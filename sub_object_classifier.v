@@ -1,7 +1,7 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations.
 
-Require Import path equiv truncation univalence.
+Require Import equiv truncation univalence.
 
 Set Universe Polymorphism.
 Global Set Primitive Projections.
@@ -91,7 +91,7 @@ Definition terminal A B (f : A -> B) : A -> {A' : Type & A'} :=
   λ a, (hfiber f (f a); (a; idpath)).
 
 Definition subobject_diagram A B (f : A -> B) : 
-  pr1 (P:=idmap) ° terminal f = sub_to_char (A;f) ° f.
+  pr1 (P:=idmap) o terminal f = sub_to_char (A;f) o f.
   apply functional_extensionality_dep. intro a. reflexivity.
 Defined.
 
@@ -132,41 +132,49 @@ Definition nchar_to_sub n B : (B -> Trunc n) -> {A : Type & {f : A -> B & forall
 
 Definition ntransport_arrow n {A : Type} {B C : A -> Type}
   {x1 x2 : A} (p : x1 = x2) (f : B x1 -> C x1) (y : B x2) (Tr_f : ∀ b : C x1 , IsTrunc n (hfiber f b))
-  : pr1 (transport (fun x => {f0 : B x -> C x & forall (b:C x), IsTrunc n {x : B x & f0 x = b}}) p (f; Tr_f)) y  =  p # (f (id_sym p # y)).
+  : pr1 (transport (fun x => {f0 : B x -> C x & forall (b:C x), IsTrunc n {x : B x & f0 x = b}}) p (f; Tr_f)) y  =  p # (f (p^ # y)).
 Proof.
   destruct p; simpl. reflexivity.
 Defined.
 
 Definition nsub_eq_char_retr n B : Sect (nchar_to_sub (n:=n) (B:=B)) (nsub_to_char n (B:=B)).
-  intro P. apply functional_extensionality_dep; intro b.
+  intro P. apply path_forall; intro b.
   unfold nsub_to_char, nchar_to_sub, hfiber; simpl.
-  equalT_pi1R ((P b).1).
+  apply truncn_unique. simpl.
   apply nhfiber_pi1.
-  destruct (P b) as [T TrT].
-  apply path_sigma' with (p := X).
-  simpl in X; destruct X; simpl.
-  apply allpath_hprop.
 Defined.
+
+(* Lemma eq_dep_sumT : forall A (B:A->Type) (P P':A) (H:B P) (H':B P')  (prf: P = P'),  H = prf^ # H'  -> existT _ P H = existT _ P' H'. *)
+(* intros A B P P' H H' prf X; destruct prf. rewrite X. reflexivity. *)
+(*  Qed. *)
 
 Definition nsub_eq_char_sect n B : Sect (nsub_to_char n (B:=B))(nchar_to_sub (n:=n) (B:=B)).
   intro t; destruct t as [A f]; simpl.
-  apply (eq_dep_sumT (λ T, ∃ f : T → B, ∀ b : B, IsTrunc n (hfiber f b)) _ (hfiber_eq (f.1))).
-  rewrite (existT_eta). 
-  equalT_pi1. 
-  apply functional_extensionality_dep; intro t.
+  apply (path_sigma) with (p := (hfiber_eq (f.1))).
+  (* apply (eq_dep_sumT (λ T, ∃ f : T → B, ∀ b : B, IsTrunc n (hfiber f b)) _ (hfiber_eq (f.1))). *)
+  simpl.
+  apply (moveR_transport_p (λ A0 : Type, ∃ f0 : A0 → B, ∀ b : B, IsTrunc n (hfiber f0 b)) (hfiber_eq f .1) (pr1; nchar_to_sub_compat (nsub_to_char n (A; f))) f).
+  rewrite <- (eta_sigma).
+
+  assert (pr1 = (transport (λ A0 : Type, ∃ f0 : A0 → B, ∀ b : B, IsTrunc n (hfiber f0 b))
+     (hfiber_eq f .1) ^ f).1).
+  (* equalT_pi1. *)
+  apply path_forall; intro t.
   destruct t as [b [a eq]]; simpl.
   destruct f as [f Tr_f]. simpl in *.
-  pose (trans := (@ntransport_arrow n _ (λ x, x) (λ x, B) _ _ (id_sym (hfiber_eq f)) f (f a; (a; idpath)) Tr_f)).
-  transitivity (transport (λ _ : Type, B) (id_sym (hfiber_eq f))
+  pose (trans := (@ntransport_arrow n _ (λ x, x) (λ x, B) _ _ (hfiber_eq f)^ f (f a; (a; idpath)) Tr_f)).
+  transitivity (transport (λ _ : Type, B) (hfiber_eq f)^
           (f
-             (transport (λ x : Type, x) (id_sym (id_sym (hfiber_eq f)))
+             (transport (λ x : Type, x) (((hfiber_eq f)^^))
                 (f a; (a; idpath))))).
-  rewrite (id_sym_invol). unfold hfiber_eq. rewrite univalence_transport, transport_const.
-  simpl. exact (id_sym eq).
+  hott_simpl.
+  (* rewrite (id_sym_invol). *)
+  unfold hfiber_eq. rewrite univalence_transport, transport_const.
+  simpl. exact (eq^).
   symmetry. simpl in *.
   destruct eq; exact trans.
 
-  apply eq_dep_sumT with (prf:= X).
+  apply path_sigma with (p := X).
   apply allpath_hprop.
 Defined. 
 
@@ -183,13 +191,13 @@ Definition nterminal n A B (f : {f : A -> B & forall b, IsTrunc n (hfiber f b)})
   λ a, (((hfiber (f.1) ((f.1) a)) ; (f.2) ((f.1) a)); (a; idpath)).
 
 Definition nsubobject_diagram n A B (f : {f : A -> B & forall b, IsTrunc n (hfiber f b)}) : 
-  pr1 (P:=_) ° nterminal n f = nsub_to_char n (A;f) ° (f.1).
-  apply functional_extensionality_dep; intro a. reflexivity.
+  pr1 (P:=_) o nterminal n f = nsub_to_char n (A;f) o (f.1).
+  apply path_forall; intro a. reflexivity.
 Defined.
 
-Definition fibers_composition_f A B C (f : A -> B) (g : B -> C) (c : C) : hfiber (g ° f) c -> {w : hfiber g c & hfiber f (w.1)} := λ a, ( (f (a.1) ; a.2) ; (a.1 ; idpath )).
+Definition fibers_composition_f A B C (f : A -> B) (g : B -> C) (c : C) : hfiber (g o f) c -> {w : hfiber g c & hfiber f (w.1)} := λ a, ( (f (a.1) ; a.2) ; (a.1 ; idpath )).
 
-Definition fibers_composition_g A B C (f : A -> B) (g : B -> C) (c : C) : {w : hfiber g c & hfiber f (w.1)} -> hfiber (g ° f) c.
+Definition fibers_composition_g A B C (f : A -> B) (g : B -> C) (c : C) : {w : hfiber g c & hfiber f (w.1)} -> hfiber (g o f) c.
   destruct 1 as [X X0]. destruct X as [xg pxg]. destruct X0 as [xf pxf]; simpl in *.
   exists xf; destruct pxf. exact pxg.
 Defined.
@@ -215,58 +223,54 @@ apply (BuildIsEquiv _ _ _ (fibers_composition_g (f:=f) (g:=g) (c:=c)) (fibers_co
 Defined.
   
 Lemma fibers_composition A B C (f : A -> B) (g : B -> C) (c : C):
-  (hfiber (g°f) c) = { w : (hfiber g c) & hfiber f (w.1) }.
+  (hfiber (g o f) c) = { w : (hfiber g c) & hfiber f (w.1) }.
 Proof.
   apply univalence_axiom.
   exists (@fibers_composition_f _ _ _ _ _ _).
   exact (@fibers_composition_eq _ _ _ _ _ _).
 Qed.
 
-Lemma function_trunc_compo n A B C : forall (f : A -> B) (g : B -> C), (forall (b:B), IsTrunc n (hfiber f b)) -> (forall (c:C), IsTrunc n (hfiber g c)) -> (forall (c:C), IsTrunc n (hfiber (g°f) c)).
+Lemma function_trunc_compo n A B C : forall (f : A -> B) (g : B -> C), (forall (b:B), IsTrunc n (hfiber f b)) -> (forall (c:C), IsTrunc n (hfiber g c)) -> (forall (c:C), IsTrunc n (hfiber (g o f) c)).
 Proof.
   intros f g Hf Hg c.
   rewrite (fibers_composition); apply trunc_sigma.
 Defined.
 
+Definition hfiber_eq_L A B C (f : A -> B) (g : B -> C) b : hfiber f b -> hfiber (g o f) (g b).
+  intro e. destruct e. exists x. exact (ap g p). Defined.
+
+Definition hfiber_eq_R A B C (f : A -> B) (g : B -> C) (H :IsMono g) b : hfiber (g o f) (g b) -> hfiber f b.
+  destruct 1. exists x. exact (@equiv_inv _ _ _ (H (f x) b) p).  Defined.
+
+Instance hfiber_mono_equiv A B C (f : A -> B) (g : B -> C) (H :IsMono g) b : IsEquiv (hfiber_eq_L (f:=f) g (b:=b)). 
+apply (isequiv_adjointify _ (hfiber_eq_R H b)).
+- intro e. destruct e. simpl. apply @path_sigma' with (p:=idpath).
+  apply eisretr.
+- intro e. destruct e. simpl. apply @path_sigma' with (p :=idpath).
+  apply eissect. 
+Defined.
+
+Definition hfiber_mono A B C (f : A -> B) (g : B -> C) (X :IsMono g) b : hfiber f b = hfiber (g o f) (g b).
+  apply univalence_axiom. exists (hfiber_eq_L (f:=f) g (b:=b)). apply hfiber_mono_equiv. exact X.
+Defined.
 
 
-
-  Definition hfiber_eq_L A B C (f : A -> B) (g : B -> C) b : hfiber f b -> hfiber (g ° f) (g b).
-    intro e. destruct e. exists x. exact (ap g p). Defined.
-
-  Definition hfiber_eq_R A B C (f : A -> B) (g : B -> C) (H :IsMono g) b : hfiber (g ° f) (g b) -> hfiber f b.
-    destruct 1. exists x. exact (@equiv_inv _ _ _ (H (f x) b) p).  Defined.
-
-  Instance hfiber_mono_equiv A B C (f : A -> B) (g : B -> C) (H :IsMono g) b : IsEquiv (hfiber_eq_L (f:=f) g (b:=b)). 
-  apply (isequiv_adjointify _ (hfiber_eq_R H b)).
-  - intro e. destruct e. simpl. apply eq_dep_sumT with (prf:=idpath).
-    apply eisretr.
-  - intro e. destruct e. simpl. apply eq_dep_sumT with (prf:=idpath).
-    apply eissect. 
-  Defined.
-
-  Definition hfiber_mono A B C (f : A -> B) (g : B -> C) (X :IsMono g) b : hfiber f b = hfiber (g ° f) (g b).
-    apply univalence_axiom. exists (hfiber_eq_L (f:=f) g (b:=b)). apply hfiber_mono_equiv. exact X.
-  Defined.
-
-
-  Definition inter_symm_f E (χ φ : E -> Type) x :
+Definition inter_symm_f E (χ φ : E -> Type) x :
   hfiber (λ t : {b : {b : E & χ b} & φ (pr1 b)}, pr1 (pr1 t)) x ->
   hfiber (λ t : {b : {b : E & φ b} & χ (pr1 b)}, pr1 (pr1 t)) x := 
-    fun X => ((existT (fun b => _ b .1) (X.1.1.1;X.1.2) X.1.1.2);X.2).
+  fun X => ((existT (fun b => _ b .1) (X.1.1.1;X.1.2) X.1.1.2);X.2).
 
-  Instance inter_symm_equiv E (χ φ : E -> Type) x : IsEquiv (inter_symm_f χ φ (x:=x)). 
-  apply (isequiv_adjointify _ (inter_symm_f φ χ (x:=x))).
-  - intro X; destruct X as [[[a b] c] d]. reflexivity.
-  - intro X; destruct X as [[[a b] c] d]. reflexivity.
-  Defined.
+Instance inter_symm_equiv E (χ φ : E -> Type) x : IsEquiv (inter_symm_f χ φ (x:=x)). 
+apply (isequiv_adjointify _ (inter_symm_f φ χ (x:=x))).
+- intro X; destruct X as [[[a b] c] d]. reflexivity.
+- intro X; destruct X as [[[a b] c] d]. reflexivity.
+Defined.
 
-  Definition inter_symm E (χ φ : E -> Type) x :
+Definition inter_symm E (χ φ : E -> Type) x :
   hfiber (λ t : {b : {b : E & χ b} & φ (pr1 b)}, pr1 (pr1 t)) x = 
   hfiber (λ t : {b : {b : E & φ b} & χ (pr1 b)}, pr1 (pr1 t)) x.
-    apply univalence_axiom. exact (BuildEquiv _ _ _ (inter_symm_equiv _ _ x)).
-  Defined.
-
+  apply univalence_axiom. exact (BuildEquiv _ _ _ (inter_symm_equiv _ _ x)).
+Defined.
 
 End SubObject_CLassifier.
 

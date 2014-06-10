@@ -1,7 +1,6 @@
 Require Export Utf8_core.
 Require Import HoTT.
 Require Import Coq.Program.Tactics.
-Require Import path.
 
 Set Universe Polymorphism.
 Global Set Primitive Projections.

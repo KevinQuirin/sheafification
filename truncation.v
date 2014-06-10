@@ -4,7 +4,7 @@
 
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations.
-Require Import path equiv.
+Require Import equiv.
 
 Generalizable Variables A X n.
 

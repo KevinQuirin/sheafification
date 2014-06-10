@@ -1,6 +1,6 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
-Require Import path equiv truncation univalence sub_object_classifier limit_colimit.
+Require Import equiv truncation univalence sub_object_classifier limit_colimit.
 
 Set Universe Polymorphism.
 Global Set Primitive Projections.
@@ -10,12 +10,12 @@ Set Implicit Arguments.
 
   Definition apD10_fed (A : Type) (B : A -> Type) (f g : ∀ x : A, B x) (H : forall x, f x = g x)  :
     apD10 (path_forall f g H) = H .
-    unfold path_forall. unfold equiv_inv.
-    destruct (@isequiv_apD10 equal_f_equiv A B f g).
-    exact (eisretr H).
+    unfold path_forall.
+    rewrite eisretr.
+    exact idpath.
   Defined.
 
-  Definition apf_L  (A B X : Type) (f : X -> A) (x y : A -> B) : x = y -> x ° f = y ° f.
+  Definition apf_L  (A B X : Type) (f : X -> A) (x y : A -> B) : x = y -> x o f = y o f.
     intro H. destruct H. exact idpath.
   Defined.
 
@@ -28,7 +28,7 @@ Set Implicit Arguments.
     destruct p. exact idpath.
   Defined.
 
-  Lemma ap_ap10_ {oA A B} (g h : oA -> B) (η : A -> oA) (p : g = h) (a : A) : apD10 (ap (fun f => f°η) p) a = ap10 p (η a).
+  Lemma ap_ap10_ {oA A B} (g h : oA -> B) (η : A -> oA) (p : g = h) (a : A) : apD10 (ap (fun f => f o η) p) a = ap10 p (η a).
     destruct p. exact idpath.
   Defined.
 
@@ -42,7 +42,7 @@ Record subuniverse_struct n := Build_subuniverse_struct {
   O_unit : forall T, T.1 -> (O T).1.1;
 
   O_equiv : forall (P : Trunc n) (Q :{T : Trunc n & (subuniverse_HProp T).1}),
-              IsEquiv (fun f : (O P).1.1 -> Q.1.1 => f ° (O_unit P)) 
+              IsEquiv (fun f : (O P).1.1 -> Q.1.1 => f o (O_unit P)) 
 }.
 
 Section Reflective_Subuniverse.
@@ -65,7 +65,7 @@ Section Reflective_Subuniverse.
     (@equiv_inv _ _ _ (subU.(O_equiv) _ _)).
 
   Definition O_rec_retr (P : Trunc n) (Q : subuniverse_Type) f
-  : O_rec _ _ f ° subU.(O_unit) _ = f :=
+  : O_rec _ _ f o subU.(O_unit) _ = f :=
     @eisretr _ _ _ (subU.(O_equiv) P Q) f.
 
   Definition O_rec_sect (P : Trunc n) (Q : subuniverse_Type) f :=
@@ -82,11 +82,11 @@ Section Reflective_Subuniverse.
   
   Definition O_unit_retract_equiv (T:Trunc n) (μ : (subU.(O) T).1.1 -> T.1) (η := subU.(O_unit) T) : Sect η μ -> IsEquiv η.
     unfold Sect; intros H. apply isequiv_adjointify with (g:=μ).
-    - assert (η ° μ ° η = idmap ° η).
-      rewrite <- comp_assoc. unfold composition at 3. apply apf.
+    - assert (η o μ o η = idmap o η).
+      unfold compose at 3. apply (ap (fun x => η o x)).
       apply path_forall; intro y.
       exact (H y).
-      exact (apD10 (elim_E (subU.(O_equiv) T (subU.(O) T)) (η ° μ) idmap X)).
+      exact (apD10 (elim_E (subU.(O_equiv) T (subU.(O) T)) (η o μ) idmap X)).
     - exact H.
   Defined.
     
@@ -140,85 +140,83 @@ Section Reflective_Subuniverse.
   Notation "'○' f" := (function_lift_modal _ _ f) (at level 0).
 
   Lemma O_rec_O_unit (A : subuniverse_Type) (B : Trunc n) (f : B.1 -> A.1.1) (x : (O subU B).1.1) :
-    O_unit subU A.1 (O_rec B A f x) = O_rec B (O subU A.1) ((O_unit subU A.1)°f) x.
-    assert (O_rec B (O subU A .1) (O_unit subU A .1 ° f) x = O_rec B (O subU A .1) ((O_unit subU A .1) ° (O_rec B A f) ° (O_unit subU B)) x).
+    O_unit subU A.1 (O_rec B A f x) = O_rec B (O subU A.1) ((O_unit subU A.1) o f) x.
+    assert (O_rec B (O subU A .1) (O_unit subU A .1 o f) x = O_rec B (O subU A .1) ((O_unit subU A .1) o (O_rec B A f) o (O_unit subU B)) x).
       pose (foo := O_rec_retr B A f).
-      rewrite (inverse (comp_assoc _ _ _)).
-      rewrite foo. exact idpath.
+      (* rewrite (inverse (comp_assoc _ _ _)). *)
+      apply (ap (fun u => O_rec B (O subU A.1) u x)).
+      apply (ap (fun u => O_unit subU A.1 o u)).
+      exact foo^.
     rewrite X; clear X.
-    assert (forall U, O_rec B (O subU A .1) (U ° O_unit subU B) x = U x).
+    assert (forall U, O_rec B (O subU A .1) (U o O_unit subU B) x = U x).
       intro U.
       exact (apD10 (O_rec_sect B (O subU A.1) U) x).
-    exact (inverse (X (O_unit subU A .1 ° O_rec B A f))).
+    exact (inverse (X (O_unit subU A .1 o O_rec B A f))).
   Defined.
 
-  Definition function_lift_modal_square (A : Trunc n) (B : subuniverse_Type) (f : A.1 -> B.1.1) : (@equiv_inv _ _ (subU.(O_unit) B.1) (O_modal_equiv B)) ° (function_lift A B.1 f) ° (subU.(O_unit) A) =  f.
-    apply path_forall; intro x; unfold composition, function_lift; simpl.
-    exact (transport (λ U, O_rec B .1 B (λ x : (B .1) .1, x) U = f x) (inverse (apD10 ((O_rec_retr A (subU.(O) B.1)) ((O_unit subU B.1)°f)) x)) (apD10 (O_rec_retr B.1 B idmap) (f x))).
+  Definition function_lift_modal_square (A : Trunc n) (B : subuniverse_Type) (f : A.1 -> B.1.1) : (@equiv_inv _ _ (subU.(O_unit) B.1) (O_modal_equiv B)) o (function_lift A B.1 f) o (subU.(O_unit) A) =  f.
+    apply path_forall; intro x; unfold compose, function_lift; simpl.
+    exact (transport (λ U, O_rec B .1 B (λ x : (B .1) .1, x) U = f x) (inverse (apD10 ((O_rec_retr A (subU.(O) B.1)) ((O_unit subU B.1) o f)) x)) (apD10 (O_rec_retr B.1 B idmap) (f x))).
   Defined.
 
   Definition function_lift_compose (A B C : Trunc n) ( f : A.1 -> B.1) (g : B.1 -> C.1) :
-    (function_lift A C (g°f)) = (function_lift B C g)°(function_lift A B f).
+    (function_lift A C (g o f)) = (function_lift B C g) o (function_lift A B f).
     apply path_forall; intro x; simpl.
     unfold function_lift.
-    fold ( (O_unit subU C) ° g).
-    fold ( (O_unit subU B) ° f).
-    assert ((λ x : A .1, O_unit subU C ((g ° f) x)) = ((((O_unit subU C) ° g) ° f))).
+    fold ( (O_unit subU C) o g).
+    fold ( (O_unit subU B) o f).
+    assert ((λ x : A .1, O_unit subU C ((g o f) x)) = ((((O_unit subU C) o g) o f))).
       exact idpath.
     rewrite X; clear X.
     
-    assert (O_rec A (O subU C) (((O_unit subU C ° g) ° f)) = O_rec A (O subU C) (((O_rec B (O subU C) (O_unit subU C ° g) ° O_unit subU B) ° f))).
-      pose (foo := O_rec_retr B (O subU C) (O_unit subU C ° g)).
+    assert (O_rec A (O subU C) (((O_unit subU C o g) o f)) = O_rec A (O subU C) (((O_rec B (O subU C) (O_unit subU C o g) o O_unit subU B) o f))).
+      pose (foo := O_rec_retr B (O subU C) (O_unit subU C o g)).
       rewrite foo. exact idpath.
-
     rewrite X; clear X.
-
-    rewrite (inverse (comp_assoc _ _ _)).
 
     assert (O_rec A (O subU C)
-     (O_rec B (O subU C) (O_unit subU C ° g) ° (O_unit subU B ° f)) =
+     (O_rec B (O subU C) (O_unit subU C o g) o (O_unit subU B o f)) =
             O_rec A (O subU C)
-     (O_rec B (O subU C) (O_unit subU C ° g) ° (O_rec A (O subU B) (O_unit subU B ° f) ° O_unit subU A))).
-      pose (foo := O_rec_retr A (O subU B) (O_unit subU B ° f)).
+     (O_rec B (O subU C) (O_unit subU C o g) o (O_rec A (O subU B) (O_unit subU B o f) o O_unit subU A))).
+      pose (foo := O_rec_retr A (O subU B) (O_unit subU B o f)).
       rewrite foo. exact idpath.
-    rewrite X; clear X.
+    etransitivity. exact (ap10 X x).
 
-    pose (foo := apD10 (O_rec_sect A (O subU C) (O_rec B (O subU C) (O_unit subU C ° g)
-       ° O_rec A (O subU B) (O_unit subU B ° f))) x).
+    pose (foo := apD10 (O_rec_sect A (O subU C) (O_rec B (O subU C) (O_unit subU C o g)
+       o O_rec A (O subU B) (O_unit subU B o f))) x).
 
-    rewrite comp_assoc.
-    unfold O_rec, equiv_inv, composition in *; simpl in *.
+    unfold O_rec, equiv_inv, compose in *; simpl in *.
     rewrite foo. exact idpath.
   Defined.
 
-  Definition function_lift_square (A B C X : Trunc n) (π1 : X.1 -> A.1) (π2 : X.1 -> B.1) (f : A.1 -> C.1) (g : B.1 -> C.1) (comm : (f°π1) = (g°π2)) : ( (function_lift A C f) ° (function_lift X A π1) ) = ( (function_lift B C g) ° (function_lift X B π2) ).
-    unfold function_lift, composition in *; simpl in *.
+  Definition function_lift_square (A B C X : Trunc n) (π1 : X.1 -> A.1) (π2 : X.1 -> B.1) (f : A.1 -> C.1) (g : B.1 -> C.1) (comm : (f o π1) = (g o π2)) : ( (function_lift A C f) o (function_lift X A π1) ) = ( (function_lift B C g) o (function_lift X B π2) ).
+    unfold function_lift, compose in *; simpl in *.
     apply path_forall; intro x; simpl.
 
-    pose (foo1 := apD10 (function_lift_compose X A C π1 f) x). unfold function_lift, composition in foo1; simpl in foo1.
-    pose (foo2 := apD10 (function_lift_compose X B C π2 g) x). unfold function_lift, composition in foo2; simpl in foo2.
-    pose (foo3 := ap (λ u, O_rec X (O subU C) (λ x0, O_unit subU C (u x0)) x) (x:=f°π1) (y:=g°π2) comm). simpl in foo3.
+    pose (foo1 := apD10 (function_lift_compose X A C π1 f) x). unfold function_lift, compose in foo1; simpl in foo1.
+    pose (foo2 := apD10 (function_lift_compose X B C π2 g) x). unfold function_lift, compose in foo2; simpl in foo2.
+    pose (foo3 := ap (λ u, O_rec X (O subU C) (λ x0, O_unit subU C (u x0)) x) (x:=f o π1) (y:=g o π2) comm). simpl in foo3.
 
     exact ((inverse foo1) @ foo3 @ foo2).
   Defined.
 
 (* The universal property commute with η *)
 
-    Definition equal_fun_modal (A:Trunc n) (B:subuniverse_Type) (f g:(O subU A).1.1 -> B.1.1) (η := O_unit subU A) : ((f°η = g°η) -> (f=g))
+    Definition equal_fun_modal (A:Trunc n) (B:subuniverse_Type) (f g:(O subU A).1.1 -> B.1.1) (η := O_unit subU A) : ((f o η = g o η) -> (f=g))
     := λ H, ((inverse (eissect _ (IsEquiv := (O_equiv subU A B)) f) @ (ap equiv_inv H) @ (eissect _ (IsEquiv := (O_equiv subU A B)) g))).
     
-  Lemma universality_unit_lemma (oA A B: Type) (η : A -> oA) (f g : oA -> B) (inv : (A -> B) -> oA -> B) (π : f°η = g°η) (eisretr : forall x:A -> B, (inv x)°η = x) (eissect : forall x : oA -> B, inv (x ° η) = x) a : apD10 (ap inv π) (η a) = ((apD10 (eisretr (f ° η)) a @ apD10 π a) @ (apD10 (eisretr (g ° η)) a) ^)%path.
+  Lemma universality_unit_lemma (oA A B: Type) (η : A -> oA) (f g : oA -> B) (inv : (A -> B) -> oA -> B) (π : f o η = g o η) (eisretr : forall x:A -> B, (inv x) o η = x) (eissect : forall x : oA -> B, inv (x o η) = x) a : apD10 (ap inv π) (η a) = ((apD10 (eisretr (f o η)) a @ apD10 π a) @ (apD10 (eisretr (g o η)) a) ^)%path.
     destruct π. simpl. rewrite concat_p1. rewrite concat_pV. exact idpath.
   Defined.
       
-  Definition universality_unit (A:Trunc n) (B:subuniverse_Type) (f g:(O subU A).1.1 -> B.1.1) (η := O_unit subU A) (π : (f°η = g°η)) : forall a, apD10 (equal_fun_modal A B π) (η a) = apD10 π a.
+  Definition universality_unit (A:Trunc n) (B:subuniverse_Type) (f g:(O subU A).1.1 -> B.1.1) (η := O_unit subU A) (π : (f o η = g o η)) : forall a, apD10 (equal_fun_modal A B π) (η a) = apD10 π a.
     intro a. unfold equal_fun_modal. destruct (O_equiv subU A B). simpl.
     repeat rewrite apD10_pp. rewrite apD10_V. rewrite concat_pp_p.
     apply moveR_Mp. apply moveR_pM. rewrite inv_V.
-    assert (apD10 (eisretr (g°η)) a = apD10 (eissect g) (η a)).
+    assert (apD10 (eisretr (g o η)) a = apD10 (eissect g) (η a)).
     fold η in eisadj; rewrite (eisadj g). apply ap_ap10_.
     rewrite <- X; clear X.
-    assert (apD10 (eisretr (f°η)) a =
+    assert (apD10 (eisretr (f o η)) a =
             apD10 (eissect f) (η a)).
     fold η in eisadj; rewrite (eisadj f). apply ap_ap10_.
     rewrite <- X. clear X.
@@ -254,18 +252,18 @@ Section Reflective_Subuniverse.
     (subuniverse_HProp subU (A.1.1*B.1.1 ; trunc_prod (H:=A.1.2) (H0 := B.1.2))).1.
     rewrite <- subuniverse_iff_O.
 
-    pose (μ := λ (X : ((O subU (A.1.1 ** B.1.1; trunc_prod (H:=A.1.2) (H0 := B.1.2))) .1) .1),
-               (O_rec (A.1.1 ** B.1.1; trunc_prod (H:=A.1.2) (H0 := B.1.2)) (A)
-                      (λ x : (A.1.1 ** B.1.1; trunc_prod (H:=A.1.2) (H0 := B.1.2)) .1, (fst x)) X,
-                O_rec (A.1.1 ** B.1.1; trunc_prod (H:=A.1.2) (H0 := B.1.2)) (B)
-                      (λ x : (A.1.1 ** B.1.1; trunc_prod (H:=A.1.2) (H0 := B.1.2)) .1, (snd x)) X)).
+    pose (μ := λ (X : ((O subU (A.1.1 * B.1.1; trunc_prod (H:=A.1.2) (H0 := B.1.2))) .1) .1),
+               (O_rec (A.1.1 * B.1.1; trunc_prod (H:=A.1.2) (H0 := B.1.2)) (A)
+                      (λ x : (A.1.1 * B.1.1; trunc_prod (H:=A.1.2) (H0 := B.1.2)) .1, (fst x)) X,
+                O_rec (A.1.1 * B.1.1; trunc_prod (H:=A.1.2) (H0 := B.1.2)) (B)
+                      (λ x : (A.1.1 * B.1.1; trunc_prod (H:=A.1.2) (H0 := B.1.2)) .1, (snd x)) X)).
     apply O_unit_retract_equiv with (μ := μ).
     intro x; destruct x as [a b].
     unfold μ; apply path_prod.
     - simpl.
-     exact (apD10 (O_rec_retr (A.1.1 ** B.1.1; trunc_prod (H:=A.1.2) (H0 := B.1.2)) A (λ x : (A .1) .1 ** (B .1) .1, fst x)) (a,b)). 
+     exact (apD10 (O_rec_retr (A.1.1 * B.1.1; trunc_prod (H:=A.1.2) (H0 := B.1.2)) A (λ x : (A .1) .1 * (B .1) .1, fst x)) (a,b)). 
     - simpl.
-      exact (apD10 (O_rec_retr (A.1.1 ** B.1.1; trunc_prod (H:=A.1.2) (H0 := B.1.2)) B (λ x : (A .1) .1 ** (B .1) .1, snd x)) (a,b)). 
+      exact (apD10 (O_rec_retr (A.1.1 * B.1.1; trunc_prod (H:=A.1.2) (H0 := B.1.2)) B (λ x : (A .1) .1 * (B .1) .1, snd x)) (a,b)). 
   Defined.
   
   Definition subuniverse_product_fun (A B : Trunc n) : (O subU (A.1*B.1; trunc_prod (H:=A.2) (H0:=B.2))).1.1 -> (O subU A).1.1*(O subU B).1.1
@@ -286,7 +284,7 @@ Section Reflective_Subuniverse.
   (*   Equiv ((O subU (A.1 * B.1 ; trunc_prod (H:=A.2) (H0:=B.2))).1.1 -> C.1.1) ((O subU A).1.1*(O subU B).1.1 -> C.1.1). *)
   (*   apply (@equiv_compose' _ (A.1*B.1 -> C.1.1) _). *)
   (*   Focus 2. *)
-  (*   exists ((λ f : ((O subU (A .1 ** B .1; trunc_prod)) .1) .1 -> (C .1) .1, f ° O_unit subU (A .1 ** B .1; trunc_prod))). *)
+  (*   exists ((λ f : ((O subU (A .1 ** B .1; trunc_prod)) .1) .1 -> (C .1) .1, f o O_unit subU (A .1 ** B .1; trunc_prod))). *)
   (*   exact (O_equiv _ _ _). *)
 
   (*   apply (@equiv_compose' _ (A.1 -> B.1 -> C.1.1) _). *)
@@ -299,7 +297,7 @@ Section Reflective_Subuniverse.
   (*   apply (@equiv_compose' _ ((O subU A).1.1 -> B.1 -> C.1.1) _). *)
   (*   Focus 2. apply equiv_inverse. *)
   (*   exists (λ f : (((O subU A) .1) .1 -> (existT (λ S, (subuniverse_HProp subU S).1) (existT (λ T, IsTrunc n T) (B .1 -> (C .1) .1) (trunc_arrow (H0 := C.1.2))) (subuniverse_arrow B .1 C)).1.1),  *)
-  (*                 f ° O_unit subU A). *)
+  (*                 f o O_unit subU A). *)
   (*   exact (O_equiv subU A (( B.1 -> C.1.1 ; trunc_arrow (H0 := C.1.2)) ; subuniverse_arrow B.1 C)). *)
     
   (*   apply (@equiv_compose' _ ((O subU A).1.1 -> (O subU B).1.1 -> C.1.1) _). *)
@@ -310,7 +308,7 @@ Section Reflective_Subuniverse.
 
   (*   apply equiv_postcompose'. *)
   (*   apply equiv_inverse. *)
-  (*   exists (λ f : ((O subU B) .1) .1 -> (C .1) .1, f ° O_unit subU B). *)
+  (*   exists (λ f : ((O subU B) .1) .1 -> (C .1) .1, f o O_unit subU B). *)
   (*   exact (O_equiv subU B C). *)
   (* Defined. *)
 
@@ -318,7 +316,7 @@ Section Reflective_Subuniverse.
     Equiv (A.1 * B.1 -> C.1.1) ((O subU A).1.1*(O subU B).1.1 -> C.1.1).
     (* apply (@equiv_compose' _ (A.1*B.1 -> C.1.1) _). *)
     (* Focus 2. *)
-    (* exists ((λ f : ((O subU (A .1 ** B .1; trunc_prod)) .1) .1 -> (C .1) .1, f ° O_unit subU (A .1 ** B .1; trunc_prod))). *)
+    (* exists ((λ f : ((O subU (A .1 ** B .1; trunc_prod)) .1) .1 -> (C .1) .1, f o O_unit subU (A .1 ** B .1; trunc_prod))). *)
     (* exact (O_equiv _ _ _). *)
 
     apply (@equiv_compose' _ (A.1 -> B.1 -> C.1.1) _).
@@ -331,7 +329,7 @@ Section Reflective_Subuniverse.
     apply (@equiv_compose' _ ((O subU A).1.1 -> B.1 -> C.1.1) _).
     Focus 2. apply equiv_inverse.
     exists (λ f : (((O subU A) .1) .1 -> (existT (λ S, (subuniverse_HProp subU S).1) (existT (λ T, IsTrunc n T) (B .1 -> (C .1) .1) (trunc_arrow (H0 := C.1.2))) (subuniverse_arrow B .1 C)).1.1), 
-                  f ° O_unit subU A).
+                  f o O_unit subU A).
     exact (O_equiv subU A (( B.1 -> C.1.1 ; trunc_arrow (H0 := C.1.2)) ; subuniverse_arrow B.1 C)).
     
     apply (@equiv_compose' _ ((O subU A).1.1 -> (O subU B).1.1 -> C.1.1) _).
@@ -342,7 +340,7 @@ Section Reflective_Subuniverse.
 
     apply equiv_postcompose'.
     apply equiv_inverse.
-    exists (λ f : ((O subU B) .1) .1 -> (C .1) .1, f ° O_unit subU B).
+    exists (λ f : ((O subU B) .1) .1 -> (C .1) .1, f o O_unit subU B).
     exact (O_equiv subU B C).
   Defined.
 
@@ -373,11 +371,11 @@ Section Reflective_Subuniverse.
       pose (Z := existT (λ T, (subuniverse_HProp subU T).1) ({z:(O subU A).1.1 & (B z).1.1} ; trunc_sigma (H:=(O subU A).1.2) (H0:=λ z, (B z).1.2)) (H (O subU A) B)).
       pose (g' :=( λ a:A.1, (O_unit subU A a ; g a)) : A.1 -> Z.1.1).
       pose (f' := O_rec _ _ g').
-      pose (eqf :=λ a:A.1, (apD10 (O_rec_retr _ _ g') a)). unfold composition in eqf. fold f' in eqf.
+      pose (eqf :=λ a:A.1, (apD10 (O_rec_retr _ _ g') a)). unfold compose in eqf. fold f' in eqf.
       pose (g'' := λ x, (f' x).1).
       pose (f'' := λ x:(O subU A).1.1, x).
       pose (eq'' := path_forall _ _ (λ x, @ap _ _ pr1 _ _ (eqf x))).
-      assert (g'' ° (O_unit subU A) = f'' ° (O_unit subU A)).
+      assert (g'' o (O_unit subU A) = f'' o (O_unit subU A)).
         exact eq''.
       pose (eq''' := apD10 (equal_fun_modal A (O subU A) (g:=f'') (f:=g'') (eq''))). unfold f'', g'' in eq'''; simpl in eq'''.
       pose (f := λ z, (f' z).2). simpl in f.
@@ -409,8 +407,10 @@ Section Reflective_Subuniverse.
       apply O_unit_retract_equiv with (μ := k).
 
       intro x; destruct x as [x1 x2]. unfold k.
-      apply eq_dep_sumT with (prf := (p (x1;x2))).
       rewrite (q (x1;x2)).
+      apply @path_sigma'  with (p := (p (x1;x2))).
+      unfold g; simpl.
+      rewrite transport_pV.
       exact idpath.
   Defined.
       
@@ -510,8 +510,8 @@ Section Reflective_Subuniverse.
 (*     intro x; destruct x as [F [G prf]]; simpl in *. *)
 (*     unfold pullback_μ; simpl. *)
     
-(*     pose (foo := apD10 (O_rec_retr (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) A (λ x : pullback f g, x .1)) (F;(G;prf))); unfold composition in foo; simpl in foo. *)
-(*     pose (bar := apD10 (O_rec_retr (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) B (λ x : pullback f g, x .2.1)) (F;(G;prf))); unfold composition in bar; simpl in bar. *)
+(*     pose (foo := apD10 (O_rec_retr (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) A (λ x : pullback f g, x .1)) (F;(G;prf))); unfold compose in foo; simpl in foo. *)
+(*     pose (bar := apD10 (O_rec_retr (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) B (λ x : pullback f g, x .2.1)) (F;(G;prf))); unfold compose in bar; simpl in bar. *)
 
 (*     assert ( *)
 (*         (O_rec (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) A *)
@@ -608,7 +608,7 @@ Section Reflective_Subuniverse.
 
 (*     repeat rewrite (transport_paths_Fl). repeat rewrite (transport_paths_Fr). *)
 (*     hott_simpl. *)
-(*     unfold function_lift_modal, function_lift_square, function_lift_compose, function_lift_modal_square, path_forall, composition. simpl. *)
+(*     unfold function_lift_modal, function_lift_square, function_lift_compose, function_lift_modal_square, path_forall, compose. simpl. *)
 (*     repeat rewrite (eisretr apD10). hott_simpl. *)
 (*     (* rewrite equalf_fed. rewrite equalf_fed. *) *)
 (*     repeat rewrite (transport_paths_Fl). repeat rewrite inverse_ap. *)

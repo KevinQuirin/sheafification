@@ -214,20 +214,39 @@ Definition truncn_unique n (A B : Trunc n) : A.1 = B.1 -> A = B.
   intro e. destruct A, B. apply path_sigma' with (p:=e).  apply allpath_hprop.
 Defined.
 
-Lemma fooo   
-      (A : Type)
-      (B : Type)
-      (f : A → B)
-      (x : A)
-      (y : A)
-      (* q : f y = f x *)
-      (* X : (x; 1) = (y; q) *)
-      (* foo := X ..2 : transport (λ u : A, f u = f x) X ..1 1 = q *)
-      (X: x=y)
-(* ============================ *)
-: (ap f X^) = transport (λ u : A, f u = f x) X 1.
-    by induction X.
-Qed.
+Definition isequiv_truncn_unique n (A B : Trunc n)
+: IsEquiv (λ p:A=B, p..1).
+  apply isequiv_adjointify with (g := truncn_unique A B).
+  - intro p; unfold truncn_unique; simpl.
+    destruct A as [A TrA], B as [B TrB]. simpl in p. destruct p. simpl.
+    assert (foo := @ap_existT Type (λ T : Type, IsTrunc n T) A TrA TrB (allpath_hprop TrA TrB)).
+    apply (transport (λ U:(A; TrA) = (A; TrB), ap pr1 U = 1) foo); clear foo.
+    assert (fo := allpath_hprop TrA TrB). destruct fo.
+    unfold allpath_hprop.
+    rewrite (@contr (TrA = TrA) ((@trunc_trunc Fun A n minus_two TrA TrA)) 1).
+    exact idpath.
+  - intro p; simpl.
+    destruct p; simpl. unfold truncn_unique. simpl.
+    destruct A as [A TrA]. simpl.
+    apply (transport (λ U, path_sigma' (λ T, IsTrunc n T) 1 U = 1) (@contr (TrA = TrA) ((@trunc_trunc Fun A n minus_two TrA TrA)) 1)^).
+    exact 1.
+Defined.
+
+    
+(* Lemma fooo    *)
+(*       (A : Type) *)
+(*       (B : Type) *)
+(*       (f : A → B) *)
+(*       (x : A) *)
+(*       (y : A) *)
+(*       (* q : f y = f x *) *)
+(*       (* X : (x; 1) = (y; q) *) *)
+(*       (* foo := X ..2 : transport (λ u : A, f u = f x) X ..1 1 = q *) *)
+(*       (X: x=y) *)
+(* (* ============================ *) *)
+(* : (ap f X^) = transport (λ u : A, f u = f x) X 1. *)
+(*     by induction X. *)
+(* Qed. *)
 
 (* Lemma L425 (A B:Type) (f:A -> B) (b:B) (x y : A) (p: f x = b) (q: f y = b) *)
 (* : ((x;p)= existT (fun u => f u = b) y q) <~> { Ɣ :x=y & (ap f Ɣ)^@ p = q}. *)

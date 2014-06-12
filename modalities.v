@@ -101,6 +101,29 @@ Section Reflective_Subuniverse.
     Grab Existential Variables. intro. simpl. exact ((subuniverse_HProp subU a) .2).
   Defined.
 
+  Definition isequiv_unique_subuniverse (T T':subuniverse_Type)
+  : IsEquiv (λ p:T=T', p..1).
+    apply isequiv_adjointify with (g := unique_subuniverse T T').
+    - intro p. unfold unique_subuniverse, eq_dep_subset. 
+      destruct T as [T ShT], T' as [T' ShT']; simpl in *. destruct p.
+      (* unfold path_sigma', path_sigma, path_sigma_uncurried. simpl. *)
+      assert (ShT = ShT').
+      apply @allpath_hprop.
+      exact (subuniverse_HProp subU T).2.
+      destruct X.
+      apply (transport (λ U, ap pr1
+                                (path_sigma'
+                                   (λ x : Trunc n, let (a, _) := subuniverse_HProp subU x in a) 1
+                                   U) = 1) (@contr (ShT = ShT) ((subuniverse_HProp subU T).2 ShT ShT) 1)^).
+      exact 1.
+    - intro p; destruct p.
+      unfold unique_subuniverse; simpl.
+      destruct T as [[T TrT] ShT]. simpl.
+      unfold eq_dep_subset. simpl.
+      apply (transport (λ U, path_sigma' (λ x : Trunc n, let (a, _) := subuniverse_HProp subU x in a) 1 U = 1) (@contr (ShT = ShT) ((subuniverse_HProp subU (T;TrT)).2 ShT ShT) 1)^).
+      exact 1.
+  Qed.
+      
   Definition O_modal (T:subuniverse_Type) : T = subU.(O) T.1.
     apply unique_subuniverse. apply truncn_unique.
     apply univalence_axiom.

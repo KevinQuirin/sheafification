@@ -353,12 +353,13 @@ Section Sheafification.
   :  ((φ1 x).1.1 -> (φ2 x).1.1).
     unfold E_to_χ_map in p.
     generalize dependent (EnJ_is_nJ χ x).
-    apply (O_rec (((χ x))) (existT (fun T => (subuniverse_HProp nj T).1) (((φ1 x) .1) .1 → ((φ2 x) .1) .1 ; trunc_arrow (H0 := ((φ2 x) .1).2)) (subuniverse_arrow (((φ1 x) .1) .1) (φ2 x)))). 
+    apply (O_rec (((χ x))) (existT (fun T => (subuniverse_HProp nj T).1) (((φ1 x) .1) .1 → ((φ2 x) .1) .1 ; trunc_arrow (H0 := ((φ2 x) .1).2)) (subuniverse_arrow (((φ1 x) .1) .1) (φ2 x)))).
     intro v. simpl.
 
     assert (eq := (ap10 p (x;v))). unfold compose in eq; simpl in eq.
+    (* intro X. exact (transport (λ U, U) (ap (λ x, x.1.1) eq) X).  *)
     exact (transport (λ T:subuniverse_Type nj, (φ1 x).1.1 -> T.1.1) eq idmap).
-  Defined.        
+  Defined.
 
   Lemma reflect_factoriality_arrow_space
         (P:Trunc n)
@@ -406,7 +407,7 @@ Section Sheafification.
     
   Lemma nTjTiseparated_eq_fun_univ_invol (E:Type) (χ:EnJ E) φ1 φ2 (p: E_to_χ_map
          (subuniverse_Type nj; subuniverse_Type_is_TruncSn (subU:=nj)) χ φ1 =
-    E_to_χ_map 
+    E_to_χ_map
          (subuniverse_Type nj; subuniverse_Type_is_TruncSn (subU:=nj)) χ φ2) (x:E)
   : forall (y:(φ2 x).1.1), nTjTiseparated_eq_fun_univ p x (nTjTiseparated_eq_fun_univ p^ x y) = y.
   Proof.
@@ -477,24 +478,118 @@ Section Sheafification.
     - exact (transport (λ u, ∀ y : ((φ1 x) .1) .1, nTjTiseparated_eq_fun_univ (inverse p) x (nTjTiseparated_eq_fun_univ u x y) = y) (inv_V p) (nTjTiseparated_eq_fun_univ_invol (inverse p) x)).
   Defined.
 
-  Lemma is_trunc_eq (S S':Trunc n) : IsTrunc n (S=S').
-    apply istrunc_paths. apply (Tn_is_TSn (n:=n)).
+  Lemma isequiv_ap10 : forall (A B: Type) f g, IsEquiv (@ap10 A B f g).
+    intros A B f g.
+    apply isequiv_apD10.
   Defined.
+
+  Arguments equiv_path A B p : simpl never.
+
+  Definition isequiv_unique_subuniverse' (T T':subuniverse_Type nj)
+  : IsEquiv (unique_subuniverse T T').
+    apply isequiv_adjointify with (g := λ p, p..1).
+     - intro p; destruct p.
+      unfold unique_subuniverse; simpl.
+      destruct T as [[T TrT] ShT]. simpl.
+      unfold eq_dep_subset. simpl.
+      apply (transport (λ U, path_sigma' (λ x : Trunc n, let (a, _) := subuniverse_HProp nj x in a) 1 U = 1) (@contr (ShT = ShT) ((subuniverse_HProp nj (T;TrT)).2 ShT ShT) 1)^).
+      exact 1.
+    - intro p. unfold unique_subuniverse, eq_dep_subset. 
+      destruct T as [T ShT], T' as [T' ShT']; simpl in *. destruct p.
+      (* unfold path_sigma', path_sigma, path_sigma_uncurried. simpl. *)
+      assert (ShT = ShT').
+      apply @allpath_hprop.
+      exact (subuniverse_HProp nj T).2.
+      destruct X.
+      apply (transport (λ U, ap pr1
+                                (path_sigma'
+                                   (λ x : Trunc n, let (a, _) := subuniverse_HProp nj x in a) 1
+                                   U) = 1) (@contr (ShT = ShT) ((subuniverse_HProp nj T).2 ShT ShT) 1)^).
+      exact 1.
+  Defined.
+
+  Definition isequiv_truncn_unique' n (A B : Trunc n)
+  : IsEquiv (truncn_unique A B).
+    apply isequiv_adjointify with (g := ap pr1).
+    - intro p; simpl.
+      destruct p; simpl. unfold truncn_unique. simpl.
+      destruct A as [A TrA]. simpl.
+      apply (transport (λ U, path_sigma' (λ T, IsTrunc n T) 1 U = 1) (@contr (TrA = TrA) ((trunc_trunc A n minus_two TrA TrA)) 1)^).
+      exact 1.
+    - intro p; unfold truncn_unique; simpl.
+      destruct A as [A TrA], B as [B TrB]. simpl in p. destruct p. simpl.
+      (* assert (foo := @ap_existT Type (λ T : Type, IsTrunc n T) A TrA TrB (allpath_hprop TrA TrB)). *)
+      (* apply (transport (λ U:(A; TrA) = (A; TrB), ap pr1 U = 1) foo); clear foo. *)
+      assert (fo := allpath_hprop TrA TrB). destruct fo.
+      unfold allpath_hprop.
+      apply (transport (λ U, ap pr1 (path_sigma' (λ T : Type, IsTrunc n T) 1 U) = 1) (@contr (TrA = TrA) ((trunc_trunc A n minus_two TrA TrA)) 1)^).
+      exact idpath.   
+  Defined.
+
+  Lemma equal_equiv (A B:Type) (f g : A -> B) (eq_f : IsEquiv f) (eq_g : IsEquiv g)
+  : f = g -> (BuildEquiv _ _ f eq_f) = (BuildEquiv _ _ g eq_g).
+    intro H. destruct H. assert (eq_f = eq_g).
+    apply allpath_hprop. destruct X. exact 1.
+  Qed.
 
   Lemma nTjTiseparated_eq : separated (subuniverse_Type nj ; @subuniverse_Type_is_TruncSn _ nj).
     intros E χ φ1 φ2.
     apply isequiv_adjointify with (g := @nTjTiseparated_eq_inv E χ φ1 φ2).
-    - intro p.
+    - intro p. 
+      unfold E_to_χ_map in *; simpl in *.
+      apply (@equiv_inj _ _ _ (isequiv_ap10 (φ1 o (pr1 (P:=fun e => (χ e).1))) (φ2 o pr1))).
+      apply path_forall; intro x.
+
+      unfold nTjTiseparated_eq_inv.
+      rewrite ap_ap10_L. unfold ap10 at 1, path_forall; rewrite eisretr.
+
+      (* unfold compose in *; simpl in *. *)
+
+      apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_unique_subuniverse' _ _))). apply isequiv_inverse.
+      apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_truncn_unique' _ _))). apply isequiv_inverse. 
+      apply (@equiv_inj _ _ _ (isequiv_equiv_path ((φ1 o pr1) x).1.1 ((φ2 o pr1) x).1.1)).
+      repeat rewrite eissect; rewrite eisretr; simpl.
+
+      apply equal_equiv.
+      unfold nTjTiseparated_eq_fun_univ.      
+      apply path_forall; intro u.
+
+
+    - intro p; destruct p.
       unfold E_to_χ_map, nTjTiseparated_eq_inv in *; simpl in *.
-      unfold nTjTiseparated_eq_fun_univ_invol, nTjTiseparated_eq_fun_univ; simpl in *.
-      (* pose (foo := λ x0:E, @O_rec_sect n nj ((χ x0).1) (O nj (φ1 x0 = φ2 x0; is_trunc_eq (φ1 x0) (φ2 x0)))). *)
-      (* unfold compose, equiv_inv in foo. *)
-      (* unfold O_rec, equiv_inv. *)
-      admit.
-    - intro x.
-      unfold E_to_χ_map, nTjTiseparated_eq_inv in *; simpl in *.
-      admit.
+      eapply concat; [idtac | apply (path_forall_1 φ1)]; apply ap.
+      apply path_forall; intro x; simpl.
+      apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_unique_subuniverse' _ _))). apply isequiv_inverse.
+      apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_truncn_unique' _ _))). apply isequiv_inverse.
+      apply (@equiv_inj _ _ _ (isequiv_equiv_path (((φ1 x) .1) .1) (((φ1 x) .1) .1))).
+      repeat rewrite eissect; rewrite eisretr; simpl.
+      unfold equiv_path. simpl.
+      apply equal_equiv.
+      unfold transport, nTjTiseparated_eq_fun_univ; simpl.
+      exact (ap10 (O_rec_const  (χ x) ((((φ1 x) .1) .1 → ((φ1 x) .1) .1; trunc_arrow);
+     subuniverse_arrow ((φ1 x) .1) .1 (φ1 x)) idmap) (EnJ_is_nJ χ x)). 
   Defined.
+
+  Lemma foooo (P:Trunc n) (R S:subuniverse_Type nj) (eq : P.1 -> (R=S)) w
+  : O_rec P
+          (((R.1.1 -> S.1.1);trunc_arrow);subuniverse_arrow R.1.1 S)
+          (λ v:P.1, transport (λ T:subuniverse_Type nj, R.1.1 -> T.1.1) (eq v) idmap)
+          
+    =
+    λ _, transport idmap (ap pr1 (ap pr1 (eq w))).
+
+    apply (@equiv_inj _ _ _ (O_equiv nj _ _)).
+    rewrite O_rec_retr.
+    apply path_forall; intro v. unfold compose; simpl.
+    apply path_forall; intro r.
+    (* unfold transport. *)
+    (* destruct (ap pr1 (ap pr1 (eq w))). *)
+  Admitted.
+
+
+    
+------------------------------------------
+
 
   Lemma nType_j_Type_is_SnType_j_Type : Snsheaf_struct (subuniverse_Type nj ;
                                                         @subuniverse_Type_is_TruncSn _ nj).

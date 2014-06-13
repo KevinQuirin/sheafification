@@ -71,16 +71,43 @@ Section Sheafification.
              transport idmap (j_is_nj P) (Oj_unit P x) = nj.(O_unit) (P.1; IsHProp_IsTrunc P.2 n0) x.
 
   Definition nJ := {T : Trunc n & (nj.(O) T).1.1}.
- 
+
+  Definition incl_Aeq_Eeq (E:Type) (χ:E -> Trunc n) (x:{e:E & (χ e).1})
+  : {e':{e:E & (χ e).1} & x.1 = e'.1} -> {e':E & x.1 = e'}
+    := λ X, (X.1.1;X.2).
+
+  Definition eq_dense_1 (E:Type) (χ:E -> Trunc n) (x:{e:E & (χ e).1})
+  : {e':{e:E & (χ e).1} & x.1 = e'.1} <~> (χ x.1).1.
+    exists (λ X, (transport (λ u, (χ u).1) (X.2)^ X.1.2)).
+    apply isequiv_adjointify with (g := (λ X, ((x.1;X);1)) : ((χ x.1).1 -> {e':{e:E & (χ e).1} & x.1 = e'.1})).
+    - intro u. exact 1.
+    - intro u. destruct u as [[e' e] p]. simpl in *. destruct p. simpl. exact 1.
+  Defined.
+
   Record EnJ (E:Type) :=
     {
       char :> E -> Trunc n ;
-      dense : forall e:E, ({e':E & e=e'}) = (O nj (char e)).1.1
+      dense_eq : forall e:E, ({e':E & e=e'}) = (O nj (char e)).1.1 ;
+      dense_diag : forall x:{e:E & (char e).1}, forall u:{e':{e:E & (char e).1} & x.1 = e'.1}, (equiv_path _ _ (dense_eq x.1)) o (incl_Aeq_Eeq char x) = (O_unit nj _) o ((eq_dense_1 char x))
+                                                                                                                                          (* For A a subobject of E, and x:A, this diagram commute : *)
+      (*                                                         *)   
+      (*   {e':A & x.1 = e'.1} === (χ x.1).1                     *)
+      (*          |                    |                         *)
+      (*        ι |                    | η                       *)
+      (*          |                    |                         *)
+      (*          v                    v                         *)
+      (*    {e':E & x.1 = e'}  === (O nj (χ x.1)).1.1            *)
+                                                                                                 
     }.
+
+
+  Definition witness_is_eta (E:Type) (χ:EnJ E) (x:{e:E & (χ e).1})
+  : transport idmap (dense_eq χ x .1) (x .1; 1) = O_unit nj (χ x .1) x.2
+    := ap10 (dense_diag χ x (x;1)) (x;1).
 
   Definition EnJ_is_nJ (E:Type) (χ : EnJ E)
   : forall e:E, (O nj (χ e)).1.1
-    := λ e, transport (λ T, T) (dense χ e) (e;idpath).
+    := λ e, transport (λ T, T) (dense_eq χ e) (e;idpath).
 
   Definition dense_eta_equal (E:Type) (χ : EnJ E) (x:E) : forall (v w:(χ x).1), O_unit nj (χ x) v = O_unit nj (χ x) w.
     intros v w.
@@ -89,7 +116,7 @@ Section Sheafification.
       destruct a as [a p], b as [b q]. simpl.
       apply @path_sigma' with (p := p^@q).
       destruct p. destruct q. simpl. exact idpath.
-    rewrite (dense χ) in X; apply X.
+    rewrite (dense_eq χ) in X; apply X.
   Defined.
 
   Definition E_to_χmono_map (T:Trunc (trunc_S n)) E (χ : E -> J) (f : E -> (pr1 T)) : 
@@ -357,8 +384,8 @@ Section Sheafification.
     intro v. simpl.
 
     assert (eq := (ap10 p (x;v))). unfold compose in eq; simpl in eq.
-    (* intro X. exact (transport (λ U, U) (ap (λ x, x.1.1) eq) X).  *)
-    exact (transport (λ T:subuniverse_Type nj, (φ1 x).1.1 -> T.1.1) eq idmap).
+    exact (transport (λ U, U) (eq..1..1)).
+    (* exact (transport (λ T:subuniverse_Type nj, (φ1 x).1.1 -> T.1.1) eq idmap). *)
   Defined.
 
   Lemma reflect_factoriality_arrow_space
@@ -391,16 +418,16 @@ Section Sheafification.
 
   Lemma transport_arrow_space
         (P Q : subuniverse_Type nj)
-        (p : P = Q)
-  : (λ x0:Q.1.1, (transport (λ T:subuniverse_Type nj, P.1.1 -> T.1.1) p idmap (transport (λ T:subuniverse_Type nj, Q.1.1 -> T.1.1) p^ idmap x0))) = idmap.
+        (p : P.1.1 = Q.1.1)
+  : (λ x0:Q.1.1, (transport idmap p (transport idmap p^ x0))) = idmap.
     destruct p; exact 1.
   Qed.
 
   Lemma transport_arrow_space_dep_path
         (P Q : subuniverse_Type nj)
         (R : Trunc n)
-        (p : R.1 -> P = Q)
-  : (λ v:R.1, λ x0:Q.1.1, (transport (λ T:subuniverse_Type nj, P.1.1 -> T.1.1) (p v) idmap (transport (λ T:subuniverse_Type nj, Q.1.1 -> T.1.1) (p v)^ idmap x0))) = λ v, idmap.
+        (p : R.1 -> P.1.1 = Q.1.1)
+  : (λ v:R.1, λ x0:Q.1.1, (transport idmap (p v) (transport idmap (p v)^ x0))) = λ v, idmap.
     apply path_forall; intro v.
     apply transport_arrow_space.
   Qed.
@@ -419,36 +446,45 @@ Section Sheafification.
                                (φ1 x)
                                (φ2 x)
                                (λ v : (χ x) .1,
-                                      transport (λ T : subuniverse_Type nj, ((φ1 x) .1) .1 → (T .1) .1)
-                                                (ap10 p (x; v)) idmap)
+      transport idmap
+        (ap10 p (x; v))..1..1)
                                (λ v : (χ x) .1,
-                                      transport (λ T : subuniverse_Type nj, ((φ2 x) .1) .1 → (T .1) .1)
-                                                (ap10 p ^ (x; v)) idmap))
+         transport idmap
+           
+              (ap10 p ^ (x; v))..1..1))
                             (EnJ_is_nJ χ x)) y
                ). unfold compose in foo; simpl in foo.
     apply (transport (λ u, u = y) foo^). clear foo.
 
-    pose (fooo := @transport_arrow_space_dep_path (φ1 x) (φ2 x) (χ x) (λ v, (ap10 p (x;v)))).
+    pose (fooo := @transport_arrow_space_dep_path (φ1 x) (φ2 x) (χ x) (λ v, (ap10 p (x;v))..1..1)).
     simpl in fooo.
 
     path_via (O_rec (χ x)
      ((((φ2 x) .1) .1 → ((φ2 x) .1) .1; trunc_arrow);
      subuniverse_arrow ((φ2 x) .1) .1 (φ2 x))
      (λ (v : (χ x) .1) (x0 : ((φ2 x) .1) .1),
-      transport (λ T : subuniverse_Type nj, ((φ1 x) .1) .1 → (T .1) .1)
-        (ap10 p (x; v)) idmap
-        (transport (λ T : subuniverse_Type nj, ((φ2 x) .1) .1 → (T .1) .1)
-           (ap10 p (x; v))^ idmap x0)) (EnJ_is_nJ χ x) y).
+      transport idmap
+        
+           (ap10 p (x; v))..1..1
+        (transport idmap
+           
+              (ap10 p (x; v))..1..1^ x0)) (EnJ_is_nJ χ x) y).
 
     apply (ap (λ u, O_rec (χ x)
      ((((φ2 x) .1) .1 → ((φ2 x) .1) .1; trunc_arrow);
      subuniverse_arrow ((φ2 x) .1) .1 (φ2 x))
      u (EnJ_is_nJ χ x) y)).
     apply path_forall; intro v. apply path_forall; intro x0.
-    apply ap.
-    apply (ap (λ u, transport (λ T : subuniverse_Type nj, ((φ2 x) .1) .1 → (T .1) .1) u idmap x0)).
+    apply ap. 
+    apply (ap (λ U, transport idmap
+     U x0)).
+    path_via ((ap10 p (x; v))^..1..1).
+    apply ap. apply ap.
     apply (ap10_V p (x;v)).
-
+    unfold projT1_path.
+    rewrite ap_V. rewrite ap_V. exact 1.
+    (* apply (ap_V (λ x1 : ∃ T : Trunc n, (subuniverse_HProp nj T) .1, (x1 .1) .1) (ap10 p (x; v))). *)
+    
     apply (transport (λ U, O_rec (χ x)
                                  ((((φ2 x) .1) .1 → ((φ2 x) .1) .1; trunc_arrow);
                                   subuniverse_arrow ((φ2 x) .1) .1 (φ2 x))
@@ -551,10 +587,12 @@ Section Sheafification.
       repeat rewrite eissect; rewrite eisretr; simpl.
 
       apply equal_equiv.
-      unfold nTjTiseparated_eq_fun_univ.      
-      apply path_forall; intro u.
-
-
+      unfold nTjTiseparated_eq_fun_univ, EnJ_is_nJ. 
+      rewrite (witness_is_eta χ x). 
+      etransitivity;
+        try exact (ap10 (O_rec_retr (χ x.1) ((((φ1 x .1) .1) .1 → ((φ2 x .1) .1) .1; trunc_arrow); subuniverse_arrow ((φ1 x .1) .1) .1 (φ2 x .1)) (λ v : (χ x .1) .1, transport idmap ((ap10 p (x .1; v)) ..1) ..1)) x.2).
+      repeat apply ap. destruct x as [x1 x2]. exact 1.
+      
     - intro p; destruct p.
       unfold E_to_χ_map, nTjTiseparated_eq_inv in *; simpl in *.
       eapply concat; [idtac | apply (path_forall_1 φ1)]; apply ap.
@@ -567,29 +605,8 @@ Section Sheafification.
       apply equal_equiv.
       unfold transport, nTjTiseparated_eq_fun_univ; simpl.
       exact (ap10 (O_rec_const  (χ x) ((((φ1 x) .1) .1 → ((φ1 x) .1) .1; trunc_arrow);
-     subuniverse_arrow ((φ1 x) .1) .1 (φ1 x)) idmap) (EnJ_is_nJ χ x)). 
+                                       subuniverse_arrow ((φ1 x) .1) .1 (φ1 x)) idmap) (EnJ_is_nJ χ x)). 
   Defined.
-
-  Lemma foooo (P:Trunc n) (R S:subuniverse_Type nj) (eq : P.1 -> (R=S)) w
-  : O_rec P
-          (((R.1.1 -> S.1.1);trunc_arrow);subuniverse_arrow R.1.1 S)
-          (λ v:P.1, transport (λ T:subuniverse_Type nj, R.1.1 -> T.1.1) (eq v) idmap)
-          
-    =
-    λ _, transport idmap (ap pr1 (ap pr1 (eq w))).
-
-    apply (@equiv_inj _ _ _ (O_equiv nj _ _)).
-    rewrite O_rec_retr.
-    apply path_forall; intro v. unfold compose; simpl.
-    apply path_forall; intro r.
-    (* unfold transport. *)
-    (* destruct (ap pr1 (ap pr1 (eq w))). *)
-  Admitted.
-
-
-    
-------------------------------------------
-
 
   Lemma nType_j_Type_is_SnType_j_Type : Snsheaf_struct (subuniverse_Type nj ;
                                                         @subuniverse_Type_is_TruncSn _ nj).
@@ -609,8 +626,7 @@ Section Sheafification.
   : forall (E:Type) (χ : E -> J) (H := λ a, (snd (pr2 (B a))) E χ), IsEquiv
       (λ (f : E -> ∀ a : A, pr1 (pr1 (B a))) (t : {b : E & pr1 (pr1 (χ b))}), f (pr1 t)).
   intros.   
-  apply (isequiv_adjointify 
-           _ (λ g e a, (@equiv_inv _ _ _ (H a) (λ x, g x a) e))).
+  apply (isequiv_adjointify _ (λ g e a, (@equiv_inv _ _ _ (H a) (λ x, g x a) e))).
   - intro φ.
     apply path_forall; intro x.
     apply path_forall; intro a.
@@ -645,14 +661,20 @@ Section Sheafification.
     intro H. simpl in H.
     apply path_forall; intro u.
     apply path_forall; intro a.
-    pose (S := (B a).2). destruct S as [s _].
-    specialize (s E χ (λ v, x v a) (λ v, y v a)).
-    exact (apD10 (equiv_inv (path_forall _ _ (λ t, apD10 ((apD10 H) t) a))) u).
+    pose (foo := (fst (B a).2) E χ (λ v, x v a) (λ v, y v a)).
+    pose (bar := (equiv_inv (path_forall _ _ (λ t, apD10 ((apD10 H) t) a)))).
+    exact (ap10 (equiv_inv (path_forall _ _ (λ t, apD10 ((apD10 H) t) a))) u).
   Defined.
 
-  Definition fed_apD10 (A : Type) (B : A -> Type) (f g : ∀ x : A, B x) (H : f = g) := eissect _ (IsEquiv := (@isequiv_apD10 equal_f_equiv A B f g)) H.
-
-
+  Lemma ap_path_forall (A B C:Type) (f:A -> B) (g h:B -> C) (eq:forall x, g x = h x)              
+  : ap (λ u, u o f) (path_forall g h eq) = path_forall (g o f) (h o f) (λ x, (eq (f x))).
+    apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+    unfold ap10 at 2, path_forall at 2; rewrite eisretr.
+    apply path_forall; intro a.
+    rewrite ap_ap10_L.
+    unfold ap10, path_forall; rewrite eisretr. exact 1.
+  Qed.
+    
   Lemma dep_prod_SnType_j_Type_sep
           (A : Type)
           (B : A -> SnType_j_Type)
@@ -660,19 +682,97 @@ Section Sheafification.
       (λ (f : E -> ∀ a : A, (B a).1.1) (t : {b : E & (χ b).1}), f (t.1)).
     intros E χ.
     unfold IsMono.
-    intros x y.
-    apply isequiv_adjointify with (g:= @dep_prod_SnType_j_Type_sep_inv A B E χ x y).
-    - intro u. unfold dep_prod_SnType_j_Type_sep_inv. 
-      admit.
-    - intro v. unfold dep_prod_SnType_j_Type_sep_inv. simpl.
-      unfold E_to_χ_map. simpl.
-      pose (foo := fed_apD10). 
-      unfold path_forall.
-      unfold ap, apD10.
-      destruct v. simpl.
-      admit.
+    intros f g.
+    apply @isequiv_adjointify with (g := @dep_prod_SnType_j_Type_sep_inv A B E χ f g).
+    - unfold Sect.
+      intro p.
+      unfold dep_prod_SnType_j_Type_sep_inv. 
+      unfold E_to_χ_map, compose. simpl.
+      pose (foo := ap_path_forall).
+      unfold equiv_inv.
+
+      specialize (foo (∃ b : E, (χ b) .1) E (∀ a : A, ((B a) .1) .1) pr1 f g (λ u : E,
+         path_forall (f u) (g u)
+           (λ a : A,
+            ap10
+              ((let (equiv_inv, eisretr, eissect, _) :=
+                    fst (B a) .2 E χ (λ v : E, f v a) (λ v : E, g v a) in
+                equiv_inv)
+                 (path_forall (λ t : ∃ b : E, (χ b) .1, f t .1 a)
+                    (λ t : ∃ b : E, (χ b) .1, g t .1 a)
+                    (λ t : ∃ b : E, (χ b) .1, apD10 (apD10 p t) a))) u))).
+      apply (transport (λ U, U=p) foo^); clear foo.
+
+      apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+      unfold ap10, path_forall at 1; rewrite eisretr.
+      apply path_forall; intro x.
+      apply (@equiv_inj _ _ _ (isequiv_apD10 _ _ _ _)); unfold path_forall at 1; rewrite eisretr.
+      apply path_forall; intro a.
+
       
+      pose (fst (B a) .2 E χ (λ v : E, f v a) (λ v : E, g v a)).
+      unfold E_to_χ_map in i; simpl in i.
+
+      (* apply (@equiv_inj _ _ _ i). *)
+      destruct (fst (B a) .2 E χ (λ v : E, f v a) (λ v : E, g v a)) as [inv retr sect _];
+        unfold Sect, E_to_χ_map in *. unfold compose in *; simpl in *.
+
+      
+      assert ((λ x : ∃ b : E, (χ b) .1, f x .1 a) =
+               (λ x : ∃ b : E, (χ b) .1, g x .1 a)).
+      apply path_forall; intro y.
+      exact (apD10 (apD10 p y) a).
+      
+      specialize (retr (path_forall _ _ (λ y, apD10 (apD10 p y) a))). simpl in retr.
+      
+
+      assert (forall u, apD10 (inv (path_forall _ _ (λ t, u t))) x.1 = u x).
+      Focus 1.
+        intro u. 
+        assert ((λ x, apD10
+                   (inv
+                      (path_forall (λ x0 : ∃ b : E, (χ b) .1, f x0 .1 a)
+                                   (λ x0 : ∃ b : E, (χ b) .1, g x0 .1 a)
+                                   (λ t : ∃ b : E, (χ b) .1, u t))) x.1 )
+                =
+                u).
+        Focus 1.
+        apply (@equiv_inj _ _ _ (isequiv_path_forall _ _)). simpl. unfold path_forall at 1.
+        
+        
+
+      admit.
+    - intro v. unfold dep_prod_SnType_j_Type_sep_inv. 
+      unfold E_to_χ_map. simpl.
+      destruct v. simpl.
+      etransitivity; [idtac | apply path_forall_1]; apply ap; apply path_forall; intro x.
+      etransitivity; [idtac | apply path_forall_1]; apply ap; apply path_forall; intro y.
+      assert ((apD10
+                 ((let (equiv_inv, eisretr, eissect, _) :=
+                       fst (B y) .2 E χ (λ v : E, f v y) (λ v : E, f v y) in
+                   equiv_inv)
+                    (path_forall (λ t : ∃ b : E, (χ b) .1, f t .1 y)
+                                 (λ t : ∃ b : E, (χ b) .1, f t .1 y) (λ t : ∃ b : E, (χ b) .1, 1)))) = λ _, 1).
+      apply (@equiv_inj _ _ _ (isequiv_path_forall _ _)).
+      unfold path_forall. rewrite eissect. 
+      apply (@equiv_inj _ _ _ (fst (B y) .2 E χ (λ v : E, f v y) (λ v : E, f v y))).
+      pose (foo := @eisretr _ _ _ (fst (B y) .2 E χ (λ v : E, f v y) (λ v : E, f v y))).
+      unfold Sect, equiv_inv in foo; simpl in foo.
+      rewrite foo.
+      unfold E_to_χ_map. simpl.
+      apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+      unfold ap10 at 1;
+      rewrite eisretr.
+      apply path_forall; intro t.
+      rewrite ap_ap10_L.
+      unfold ap10; rewrite eisretr. exact 1.
+      exact (apD10 X x).
   Defined.
+
+
+    
+
+
     
   Definition dep_prod_SnType_j_Type : forall A (B : A -> SnType_j_Type) ,
                                    Snsheaf_struct (forall a, pr1 (pr1 (B a)); 

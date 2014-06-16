@@ -102,8 +102,14 @@ Section Reflective_Subuniverse.
   Defined.
 
   Definition isequiv_unique_subuniverse (T T':subuniverse_Type)
-  : IsEquiv (λ p:T=T', p..1).
-    apply isequiv_adjointify with (g := unique_subuniverse T T').
+  : IsEquiv (unique_subuniverse T T').
+    apply isequiv_adjointify with (g := λ p, p..1).
+     - intro p; destruct p.
+      unfold unique_subuniverse; simpl.
+      destruct T as [[T TrT] ShT]. simpl.
+      unfold eq_dep_subset. simpl.
+      apply (transport (λ U, path_sigma' (λ x : Trunc n, let (a, _) := subuniverse_HProp subU x in a) 1 U = 1) (@contr (ShT = ShT) ((subuniverse_HProp subU (T;TrT)).2 ShT ShT) 1)^).
+      exact 1.
     - intro p. unfold unique_subuniverse, eq_dep_subset. 
       destruct T as [T ShT], T' as [T' ShT']; simpl in *. destruct p.
       (* unfold path_sigma', path_sigma, path_sigma_uncurried. simpl. *)
@@ -116,13 +122,7 @@ Section Reflective_Subuniverse.
                                    (λ x : Trunc n, let (a, _) := subuniverse_HProp subU x in a) 1
                                    U) = 1) (@contr (ShT = ShT) ((subuniverse_HProp subU T).2 ShT ShT) 1)^).
       exact 1.
-    - intro p; destruct p.
-      unfold unique_subuniverse; simpl.
-      destruct T as [[T TrT] ShT]. simpl.
-      unfold eq_dep_subset. simpl.
-      apply (transport (λ U, path_sigma' (λ x : Trunc n, let (a, _) := subuniverse_HProp subU x in a) 1 U = 1) (@contr (ShT = ShT) ((subuniverse_HProp subU (T;TrT)).2 ShT ShT) 1)^).
-      exact 1.
-  Qed.
+  Defined.
       
   Definition O_modal (T:subuniverse_Type) : T = subU.(O) T.1.
     apply unique_subuniverse. apply truncn_unique.
@@ -322,6 +322,7 @@ Section Reflective_Subuniverse.
     apply ap. apply H.
     exact (O_rec_sect A (O subU A) idmap).
   Qed.
+
 
 (* Dependent product and arrows *)
   Definition subuniverse_forall (A:Type) (B:A -> Trunc n) : (* Theorem 7.7.2 *)
@@ -751,5 +752,55 @@ Section Reflective_Subuniverse.
     (*   rewrite X0. simpl. *)
     (*   apply (pullback_sheaves ((Unit;istrunc_unit n);unit_modal) ((Unit;istrunc_unit n);unit_modal) S). *)
   Admitted.
+
+
+  (** Things' *)
+  
+  
+  Lemma reflect_factoriality_arrow_space
+        (P:Trunc n)
+        (Q R: subuniverse_Type)
+        (f : P.1 -> (Q.1.1 -> R.1.1))
+        (g : P.1 -> (R.1.1 -> Q.1.1))
+        (S := ((Q.1.1 -> R.1.1; trunc_arrow (H0 := R.1.2)); subuniverse_arrow Q.1.1 R) : subuniverse_Type )
+        (T := ((R.1.1 -> Q.1.1; trunc_arrow (H0 := Q.1.2)); subuniverse_arrow R.1.1 Q) : subuniverse_Type )
+        (RR := ((R.1.1 -> R.1.1; trunc_arrow (H0 := R.1.2)); subuniverse_arrow R.1.1 R) : subuniverse_Type )
+  : (λ v, (O_rec P S f v) o (O_rec P T g v)) = (λ v, O_rec P RR (λ v, (f v) o (g v)) v).
+    simpl in *.
+    pose (foo := elim_E (O_equiv subU P RR)).
+    specialize (foo (λ w, O_rec P S f w o O_rec P T g w) (λ w, O_rec P RR (λ v : P .1, f v o g v) w)). simpl in foo.
+    apply foo; clear foo.
+    apply path_forall; intro v. unfold compose; simpl.
+    path_via ((λ v : P .1, f v o g v) v).
+    - apply path_forall; intro r; simpl.
+      pose (foo := ap10 (O_rec_retr P S f) v). unfold compose in foo; simpl in foo.
+      rewrite foo. unfold compose; simpl.
+      apply ap.
+      pose (bar := ap10 (O_rec_retr P T g) v). unfold compose in bar; simpl in bar.
+      rewrite bar.
+      exact 1.
+    - apply path_forall; intro r; simpl.
+      pose (foo := ap10 (O_rec_retr P RR (λ (v0 : P .1) (x : (R .1) .1), f v0 (g v0 x))) v). unfold compose in foo; simpl in foo.
+      rewrite foo.
+      exact 1.
+  Defined.
+
+  
+  Lemma transport_arrow_space
+        (P Q : subuniverse_Type)
+        (p : P.1.1 = Q.1.1)
+  : (λ x0:Q.1.1, (transport idmap p (transport idmap p^ x0))) = idmap.
+    destruct p; exact 1.
+  Qed.
+
+  Lemma transport_arrow_space_dep_path
+        (P Q : subuniverse_Type)
+        (R : Trunc n)
+        (p : R.1 -> P.1.1 = Q.1.1)
+  : (λ v:R.1, λ x0:Q.1.1, (transport idmap (p v) (transport idmap (p v)^ x0))) = λ v, idmap.
+    apply path_forall; intro v.
+    apply transport_arrow_space.
+  Qed.
+  
  
 End Reflective_Subuniverse.

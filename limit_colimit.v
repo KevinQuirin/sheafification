@@ -65,7 +65,8 @@ Section kernel_pair.
   
   Definition Im_coequalizes_kernel_pair A B (f : A -> B) : toIm f o inj1 (f:=f) = toIm f o inj2 (f:=f).
     apply path_forall; intro x.
-    unfold toIm, inj1, inj2, compose. simpl. eapply (eq_dep_subset (λ x, Truncation minus_one (∃ x0 : A, f x0 = x)) _ _ _ (pr2 (pr2 x))). 
+    unfold toIm, inj1, inj2, compose. simpl.
+    eapply (eq_dep_subset' (λ x, Truncation minus_one (∃ x0 : A, f x0 = x)) _ _ _ (pr2 (pr2 x))). 
   Defined.
   
   (* The proof below should be instead the proof that Im f is equivalent to the coequalizer of (kernel_pair f) *)

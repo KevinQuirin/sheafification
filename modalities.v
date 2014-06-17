@@ -97,7 +97,7 @@ Section Reflective_Subuniverse.
   Defined.
 
   Definition unique_subuniverse : forall (T T' : subuniverse_Type), pr1 T = pr1 T' -> T = T'. 
-    intros. destruct T, T'. eapply (eq_dep_subset (λ x, let (a, _) := subuniverse_HProp subU x in a) _ _ _ X). 
+    intros. destruct T, T'. eapply (eq_dep_subset' (λ x, let (a, _) := subuniverse_HProp subU x in a) _ _ _ X). 
     Grab Existential Variables. intro. simpl. exact ((subuniverse_HProp subU a) .2).
   Defined.
 

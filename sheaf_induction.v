@@ -861,24 +861,24 @@ Section Sheafification.
     
     exact (ap10 X x).
   Qed.
-        
-  Definition kpsic_func T : (clΔ T) .1 -> kernel_pair (separated_unit T).
-    intro X. destruct X as [ab p]. destruct ab as [a b]. simpl in p.
-    pose (Ωj := (T.1 -> subuniverse_Type nj; T_nType_j_Type_trunc T)).
-    pose (inj := pr1 : (separated_Type T) -> Ωj.1).
-    assert (IsMono inj).
-      intros x y. apply subset_is_subobject. intro.
-      unfold squash. apply istrunc_truncation.
-    unfold kernel_pair, pullback.
-    exists a. exists b.
-    assert (inj (separated_unit T a) = inj (separated_unit T b)).
-      unfold inj, separated_unit. simpl.
-      apply path_forall; intro t; simpl.
-      apply unique_subuniverse; apply truncn_unique.
-      unfold Oj; simpl.
-      apply univalence_axiom.
-      exists (kpsic_func_univ_func a b p X t).
-      apply isequiv_adjointify with (g := kpsic_func_univ_inv a b p X t).
+
+  Lemma kpsic_func_univ_eq
+        (T : Trunc (trunc_S n))
+        (a : T .1)
+        (b : T .1)
+        (p : (clδ T (a, b)) .1)
+        (Ωj := (T .1 → subuniverse_Type nj; T_nType_j_Type_trunc T)
+               : ∃ x, IsTrunc (trunc_S n) x)
+        (inj := (pr1:separated_Type T → Ωj .1) : separated_Type T → Ωj .1)
+        (X : IsMono inj)
+        (t : T .1)
+  : (Sect (kpsic_func_univ_inv a b p X t) (kpsic_func_univ_func a b p X t))
+    /\ (Sect (kpsic_func_univ_func a b p X t) (kpsic_func_univ_inv a b p X t)).
+  (* : ((O nj (a = t; istrunc_paths (H:=T.2) T .1 n a t)) .1) .1 = ((O nj (b = t; istrunc_paths (H:=T.2) T .1 n b t)) .1) .1. *)
+    (* apply univalence_axiom. *)
+      (* exists (kpsic_func_univ_func a b p X t). *)
+      (* apply isequiv_adjointify with (g := kpsic_func_univ_inv a b p X t). *)
+    split.
     - intro x.
       unfold kpsic_func_univ_inv, kpsic_func_univ_func, δ; simpl. unfold clδ, compose, δ in p; simpl in p.
       pose (foo := O_rec_O_rec).
@@ -933,28 +933,161 @@ Section Sheafification.
                                                 p))) (g:=idmap) _ x).
       apply foo.
       intros q q'. destruct q'. hott_simpl.
-    - exact (@equiv_inv _ _ _ (X (separated_unit T a) (separated_unit T b)) X0). 
+  Qed.
+
+  Arguments kpsic_func_univ_eq : default implicits, simpl never.
+        
+  Definition kpsic_func T : (clΔ T) .1 -> kernel_pair (separated_unit T).
+    intro X. destruct X as [ab p]. destruct ab as [a b]. simpl in p.
+    pose (Ωj := (T.1 -> subuniverse_Type nj; T_nType_j_Type_trunc T)).
+    pose (inj := pr1 : (separated_Type T) -> Ωj.1).
+    assert (IsMono inj).
+      intros x y. apply subset_is_subobject. intro.
+      unfold squash. apply istrunc_truncation.
+    unfold kernel_pair, pullback.
+    exists a. exists b.
+    assert (inj (separated_unit T a) = inj (separated_unit T b)).
+      unfold inj, separated_unit. simpl.
+      apply path_forall; intro t; simpl.
+      apply unique_subuniverse; apply truncn_unique.
+      unfold Oj; simpl.
+      apply univalence_axiom.
+      exists (kpsic_func_univ_func a b p X t).
+      apply isequiv_adjointify with (g := kpsic_func_univ_inv a b p X t);
+        [exact (fst (kpsic_func_univ_eq a b p X t)) | exact (snd (kpsic_func_univ_eq a b p X t))].
+    exact (@equiv_inv _ _ _ (X (separated_unit T a) (separated_unit T b)) X0). 
   Defined.
 
   Definition kpsic_inv T : kernel_pair (separated_unit T) -> (clΔ T).1.
-    (* unfold kernel_pair, separated_unit, clΔ, toIm, pullback. simpl. *)
-    (*   intro X0; destruct X0 as [a [b p]]. *)
-    (*   exists (a,b). *)
-    (*   simpl. *)
-    (*   pose (foo := ap10 (projT1_path p) a); unfold Oj, j in foo; simpl in foo. *)
-    (*   assert (bar := projT1_path (projT1_path foo)); simpl in bar; clear foo. *)
-    (*   assert ((a=b) = (b=a)). *)
-    (*     apply univalence_axiom. *)
-    (*     exists (λ x, inverse x). *)
-    (*     apply isequiv_adjointify with (g:= λ x, inverse x); try intro x; hott_simpl. *)
-    (*   destruct X. *)
-    (*   rewrite <- bar. *)
-    (*   auto. *)
-    admit.
+    unfold kernel_pair, separated_unit, clΔ, toIm, pullback. simpl.
+      intro X0; destruct X0 as [a [b p]].
+      exists (a,b).
+      unfold clδ, δ, compose; simpl.
+      pose (foo := (ap10 (projT1_path p) b)..1..1); unfold Oj, j in foo; simpl in foo.
+      apply (transport idmap foo^).
+      apply O_unit. exact 1.
   Defined.
+
+  Lemma isequiv_eq_dep_subset {A:Type} {B:A -> Type} (X : ∀ a : A, IsHProp (B a)) (u v : {a:A & B a})
+  : IsEquiv (eq_dep_subset X u v).
+    apply @isequiv_adjointify with (g := λ p, ap pr1 p).
+    - intro p. destruct p. simpl. unfold eq_dep_subset.
+      destruct u as [a H]; simpl in *.
+      assert (center (H=H) = 1).
+        apply contr.
+      apply (transport (λ u, path_sigma B (a;H) (a;H) 1 u = 1) X0^).
+      exact 1.
+    - intro p.
+      destruct u as [u G], v as [v H].
+      simpl in p; destruct p. unfold eq_dep_subset.
+      pose (foo := @ap_existT). unfold path_sigma' in foo.
+      rewrite <- foo.
+      simpl.
+      destruct (center (G=H)). simpl. exact 1.
+  Defined.
+
+  Definition equiv_VV (A B:Type) (f:A -> B) (H:IsEquiv f)
+  : (f ^-1) ^-1 = f.
+    hott_simpl.
+  Defined.
+
+  Definition moveR_EV (A B:Type) (f:A -> B) (IsEquiv:IsEquiv f) a b
+  : a = f b -> (f ^-1) a = b.
+    intro p.
+    apply moveR_E. rewrite equiv_VV. exact p.
+  Defined.
+
+  Definition kpsic_aux1 (A B C D : Trunc n) f g h c d (p1:O nj A=O nj B) (p2:O nj B= O nj C) (p3:C=D)
+  : O_rec A (O nj B) (λ v:A.1, O_unit nj B (f v)) (g (O_unit nj C c)) = h (O_unit nj D d).
+    
+    destruct p3. simpl.
+
+   
+  Admitted.
+            
 
   Definition kernel_pair_separated_is_clΔ T : (clΔ T).1 =
     kernel_pair (toIm (λ t : pr1 T, λ t', nj.(O) (t = t'; istrunc_paths (H:=pr2 T) (pr1 T) n t t'))).
+    apply univalence_axiom.
+    exists (@kpsic_func T).
+    apply isequiv_adjointify with (g := @kpsic_inv T).
+    - intro X. unfold kpsic_inv. simpl.
+      destruct X as [a [b p]]. 
+      apply @path_sigma' with (p:=1).
+      apply @path_sigma' with (p:=1).
+      simpl.
+
+     (*  pose (foo := @equiv_inj _ _ (eq_dep_subset (λ b0 : T .1 → (∃ T0 : Trunc n, (subuniverse_HProp nj T0) .1), *)
+     (*  squash *)
+     (*    (hfiber (λ t t' : T .1, O nj (t = t'; istrunc_paths (H:=T.2) T .1 n t t')) b0)) *)
+     (* (λ a0 : T .1 → subuniverse_Type nj, *)
+     (*  istrunc_truncation minus_one *)
+     (*    (hfiber (λ t t' : T .1, O nj (t = t'; istrunc_paths (H:=T.2) T .1 n t t')) a0)) *)
+     (* (truncation_incl (a; 1)) (truncation_incl (b; 1)))). simpl in foo. *)
+
+      unfold separated_unit, toIm in p. simpl in p.
+
+      apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_eq_dep_subset
+                                                     (λ a0 : T .1 → subuniverse_Type nj,
+                                                             istrunc_truncation minus_one
+                                                                                (hfiber (λ t t' : T .1, O nj (t = t'; istrunc_paths T .1 n t t')) a0))
+                                                     (λ t' : T .1, O nj (a = t'; istrunc_paths T .1 n a t');
+                                                      truncation_incl (a; 1))
+                                                     (λ t' : T .1, O nj (b = t'; istrunc_paths T .1 n b t');
+                                                      truncation_incl (b; 1))
+            )));
+      [apply isequiv_inverse | rewrite eissect].
+      apply (@equiv_inj _ _ _ (isequiv_apD10 _ _ _ _));
+        unfold path_forall; rewrite eisretr.
+      apply path_forall; intro t.
+
+      apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_unique_subuniverse _ _)));
+        [apply isequiv_inverse | rewrite eissect].
+      
+      apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_truncn_unique _ _)));
+        [apply isequiv_inverse | rewrite eissect].
+
+      simpl in *.
+
+      apply (@equiv_inj _ _ _ (isequiv_equiv_path _ _)); rewrite eisretr.
+
+      apply equal_equiv.
+      unfold kpsic_func_univ_func, δ. simpl.
+
+      apply (@equiv_inj _ _ _ (O_equiv nj (a = t; istrunc_paths T .1 n a t) (O nj (b = t; istrunc_paths T .1 n b t)))).
+      rewrite (O_rec_retr).
+      apply path_forall; intro u. simpl in *.
+
+      unfold δ; simpl.
+      unfold compose; simpl. destruct u.
+
+      set (t1 := (transport idmap (((ap10 p ..1 b) ..1) ..1) ^
+                  (O_unit nj (b = b; istrunc_paths T .1 n b b) 1))). simpl in t1.
+      set (t2 := transport idmap (ap pr1 (apD10 p ..1 a) ..1)
+                           (O_unit nj (a = a; istrunc_paths T .1 n a a) 1)). simpl in t2.
+
+      assert (q1 := ap10 p..1 a); simpl in q1.
+      assert (q2 := ap10 p..1 b); simpl in q2.
+      assert (q3 : O nj (a = b; istrunc_paths (H:=T.2) T .1 n a b) = O nj (b = a; istrunc_paths (H:=T.2) T .1 n b a)).
+        apply ap.
+        apply truncn_unique. simpl.
+        apply univalence_axiom.
+        exists (λ p, p^). apply isequiv_adjointify with (g := λ p, p^); intro; hott_simpl.
+
+
+      
+
+      admit.
+    - intro X. destruct X as [ab p]. destruct ab as [a b].
+      (* unfold clδ, δ, compose in p. simpl in p. *)
+      unfold kpsic_inv.
+      apply @path_sigma' with (p:=1).
+      rewrite transport_1.
+      unfold clδ, δ, compose in *. simpl in p.
+      apply moveR_transport_V.
+
+      apply moveR_EV. symmetry.
+      apply (@equiv_inj _ _ (equiv_inv (IsEquiv := (isequiv_equiv_path _ _)))).
   Admitted.
 
   Definition separated_equiv : forall (P : Trunc (trunc_S n)) (Q :{T : Trunc (trunc_S n) & separated T}),

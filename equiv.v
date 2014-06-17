@@ -297,7 +297,7 @@ Instance subset_is_subobject A (B : A -> Type) (BProp : forall a, IsHProp (B a))
   IsEquiv (ap (pr1 (P := B)) (x:=x) (y:=y)).
 destruct x, y.
 apply  (isequiv_adjointify (ap (pr1 (P := B)) (x:=(x;b)) (y:=(x0;b0)))
-                           (eq_dep_subset B BProp b b0)). 
+                           (eq_dep_subset BProp (x;b) (x0;b0))). 
 - intro. unfold eq_dep_subset; simpl in *. destruct x1. 
   apply (projT1_path_sigma (P:=B) (u:=(x;b)) (v:=(x;b0)) idpath (center (b = b0))). 
 - intro. unfold eq_dep_subset, path_sigma'; simpl in *. 

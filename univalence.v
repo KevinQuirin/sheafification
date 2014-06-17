@@ -38,8 +38,14 @@ Proof.
   exists f. exact (log_equiv_is_equiv (H:=H) (H':=H') f g).
 Defined.
 
-Lemma eq_dep_subset : forall A (B:A -> Type) (_:forall a, IsHProp (B a)) 
+Lemma eq_dep_subset' : forall A (B:A -> Type) (_:forall a, IsHProp (B a)) 
                              (a a':A) (H: B a) (H': B a'),
                         a = a' -> existT _ a H = existT _ a' H'.
   intros. apply (path_sigma' _ X0). destruct X0. apply (X a).
+Defined.
+
+Lemma eq_dep_subset : forall A (B:A -> Type) (_:forall a, IsHProp (B a)) 
+                             (u v : sigT B),
+                        u.1 = v.1 -> u = v.
+  intros. apply (path_sigma _ _ _ X0). destruct u; destruct v; simpl in X0; destruct X0. apply (X x).
 Defined.

@@ -8,8 +8,6 @@ Set Implicit Arguments.
 Local Open Scope path_scope.
 Local Open Scope equiv_scope.
 
-Context {Fun : Funext}.
-
 Definition S_le n : (n <= trunc_S n)%trunc.
   induction n. exact tt. exact IHn. Defined.
 
@@ -101,9 +99,9 @@ Defined.
 
 Definition IsMonof_isMono (A B : Type) (f : A -> B) : IsMonof f = IsMono f.
   apply univalence_hprop.
-  apply @trunc_forall. exact Fun. intro a.
-  apply @trunc_forall. exact Fun. intro φ.
-  apply @trunc_forall. exact Fun. intro ψ.
+  apply @trunc_forall. exact equal_f_equiv. intro a.
+  apply @trunc_forall. exact equal_f_equiv. intro φ.
+  apply @trunc_forall. exact equal_f_equiv. intro ψ.
   
   (* repeat (apply (@trunc_forall _ _ (fun P => _)); intro). *)
   apply hprop_isequiv.
@@ -338,3 +336,30 @@ Lemma equal_equiv (A B:Type) (f g : A -> B) (eq_f : IsEquiv f) (eq_g : IsEquiv g
   intro H. destruct H. assert (eq_f = eq_g).
   apply allpath_hprop. destruct X. exact 1.
 Qed.
+
+Lemma equal_inverse A (a b:A)
+: (a=b) = (b=a).
+  apply univalence_axiom.
+  exists inverse.
+  apply @isequiv_adjointify with (g := inverse);
+    intro u; destruct u; exact 1.
+Defined.
+
+Definition equiv_VV (A B:Type) (f:A -> B) (H:IsEquiv f)
+: (f ^-1) ^-1 = f.
+  hott_simpl.
+Defined.
+
+Definition moveR_EV (A B:Type) (f:A -> B) (IsEquiv:IsEquiv f) a b
+: a = f b -> (f ^-1) a = b.
+  intro p.
+  apply moveR_E. rewrite equiv_VV. exact p.
+Defined.
+
+
+Lemma equal_equiv_inv (A B:Type) (f g: Equiv A B)
+: f=g -> equiv_fun A B f = equiv_fun A B g.
+  intro H. destruct H.
+  exact 1.
+Qed.
+  

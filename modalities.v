@@ -6,6 +6,9 @@ Set Universe Polymorphism.
 Global Set Primitive Projections.
 Set Implicit Arguments.
 
+Section Preliminary .
+
+
 (* Needed lemmas *)
 
   Definition apD10_fed (A : Type) (B : A -> Type) (f g : ∀ x : A, B x) (H : forall x, f x = g x)  :
@@ -44,6 +47,8 @@ Record subuniverse_struct n := Build_subuniverse_struct {
   O_equiv : forall (P : Trunc n) (Q :{T : Trunc n & (subuniverse_HProp T).1}),
               IsEquiv (fun f : (O P).1.1 -> Q.1.1 => f o (O_unit P)) 
 }.
+
+End Preliminary.
 
 Section Reflective_Subuniverse.
 
@@ -161,6 +166,43 @@ Section Reflective_Subuniverse.
 
   Notation "'○' f" := (function_lift _ _ f) (at level 0).
   Notation "'○' f" := (function_lift_modal _ _ f) (at level 0).
+  
+  Lemma reflect_factoriality_pre
+        (X:Trunc n)
+        (Y Z:subuniverse_Type)
+        (g : Y.1.1 -> Z.1.1)
+        (f : X.1 -> Y.1.1)
+  : g o (O_rec X Y f) = O_rec X Z (g o f).
+  Proof.
+    apply (elim_E (O_equiv subU X Z) (g o (O_rec X Y f)) (O_rec X Z (g o f))).
+    path_via (g o f).
+    - apply (ap (λ f, g o f)).
+      exact (O_rec_retr X Y f).
+    - exact (O_rec_retr X Z (g o f))^.
+  Defined.
+
+  Lemma reflect_factoriality_post
+        (X Y:Trunc n)
+        (Z:subuniverse_Type)
+        (g:Y.1 -> Z.1.1)
+        (f:X.1 -> Y.1)
+  : (O_rec Y Z g) o (function_lift X Y f) = O_rec X Z (g o f).
+  Proof.
+    path_via (O_rec X Z ((O_rec Y Z g) o (O_unit subU Y o f))).
+    - apply reflect_factoriality_pre.
+    - apply ap.
+      path_via (((O_rec Y Z g) o O_unit subU Y) o f).
+      apply (ap (λ u, u o f)).
+      exact (O_rec_retr Y Z g).
+  Defined.
+
+  Lemma reflect_functoriality
+        (X Y Z:Trunc n)
+        (g:Y.1 -> Z.1)
+        (f:X.1 -> Y.1)
+  : (function_lift Y Z g) o (function_lift X Y f) = function_lift X Z (g o f).
+    apply reflect_factoriality_post.
+  Defined.
 
   Lemma O_rec_O_unit (A : subuniverse_Type) (B : Trunc n) (f : B.1 -> A.1.1) (x : (O subU B).1.1) :
     O_unit subU A.1 (O_rec B A f x) = O_rec B (O subU A.1) ((O_unit subU A.1) o f) x.
@@ -223,6 +265,38 @@ Section Reflective_Subuniverse.
     exact ((inverse foo1) @ foo3 @ foo2).
   Defined.
 
+  Definition function_lift_idmap A : function_lift A A idmap = idmap
+    := O_rec_sect A (O subU A) idmap.
+
+  Lemma function_lift_equiv A B f 
+  : IsEquiv f -> IsEquiv (function_lift A B f).
+    intro H.
+    apply @isequiv_adjointify with (g:=function_lift B A equiv_inv).
+    - intro x.
+      etransitivity; try exact (ap10 (reflect_functoriality B A B f equiv_inv) x).
+      etransitivity; try exact (ap10 (function_lift_idmap B) x).
+      apply (ap (λ u, function_lift B B u x)).
+      apply path_forall; intro.
+      apply eisretr.
+    - intro y.
+      etransitivity; try exact (ap10 (reflect_functoriality A B A equiv_inv f) y).
+      etransitivity; try exact (ap10 (function_lift_idmap A) y).
+      apply (ap (λ u, function_lift A A u y)).
+      apply path_forall; intro.
+      apply eissect.
+  Defined.
+
+  Lemma function_lift_transport A B (p:A=B)
+  : ((ap (O subU) p)..1..1) = (@path_universe univalence_equiv (O subU A).1.1 (O subU B).1.1 (function_lift A B (transport idmap p..1)) (function_lift_equiv A B (f := (equiv_path A.1 B.1 p..1)) _)) .
+    destruct p. simpl.
+    unfold path_universe, path_universe_uncurried.
+    apply (@equiv_inj _ _ _ (isequiv_equiv_path _ _)).
+    rewrite eisretr. apply equal_equiv. simpl.
+    apply path_forall; intro a. simpl.
+    unfold function_lift. simpl.
+    exact ((ap10 (O_rec_sect A (O subU A) idmap) a)^).
+  Qed.
+
 (* The universal property commute with η *)
 
     Definition equal_fun_modal (A:Trunc n) (B:subuniverse_Type) (f g:(O subU A).1.1 -> B.1.1) (η := O_unit subU A) : ((f o η = g o η) -> (f=g))
@@ -247,44 +321,6 @@ Section Reflective_Subuniverse.
   Defined.
 
 (* Things *)
-  
-
-  Lemma reflect_factoriality_pre
-        (X:Trunc n)
-        (Y Z:subuniverse_Type)
-        (g : Y.1.1 -> Z.1.1)
-        (f : X.1 -> Y.1.1)
-  : g o (O_rec X Y f) = O_rec X Z (g o f).
-  Proof.
-    apply (elim_E (O_equiv subU X Z) (g o (O_rec X Y f)) (O_rec X Z (g o f))).
-    path_via (g o f).
-    - apply (ap (λ f, g o f)).
-      exact (O_rec_retr X Y f).
-    - exact (O_rec_retr X Z (g o f))^.
-  Defined.
-
-  Lemma reflect_factoriality_post
-        (X Y:Trunc n)
-        (Z:subuniverse_Type)
-        (g:Y.1 -> Z.1.1)
-        (f:X.1 -> Y.1)
-  : (O_rec Y Z g) o (function_lift X Y f) = O_rec X Z (g o f).
-  Proof.
-    path_via (O_rec X Z ((O_rec Y Z g) o (O_unit subU Y o f))).
-    - apply reflect_factoriality_pre.
-    - apply ap.
-      path_via (((O_rec Y Z g) o O_unit subU Y) o f).
-      apply (ap (λ u, u o f)).
-      exact (O_rec_retr Y Z g).
-  Defined.
-
-  Lemma reflect_functoriality
-        (X Y Z:Trunc n)
-        (g:Y.1 -> Z.1)
-        (f:X.1 -> Y.1)
-  : (function_lift Y Z g) o (function_lift X Y f) = function_lift X Z (g o f).
-    apply reflect_factoriality_post.
-  Defined.
 
   Lemma O_rec_O_rec_dep_retr
         (A: Trunc n)
@@ -323,6 +359,55 @@ Section Reflective_Subuniverse.
     exact (O_rec_sect A (O subU A) idmap).
   Qed.
 
+  
+  Lemma O_rec_O_rec (A B C : Trunc n) f g x (H : forall b c, (f (g b c) c) = b)
+  : O_rec A
+          (O subU B)
+          (λ u:A.1, O_rec C
+                          (O subU B)
+                          (λ v:C.1, O_unit subU B (f u v))
+                          x)
+          o (O_rec B
+                 (O subU A)
+                 (λ u:B.1, O_rec C
+                                 (O subU A)
+                                 (λ v:C.1, O_unit subU A (g u v))
+                                 x)
+                 ) = idmap.
+
+    apply (equal_fun_modal B (O subU B)).
+    unfold compose; simpl.
+    apply path_forall; intro b.
+
+    pose (eq := ap10 (O_rec_retr B (O subU A) (λ u : B .1, O_rec C (O subU A) (λ v : C .1, O_unit subU A (g u v)) x)) b); unfold compose in eq; simpl in eq.
+    rewrite eq; clear eq.
+
+    pose (eq := ap10 (reflect_factoriality_post C A (O subU B) (λ u : A .1, O_rec C (O subU B) (λ v : C .1, O_unit subU B (f u v)) x) (g b)) x); unfold compose, function_lift in eq; simpl in eq.
+    rewrite eq; clear eq.
+
+    assert ((λ x, 
+            O_rec C (O subU B)
+                  (λ x0 : C .1,
+                          O_rec C (O subU B) (λ v : C .1, O_unit subU B (f (g b x0) v)) x) x) = (λ _, O_unit subU B b)).
+
+    apply (@equiv_inj _ _ _ (O_equiv subU C (O subU B))).
+    unfold compose; simpl.
+    apply path_forall; intro c.
+    pose (foo := ap10 (O_rec_retr C (O subU B) (λ x1 : C .1,
+       O_rec C (O subU B) (λ v : C .1, O_unit subU B (f (g b x1) v))
+         (O_unit subU C c))) c).
+    unfold compose in foo; simpl in foo. rewrite foo; clear foo.
+    pose (foo := ap10 (O_rec_retr C (O subU B) (λ v : C .1, O_unit subU B (f (g b c) v))) c).
+    unfold compose in foo; simpl in foo. rewrite foo; clear foo.
+    apply ap. exact (H b c).
+    
+    exact (ap10 X x).
+  Qed.
+
+  Lemma equiv_nj_inverse A a b
+  : (O subU (a=b ; istrunc_paths (H:=A.2) A.1 n a b)).1.1 = (O subU (b=a ; istrunc_paths (H:=A.2) A.1 n b a)).1.1.
+    repeat apply ap. apply truncn_unique. exact (equal_inverse a b).
+  Defined.
 
 (* Dependent product and arrows *)
   Definition subuniverse_forall (A:Type) (B:A -> Trunc n) : (* Theorem 7.7.2 *)
@@ -492,7 +577,7 @@ Section Reflective_Subuniverse.
       rewrite <- q. 
       assert ( (eq''' (η a)) =  (eqf a) ..1).
         unfold eq''', projT1_path, eqf, q, p, f, eq''', eq'', f'', g'', eqf, f', g', Z, η in *; simpl in *.
-        rewrite universality_unit. rewrite apD10_fed. exact idpath.
+        rewrite universality_unit. unfold path_forall. rewrite eisretr. exact idpath.
       exact (ap (λ v, transport (λ u, ((B u) .1) .1) v (f' (η a)) .2) X0).
     - intros H A B.
       pose (h := λ x, O_rec ({x:A.1.1 & (B x).1.1};trunc_sigma (H := A.1.2) (H0 := λ u, (B u).1.2)) A pr1 x).
@@ -803,4 +888,4 @@ Section Reflective_Subuniverse.
   Qed.
   
  
-End Reflective_Subuniverse.
+End Reflective_Subuniverse. 

@@ -49,3 +49,21 @@ Lemma eq_dep_subset : forall A (B:A -> Type) (_:forall a, IsHProp (B a))
                         u.1 = v.1 -> u = v.
   intros. apply (path_sigma _ _ _ X0). destruct u; destruct v; simpl in X0; destruct X0. apply (X x).
 Defined.
+
+Lemma isequiv_eq_dep_subset {A:Type} {B:A -> Type} (X : ∀ a : A, IsHProp (B a)) (u v : {a:A & B a})
+: IsEquiv (eq_dep_subset X u v).
+  apply @isequiv_adjointify with (g := λ p, ap pr1 p).
+  - intro p. destruct p. simpl. unfold eq_dep_subset.
+    destruct u as [a H]; simpl in *.
+    assert (center (H=H) = 1).
+    apply contr.
+    apply (transport (λ u, path_sigma B (a;H) (a;H) 1 u = 1) X0^).
+    exact 1.
+  - intro p.
+    destruct u as [u G], v as [v H].
+    simpl in p; destruct p. unfold eq_dep_subset.
+    pose (foo := @ap_existT). unfold path_sigma' in foo.
+    rewrite <- foo.
+    simpl.
+    destruct (center (G=H)). simpl. exact 1.
+Defined.

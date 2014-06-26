@@ -209,13 +209,14 @@ Admitted.
 
 
 Definition truncn_unique n (A B : Trunc n) : A.1 = B.1 -> A = B.
-  intro e. destruct A, B. apply path_sigma' with (p:=e).  apply allpath_hprop.
+  intro e. apply eq_dep_subset. intro. apply hprop_trunc. exact e.
 Defined.
 
 Arguments equiv_path A B p : simpl never.
 
 Definition isequiv_truncn_unique n (A B : Trunc n)
 : IsEquiv (truncn_unique A B).
+  unfold truncn_unique.
   apply isequiv_adjointify with (g := ap pr1).
   - intro p; simpl.
     destruct p; simpl. unfold truncn_unique. simpl.
@@ -224,8 +225,6 @@ Definition isequiv_truncn_unique n (A B : Trunc n)
     exact 1.
   - intro p; unfold truncn_unique; simpl.
     destruct A as [A TrA], B as [B TrB]. simpl in p. destruct p. simpl.
-    (* assert (foo := @ap_existT Type (λ T : Type, IsTrunc n T) A TrA TrB (allpath_hprop TrA TrB)). *)
-    (* apply (transport (λ U:(A; TrA) = (A; TrB), ap pr1 U = 1) foo); clear foo. *)
     assert (fo := allpath_hprop TrA TrB). destruct fo.
     unfold allpath_hprop.
     apply (transport (λ U, ap pr1 (path_sigma' (λ T : Type, IsTrunc n T) 1 U) = 1) (@contr (TrA = TrA) ((trunc_trunc A n minus_two TrA TrA)) 1)^).

@@ -649,16 +649,39 @@ Section Sheafification.
     exact f.
   Defined.
   
-  Definition δ (T:Trunc (trunc_S n)) : ((pr1 T) * (pr1 T)) -> Trunc n.
-    intro x. exists (fst x = snd x). apply istrunc_paths.
+  Definition δ (T:Trunc (trunc_S n)) : T.1 * T.1-> Trunc n.
+    intros x. exists (fst x = snd x). apply istrunc_paths.
     exact T.2.
   Defined.
 
-  Definition Δ T := (nchar_to_sub (δ T)).
+  Definition ΔΣ (T:Trunc (trunc_S n)) := {a:T.1 & {b:T.1 & a = b}}.
 
+  Definition Δ (T:Trunc (trunc_S n)) := nchar_to_sub (δ T).
+
+  Lemma Δ_is_ΔΣ T : (ΔΣ T) = (Δ T).1 .
+    unfold Δ, ΔΣ. simpl.
+    pose (foo := (Δ T).2). simpl in foo.
+    apply univalence_axiom.
+    exists ((λ x, ((x.1, x.2.1);x.2.2)) : (∃ a b : T .1, a = b) -> (∃ b : T .1 ∧ T .1, fst b = snd b)).
+    apply isequiv_adjointify with (g := (λ x, (fst x.1;(snd x.1;x.2))) : (∃ b : T .1 ∧ T .1, fst b = snd b) -> (∃ a b : T .1, a = b)).
+    - intro x. destruct x as [[x y] z]. exact 1.
+    - intro x. destruct x as [x [y z]]. exact 1.
+  Defined.
+  
   Definition clδ T := pr1  o nj.(O) o (δ T).
 
   Definition clΔ T := (nchar_to_sub (clδ T)).
+
+  Definition clΔΣ (T: Trunc (trunc_S n)) := {a:T.1 & {b:T.1 & (O nj (a=b; istrunc_paths (T.2) a b)).1.1}}.
+
+  Lemma clΔ_is_clΔΣ T : (clΔΣ T) = (clΔ T).1.
+    unfold clΔΣ, clΔ, clδ, δ, compose. simpl.
+    apply univalence_axiom.
+    exists ((λ x, ((x.1, x.2.1);x.2.2)) : (∃ a b : T .1, ((O nj (a = b; istrunc_paths T .2 a b)) .1) .1) -> (∃ b : T .1 ∧ T .1, ((O nj (fst b = snd b; istrunc_paths T .2 (fst b) (snd b))) .1) .1)).
+    apply isequiv_adjointify with (g := (λ x, (fst x.1;(snd x.1;x.2))) : (∃ b : T .1 ∧ T .1, ((O nj (fst b = snd b; istrunc_paths T .2 (fst b) (snd b))) .1) .1) -> (∃ a b : T .1, ((O nj (a = b; istrunc_paths T .2 a b)) .1) .1)).
+    - intro x. destruct x as [[x y] z]. exact 1.
+    - intro x. destruct x as [x [y z]]. exact 1.
+  Defined.
 
   Lemma dense_into_cloture_dense_eq_trunc (E:Type) (φ:E -> Trunc n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1}) (x:clA)
   : IsTrunc n {y : (φ x.1).1 & x.2 = O_unit nj _ y}.

@@ -68,14 +68,88 @@ Section kernel_pair.
     unfold toIm, inj1, inj2, compose. simpl.
     eapply (eq_dep_subset' (λ x, Truncation minus_one (∃ x0 : A, f x0 = x)) _ _ _ (pr2 (pr2 x))). 
   Defined.
+
+
+  (* Definition IsEpi A B (f:A -> B) *)
+  (* := forall C, IsEquiv (λ (u:B -> C), u o f). *)
+
+  (* Definition epi_coeq_kernel_pair_eq A B (f:A -> B) (epi : IsEpi f) *)
+  (* : f o inj1 (f:=f) = f o inj2 (f:=f). *)
+  (*   apply path_forall; intro x. *)
+  (*   exact x.2.2. *)
+  (* Defined. *)
+
+  (* Definition epi_coeq_kernel_pair A (epi : IsEpi (λ _:A, tt)) *)
+  (* : is_coequalizer (λ _, tt ; epi_coeq_kernel_pair_eq epi). *)
+  (*   intro Q. simpl. *)
+  (*   apply isequiv_adjointify with (g := λ x, λ a, x.1 (equiv_inv (IsEquiv := epi A) idmap a)). *)
+  (*   - intros [q eq]. *)
+  (*     simpl. unfold compose. simpl. *)
+  (*     unfold equiv_inv. *)
+  (*     destruct (epi A) as [inv retr sect _]. *)
+  (*     apply @path_sigma' with (p := path_forall _ _ (λ x, ap q (ap10 (retr idmap) x))). *)
+  (*     simpl. *)
+  (*     apply moveR_transport_p. *)
+        
+      
+    
+
+  (* Definition epi_coeq_kernel_pair A B (f:A -> B) (epi :IsEpi f) *)
+  (* : is_coequalizer (f ; epi_coeq_kernel_pair_eq epi). *)
+  (*   intro C. simpl. *)
+  (*   assert ((∃ m : A → C, m o inj1 (f:=f) = m o inj2 (f:=f)) -> (B -> C)). *)
+  (*   intros [m eq] b. *)
+  (*   unfold inj1, inj2, compose in eq; simpl in eq. *)
+  (*   unfold IsEpi in f. *)
   
   (* The proof below should be instead the proof that Im f is equivalent to the coequalizer of (kernel_pair f) *)
+
+  (* Lemma Im_is_coeq_diag (A:Type)  *)
+  (* : @is_coequalizer (A*A) A fst snd Unit (λ _, tt ; 1). *)
+  (*   intros Q. *)
+
+  (*   assert ((∃ m : A → Q, m o fst = m o snd) -> (Unit → Q)). *)
+  (*   Focus 1. *)
+
+  (*   intros [q eq] tt. *)
+    
+  (*   assert (eq_1 : (fst : Q*Q -> Q) o (λ a:A*A, (q (fst a), q (snd a))) = q o (fst : A*A -> A)). *)
+  (*     apply path_forall; intro a. exact 1. *)
+  (*   assert (eq_2 : ((snd : Q*Q -> Q) o (λ a:A*A, (q (fst a), q (snd a))) = q o (snd : A*A -> A))). *)
+  (*     apply path_forall; intro a; exact 1. *)
+  (*     (* unfold compose in *; simpl in *. *) *)
+
+  (*   assert ((fst : Q*Q -> Q) = (snd : Q*Q -> Q)). *)
+  (*     apply path_forall; intro x. *)
+
+  (*     assert (eq_3 := eq_1 @ eq @ eq_2^). simpl in *. *)
+  (*     assert (forall u:Q, {a:A & u = q a}). *)
+  (*       intro u. *)
+      
+  (*     destruct x as [x y]. simpl in *. *)
+  (*     apply ap10 in eq_1; apply ap10 in eq_2. unfold pointwise_paths in eq_1, eq_2. *)
+      
+  (*   assert (forall X:Type, forall f g:X -> Q, f=g). *)
+  (*     intros X f g. *)
+      
+
+    
 
   Lemma Im_is_coequalizer_kernel_pair A B (f : A -> B) :
     is_coequalizer (toIm f;(Im_coequalizes_kernel_pair f)).
   Proof.
-    intro Y; simpl.
-    unfold toIm, compose. simpl.
+    (* intro Y; simpl. *)
+    (* unfold toIm, compose. simpl. *)
+    
+    (* assert ((∃ m : A → Y, *)
+    (*         (λ x0 : kernel_pair f, m (inj1 x0)) = *)
+    (*         (λ x0 : kernel_pair f, m (inj2 x0))) -> (Im f -> Y)). *)
+    (*   intros [m p] [b q]. *)
+    (*   unfold inj1, inj2, kernel_pair, pullback in p; simpl in p. *)
+      
+
+    (* apply isequiv_adjointify with (g := X). *)
+    
     (* unfold Im_coequalizes_kernel_pair, path_forall, composition.  *)
   Admitted.
 

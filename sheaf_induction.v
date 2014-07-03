@@ -577,11 +577,11 @@ Section Type_to_separated_Type.
   Proof.
     intro S. unfold compose. simpl.
     assert ((∃ m : T .1 → S, (λ x0 : (clΔ T) .1, m (fst x0 .1)) = (λ x0 : (clΔ T) .1, m (snd x0 .1))) -> (separated_Type T → S)).
-      intros [m p] x.
-      simpl in *.
-      unfold separated_Type in x. unfold Im in x.
-      destruct x as [b q]. simpl in b.
+      intros [m p] [b h]. simpl in *.
+      unfold clδ, δ, compose in p; simpl in p.
+     
     
+        
   Admitted.
 
   Definition sep_eq_inv_Δ (P : Trunc (trunc_S n)) (Q :{T : Trunc (trunc_S n) & separated T})
@@ -611,6 +611,14 @@ Section Type_to_separated_Type.
                                               f o (separated_unit P)).
     (* cf proof_separation_universal.prf *)
   Admitted.
+
+  Definition separation_reflective_subuniverse
+  : subuniverse_struct (trunc_S n)
+    := (Build_subuniverse_struct
+          (λ T, existT (λ T, IsHProp T) (separated T) (separated_is_HProp (T:=T)))
+          separation
+          separated_unit
+          separated_equiv_Δ).
       
   (**** From separated to sheaf ****)
 

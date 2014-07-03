@@ -138,14 +138,16 @@ Section kernel_pair.
   Lemma Im_is_coequalizer_kernel_pair A B (f : A -> B) :
     is_coequalizer (toIm f;(Im_coequalizes_kernel_pair f)).
   Proof.
-    (* intro Y; simpl. *)
-    (* unfold toIm, compose. simpl. *)
+    intro Y; simpl.
+    unfold toIm, compose. simpl.
     
-    (* assert ((∃ m : A → Y, *)
-    (*         (λ x0 : kernel_pair f, m (inj1 x0)) = *)
-    (*         (λ x0 : kernel_pair f, m (inj2 x0))) -> (Im f -> Y)). *)
-    (*   intros [m p] [b q]. *)
-    (*   unfold inj1, inj2, kernel_pair, pullback in p; simpl in p. *)
+    assert ((∃ m : A → Y,
+            (λ x0 : kernel_pair f, m (inj1 x0)) =
+            (λ x0 : kernel_pair f, m (inj2 x0))) -> (Im f -> Y)).
+      intros [m p] [b q].
+      unfold kernel_pair in p.
+      unfold inj1, inj2, kernel_pair, pullback in p; simpl in p.
+      unfold squash, hfiber in q.
       
 
     (* apply isequiv_adjointify with (g := X). *)

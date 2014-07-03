@@ -1,4 +1,4 @@
 sheafification
 ==============
 
-Sheafification functor in type theory
+Sheafification functor in type theory : In progress

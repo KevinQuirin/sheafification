@@ -589,11 +589,10 @@ Section Type_to_separated_Type.
 
     intros [m p] [b h]. simpl in *. 
       
-    pose (ff := (λ m, λ b, (equiv_inv (IsEquiv := separated_unit_coeq T S)) (m.1; path_forall _ _ (λ x, (ap10 m.2 ((x.1,x.2.1); (transport idmap (ap10 x.2.2 x.2.1)..1..1^ (O_unit nj (x.2.1 = x.2.1; istrunc_paths T .2 x.2.1 x.2.1) 1)))))) b) : ((∃ m : T .1 → S, (λ x0 : (clΔ T) .1, m (fst x0 .1)) = (λ x0 : (clΔ T) .1, m (snd x0 .1))) -> (separated_Type T → S))).
+    (* pose (ff := (λ m, λ b, (equiv_inv (IsEquiv := separated_unit_coeq T S)) (m.1; path_forall _ _ (λ x, (ap10 m.2 ((x.1,x.2.1); (transport idmap (ap10 x.2.2 x.2.1)..1..1^ (O_unit nj (x.2.1 = x.2.1; istrunc_paths T .2 x.2.1 x.2.1) 1)))))) b) : ((∃ m : T .1 → S, (λ x0 : (clΔ T) .1, m (fst x0 .1)) = (λ x0 : (clΔ T) .1, m (snd x0 .1))) -> (separated_Type T → S))). *)
 
     (* apply isequiv_adjointify with (g:= ff). *)
    
-     aaa
   Admitted.
 
   Definition sep_eq_inv_Δ (P : Trunc (trunc_S n)) (Q :{T : Trunc (trunc_S n) & separated T})
@@ -618,11 +617,527 @@ Section Type_to_separated_Type.
     exact (inv x). 
   Defined.
 
+    Definition sep_eq_inv (P : Trunc (trunc_S n)) (Q :{T : Trunc (trunc_S n) & separated T})
+  : (P .1 → (Q .1) .1) -> (separated_Type P → (Q .1) .1).
+    intros f.
+    apply (equiv_inv (IsEquiv := separated_unit_coeq P Q.1.1)).
+    exists f.
+    destruct Q as [Q sepQ].
+    unfold separated in sepQ.
+    unfold inj1, inj2. unfold compose; simpl in *.
+    specialize (sepQ (clΔ P).1). unfold E_to_χ_map in sepQ. simpl in sepQ.
+    specialize (sepQ (dense_into_cloture (δ P))).
+    unfold IsMono, clδ, δ, compose in sepQ; simpl in sepQ.
+    specialize (sepQ (λ X, f (fst X.1)) (λ X, f (snd X.1))).
+    destruct sepQ as [inv _ _ _].
+
+    specialize (inv (path_forall _ _ (λ x, ap f x.2.1))).
+    apply ap10 in inv.
+
+    apply path_forall; intro x.
+    unfold kernel_pair, pullback in x. exact (inv ((x.1,x.2.1) ; transport idmap (ap10 x.2.2 x.2.1)..1..1^ (O_unit nj (x.2.1 = x.2.1; istrunc_paths P .2 x.2.1 x.2.1) 1) )).
+  Defined.
+
   Definition separated_equiv_Δ : forall (P : Trunc (trunc_S n)) (Q :{T : Trunc (trunc_S n) & separated T}),
                                    IsEquiv (fun f : separated_Type P -> pr1 (pr1 Q) =>
                                               f o (separated_unit P)).
     (* cf proof_separation_universal.prf *)
   Admitted.
+
+   
+  Definition separated_equiv : forall (P : Trunc (trunc_S n)) (Q :{T : Trunc (trunc_S n) & separated T}),
+                                 IsEquiv (fun f : separated_Type P -> pr1 (pr1 Q) =>
+                                           f o (separated_unit P)).
+    intros P Q.
+    apply isequiv_adjointify with (g := sep_eq_inv Q).
+    - admit.
+    - intro φ.
+      (* apply path_forall; intro x. *)
+      unfold sep_eq_inv, separated_unit, compose.
+
+      apply (@equiv_inj _ _ _ (separated_unit_coeq P (Q .1) .1)).
+
+      pose (foo := (eisretr _ (IsEquiv := (separated_unit_coeq P (Q .1) .1))) (λ x : P .1,
+       φ (toIm (λ t t' : P .1, O nj (t = t'; istrunc_paths P .2 t t')) x);
+      (let (Q0, sepQ) as s
+           return
+             (∀ f : P .1 → (s .1) .1,
+              (λ x : kernel_pair
+                       (λ t t' : P .1, O nj (t = t'; istrunc_paths P .2 t t')),
+               f (inj1 x)) =
+              (λ x : kernel_pair
+                       (λ t t' : P .1, O nj (t = t'; istrunc_paths P .2 t t')),
+               f (inj2 x))) := Q in
+       λ f : P .1 → ((Q0; sepQ) .1) .1,
+       match
+         sepQ (clΔ P) .1 (dense_into_cloture (δ P))
+           (λ X : ∃ b : P .1 ∧ P .1,
+                  ((O sheaf_def_and_thm.nj
+                      (fst b = snd b; istrunc_paths P .2 (fst b) (snd b))) .1)
+                  .1, f (fst X .1))
+           (λ X : ∃ b : P .1 ∧ P .1,
+                  ((O sheaf_def_and_thm.nj
+                      (fst b = snd b; istrunc_paths P .2 (fst b) (snd b))) .1)
+                  .1, f (snd X .1))
+       with
+       | {| equiv_inv := inv |} =>
+           path_forall
+             (λ x : kernel_pair
+                      (λ t t' : P .1, O nj (t = t'; istrunc_paths P .2 t t')),
+              f x .1)
+             (λ x : kernel_pair
+                      (λ t t' : P .1, O nj (t = t'; istrunc_paths P .2 t t')),
+              f (x .2) .1)
+             (λ x : kernel_pair
+                      (λ t t' : P .1, O nj (t = t'; istrunc_paths P .2 t t')),
+              ap10
+                (inv
+                   (path_forall
+                      (λ x0 : ∃ (b : ∃ b : P .1 ∧ P .1,
+                                     ((O sheaf_def_and_thm.nj
+                                         (fst b = snd b;
+                                         istrunc_paths P .2 (fst b) (snd b)))
+                                      .1) .1) (π : fst b .1 = snd b .1),
+                              O_unit sheaf_def_and_thm.nj
+                                (fst b .1 = snd b .1;
+                                istrunc_paths P .2 (fst b .1) (snd b .1)) π =
+                              b .2, f (fst (x0 .1) .1))
+                      (λ x0 : ∃ (b : ∃ b : P .1 ∧ P .1,
+                                     ((O sheaf_def_and_thm.nj
+                                         (fst b = snd b;
+                                         istrunc_paths P .2 (fst b) (snd b)))
+                                      .1) .1) (π : fst b .1 = snd b .1),
+                              O_unit sheaf_def_and_thm.nj
+                                (fst b .1 = snd b .1;
+                                istrunc_paths P .2 (fst b .1) (snd b .1)) π =
+                              b .2, f (snd (x0 .1) .1))
+                      (λ x0 : ∃ (b : ∃ b : P .1 ∧ P .1,
+                                     ((O sheaf_def_and_thm.nj
+                                         (fst b = snd b;
+                                         istrunc_paths P .2 (fst b) (snd b)))
+                                      .1) .1) (π : fst b .1 = snd b .1),
+                              O_unit sheaf_def_and_thm.nj
+                                (fst b .1 = snd b .1;
+                                istrunc_paths P .2 (fst b .1) (snd b .1)) π =
+                              b .2, ap f (x0 .2) .1)))
+                ((x .1, (x .2) .1);
+                transport idmap (((ap10 (x .2) .2 (x .2) .1) ..1) ..1) ^
+                  (O_unit nj
+                     ((x .2) .1 = (x .2) .1;
+                     istrunc_paths P .2 (x .2) .1 (x .2) .1) 1)))
+       end)
+        (λ x : P .1,
+         φ (toIm (λ t t' : P .1, O nj (t = t'; istrunc_paths P .2 t t')) x)))).
+      (* simpl in foo. *)
+
+      apply (transport (λ u, u = (φ
+    o (separated_unit P;
+      Im_coequalizes_kernel_pair
+        (λ t t' : P .1, O nj (t = t'; istrunc_paths P .2 t t'))) .1;
+   ap
+     (λ u : kernel_pair
+              (λ t t' : P .1, O nj (t = t'; istrunc_paths P .2 t t'))
+            → separated_Type P, φ o u)
+     (separated_unit P;
+     Im_coequalizes_kernel_pair
+       (λ t t' : P .1, O nj (t = t'; istrunc_paths P .2 t t'))) .2)) foo^).
+      clear foo.
+
+      unfold separated_unit, compose.
+
+      apply path_sigma' with (p:=1). rewrite transport_1.
+
+      destruct Q as [Q sepQ]. 
+
+      destruct ( sepQ (clΔ P) .1 (dense_into_cloture (δ P))
+       (λ X : ∃ b : P .1 ∧ P .1,
+              ((O sheaf_def_and_thm.nj
+                  (fst b = snd b; istrunc_paths P .2 (fst b) (snd b))) .1) .1,
+        φ
+          (toIm (λ t t' : P .1, O nj (t = t'; istrunc_paths P .2 t t'))
+             (fst X .1)))
+       (λ X : ∃ b : P .1 ∧ P .1,
+              ((O sheaf_def_and_thm.nj
+                  (fst b = snd b; istrunc_paths P .2 (fst b) (snd b))) .1) .1,
+        φ
+          (toIm (λ t t' : P .1, O nj (t = t'; istrunc_paths P .2 t t'))
+             (snd X .1)))) as [inv retr sect _].
+
+      apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+      unfold ap10 at 1, path_forall at 1.
+      rewrite eisretr.
+
+      apply path_forall; intro x.
+      
+      set (eqq := (path_forall
+           (λ x0 : ∃ (b : ∃ b : P .1 ∧ P .1,
+                          ((O sheaf_def_and_thm.nj
+                              (fst b = snd b;
+                              istrunc_paths P .2 (fst b) (snd b))) .1) .1)
+                   (π : fst b .1 = snd b .1),
+                   O_unit sheaf_def_and_thm.nj
+                     (fst b .1 = snd b .1;
+                     istrunc_paths P .2 (fst b .1) (snd b .1)) π = 
+                   b .2,
+            φ
+              (toIm (λ t t' : P .1, O nj (t = t'; istrunc_paths P .2 t t'))
+                 (fst (x0 .1) .1)))
+           (λ x0 : ∃ (b : ∃ b : P .1 ∧ P .1,
+                          ((O sheaf_def_and_thm.nj
+                              (fst b = snd b;
+                              istrunc_paths P .2 (fst b) (snd b))) .1) .1)
+                   (π : fst b .1 = snd b .1),
+                   O_unit sheaf_def_and_thm.nj
+                     (fst b .1 = snd b .1;
+                     istrunc_paths P .2 (fst b .1) (snd b .1)) π = 
+                   b .2,
+            φ
+              (toIm (λ t t' : P .1, O nj (t = t'; istrunc_paths P .2 t t'))
+                 (snd (x0 .1) .1)))
+           (λ x0 : ∃ (b : ∃ b : P .1 ∧ P .1,
+                          ((O sheaf_def_and_thm.nj
+                              (fst b = snd b;
+                              istrunc_paths P .2 (fst b) (snd b))) .1) .1)
+                   (π : fst b .1 = snd b .1),
+                   O_unit sheaf_def_and_thm.nj
+                     (fst b .1 = snd b .1;
+                     istrunc_paths P .2 (fst b .1) (snd b .1)) π = 
+                   b .2,
+            ap
+              (λ x1 : P .1,
+               φ
+                 (toIm
+                    (λ t t' : P .1, O nj (t = t'; istrunc_paths P .2 t t'))
+                    x1)) (x0 .2) .1))).
+
+      path_via (ap10 (ap (λ (u : (clΔ P) .1 → separated_Type P) (x0 : (clΔ P) .1), φ (u x0))
+        (separated_unit_coeq_Δ_coeq P)) ((x .1, (x .2) .1);
+     transport idmap (((ap10 (x .2) .2 (x .2) .1) ..1) ..1) ^
+       (O_unit nj
+          ((x .2) .1 = (x .2) .1; istrunc_paths P .2 (x .2) .1 (x .2) .1) 1))).
+      Focus 1.
+
+      apply (ap (λ u, ap10 u ((x .1, (x .2) .1);
+     transport idmap (((ap10 (x .2) .2 (x .2) .1) ..1) ..1) ^
+       (O_unit nj
+          ((x .2) .1 = (x .2) .1; istrunc_paths P .2 (x .2) .1 (x .2) .1) 1))) (x := (inv eqq)) (y:=(ap (λ (u : (clΔ P) .1 → separated_Type P) (x0 : (clΔ P) .1), φ (u x0))
+        (separated_unit_coeq_Δ_coeq P)))).
+
+      (* unfold eqq. *)
+      (* unfold separated_unit_coeq_Δ_coeq. simpl. *)
+      specialize (sect (ap (λ (u : (clΔ P) .1 → separated_Type P) (x0 : (clΔ P) .1), φ (u x0))
+     (separated_unit_coeq_Δ_coeq P))).
+      apply (transport (λ u, inv eqq = u) sect).
+      apply ap.
+      unfold eqq.
+      apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+      unfold ap10 at 1, path_forall at 1. rewrite eisretr.
+      apply path_forall; intro y.
+
+      pose (foo := @ap_ap10_L).
+
+      unfold E_to_χ_map. simpl in y. rewrite foo. clear foo.
+      
+      destruct y as [[(a,b) t] r].
+      unfold clδ, δ, compose in t; simpl in t.
+      unfold dense_into_cloture, δ, compose in r. simpl in r.
+      destruct r as [π r].
+      destruct π.
+      simpl.
+
+      pose (foo := @ap_ap10). specialize (foo _ _ _ (separated_unit P o (λ x : (clΔ P) .1, fst x .1)) (separated_unit P o (λ x : (clΔ P) .1, snd x .1)) φ (separated_unit_coeq_Δ_coeq P) ((a, a); t)).
+      unfold compose in foo. simpl in foo.
+      apply (transport (λ u, 1 = u) foo). clear foo.
+      unfold separated_unit_coeq_Δ_coeq.
+      unfold ap10 at 1, path_forall at 1. rewrite eisretr.
+      
+      path_via (ap φ (idpath (separated_unit P a))).
+      apply ap.
+
+      assert (((ap pr1 (retr_kpsic_inv ((a, a); t)))) = 1).
+      Focus 1.
+      unfold retr_kpsic_inv.
+      unfold path_sigma' at 1.
+      apply projT1_path_sigma.
+
+      path_via ( 
+          ((let (a0, s) as s
+                return
+                (separated_unit P (fst (kpsic_inv s) .1) =
+                 separated_unit P (snd (kpsic_inv s) .1)) :=
+                kpsic_func ((a, a); t) in
+            let (b, p) as s0
+                return
+                (separated_unit P (fst (kpsic_inv (a0; s0)) .1) =
+                 separated_unit P (snd (kpsic_inv (a0; s0)) .1)) := s in
+            p))).
+
+     Focus 2.
+
+     unfold kpsic_func.
+
+     apply (@equiv_inj _ _ _ ( subset_is_subobject
+          (λ a0 : (P .1 → subuniverse_Type nj; T_nType_j_Type_trunc P) .1,
+           istrunc_truncation minus_one
+             (hfiber
+                (λ t0 t' : P .1, O nj (t0 = t'; istrunc_paths P .2 t0 t')) a0))
+          (separated_unit P a) (separated_unit P a))).
+     rewrite eisretr.
+
+     apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+     unfold ap10 at 1, path_forall at 1; rewrite eisretr.
+
+     apply path_forall; intro u.
+
+     apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_unique_subuniverse _ _))).
+       apply isequiv_inverse.
+     rewrite eissect.
+
+     apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_truncn_unique _ _))).
+       apply isequiv_inverse.
+     rewrite eissect.
+
+     simpl.
+
+     apply (@equiv_inj _ _ _ (isequiv_equiv_path _ _)).
+     unfold univalence_axiom.
+     rewrite eisretr. simpl. unfold equiv_path.
+
+     apply equal_equiv. unfold kpsic_func_univ_func. simpl.
+     apply (@equiv_inj _ _ _ (O_equiv nj _ _)). idtac.
+     apply (transport (λ u, u=_) (O_rec_retr (a = u; istrunc_paths P .2 a u) (O nj (a = u; istrunc_paths P .2 a u)) (λ u0 : a = u,
+      O_rec (δ P (a, a)) (O nj (a = u; istrunc_paths P .2 a u))
+        (λ v : a = a, O_unit nj (a = u; istrunc_paths P .2 a u) (v ^ @ u0)) t))^).
+
+     apply path_forall; intro v. unfold compose; simpl.
+     unfold δ.
+
+     pose (foo := @projT1_path_sigma).
+     unfold path_sigma'. unfold projT1_path in foo.
+     rewrite foo. unfold eq_dep_subset, eq_dep_subset', path_sigma'.
+     unfold projT1_path.
+     specialize (foo _ (λ 
+                                                  b : 
+                                                  P .1
+                                                  → 
+                                                  (∃ 
+                                                  T : 
+                                                  Trunc sheaf_def_and_thm.n,
+                                                  (subuniverse_HProp nj T) .1),
+                                                  squash
+                                                  (hfiber
+                                                  (λ 
+                                                  t0 t' : P .1,
+                                                  O nj
+                                                  (
+                                                  t0 = t';
+                                                  istrunc_paths P .2 t0 t'))
+                                                  b))
+                     (λ 
+                                                  t' : P .1,
+                                                  O nj
+                                                  (
+                                                  a = t';
+                                                  istrunc_paths P .2 a t');
+                                                 truncation_incl (a; 1))
+                     (λ 
+                                                  t' : P .1,
+                                                  O nj
+                                                  (
+                                                  a = t';
+                                                  istrunc_paths P .2 a t');
+                                                 truncation_incl (a; 1))).
+     rewrite foo.
+                     
+     simpl.
+     rewrite r.
+
+     pose (foo := (ap10 (O_rec_retr (a = a; istrunc_paths P .2 a a) (O nj (a = u; istrunc_paths P .2 a u)) (λ v0 : a = a, O_unit nj (a = u; istrunc_paths P .2 a u) (v0 ^ @ v))) 1)). unfold compose in foo. simpl in foo.
+
+     pose (fooo := transport (λ U, O_rec (a = a; istrunc_paths P .2 a a)
+          (O nj (a = u; istrunc_paths P .2 a u))
+          (λ v0 : a = a, O_unit nj (a = u; istrunc_paths P .2 a u) (v0 ^ @ v))
+          U =
+        O_unit nj (a = u; istrunc_paths P .2 a u) (1 @ v)) r^).
+     
+     etransitivity. exact fooo. clear fooo. clear foo.
+     apply ap.
+     rewrite concat_1p. exact 1.
+
+     assert (ap (separated_unit P) (ap snd (ap pr1 (retr_kpsic_inv ((a, a); t)))) = 1).
+     rewrite X. auto.
+
+     assert (ap (separated_unit P) (ap fst (ap pr1 (retr_kpsic_inv ((a, a); t)) ^)) = 1).
+     path_via (ap (separated_unit P) (idpath a)).
+       apply ap.
+     path_via (ap fst (idpath (a,a))).
+       apply ap.
+
+     rewrite ap_V.
+     apply (transport (λ u, u^=1) X^). auto.
+
+     assert (forall (A:Type) (a:A) (p q:a=a) (Hp : p=1) (Hq : q=1) r, p @ (r @ q) = r).
+       intros A a0 p q Hp Hq r0.
+       rewrite Hp. rewrite Hq. rewrite concat_1p. apply concat_p1.
+
+     apply X2.
+     exact X1. exact X0.
+
+
+      
+      
+(***)
+      apply (ap (λ u, ap10 u x) (x:=(inv eqq)) (y:=(ap (λ (u : (clΔ P) .1 → separated_Type P) (x0 : (clΔ P) .1), φ (u x0))
+        (toIm (λ t t' : P .1, O nj (t = t'; istrunc_paths P .2 t t'));
+        separated_unit_coeq_Δ_coeq P) .2)) ).
+
+      specialize (sect (ap (λ (u : (clΔ P) .1 → separated_Type P) (x0 : (clΔ P) .1), φ (u x0)) (separated_unit_coeq_Δ_coeq P))).
+      apply (transport (λ u, inv eqq = u) sect).
+      apply ap.
+      unfold eqq. unfold E_to_χ_map. clear eqq.
+      apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+      unfold ap10 at 1, path_forall at 1. rewrite eisretr.
+      apply path_forall.
+      intro y.
+
+      unfold clΔ, clδ, δ, compose. 
+
+      pose (foo := ap_ap10_L (λ x0 : (nchar_to_sub
+             (λ x0 : P .1 ∧ P .1,
+              (O nj (fst x0 = snd x0; istrunc_paths P .2 (fst x0) (snd x0)))
+              .1)) .1,
+   φ ((separated_unit P o (λ x : (clΔ P) .1, fst x .1)) x0)) (λ x0 : (nchar_to_sub
+             (λ x0 : P .1 ∧ P .1,
+              (O nj (fst x0 = snd x0; istrunc_paths P .2 (fst x0) (snd x0)))
+              .1)) .1,
+   φ ((separated_unit P o (λ x : (clΔ P) .1, snd x .1)) x0)) (λ (x0 : ∃ b : (nchar_to_sub
+                        (λ x0 : P .1 ∧ P .1,
+                         (O nj
+                            (fst x0 = snd x0;
+                            istrunc_paths P .2 (fst x0) (snd x0))) .1)) .1,
+               ((dense_into_cloture
+                   (λ x0 : P .1 ∧ P .1,
+                    (fst x0 = snd x0; istrunc_paths P .2 (fst x0) (snd x0))))
+                  b) .1), x0.1) (ap
+           (λ (u : (nchar_to_sub
+                      (λ x0 : P .1 ∧ P .1,
+                       (O nj
+                          (fst x0 = snd x0;
+                          istrunc_paths P .2 (fst x0) (snd x0))) .1)) .1
+                   → separated_Type P)
+            (x0 : (nchar_to_sub
+                     (λ x0 : P .1 ∧ P .1,
+                      (O nj
+                         (fst x0 = snd x0;
+                         istrunc_paths P .2 (fst x0) (snd x0))) .1)) .1),
+            φ (u x0)) (separated_unit_coeq_Δ_coeq P)) y).
+      unfold clΔ, clδ, δ, compose in foo.
+
+      apply (transport (λ U, _ = U) foo^). clear foo.
+
+      destruct y as [[(a,b) t] r].
+      unfold clδ, δ, compose in t; simpl in t.
+      unfold dense_into_cloture, δ, compose in r. simpl in r.
+      destruct r as [π r].
+      destruct π.
+      simpl.
+      
+      
+      pose (foo := ap_ap10 (separated_unit P o (λ x : (clΔ P) .1, fst x .1)) (separated_unit P o (λ x : (clΔ P) .1, snd x .1)) φ (separated_unit_coeq_Δ_coeq P) ((a,a);t)).
+      unfold clΔ, clδ, δ, compose in foo.
+      unfold compose.
+      apply (transport (λ U, _ = U) foo). clear foo.
+      unfold separated_unit_coeq_Δ_coeq.
+      unfold ap10 at 1, path_forall at 1.
+      rewrite (eisretr apD10).
+
+      path_via (ap φ (idpath (separated_unit P a))).
+
+      apply (ap (λ u, ap φ u)).
+      symmetry.
+
+      assert (((ap pr1 (retr_kpsic_inv ((a, a); t)))) = 1).
+      Focus 1.
+      unfold retr_kpsic_inv.
+      unfold path_sigma' at 1.
+      apply projT1_path_sigma.
+
+      path_via ( 
+          ((let (a0, s) as s
+                return
+                (separated_unit P (fst (kpsic_inv s) .1) =
+                 separated_unit P (snd (kpsic_inv s) .1)) :=
+                kpsic_func ((a, a); t) in
+            let (b, p) as s0
+                return
+                (separated_unit P (fst (kpsic_inv (a0; s0)) .1) =
+                 separated_unit P (snd (kpsic_inv (a0; s0)) .1)) := s in
+            p))).
+
+     Focus 2.
+
+     unfold kpsic_func.
+
+     apply (@equiv_inj _ _ _ ( subset_is_subobject
+          (λ a0 : (P .1 → subuniverse_Type nj; T_nType_j_Type_trunc P) .1,
+           istrunc_truncation minus_one
+             (hfiber
+                (λ t0 t' : P .1, O nj (t0 = t'; istrunc_paths P .2 t0 t')) a0))
+          (separated_unit P a) (separated_unit P a))).
+     rewrite eisretr.
+
+     apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+     unfold ap10 at 1, path_forall at 1; rewrite eisretr.
+
+     simpl. apply path_forall; intro u. simpl.
+
+     apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_unique_subuniverse _ _))).
+       apply isequiv_inverse.
+     rewrite eissect.
+
+     apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_truncn_unique _ _))).
+       apply isequiv_inverse.
+     rewrite eissect.
+
+     simpl.
+
+     apply (@equiv_inj _ _ _ (isequiv_equiv_path _ _)).
+     unfold univalence_axiom.
+     rewrite eisretr. simpl. unfold equiv_path.
+
+     apply equal_equiv. unfold kpsic_func_univ_func. simpl.
+     apply (@equiv_inj _ _ _ (O_equiv nj _ _)).
+     rewrite O_rec_retr.
+
+     apply path_forall; intro v. unfold compose; simpl.
+     unfold δ. simpl.
+     rewrite r.
+
+     pose (foo := ap10 (O_rec_retr (a = a; istrunc_paths P .2 a a) (O nj (a = u; istrunc_paths P .2 a u)) (λ v0 : a = a, O_unit nj (a = u; istrunc_paths P .2 a u) (v0 ^ @ v))) 1). unfold compose in foo. simpl in foo.
+     etransitivity. exact foo.
+     apply ap.
+     rewrite concat_1p. exact 1.
+
+     assert (ap (separated_unit P) (ap snd (ap pr1 (retr_kpsic_inv ((a, a); t)))) = 1).
+     rewrite X. auto.
+
+     assert (ap (separated_unit P) (ap fst (ap pr1 (retr_kpsic_inv ((a, a); t)) ^)) = 1).
+     path_via (ap (separated_unit P) (idpath a)).
+       apply ap.
+     path_via (ap fst (idpath (a,a))).
+       apply ap.
+
+     rewrite ap_V.
+     apply (transport (λ u, u^=1) X^). auto.
+
+     assert (forall (A:Type) (a:A) (p q:a=a) (Hp : p=1) (Hq : q=1) r, p @ (r @ q) = r).
+       intros A a0 p q Hp Hq r0.
+       rewrite Hp. rewrite Hq. rewrite concat_1p. apply concat_p1.
+
+     apply X2.
+     exact X1. exact X0.
+  Qed.
+      
 
   Definition separation_reflective_subuniverse
   : subuniverse_struct (trunc_S n)

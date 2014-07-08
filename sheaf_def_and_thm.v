@@ -28,12 +28,25 @@ Variable j_is_nj : forall P, (j P).1 = (nj.(O) (P.1; IsHProp_IsTrunc P.2 n0)).1.
 Variable j_is_nj_unit : forall P x ,
                           transport idmap (j_is_nj P) (Oj_unit P x) = nj.(O_unit) (P.1; IsHProp_IsTrunc P.2 n0) x.
 
+(* Left Exactness *)
+
+Definition islex n (subU : subuniverse_struct n)
+  := forall (X Y:Trunc n) (f : X.1 -> Y.1) (y:Y.1), (O subU (existT (λ T, IsTrunc n T) (hfiber f y) (trunc_sigma X.2 (λ a, istrunc_paths (trunc_succ (H:=Y.2)) _ _)))).1.1 = {rx : (O subU X).1.1 & function_lift subU X Y f rx = O_unit subU Y y}.
+
+
+Lemma lex_compat_func (X Y:Trunc n) (f: X.1 -> Y.1) (y:Y.1)
+: forall a:{a:X.1 & f a = y}, (function_lift nj X Y f (O_unit nj _ a.1) = O_unit nj Y y).
+  intros a. simpl.
+  pose (foo := ap10 (O_rec_retr X (O nj Y) (λ x : X .1, O_unit nj Y (f x))) a.1). unfold compose in foo; simpl in foo.
+  exact (transport (λ U, O_rec X (O nj Y) (λ x : X .1, O_unit nj Y (f x)) (O_unit nj X a.1) = O_unit nj Y U) a.2 foo).
+Defined.
+
+Variable islex_nj : islex nj.
+
+Variable lex_compat : forall (X Y:Trunc n) (f: X.1 -> Y.1) (y:Y.1) (a:{a:X.1 & f a = y}),
+                       ((equiv_path _ _ (islex_nj X Y f y)) o (O_unit nj _)) a = (O_unit nj _ a.1; lex_compat_func X Y f a).
+
 Section Sheafification.
-
-  Definition islex
-    := forall (X Y:Trunc n) (f : X.1 -> Y.1) (y:Y.1), (O nj (hfiber f y ; trunc_sigma X.2 (λ a, istrunc_paths (trunc_succ (H:=Y.2)) _ _))).1.1 = {rx : (O nj X).1.1 & function_lift nj X Y f rx = O_unit nj Y y}.
-
-  Hypotheses islex_nj : islex.
 
   Definition nJ := {T : Trunc n & (nj.(O) T).1.1}.
 
@@ -658,137 +671,27 @@ Section Sheafification.
     exact T.2.
   Defined.
 
-  Definition ΔΣ (T:Trunc (trunc_S n)) := {a:T.1 & {b:T.1 & a = b}}.
-
   Definition Δ (T:Trunc (trunc_S n)) := nchar_to_sub (δ T).
-
-  Lemma Δ_is_ΔΣ T : (ΔΣ T) = (Δ T).1 .
-    unfold Δ, ΔΣ. simpl.
-    pose (foo := (Δ T).2). simpl in foo.
-    apply univalence_axiom.
-    exists ((λ x, ((x.1, x.2.1);x.2.2)) : (∃ a b : T .1, a = b) -> (∃ b : T .1 ∧ T .1, fst b = snd b)).
-    apply isequiv_adjointify with (g := (λ x, (fst x.1;(snd x.1;x.2))) : (∃ b : T .1 ∧ T .1, fst b = snd b) -> (∃ a b : T .1, a = b)).
-    - intro x. destruct x as [[x y] z]. exact 1.
-    - intro x. destruct x as [x [y z]]. exact 1.
-  Defined.
   
   Definition clδ T := pr1  o nj.(O) o (δ T).
 
   Definition clΔ T := (nchar_to_sub (clδ T)).
 
-  Definition clΔΣ (T: Trunc (trunc_S n)) := {a:T.1 & {b:T.1 & (O nj (a=b; istrunc_paths (T.2) a b)).1.1}}.
-
-  Lemma clΔ_is_clΔΣ T : (clΔΣ T) = (clΔ T).1.
-    unfold clΔΣ, clΔ, clδ, δ, compose. simpl.
-    apply univalence_axiom.
-    exists ((λ x, ((x.1, x.2.1);x.2.2)) : (∃ a b : T .1, ((O nj (a = b; istrunc_paths T .2 a b)) .1) .1) -> (∃ b : T .1 ∧ T .1, ((O nj (fst b = snd b; istrunc_paths T .2 (fst b) (snd b))) .1) .1)).
-    apply isequiv_adjointify with (g := (λ x, (fst x.1;(snd x.1;x.2))) : (∃ b : T .1 ∧ T .1, ((O nj (fst b = snd b; istrunc_paths T .2 (fst b) (snd b))) .1) .1) -> (∃ a b : T .1, ((O nj (a = b; istrunc_paths T .2 a b)) .1) .1)).
-    - intro x. destruct x as [[x y] z]. exact 1.
-    - intro x. destruct x as [x [y z]]. exact 1.
-  Defined.
-
-  Lemma dense_into_cloture_dense_eq_trunc (E:Type) (φ:E -> Trunc n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1}) (x:clA)
-  : IsTrunc n {y : (φ x.1).1 & x.2 = O_unit nj _ y}.
-    apply trunc_sigma.
-    exact (φ x.1).2.
-    intro a. apply istrunc_paths.
-    apply @trunc_succ.
-    exact (O nj (φ x.1)).1.2.
-  Defined.
-
-  Lemma sigma_sigma (A:Type) (B : A -> Type) (P : A -> Type) (Q : forall a:A, P a -> (B a) -> Type)
-  : {x : {a:A & P a} & {b : (B x.1) & (Q x.1 x.2 b)}}
-    = {x:A & {p : P x & {b : B x & Q x p b}}}.
-    apply univalence_axiom.
-
-    exists ((λ X, (X.1.1;(X.1.2;(X.2.1;X.2.2))))).
-    apply isequiv_adjointify with (g := (λ X, ((X.1;X.2.1) ; (X.2.2.1;X.2.2.2))):((∃ (x : A) (p : P x) (b : B x), Q x p b) -> (∃ (x : ∃ a : A, P a) (b : B x .1), Q x .1 x .2 b))).
-    - intro X.
-      simpl. destruct X as [X s]. simpl. destruct s as [Y s]. simpl. destruct s. simpl. exact 1.
-    - intro X.
-      simpl. destruct X as [X s]. destruct X as [X Y], s as [s t]. simpl. exact 1.
-  Qed.
-
-  Lemma dense_into_cloture_dense_eq_eq (E:Type) (φ:E -> Trunc n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
-  : A = {x:clA & {π : (φ x.1).1 & x.2 = O_unit nj _ π}}.
-
-    unfold clA.
-    pose (foo := sigma_sigma).
-    specialize (foo E (λ x, (φ x) .1) (λ e, ((O nj (φ e)) .1) .1)). simpl in foo.
-    specialize (foo (λ a, λ p, λ q, p = O_unit nj _ q)). simpl in foo.
-    rewrite foo; clear foo.
-    
-    apply univalence_axiom.
-
-    exists ((λ x, (x.1; (O_unit nj _ x.2 ; (x.2 ; 1)))) : A -> (∃ (x : E) (p : ((O nj (φ x)) .1) .1) (b : (φ x) .1),
-                                                                  p = O_unit nj (φ x) b)).
-
-    apply isequiv_adjointify with (g := (λ x, (x.1 ; x.2.2.1)) : (∃ (x : E) (p : ((O nj (φ x)) .1) .1) (b : (φ x) .1), p = O_unit nj (φ x) b) -> A).
-
-    (* exists ((λ x, ((x.1; O_unit nj _ x.2) ; (x.2; 1))): A -> (∃ (x : clA) (π : (φ x .1) .1), x .2 = O_unit nj (φ x .1) π)). *)
-    (* apply isequiv_adjointify with (g := (λ x, (x.1.1; x.2.1)) : (∃ (x : clA) (π : (φ x .1) .1), x .2 = O_unit nj (φ x .1) π) -> A). *)
-    - intro x. simpl.
-      destruct x as [e [ca [p eq]]]; simpl in *.
-      (* destruct x as [[e ca] [p eq]]. simpl in *. *)
-      (* apply @path_sigma' with (p := path_sigma' (λ e, ((O nj (φ e)) .1) .1) 1 eq^). *)
-      (* unfold path_sigma', path_sigma. unfold clA. rewrite transport_projT1_path_sigma_uncurried. *)
-
-      
-      
-      apply @path_sigma' with (p:=1). simpl.
-      apply @path_sigma' with (p:=eq^). simpl.
-
-      rewrite transport_sigma'. simpl.
-      apply @path_sigma' with (p:=1).
-      simpl.
-      destruct eq. exact 1.
-    - intro X. destruct X as [X a]. exact 1.
-  Qed.
-
-
-  (* Lemma nj_sigma_func (X Y:Trunc n) f y *)
-  (* : (O nj ({x:X.1 & f x = y} ; trunc_sigma X.2 (λ a, trunc_succ (H := istrunc_paths Y.2 _ _)))).1.1 -> {rx : (O nj X).1.1 & function_lift nj X Y f rx = O_unit nj _ y}. *)
-  (*   intro x. simpl. *)
-  (*   exists ((function_lift nj (∃ x : X .1, f x = y; trunc_sigma X .2 (λ a : X .1, trunc_succ)) X pr1) x). *)
-  (*   pose (foo := ap10 (reflect_functoriality nj (∃ x0 : X .1, f x0 = y; trunc_sigma X .2 (λ a : X .1, trunc_succ (H:=istrunc_paths Y.2 _ _))) X Y f pr1) x). *)
-  (*   etransitivity; try exact foo. *)
-  (*   unfold function_lift. simpl in *. *)
-  (*   apply (@ap10 _ _ _ (λ _, O_unit nj Y y)). *)
-  (*   apply (@equiv_inj _ _ _ (O_equiv nj (∃ x0 : X .1, f x0 = y; trunc_sigma X .2 (λ a : X .1, trunc_succ)) *)
-  (*    (O nj Y))). *)
-  (*   rewrite O_rec_retr. unfold compose; simpl in *. *)
-  (*   apply path_forall; intro u. apply ap. exact u.2. *)
-  (* Defined. *)
-
-
-  (* Lemma nj_sigma_func (X Y:Trunc n) f y *)
-  (* : (O nj ({x:X.1 & f x = y} ; trunc_sigma X.2 (λ a, trunc_succ (H := istrunc_paths Y.2 _ _)))).1.1 -> {rx : (O nj X).1.1 & function_lift_modal X (O nj Y) ((O_unit nj _ ) o f) rx = O_unit nj _ y}. *)
-  (*   intro x. *)
-  (*   unfold function_lift_modal, compose. simpl. *)
-  (*   exists ((function_lift nj (∃ x : X .1, f x = y; trunc_sigma X .2 (λ a : X .1, trunc_succ)) X pr1) x). *)
-  (*     pose (foo := ap10 (reflect_functoriality nj (∃ x0 : X .1, f x0 = y; trunc_sigma X .2 (λ a : X .1, trunc_succ (H:=istrunc_paths Y.2 _ _))) X Y f pr1) x). *)
-  (*     etransitivity; try exact foo. clear foo. *)
-  (*     unfold function_lift. simpl. *)
-  (*     apply (@ap10 _ _ _ (λ _, O_unit nj Y y)). *)
-  (*     apply (@equiv_inj _ _ _ (O_equiv nj (∃ x0 : X .1, f x0 = y; trunc_sigma X .2 (λ a : X .1, trunc_succ)) (O nj Y))). *)
-  (*     rewrite O_rec_retr. apply path_forall; intro u. unfold compose. apply ap. exact u.2. *)
-  (* Defined. *)
-
-  Lemma equal_sigma_types (A:Type) (P Q: A -> Type) (e:P = Q)
-  : {a:A & P a} = {a:A & Q a}.
-    destruct e. exact 1.
-  Defined.
-
   Lemma equal_hfibers (A B:Type) (r:A=B) (f g:A -> B) e (p : f = equiv_path _ _ r) (q : g = equiv_path _ _ r)
-  : {a:A & f a = g e} = {a:A & a = e}.
-    (* apply equal_sigma_types. *)
-    destruct r. simpl in *.
-    assert (g = idmap).
-    apply path_forall; intro x. exact (ap10 q x).
-    destruct p. destruct q. rewrite X.
-    exact 1.
-  Defined.
+  : {a:A & a = e} <~> {a:A & f a = g e}.
 
+    exists (λ x, (x.1 ; (ap f x.2) @ (ap10 (p@q^) e))).
+    destruct r.
+    assert (f=idmap).
+    apply path_forall; intro x. exact (ap10 p x).
+    destruct p. destruct q.
+    rewrite X. simpl.
+    apply @isequiv_adjointify with  (g:= ( λ x, (x.1; x.2))).
+    - intro x. simpl. hott_simpl. apply eta_sigma.
+    - intro x. simpl. hott_simpl. apply eta_sigma.
+  Defined.
+  
+(* In modalities *)
   Definition O_invol_ : forall T, O nj T = (O nj) ( pr1 ((O nj) T))
     := λ T, (O_modal (O nj T)).
 
@@ -809,16 +712,18 @@ Section Sheafification.
     simpl in rew. unfold projT1_path. rewrite rew; clear rew.
     unfold univalence_axiom. rewrite eisretr. simpl. exact 1.
   Defined.
+(* End In modalities *)
         
   Lemma dicde_l (E:Type) (φ:E -> Trunc n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1}) (e:clA)
   : (∃ rx : ((O nj (φ e .1)) .1) .1,
+       rx =
+      e.2) =(∃ rx : ((O nj (φ e .1)) .1) .1,
        O_rec (φ e .1) (O nj (O nj (φ e .1)) .1)
              (λ x : (φ e .1) .1,
                     O_unit nj (O nj (φ e .1)) .1 (O_unit nj (φ e .1) x)) rx =
-       O_unit nj (O nj (φ e .1)) .1 e .2) =
-    (∃ rx : ((O nj (φ e .1)) .1) .1,
-       rx =
-      e.2).
+       O_unit nj (O nj (φ e .1)) .1 e .2)
+    .
+    apply univalence_axiom.
     assert (foo := @equal_hfibers
                    ((O nj (φ e .1)).1.1)
                    ((O nj (O nj (φ e .1)) .1).1.1)
@@ -830,29 +735,51 @@ Section Sheafification.
     apply foo. clear foo.
     - simpl.
       pose (bar := O_rec_sect (φ e .1) (O nj (O nj (φ e .1)) .1) (O_unit nj _)). unfold compose in bar. simpl in bar.
-      unfold O_rec, compose; simpl. rewrite bar. simpl. clear bar.
-      apply OO_unit_idmap.
+      unfold O_rec, compose; simpl.
+      exact (bar @ OO_unit_idmap _).
     - apply OO_unit_idmap.
-  Qed.
-
+  Defined.
+    
+  Lemma dicde_ll
+        (E : Type)
+        (φ : E → Trunc n)
+        (A := ∃ e : E, (φ e) .1 : Type)
+        (clA := ∃ e : E, ((O nj (φ e)) .1) .1 : Type)
+        (a : ∃ e : E, ((O nj (φ e)) .1) .1)
+        (x : ∃ π : (φ a .1) .1, O_unit nj (φ a .1) π = a .2)
+        (π : ∃ π : (φ a .1) .1, O_unit nj (φ a .1) π = a .2)
+        (π' : ∃ π : (φ a .1) .1, O_unit nj (φ a .1) π = a .2)
+  : equiv_path _ _ (dicde_l φ a) (a .2; 1) =
+    (O_unit nj (φ a .1) π' .1;
+     lex_compat_func (φ a .1) (O nj (φ a .1)) .1 (O_unit nj (φ a .1)) π').
+    (* simpl. *)
+    (* apply (moveR_transport_V idmap (dicde_l φ a)). *)
+    unfold dicde_l.   
+    unfold univalence_axiom.
+    rewrite eisretr. simpl. hott_simpl.
+    apply @path_sigma' with (p := π'.2^). simpl. destruct π'. simpl. destruct p. simpl.
+    unfold lex_compat_func. simpl.
+    apply ap10_O_retr_sect.
+  Defined.
+    
   Lemma path_sigma_eta (A : Type) (P : A → Type) (u : ∃ x, P x)
   : path_sigma P u (u.1;u.2) 1 1 = (eta_sigma u)^.
   destruct u. simpl. exact 1.
   Defined.
 
-
   Lemma dense_into_cloture_dense_eq (E:Type) (φ:E -> Trunc n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
   : is_dense_eq (λ e:clA, ({π : (φ e.1).1 & O_unit nj _ π = e.2} ; trunc_sigma (φ e .1) .2
               (λ a : (φ e .1) .1,
                istrunc_paths (trunc_succ (H:=(O nj (φ e.1)).1.2)) (O_unit nj (φ e .1) a) e .2))).
-    intro e. 
+    intro e.
+    assert (rew := ((islex_nj (φ e .1) (O nj (φ e .1)).1 (O_unit nj _) e.2) @ (dicde_l φ e)^)).
+    (* path_via ((∃ rx : ((O nj (φ e .1)) .1) .1, rx = e .2)). *)
     apply univalence_axiom.
-    assert (foo := islex_nj (φ e .1) (O nj (φ e .1)).1 (O_unit nj _) e.2).
-    apply (transport (λ U, (∃ e' : clA, e = e') <~> U) (foo @ dicde_l φ e) ^).
-    clear foo.
+    apply (transport (λ U, (∃ e' : clA, e = e') <~> U) (islex_nj (φ e .1) (O nj (φ e .1)).1 (O_unit nj _) e.2)^).
+    apply (transport (λ U, (∃ e' : clA, e = e') <~> U) (dicde_l φ e)).
     
-    exists (λ x:(∃ e' : clA, e = e'), existT (λ u, u = e.2) e.2 1).
-    apply @isequiv_adjointify with (g:= λ x, ((e.1;x.1); path_sigma _ e (e.1;x.1) 1 x.2^)).
+    exists ((λ x:(∃ e' : clA, e = e'), existT (λ u, u = e.2) e.2 1)).
+    apply @isequiv_adjointify with (g:= (λ x, ((e.1;x.1); path_sigma _ e (e.1;x.1) 1 x.2^))).
 
     - intros [x p]. destruct p. exact 1.
     - intros [x p]. destruct p. simpl.
@@ -867,7 +794,14 @@ Section Sheafification.
       rewrite concat_p1.
       rewrite ap_const. hott_simpl.
   Defined.
-      
+
+  Lemma transport_equiv (A: Type) (f g:A -> Type) (x y: A) (p: x=y) (q: f x <~> g x)
+  : transport (λ a:A, f a <~> g a) p q
+    = (equiv_compose' (equiv_path _ _ (ap g p)) (equiv_compose' q (equiv_inverse (equiv_path _ _ (ap f p))))).
+    path_induction.
+    destruct q. apply equal_equiv. simpl. done.
+  Defined.
+
   Lemma dense_into_cloture_dense_diag (E:Type) (φ:E -> Trunc n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
   : is_dense_diag (dense_into_cloture_dense_eq φ).
     intros x p.
@@ -875,31 +809,30 @@ Section Sheafification.
     apply path_forall; intro y.
     unfold univalence_axiom. rewrite eisretr.
     simpl.
-
-    SearchAbout transport.
-    
-    pose (foo := @transport_arrow).
-    specialize (foo Type). 
-
-    (* rewrite (inv_pp). *)
-    (* rewrite (transport_pp). *)
-    (* apply (moveR_transport_V). *)
-
-    
     destruct x as [a x]. simpl in x. simpl in p. destruct p as [a' q]. destruct a' as [a' π]. simpl in q.
     destruct q. simpl.
     destruct y as [[a' π'] q]. simpl in *. destruct q. simpl in *.
-
     unfold incl_Aeq_Eeq. simpl.
-
-    SearchAbout transport.
-
-    
+    rewrite <- transport_pp.
+    rewrite transport_equiv. simpl.
+    rewrite ap_idmap.
+    rewrite ap_const.
     unfold compose.
-    apply path_forall; intro y. destruct y as [[a' π'] q]. simpl in *. destruct q. simpl in *.
-    apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_equiv_path _ _))).
-    unfold incl_Aeq_Eeq. simpl. unfold dense_into_cloture_dense_eq. simpl.
-  Admitted.
+    simpl.
+    (* rewrite inv_pp. *)
+    rewrite transport_pp.
+
+    pose (foo := lex_compat (φ a .1) (O nj (φ a .1)).1 (O_unit nj (φ a .1))). unfold compose, equiv_path in foo; simpl in foo.
+    specialize (foo a.2 π'). simpl in foo.
+    unfold hfiber in foo. simpl in foo.
+    (* assert (bar := foo..1); simpl in bar. *)
+
+    apply (moveR_transport_V idmap (islex_nj (φ a .1) (O nj (φ a .1)) .1 (O_unit nj (φ a .1)) a .2) (transport idmap (dicde_l φ a)  (a .2; 1))).
+
+    apply (transport (λ U, transport idmap (dicde_l φ a) (a .2; 1) = U) foo^).
+    clear foo.
+    apply dicde_ll. exact π. exact π'.
+  Qed.
   
   Definition dense_into_cloture (E:Type) (φ:E -> Trunc n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
   : EnJ clA.

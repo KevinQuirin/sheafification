@@ -24,6 +24,8 @@ Definition n := sheaf_def_and_thm.n.
 Definition nj := sheaf_def_and_thm.nj.
 Definition j_is_nj := sheaf_def_and_thm.j_is_nj.
 Definition j_is_nj_unit := sheaf_def_and_thm.j_is_nj_unit.
+Definition islex_nj := sheaf_def_and_thm.islex_nj.
+Definition lex_compat := sheaf_def_and_thm.lex_compat.
 
 Section Type_to_separated_Type.
 
@@ -571,17 +573,27 @@ Section Type_to_separated_Type.
     unfold compose; simpl.
       repeat apply ap. exact (retr_kpsic_inv x).
   Defined.
-  
+
+  Lemma separated_unit_coeq T :
+    is_coequalizer (existT _ (separated_unit T) (Im_coequalizes_kernel_pair _)).
+    
+    apply Im_is_coequalizer_kernel_pair.
+  Defined.
+
   Lemma separated_unit_coeq_Δ T :
     is_coequalizer (existT _ (separated_unit T) (separated_unit_coeq_Δ_coeq T)).
   Proof.
     intro S. unfold compose. simpl.
-    assert ((∃ m : T .1 → S, (λ x0 : (clΔ T) .1, m (fst x0 .1)) = (λ x0 : (clΔ T) .1, m (snd x0 .1))) -> (separated_Type T → S)).
-      intros [m p] [b h]. simpl in *.
-      unfold clδ, δ, compose in p; simpl in p.
-     
-    
-        
+
+    assert (((∃ m : T .1 → S, (λ x0 : (clΔ T) .1, m (fst x0 .1)) = (λ x0 : (clΔ T) .1, m (snd x0 .1))) -> (separated_Type T → S))).
+
+    intros [m p] [b h]. simpl in *. 
+      
+    pose (ff := (λ m, λ b, (equiv_inv (IsEquiv := separated_unit_coeq T S)) (m.1; path_forall _ _ (λ x, (ap10 m.2 ((x.1,x.2.1); (transport idmap (ap10 x.2.2 x.2.1)..1..1^ (O_unit nj (x.2.1 = x.2.1; istrunc_paths T .2 x.2.1 x.2.1) 1)))))) b) : ((∃ m : T .1 → S, (λ x0 : (clΔ T) .1, m (fst x0 .1)) = (λ x0 : (clΔ T) .1, m (snd x0 .1))) -> (separated_Type T → S))).
+
+    (* apply isequiv_adjointify with (g:= ff). *)
+   
+     aaa
   Admitted.
 
   Definition sep_eq_inv_Δ (P : Trunc (trunc_S n)) (Q :{T : Trunc (trunc_S n) & separated T})

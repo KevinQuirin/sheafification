@@ -886,6 +886,35 @@ Section Reflective_Subuniverse.
     apply path_forall; intro v.
     apply transport_arrow_space.
   Qed.
-  
+
+  Lemma ap10_O_retr_sect (P:Trunc n) (Q:subuniverse_Type) f x0
+  : (ap10
+       (O_rec_sect P Q
+                   f) (O_unit subU P x0)) =
+    (ap10
+       (O_rec_retr P Q
+                   (λ x1 : P.1, f (O_unit subU P x1))) x0).
+
+    unfold O_rec_retr, O_rec_sect. simpl.
+    pose (foo := O_equiv subU P Q).
+    pose (adj := eisadj _ (IsEquiv := foo)).
+    specialize (adj f). simpl in adj. unfold compose in adj. unfold compose.
+
+    path_via (ap10 (ap
+                      (λ (f : ((O subU P) .1) .1 → (Q .1) .1) (x : P .1), f (O_unit subU P x))
+                      (eissect
+                         (λ (f : ((O subU P) .1) .1 → (Q .1) .1) 
+                            (x : P .1), f (O_unit subU P x)) f)) x0).
+
+    pose (rew := @ap_ap10_L). unfold compose in rew. rewrite rew. exact 1.
+    apply (ap (λ u, ap10 u x0) (x:=(ap
+                                      (λ (f0 : ((O subU P) .1) .1 → (Q .1) .1) (x : P .1), f0 (O_unit subU P x))
+                                      (eissect
+                                         (λ (f0 : ((O subU P) .1) .1 → (Q .1) .1) (x : P .1),
+                                          f0 (O_unit subU P x)) f))) (y:=(eisretr
+                                                                          (λ (f0 : ((O subU P) .1) .1 → (Q .1) .1) (x : P .1), f0 (O_unit subU P x))
+                                                                          (λ x1 : P .1, f (O_unit subU P x1))))).
+    exact adj^.
+  Defined.
  
 End Reflective_Subuniverse. 

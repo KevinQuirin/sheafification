@@ -6,12 +6,15 @@ Set Universe Polymorphism.
 Global Set Primitive Projections.
 Set Implicit Arguments.
 
+Local Open Scope path_scope.
+Local Open Scope equiv_scope.
+Local Open Scope type_scope.
+
 (* we assume functional extensionality and univalence *)
 
 Instance univalence_equiv : Univalence. 
-Admitted.
 
-Definition univalence_axiom T T' : (T <~> T')%equiv -> T = T' := 
+Definition univalence_axiom T T' : (T <~> T') -> T = T' := 
   @equiv_inv _ _ _ (isequiv_equiv_path T T').
 
 Definition univalence_transport : forall (T T' : Type) (f : T -> T')

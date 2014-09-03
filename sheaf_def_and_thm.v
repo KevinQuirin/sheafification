@@ -1,6 +1,6 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
-Require Import equiv truncation univalence sub_object_classifier limit_colimit modalities.
+Require Import lemmas epi_mono equiv truncation univalence sub_object_classifier limit_colimit modalities.
 Require Import sheaf_base_case.
 
 Set Universe Polymorphism.
@@ -56,7 +56,7 @@ Section Sheafification.
 
   Definition eq_dense_1 (E:Type) (χ:E -> Trunc n) (x:{e:E & (χ e).1})
   : {e':{e:E & (χ e).1} & x.1 = e'.1} <~> (χ x.1).1.
-    exists (λ X, (transport (λ u, (χ u).1) (X.2)^ X.1.2)).
+    exists (λ X:(∃ e' : ∃ e : E, (χ e) .1, x .1 = e' .1), (transport (λ u, (χ u).1) (X.2)^ X.1.2)).
     apply isequiv_adjointify with (g := (λ X, ((x.1;X);1)) : ((χ x.1).1 -> {e':{e:E & (χ e).1} & x.1 = e'.1})).
     - intro u. exact 1.
     - intro u. destruct u as [[e' e] p]. simpl in *. destruct p. simpl. exact 1.
@@ -419,7 +419,7 @@ Section Sheafification.
     path_via ((ap10 p (x; v))^..1..1).
     apply ap. apply ap.
     apply (ap10_V p (x;v)).
-    unfold projT1_path.
+    unfold pr1_path.
     rewrite ap_V. rewrite ap_V. exact 1.
     
     apply (transport (λ U, O_rec (χ x)
@@ -460,7 +460,7 @@ Section Sheafification.
       apply path_forall; intro x.
 
       unfold nTjTiseparated_eq_inv.
-      rewrite ap_ap10_L. unfold ap10 at 1, path_forall; rewrite eisretr.
+      rewrite ap10_ap_precompose. unfold ap10 at 1, path_forall; rewrite eisretr.
 
       apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_unique_subuniverse _ _))). apply isequiv_inverse.
       apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_truncn_unique _ _))). apply isequiv_inverse. 
@@ -552,7 +552,7 @@ Section Sheafification.
     apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
     unfold ap10 at 2, path_forall at 2; rewrite eisretr.
     apply path_forall; intro a.
-    rewrite ap_ap10_L.
+    rewrite ap10_ap_precompose.
     unfold ap10, path_forall; rewrite eisretr. exact 1.
   Qed.
 
@@ -593,12 +593,12 @@ Section Sheafification.
       apply (@equiv_inj _ _ _ (isequiv_apD10 _ _ _ _)); unfold path_forall at 1; rewrite eisretr.
       apply path_forall; intro a.
 
-      rewrite <- (@ap_ap10_L E
+      rewrite <- (@ap10_ap_precompose (∃ b : E, (χ b) .1)
+                             E
                              (((B a) .1) .1)
-                             (∃ b : E, (χ b) .1)
+                             pr1
                              (λ v, f v a)
                              (λ v, g v a)
-                             pr1
                              ((let (equiv_inv, eisretr, eissect, _) :=
                                    fst (B a) .2 E χ (λ v : E, f v a) (λ v : E, g v a) in
                                equiv_inv)
@@ -632,7 +632,7 @@ Section Sheafification.
       unfold ap10 at 1;
         rewrite eisretr.
       apply path_forall; intro t.
-      rewrite ap_ap10_L.
+      rewrite ap10_ap_precompose.
       unfold ap10; rewrite eisretr. exact 1.
       exact (apD10 X x).
   Defined.
@@ -680,7 +680,7 @@ Section Sheafification.
   Lemma equal_hfibers (A B:Type) (r:A=B) (f g:A -> B) e (p : f = equiv_path _ _ r) (q : g = equiv_path _ _ r)
   : {a:A & a = e} <~> {a:A & f a = g e}.
 
-    exists (λ x, (x.1 ; (ap f x.2) @ (ap10 (p@q^) e))).
+    exists (λ x:(∃ a : A, a = e), (x.1 ; (ap f x.2) @ (ap10 (p@q^) e))).
     destruct r.
     assert (f=idmap).
     apply path_forall; intro x. exact (ap10 p x).
@@ -709,7 +709,7 @@ Section Sheafification.
                                                                                                  {|
                                                                                                    equiv_fun := O_unit nj (O nj T) .1;
                                                                                                    equiv_isequiv := O_modal_equiv (O nj T) |})). 
-    simpl in rew. unfold projT1_path. rewrite rew; clear rew.
+    simpl in rew. unfold pr1_path. rewrite rew; clear rew.
     unfold univalence_axiom. rewrite eisretr. simpl. exact 1.
   Defined.
 (* End In modalities *)
@@ -779,7 +779,7 @@ Section Sheafification.
     apply (transport (λ U, (∃ e' : clA, e = e') <~> U) (dicde_l φ e)).
     
     exists ((λ x:(∃ e' : clA, e = e'), existT (λ u, u = e.2) e.2 1)).
-    apply @isequiv_adjointify with (g:= (λ x, ((e.1;x.1); path_sigma _ e (e.1;x.1) 1 x.2^))).
+    apply @isequiv_adjointify with (g:= (λ x:(∃ rx : ((O nj (φ e .1)) .1) .1, rx = e .2), ((e.1;x.1); path_sigma _ e (e.1;x.1) 1 x.2^))).
 
     - intros [x p]. destruct p. exact 1.
     - intros [x p]. destruct p. simpl.

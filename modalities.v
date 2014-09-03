@@ -571,12 +571,12 @@ Section Reflective_Subuniverse.
       intro a.
 
       unfold f. unfold g' in eqf; simpl in eqf.
-      pose (p := projT1_path (eqf a)). simpl in p.
-      pose (q := projT2_path (eqf a)). simpl in q.
+      pose (p := pr1_path (eqf a)). simpl in p.
+      pose (q := pr2_path (eqf a)). simpl in q.
 
       rewrite <- q. 
       assert ( (eq''' (η a)) =  (eqf a) ..1).
-        unfold eq''', projT1_path, eqf, q, p, f, eq''', eq'', f'', g'', eqf, f', g', Z, η in *; simpl in *.
+        unfold eq''', pr1_path, eqf, q, p, f, eq''', eq'', f'', g'', eqf, f', g', Z, η in *; simpl in *.
         rewrite universality_unit. unfold path_forall. rewrite eisretr. exact idpath.
       exact (ap (λ v, transport (λ u, ((B u) .1) .1) v (f' (η a)) .2) X0).
     - intros H A B.
@@ -906,7 +906,7 @@ Section Reflective_Subuniverse.
                          (λ (f : ((O subU P) .1) .1 → (Q .1) .1) 
                             (x : P .1), f (O_unit subU P x)) f)) x0).
 
-    pose (rew := @ap_ap10_L). unfold compose in rew. rewrite rew. exact 1.
+    pose (rew := @ap10_ap_precompose). unfold compose in rew. rewrite rew. exact 1.
     apply (ap (λ u, ap10 u x0) (x:=(ap
                                       (λ (f0 : ((O subU P) .1) .1 → (Q .1) .1) (x : P .1), f0 (O_unit subU P x))
                                       (eissect

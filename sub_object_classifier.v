@@ -1,7 +1,7 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations.
 
-Require Import equiv truncation univalence.
+Require Import epi_mono equiv truncation univalence.
 
 Set Universe Polymorphism.
 Global Set Primitive Projections.
@@ -92,7 +92,7 @@ Definition terminal A B (f : A -> B) : A -> {A' : Type & A'} :=
 
 Definition subobject_diagram A B (f : A -> B) : 
   pr1 (P:=idmap) o terminal f = sub_to_char (A;f) o f.
-  apply functional_extensionality_dep. intro a. reflexivity.
+  apply path_forall; intro a. unfold compose, sub_to_char; simpl. exact 1.
 Defined.
 
 Definition nsub_to_char n B : {A : Type & {f : A -> B & forall b, IsTrunc n (hfiber f b)}} -> B -> Trunc n :=
@@ -192,7 +192,7 @@ Definition nterminal n A B (f : {f : A -> B & forall b, IsTrunc n (hfiber f b)})
 
 Definition nsubobject_diagram n A B (f : {f : A -> B & forall b, IsTrunc n (hfiber f b)}) : 
   pr1 (P:=_) o nterminal n f = nsub_to_char n (A;f) o (f.1).
-  apply path_forall; intro a. reflexivity.
+  apply path_forall; intro a. unfold compose, nsub_to_char; simpl. reflexivity.
 Defined.
 
 Definition fibers_composition_f A B C (f : A -> B) (g : B -> C) (c : C) : hfiber (g o f) c -> {w : hfiber g c & hfiber f (w.1)} := λ a, ( (f (a.1) ; a.2) ; (a.1 ; idpath )).

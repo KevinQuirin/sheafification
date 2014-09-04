@@ -63,3 +63,8 @@ Lemma isequiv_ap10 : forall (A B: Type) f g, IsEquiv (@ap10 A B f g).
   intros A B f g.
   apply isequiv_apD10.
 Defined.
+
+Lemma ap_conjug_ap10 (A B:Type) (f g : A -> B) φ (r : f = g) (p : forall x, φ x = x) x
+: (ap f (p x))^ @ (ap10 r (φ x)) @ (ap g (p x)) = ap10 r x.
+  destruct r. simpl. rewrite concat_p1. apply concat_Vp.
+Qed.

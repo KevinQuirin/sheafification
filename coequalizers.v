@@ -100,6 +100,159 @@ Section Coequalizer_universal_property.
   
 End Coequalizer_universal_property.
 
+Section CoequalizersTransport.
+  
+  Lemma coequalizer_transport_end
+          (A B X Q:Type)
+          (f g:A -> B)
+          (pp : Q = X)
+          (p := (equiv_path _ _ pp))
+          (n : (∃ n : B → Q, n o f = n o g))
+          (n_coeq : is_coequalizer n)
+          (m : (∃ m : B → X, m o f = m o g))
+          (mn_p : m.1 = p o n.1)
+          (compat : transport (λ U, U o f = U o g) mn_p m.2 = ((ap (λ u, p o u) n.2)))
+  : @is_coequalizer A B f g X m.
+  Proof.
+    destruct pp; simpl in *.
+    assert (X : m=n).
+      apply @path_sigma with (p := mn_p).
+      rewrite ap_idmap in compat. exact compat.
+    destruct X.
+    exact n_coeq.
+  Qed.
+
+  Lemma coequalizer_transport_source_comm
+        (A B X Q:Type)
+        (f g:A -> B)
+        (φ Ɣ:X -> B)
+        (p : X <~> A)
+        (m : (∃ m : B → Q, m o f = m o g))
+        (eq1 : φ o p^-1 = f)
+        (eq2 : Ɣ o p^-1 = g)
+  : m.1 o φ = m.1 o Ɣ .
+    destruct m as [m cm]; simpl in *.
+    destruct p as [p ep]; destruct ep as [q retr sect adj]; simpl in *.
+    apply path_forall; intro x.
+    path_via ((m o φ o q o p) x).
+    unfold compose; simpl. repeat apply ap. exact (sect x)^.
+    path_via ((m o Ɣ o q o p) x).
+    unfold compose; simpl. generalize (p x); intro y. 
+    exact ((ap m (ap10 eq1 y)) @ (ap10 cm y) @ (ap m (ap10 eq2 y))^).
+
+    unfold compose; simpl. repeat apply ap; apply sect.
+  Defined.
+
+    
+  Lemma coequalizer_transport_source
+        (A B X Q:Type)
+        (f g:A -> B)
+        (φ Ɣ:X -> B)
+        (p : X <~> A)
+        (m : (∃ m : B → Q, m o f = m o g))
+        (m_coeq : is_coequalizer m)
+        (eq1 : φ o p^-1 = f)
+        (eq2 : Ɣ o p^-1 = g)
+  : @is_coequalizer X B φ Ɣ Q (m.1; coequalizer_transport_source_comm p m eq1 eq2).
+    destruct m as [m cm]; simpl in *.
+    pose (oadj := @other_adj _ _ p (equiv_isequiv p)).
+    assert (Eq : IsEquiv p^-1) by apply isequiv_inverse.
+    assert (Ep : IsEquiv p) by exact (equiv_isequiv p).
+      
+    destruct p as [p ep]; destruct ep as [q retr sect adj]; simpl in *.
+
+    destruct eq1; destruct eq2. simpl in *.
+    assert (rew : (λ x : X,
+                   ap m (ap φ (sect x)^) @
+                      (((1 @ ap10 cm (p x)) @ 1) @ ap m (ap Ɣ (sect x))))
+            =
+            (λ x : X,
+                   (ap (m o φ) (sect x)^) @
+                      ((ap10 cm (p x)) @ (ap (m o Ɣ) (sect x))))).
+    apply path_forall; intro x; hott_simpl.
+    repeat rewrite ap_compose; exact 1.
+    apply (transport (λ U, is_coequalizer (m; path_forall _ _ U)) rew^); clear rew.
+
+    intro Y. specialize (m_coeq Y).
+    destruct m_coeq as [invc retrc sectc _]. simpl in *.
+
+    apply @isequiv_adjointify with (g := λ n, invc (n.1; (ap (λ u, u o q) n.2))).
+
+    - intros [n cn]. simpl. unfold Sect in retrc, sectc.
+      specialize (retrc (n;(ap (λ u, u o q) cn))). simpl in *.
+      apply @path_sigma' with (p:= retrc..1). simpl.
+      
+      assert (Eapq : IsEquiv (ap (x := n o φ) (y := n o Ɣ) (λ u : X → Y, u o q))) by
+          apply (@isequiv_ap _ _ (λ u : X → Y, u o q) (isequiv_precompose q) (n o φ) (n o Ɣ)).
+
+      apply (@equiv_inj _ _ _ Eapq).
+      etransitivity; try exact retrc..2.
+      simpl.
+
+      pose (foo := @ap_transport (B -> Y)
+                                 (λ m0 : B → Y, m0 o φ = m0 o Ɣ)
+                                 (λ m0 : B → Y, m0 o (φ o q) = m0 o (Ɣ o q))
+                                 (invc (n; ap (λ u : X → Y, u o q) cn) o m)
+                                 n
+                                 (retrc..1)
+                                 (λ x, (ap (x := x o φ) (y := x o Ɣ) (λ u : X → Y, u o q)))
+                                 (ap (λ u : X → Q, invc (n; ap (λ u0 : X → Y, u0 o q) cn) o u)
+                                     (path_forall (m o φ) (m o Ɣ)
+                                                  (λ x : X,
+                                                         ap (m o φ) (sect x)^ @ (ap10 cm (p x) @ ap (m o Ɣ) (sect x)))))).
+      etransitivity; try exact foo. clear foo.
+      apply ap.
+
+      set (foo := invc (n; ap (λ u0 : X → Y, u0 o q) cn)).
+
+      apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+      apply path_forall; intro x.
+
+      apply (transport (λ U, U = _) (ap10_ap_precompose q (ap (λ u : X → Q, foo o u)
+           (path_forall (m o φ) (m o Ɣ)
+              (λ x0 : X,
+               ap (m o φ) (sect x0)^ @
+               (ap10 cm (p x0) @ ap (m o Ɣ) (sect x0))))) x)^).
+      rewrite ap10_ap_postcompose.
+
+      unfold ap10 at 1, path_forall; rewrite eisretr.
+
+      apply (transport (λ U, _ = U) (ap10_ap_postcompose foo cm x)^).
+      apply ap.
+
+      unfold Sect in *.
+
+      repeat rewrite (oadj x). rewrite ap_V. repeat rewrite <- ap_compose.
+      rewrite concat_p_pp.
+      exact (@ap_conjug_ap10 A Q (m o φ o q) (m o Ɣ o q) (p o q) cm retr x).
+    - intro x. simpl. unfold Sect in retrc, sectc. specialize (sectc x).
+      simpl.
+      assert ((ap (λ u : X → Y, u o q)
+       (ap (λ u : X → Q, x o u)
+          (path_forall (m o φ) (m o Ɣ)
+             (λ x0 : X,
+              ap (m o φ) (sect x0)^ @ (ap10 cm (p x0) @ ap (m o Ɣ) (sect x0)))))) = ap (λ u : A → Q, x o u) cm).
+      apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+      apply path_forall; intro u.
+
+      rewrite ap10_ap_precompose.
+      rewrite ap10_ap_postcompose.
+      unfold ap10 at 1, path_forall; rewrite eisretr.
+      apply (transport (λ U, _ = U) (ap10_ap_postcompose x cm u)^).
+      apply ap.
+      
+      repeat rewrite (oadj u). rewrite ap_V. repeat rewrite <- ap_compose.
+      rewrite concat_p_pp.
+      exact (@ap_conjug_ap10 A Q (m o φ o q) (m o Ɣ o q) (p o q) cm retr u).
+      apply (transport (λ U, invc (x o m; U) = x) X0^).
+      exact sectc.
+  Qed.
+
+        
+      
+  
+End CoequalizersTransport.
+
 Section CoequalizersEpimorphisms.
 
   (** Coequalizers are epimorphisms *)
@@ -202,46 +355,27 @@ Section CoequalizersEpimorphisms.
     exact f_epi.
   Qed.
 
-  Theorem coequalizer_transport
-          (A B X Q:Type)
-          (f g:A -> B)
-          (pp : Q = X)
-          (p := (equiv_path _ _ pp))
-          (n : (∃ n : B → Q, n o f = n o g))
-          (n_coeq : is_coequalizer n)
-          (m : (∃ m : B → X, m o f = m o g))
-          (mn_p : m.1 = p o n.1)
-          (compat : transport (λ U, U o f = U o g) mn_p m.2 = ((ap (λ u, p o u) n.2)))
-  : @is_coequalizer A B f g X m.
-
-    destruct pp; simpl in *.
-    assert (X : m=n).
-      apply @path_sigma with (p := mn_p).
-      rewrite ap_idmap in compat. exact compat.
-    destruct X.
-    exact n_coeq.
-  Qed.
-
   Theorem epi_coeq_kernel_pair (C B:Type) (f:C -> B) (f_epi : is_epi f)
   : is_coequalizer (f ; epi_coeq_kernel_pair_comm f).
-    pose (pp := epi_coeq_kernel_pair_eq f_epi).
-    pose (foo := @coequalizer_transport (kernel_pair f) C B (coequalizer (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1)) (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1) pp).
-    simpl in foo.
-    specialize (foo (coeq (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1);
-                     path_forall _ _ (@pp_coeq _ _ (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1)))).
-    simpl in foo.
-    specialize (foo (coequalizer_is_coequalizer (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1))).
-    simpl in foo.
-    specialize (foo (f; epi_coeq_kernel_pair_comm f)).
-    simpl in foo.
+    (* pose (pp := epi_coeq_kernel_pair_eq f_epi). *)
+    (* pose (foo := @coequalizer_transport (kernel_pair f) C B (coequalizer (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1)) (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1) pp). *)
+    (* simpl in foo. *)
+    (* specialize (foo (coeq (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1); *)
+    (*                  path_forall _ _ (@pp_coeq _ _ (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1)))). *)
+    (* simpl in foo. *)
+    (* specialize (foo (coequalizer_is_coequalizer (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1))). *)
+    (* simpl in foo. *)
+    (* specialize (foo (f; epi_coeq_kernel_pair_comm f)). *)
+    (* simpl in foo. *)
 
-    eapply foo.
+    (* eapply foo. *)
 
-    assert (f = transport idmap (pp^)^
-             o coeq (λ x : kernel_pair f, x.1) (λ x : kernel_pair f, (x.2).1)).
-    rewrite inv_V. unfold pp. 
+    (* assert (f = transport idmap (pp^)^ *)
+    (*          o coeq (λ x : kernel_pair f, x.1) (λ x : kernel_pair f, (x.2).1)). *)
+    (* rewrite inv_V. unfold pp.  *)
 
-    apply path_forall; intro w. unfold compose; simpl.
+    (* apply path_forall; intro w. unfold compose; simpl. *)
+  Admitted.
     
 
-End CoequalizersEpimorphisms.
+End CoequalizersEpimorphisms. 

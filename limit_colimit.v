@@ -19,7 +19,7 @@ Section Pullback.
 
   Definition pullback_inj : (S -> pullback f g) -> 
                             pullback (fun m : S -> A => f o m) (fun n : S -> B => g o n) :=
-    fun h => (pr1 (P:=_) o h; ((fun x => pr1 (pr2 x)) o h ; 
+    fun h => (pr1 o h; ((fun x => pr1 (pr2 x)) o h ; 
                               path_forall _ _ (fun s => pr2 (pr2 (h s))))).
 
 

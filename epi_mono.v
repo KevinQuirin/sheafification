@@ -21,8 +21,8 @@ Section Embeddings.
     
     assert (forall b:B, forall x y:hfiber f b, (x=y) = (hfiber (ap f) (x.2 @ y.2^))).
     { intros u [x p] [y q]. simpl.
-      path_via ({r:x=y & (ap f r ) @ q = p}). exact (L425 (x;p) (y;q)).
-      apply univalence_axiom. unfold hfiber.
+      etransitivity; try exact (L425 (x;p) (y;q)).
+      apply path_universe_uncurried. unfold hfiber.
       exists ((λ r, (r.1; moveL_pV q (ap f r.1) p r.2)) : (∃ r : x = y, ap f r @ q = p) -> (∃ x0 : x = y, ap f x0 = p @ q ^)).
       apply isequiv_adjointify with (g := (λ r, (r.1; moveR_pM q p (ap f r.1) r.2)) : (∃ x0 : x = y, ap f x0 = p @ q ^) -> (∃ r : x = y, ap f r @ q = p)).
       - intros [r Ɣ]; apply @path_sigma' with (p:=1); simpl. destruct q; simpl. hott_simpl.

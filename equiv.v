@@ -143,9 +143,9 @@ Definition HProp_contr A (B : A -> Type) (BProp : forall a, IsHProp (B a)) (a a'
 Defined.
 
 Instance subset_is_subobject A (B : A -> Type) (BProp : forall a, IsHProp (B a)) x y : 
-  IsEquiv (ap (pr1 (P := B)) (x:=x) (y:=y)).
-destruct x, y.
-apply  (isequiv_adjointify (ap (pr1 (P := B)) (x:=(x;b)) (y:=(x0;b0)))
+  IsEquiv (ap (@pr1 A B) (x:=x) (y:=y)).
+destruct x as [x b], y as [x0 b0].
+apply  (isequiv_adjointify (ap (@pr1 A B) (x:=(x;b)) (y:=(x0;b0)))
                            (eq_dep_subset BProp (x;b) (x0;b0))). 
 - intro. unfold eq_dep_subset; simpl in *. destruct x1.
   apply (pr1_path_sigma (P:=B) (u:=(x;b)) (v:=(x;b0)) 1 (center (b = b0))). 
@@ -157,7 +157,7 @@ Defined.
 
 Definition elim_E A B (f:A->B) (H:IsEquiv f) (x y : A) (p : f x = f y)
 : x = y :=
-  (eissect f x)^ @ @moveR_E _ _ (f ^-1) isequiv_inverse _ _ p.
+  (eissect f x)^ @ @moveR_equiv_M _ _ (f ^-1) isequiv_inverse _ _ p.
 
 
 Definition True_is_irr (x y : Unit) : x = y.
@@ -186,7 +186,7 @@ Qed.
 
 Lemma equal_inverse A (a b:A)
 : (a=b) = (b=a).
-  apply univalence_axiom.
+  apply path_universe_uncurried.
   exists inverse.
   apply @isequiv_adjointify with (g := inverse);
     intro u; destruct u; exact 1.
@@ -200,7 +200,7 @@ Defined.
 Definition moveR_EV (A B:Type) (f:A -> B) (IsEquiv:IsEquiv f) a b
 : a = f b -> (f ^-1) a = b.
   intro p.
-  apply moveR_E. rewrite equiv_VV. exact p.
+  apply moveR_equiv_M. rewrite equiv_VV. exact p.
 Defined.
 
 
@@ -209,4 +209,10 @@ Lemma equal_equiv_inv (A B:Type) (f g: Equiv A B)
   intro H. destruct H.
   exact 1.
 Qed.
-  
+
+Definition transport_path_universe_uncurried A B (f:A -> B) feq
+: transport idmap (path_universe_uncurried (BuildEquiv _ _ f feq)) = f.
+  assert (s := (eissect _ (IsEquiv := isequiv_path_universe (A:=A) (B:=B) ) (BuildEquiv _ _ f feq))).
+  apply equal_equiv_inv in s.
+  exact s.
+Defined.

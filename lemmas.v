@@ -23,7 +23,7 @@ Defined.
 
 Lemma L425 A B (f:A -> B) (y:B) (x x': hfiber f y)
 : (x=x') = {Ɣ:x.1=x'.1 & (ap f Ɣ) @ x'.2 = x.2}.
-  apply univalence_axiom.
+  apply path_universe_uncurried.
   exists ((λ p, match p with 1 => (1;concat_1p x.2) end) : x = x' -> (∃ Ɣ : x .1 = x' .1, ap f Ɣ @ x' .2 = x .2)).
   apply isequiv_adjointify with (g := L425_inv x x').
   - intros [Ɣ q].

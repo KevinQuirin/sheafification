@@ -142,8 +142,7 @@ Section Sheafification.
   Instance nj_inter_equiv (A : Trunc n) (φ : A.1 -> Trunc n) : IsEquiv (nj_inter_f A φ).
   apply (isequiv_adjointify _ (nj_inter_g A φ)).
   - intro x. unfold nj_inter_f, nj_inter_g. simpl in *.
-    path_via (
-        function_lift nj
+    transitivity (function_lift nj
                       (∃ a0 : A .1, (φ a0) .1;
                        trunc_sigma A .2 (λ a0 : A .1, (φ a0) .2))
                       (∃ a0 : A .1, ((O nj (φ a0)) .1) .1;
@@ -163,7 +162,7 @@ Section Sheafification.
                                                        trunc_sigma  
                                                          A .2 (λ a0 : A .1, (φ a0) .2)) (λ b, (X.1;b)))
                               X .2) x)
-      ).
+      ); auto with path_hints.
 
     pose (foo := ap10 (reflect_factoriality_pre
                          (∃ a0 : A .1, ((O nj (φ a0)) .1) .1;
@@ -193,7 +192,7 @@ Section Sheafification.
          ). 
     etransitivity; try exact foo. clear foo.
 
-    path_via (
+    transitivity (
         O_rec
           (∃ a0 : A .1, ((O nj (φ a0)) .1) .1;
            trunc_sigma 
@@ -282,7 +281,7 @@ Section Sheafification.
     nj.(O) ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2)) =
     nj.(O) ({a:A.1 & (nj.(O) (φ a)).1.1}; trunc_sigma (A.2) (fun a => (nj.(O) (φ a)).1.2)).
     apply unique_subuniverse. apply truncn_unique.
-    apply univalence_axiom. exact (BuildEquiv _ _ _ (nj_inter_equiv _ _)).
+    apply path_universe_uncurried. exact (BuildEquiv _ _ _ (nj_inter_equiv _ _)).
   Defined.
 
   Definition nj_fibers_compose A B C (f : A -> B) (g : B -> C) (c : C)
@@ -344,8 +343,11 @@ Section Sheafification.
                                              n0) (nchar_to_sub_compat (λ t : E, (φ t) .1)))). unfold compose in X.
     apply (transport (fun x => x = _) (inverse X)). clear X.
     
-    apply ap. apply truncn_unique. simpl. etransitivity.
-    apply univalence_axiom. apply equiv_sigma_contr.
+    apply ap. apply truncn_unique. simpl.
+    (* etransitivity. *)
+    apply path_universe_uncurried.
+    eapply transitive_equiv.
+    apply equiv_sigma_contr.
     intro. pose (f := j_is_nj (hfiber pr1 a .1; 
                                (nchar_to_sub_compat (λ t : {b : E | ((φ b) .1) .1}, (χ t .1) .1)
                                                     a .1))).
@@ -353,6 +355,7 @@ Section Sheafification.
     simpl.
     apply (transport (fun X => Contr (not (not X))) (inverse (nhfiber_pi1 _ _))).
     apply Oj_J_Contr.
+    apply equiv_path.
     etransitivity. apply nhfiber_pi1. reflexivity.
   Defined.
 
@@ -363,7 +366,8 @@ Section Sheafification.
   :  ((φ1 x).1.1 -> (φ2 x).1.1).
     unfold E_to_χ_map in p.
     generalize dependent (EnJ_is_nJ χ x).
-    apply (O_rec (((χ x))) (existT (fun T => (subuniverse_HProp nj T).1) (((φ1 x) .1) .1 → ((φ2 x) .1) .1 ; trunc_arrow ((φ2 x) .1).2) (subuniverse_arrow (((φ1 x) .1) .1) (φ2 x)))).
+    pose (p0 := O_rec (((χ x))) (existT (fun T => (subuniverse_HProp nj T).1) (((φ1 x) .1) .1 → ((φ2 x) .1) .1 ; trunc_arrow ((φ2 x) .1).2) (subuniverse_arrow (((φ1 x) .1) .1) (φ2 x)))); simpl in p0.
+    apply p0.
     intro v. simpl.
 
     assert (eq := (ap10 p (x;v))). unfold compose in eq; simpl in eq.
@@ -397,7 +401,7 @@ Section Sheafification.
     pose (fooo := @transport_arrow_space_dep_path n nj (φ1 x) (φ2 x) (χ x) (λ v, (ap10 p (x;v))..1..1)).
     simpl in fooo.
 
-    path_via (O_rec (χ x)
+    transitivity (O_rec (χ x)
                     ((((φ2 x) .1) .1 → ((φ2 x) .1) .1; trunc_arrow ((φ2 x).1.2));
                      subuniverse_arrow ((φ2 x) .1) .1 (φ2 x))
                     (λ (v : (χ x) .1) (x0 : ((φ2 x) .1) .1),
@@ -406,7 +410,7 @@ Section Sheafification.
                                (ap10 p (x; v))..1..1
                                (transport idmap
                                           
-                                          (ap10 p (x; v))..1..1^ x0)) (EnJ_is_nJ χ x) y).
+                                          (ap10 p (x; v))..1..1^ x0)) (EnJ_is_nJ χ x) y); auto with path_hints.
 
     apply (ap (λ u, O_rec (χ x)
                           ((((φ2 x) .1) .1 → ((φ2 x) .1) .1; trunc_arrow ((φ2 x).1.2));
@@ -416,7 +420,7 @@ Section Sheafification.
     apply ap. 
     apply (ap (λ U, transport idmap
                               U x0)).
-    path_via ((ap10 p (x; v))^..1..1).
+    transitivity ((ap10 p (x; v))^..1..1).
     apply ap. apply ap.
     apply (ap10_V p (x;v)).
     unfold pr1_path.
@@ -444,7 +448,7 @@ Section Sheafification.
     unfold E_to_χ_map in p; simpl in p.
     apply path_forall; intro x.
     apply unique_subuniverse; apply truncn_unique.
-    apply univalence_axiom.
+    apply path_universe_uncurried.
     exists (nTjTiseparated_eq_fun_univ p x).
     apply isequiv_adjointify with (g := nTjTiseparated_eq_fun_univ (inverse p) x).
     - exact (nTjTiseparated_eq_fun_univ_invol p x).
@@ -456,7 +460,7 @@ Section Sheafification.
     apply isequiv_adjointify with (g := @nTjTiseparated_eq_inv E χ φ1 φ2).
     - intro p. 
       unfold E_to_χ_map in *; simpl in *.
-      apply (@equiv_inj _ _ _ (isequiv_ap10 (φ1 o (pr1 (P:=fun e => (χ e).1))) (φ2 o pr1))).
+      apply (@equiv_inj _ _ _ (isequiv_ap10 (φ1 o (@pr1 _ (fun e => (χ e).1))) (φ2 o pr1))).
       apply path_forall; intro x.
 
       unfold nTjTiseparated_eq_inv.
@@ -466,10 +470,12 @@ Section Sheafification.
       apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_truncn_unique _ _))). apply isequiv_inverse. 
       apply (@equiv_inj _ _ _ (isequiv_equiv_path ((φ1 o pr1) x).1.1 ((φ2 o pr1) x).1.1)).
       repeat rewrite eissect.
-      unfold univalence_axiom. rewrite eisretr.
+      unfold path_universe_uncurried. rewrite eisretr.
       apply equal_equiv.
       unfold nTjTiseparated_eq_fun_univ, EnJ_is_nJ. 
-      rewrite (witness_is_eta χ x). 
+      apply (transport (λ U, O_rec _ ((((φ1 (pr1 x)).1).1 → ((φ2 (pr1 x)).1).1;
+      trunc_arrow ((φ2 (pr1 x)).1).2);
+     subuniverse_arrow ((φ1 (pr1 x)).1).1 (φ2 (pr1 x))) _ U = _) ((witness_is_eta χ x)^)).
       etransitivity;
         try exact (ap10 (O_rec_retr (χ x.1) ((((φ1 x .1) .1) .1 → ((φ2 x .1) .1) .1; trunc_arrow ((φ2 x.1).1.2)); subuniverse_arrow ((φ1 x .1) .1) .1 (φ2 x .1)) (λ v : (χ x .1) .1, transport idmap ((ap10 p (x .1; v)) ..1) ..1)) x.2).
       repeat apply ap. destruct x as [x1 x2]. exact 1.
@@ -481,7 +487,7 @@ Section Sheafification.
       apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_unique_subuniverse _ _))). apply isequiv_inverse.
       apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_truncn_unique _ _))). apply isequiv_inverse.
       apply (@equiv_inj _ _ _ (isequiv_equiv_path (((φ1 x) .1) .1) (((φ1 x) .1) .1))).
-      repeat rewrite eissect. unfold univalence_axiom. rewrite eisretr; simpl.
+      repeat rewrite eissect. unfold path_universe_uncurried. rewrite eisretr; simpl.
       unfold equiv_path. simpl.
       apply equal_equiv.
       unfold transport, nTjTiseparated_eq_fun_univ; simpl.
@@ -660,7 +666,7 @@ Section Sheafification.
 
   Lemma cloture_is_closed' (A:Type) (E:Type) (m : {f : A -> E & forall e:E, IsTrunc n (hfiber f e)}) : closed' (pr2 (cloture' m)).
     unfold closed', cloture'. 
-    rewrite eta_sigma.
+    rewrite (eta_sigma (nchar_to_sub (cloture (nsub_to_char n (A; m))))).
     pose (f := cloture_is_closed (nsub_to_char n (A; m))). 
     rewrite <- (@nsub_eq_char_retr n _ (cloture (nsub_to_char n (A; m)))) in f.
     exact f.
@@ -687,8 +693,8 @@ Section Sheafification.
     destruct p. destruct q.
     rewrite X. simpl.
     apply @isequiv_adjointify with  (g:= ( λ x, (x.1; x.2))).
-    - intro x. simpl. hott_simpl. apply eta_sigma.
-    - intro x. simpl. hott_simpl. apply eta_sigma.
+    - intro x. simpl. hott_simpl.
+    - intro x. simpl. hott_simpl. 
   Defined.
   
 (* In modalities *)
@@ -699,18 +705,18 @@ Section Sheafification.
   : O_unit nj (O nj T).1 = equiv_path _ _ ((O_invol_ T)..1..1).
     unfold O_invol_. unfold O_modal.
     pose (rew := eissect _ (IsEquiv := isequiv_unique_subuniverse (O nj T) (O nj (O nj T) .1)) (truncn_unique (O nj T) .1 (O nj (O nj T) .1) .1
-                                                                                                              (univalence_axiom
+                                                                                                              (path_universe_uncurried
                                                                                                                  {|
                                                                                                                    equiv_fun := O_unit nj (O nj T) .1;
                                                                                                                    equiv_isequiv := O_modal_equiv (O nj T) |}))). 
     simpl in rew; rewrite rew; clear rew.
 
-    pose (rew := eissect _ (IsEquiv := isequiv_truncn_unique (O nj T).1 (O nj (O nj T) .1).1) (univalence_axiom
+    pose (rew := eissect _ (IsEquiv := isequiv_truncn_unique (O nj T).1 (O nj (O nj T) .1).1) (path_universe_uncurried
                                                                                                  {|
                                                                                                    equiv_fun := O_unit nj (O nj T) .1;
                                                                                                    equiv_isequiv := O_modal_equiv (O nj T) |})). 
     simpl in rew. unfold pr1_path. rewrite rew; clear rew.
-    unfold univalence_axiom. rewrite eisretr. simpl. exact 1.
+    unfold path_universe_uncurried. rewrite eisretr. simpl. exact 1.
   Defined.
 (* End In modalities *)
         
@@ -723,7 +729,7 @@ Section Sheafification.
                     O_unit nj (O nj (φ e .1)) .1 (O_unit nj (φ e .1) x)) rx =
        O_unit nj (O nj (φ e .1)) .1 e .2)
     .
-    apply univalence_axiom.
+    apply path_universe_uncurried.
     assert (foo := @equal_hfibers
                    ((O nj (φ e .1)).1.1)
                    ((O nj (O nj (φ e .1)) .1).1.1)
@@ -755,9 +761,9 @@ Section Sheafification.
     (* simpl. *)
     (* apply (moveR_transport_V idmap (dicde_l φ a)). *)
     unfold dicde_l.   
-    unfold univalence_axiom.
+    unfold path_universe_uncurried.
     rewrite eisretr. simpl. hott_simpl.
-    apply @path_sigma' with (p := π'.2^). simpl. destruct π'. simpl. destruct p. simpl.
+    apply @path_sigma' with (p := π'.2^). simpl. destruct π' as [b p]. simpl. destruct p. simpl.
     unfold lex_compat_func. simpl.
     apply ap10_O_retr_sect.
   Defined.
@@ -774,7 +780,7 @@ Section Sheafification.
     intro e.
     assert (rew := ((islex_nj (φ e .1) (O nj (φ e .1)).1 (O_unit nj _) e.2) @ (dicde_l φ e)^)).
     (* path_via ((∃ rx : ((O nj (φ e .1)) .1) .1, rx = e .2)). *)
-    apply univalence_axiom.
+    apply path_universe_uncurried.
     apply (transport (λ U, (∃ e' : clA, e = e') <~> U) (islex_nj (φ e .1) (O nj (φ e .1)).1 (O_unit nj _) e.2)^).
     apply (transport (λ U, (∃ e' : clA, e = e') <~> U) (dicde_l φ e)).
     
@@ -786,13 +792,15 @@ Section Sheafification.
       apply @path_sigma' with (p := eta_sigma _).
       rewrite path_sigma_eta.
       simpl.
-      pose (foo := trans_paths clA clA (λ _, e) idmap (e.1;e.2) e (eta_sigma e) (eta_sigma e)^). simpl in foo.
-      etransitivity. exact foo.
-      simpl. rewrite ap_idmap.
-      rewrite concat_pp_p.
-      rewrite concat_Vp.
-      rewrite concat_p1.
-      rewrite ap_const. hott_simpl.
+      reflexivity.
+      
+      (* pose (foo := trans_paths clA clA (λ _, e) idmap (e.1;e.2) e (eta_sigma e) (eta_sigma e)^). simpl in foo. *)
+      (* etransitivity. exact foo. *)
+      (* simpl. rewrite ap_idmap. *)
+      (* rewrite concat_pp_p. *)
+      (* rewrite concat_Vp. *)
+      (* rewrite concat_p1. *)
+      (* rewrite ap_const. hott_simpl. *)
   Defined.
 
   Lemma transport_equiv (A: Type) (f g:A -> Type) (x y: A) (p: x=y) (q: f x <~> g x)
@@ -807,7 +815,7 @@ Section Sheafification.
     intros x p.
     unfold compose. unfold dense_into_cloture_dense_eq.
     apply path_forall; intro y.
-    unfold univalence_axiom. rewrite eisretr.
+    unfold path_universe_uncurried. rewrite eisretr.
     simpl.
     destruct x as [a x]. simpl in x. simpl in p. destruct p as [a' q]. destruct a' as [a' π]. simpl in q.
     destruct q. simpl.

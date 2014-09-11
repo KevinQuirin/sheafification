@@ -131,7 +131,7 @@ Section Reflective_Subuniverse.
       
   Definition O_modal (T:subuniverse_Type) : T = subU.(O) T.1.
     apply unique_subuniverse. apply truncn_unique.
-    apply univalence_axiom.
+    apply path_universe_uncurried.
     exact (BuildEquiv _ _ (subU.(O_unit) (pr1 T)) (O_modal_equiv _)).
   Defined.
 
@@ -141,7 +141,7 @@ Section Reflective_Subuniverse.
 
   Definition subuniverse_struct_transport T U (f : (T.1 <~> U.1)%equiv) :
     (subU.(subuniverse_HProp) T).1 -> (subU.(subuniverse_HProp) U).1.
-    apply univalence_axiom in f. apply truncn_unique in f. rewrite f.
+    apply path_universe_uncurried in f. apply truncn_unique in f. rewrite f.
     intro x; exact x.
   Defined.
   
@@ -175,7 +175,7 @@ Section Reflective_Subuniverse.
   : g o (O_rec X Y f) = O_rec X Z (g o f).
   Proof.
     apply (elim_E (O_equiv subU X Z) (g o (O_rec X Y f)) (O_rec X Z (g o f))).
-    path_via (g o f).
+    transitivity (g o f).
     - apply (ap (λ f, g o f)).
       exact (O_rec_retr X Y f).
     - exact (O_rec_retr X Z (g o f))^.
@@ -188,12 +188,12 @@ Section Reflective_Subuniverse.
         (f:X.1 -> Y.1)
   : (O_rec Y Z g) o (function_lift X Y f) = O_rec X Z (g o f).
   Proof.
-    path_via (O_rec X Z ((O_rec Y Z g) o (O_unit subU Y o f))).
+    transitivity (O_rec X Z ((O_rec Y Z g) o (O_unit subU Y o f))).
     - apply reflect_factoriality_pre.
     - apply ap.
-      path_via (((O_rec Y Z g) o O_unit subU Y) o f).
-      apply (ap (λ u, u o f)).
-      exact (O_rec_retr Y Z g).
+      transitivity (((O_rec Y Z g) o O_unit subU Y) o f).
+      reflexivity.
+      exact (ap (λ u, u o f) (O_rec_retr Y Z g)).
   Defined.
 
   Lemma reflect_functoriality
@@ -287,7 +287,7 @@ Section Reflective_Subuniverse.
   Defined.
 
   Lemma function_lift_transport A B (p:A=B)
-  : ((ap (O subU) p)..1..1) = (@path_universe univalence_equiv (O subU A).1.1 (O subU B).1.1 (function_lift A B (transport idmap p..1)) (function_lift_equiv A B (f := (equiv_path A.1 B.1 p..1)) _)) .
+  : ((ap (O subU) p)..1..1) = (@path_universe _ (O subU A).1.1 (O subU B).1.1 (function_lift A B (transport idmap p..1)) (function_lift_equiv A B (f := (equiv_path A.1 B.1 p..1)) _)) .
     destruct p. simpl.
     unfold path_universe, path_universe_uncurried.
     apply (@equiv_inj _ _ _ (isequiv_equiv_path _ _)).
@@ -329,20 +329,23 @@ Section Reflective_Subuniverse.
         (H : forall a, f a (g a) = a)
   : O_rec A (O subU A) (λ x:A.1, O_rec (B x) (O subU A) (λ y, O_unit subU A (f x y)) (O_unit subU (B x) (g x))) = idmap.
     simpl.
-    path_via (
+    assert (X:forall x0 : A .1, (function_lift (B x0) A (f x0) (O_unit subU (B x0) (g x0)))  = (O_unit subU A x0)).
+    intro a.
+    etransitivity. exact (ap10 (O_rec_retr (B a) (O subU A) (λ x : (B a) .1, O_unit subU A (f a x))) (g a)).
+    apply ap; apply H.
+    transitivity (
         O_rec A (O subU A)
               (λ x0 : A .1,
                       (function_lift (B x0) A (f x0))
                         (O_unit subU (B x0) (g x0)))
       ).
 
-    assert (forall x0 : A .1, (function_lift (B x0) A (f x0) (O_unit subU (B x0) (g x0)))  = (O_unit subU A x0)).
-    intro a.
-    etransitivity. exact (ap10 (O_rec_retr (B a) (O subU A) (λ x : (B a) .1, O_unit subU A (f a x))) (g a)).
-    apply ap. apply H.
-    path_via (O_rec A (O subU A)  (λ x0 : A .1, O_unit subU A x0)).
+    transitivity (O_rec A (O subU A)  (λ x0 : A .1, O_unit subU A x0)).
     apply ap. apply path_forall; intro a; exact (X a).
-    exact (O_rec_sect A (O subU A) idmap).
+    rewrite (path_forall _ _ X).
+    reflexivity.
+    rewrite (path_forall _ _ X).
+    apply (O_rec_sect A (O subU A) idmap).
   Qed.
 
   Lemma O_rec_O_rec_dep_sect
@@ -352,7 +355,7 @@ Section Reflective_Subuniverse.
         (H : forall a, f a (g a) = a)
   : O_rec A (O subU A) (λ x:A.1, O_rec (B x) (O subU A) (λ y, O_unit subU A (f x (O_unit subU (B x) y))) (g x)) = idmap.
     simpl.
-    path_via (O_rec A (O subU A) (λ x : A .1, O_unit subU A x)).
+    transitivity (O_rec A (O subU A) (λ x : A .1, O_unit subU A x)).
     apply ap. apply path_forall; intro a.
     etransitivity; try exact (ap10 (O_rec_sect (B a) (O subU A) (λ u, O_unit subU A (f a u))) (g a)).
     apply ap. apply H.
@@ -406,7 +409,9 @@ Section Reflective_Subuniverse.
 
   Lemma equiv_nj_inverse A a b
   : (O subU (a=b ; istrunc_paths (H:=A.2) A.1 n a b)).1.1 = (O subU (b=a ; istrunc_paths (H:=A.2) A.1 n b a)).1.1.
-    repeat apply ap. apply truncn_unique. exact (equal_inverse a b).
+    repeat apply (ap pr1). apply ap.
+    apply truncn_unique.
+    exact (equal_inverse a b).
   Defined.
 
 (* Dependent product and arrows *)
@@ -459,7 +464,7 @@ Section Reflective_Subuniverse.
          (λ x, (O_unit subU A (fst x), O_unit subU B (snd x))).
 
   Definition subuniverse_product_inv (A B : Trunc n) : (O subU A).1.1*(O subU B).1.1 -> (O subU (A.1*B.1 ; trunc_prod (H:=A.2) (H0:=B.2))).1.1.
-    intro x. destruct x.
+    intro x. destruct x as [p p0].
     generalize dependent p; apply O_rec; intro p.
     generalize dependent p0; apply O_rec; intro p0.
     apply (O_unit subU).
@@ -508,9 +513,9 @@ Section Reflective_Subuniverse.
     apply (@equiv_compose' _ (A.1 -> B.1 -> C.1.1) _).
     Focus 2.
     exists (λ f, λ u v, f (u,v)).
-    apply isequiv_adjointify with (g := λ u, λ x, u (fst x) (snd x)).
+    refine (@isequiv_adjointify _ _ _ (λ u, λ x, u (fst x) (snd x)) _ _).
     intro x. apply path_forall; intro u; apply path_forall; intro v. exact idpath.
-    intro x. apply path_forall; intro u. rewrite eta_prod. exact idpath.
+    intro x. apply path_forall; intro u. apply (transport (λ U, x U = x u) (eta_prod u)). exact idpath.
 
     apply (@equiv_compose' _ ((O subU A).1.1 -> B.1 -> C.1.1) _).
     Focus 2. apply equiv_inverse.
@@ -519,9 +524,9 @@ Section Reflective_Subuniverse.
     exact (O_equiv subU A (( B.1 -> C.1.1 ; trunc_arrow (H0 := C.1.2)) ; subuniverse_arrow B.1 C)).
     
     apply (@equiv_compose' _ ((O subU A).1.1 -> (O subU B).1.1 -> C.1.1) _).
-    exists (λ f, λ u, f (fst u) (snd u)).
+    exists (λ f:(((O subU A).1).1 → ((O subU B).1).1 → (C.1).1), λ u, f (fst u) (snd u)).
     apply isequiv_adjointify with (g := λ f, λ u v, f (u,v)).
-    intro x. apply path_forall; intro u. rewrite eta_prod. exact idpath.
+    intro x. apply path_forall; intro u. rewrite (eta_prod u). exact idpath.
     intro x. apply path_forall; intro u. apply path_forall; intro v. exact idpath.
 
     apply equiv_postcompose'.
@@ -532,7 +537,7 @@ Section Reflective_Subuniverse.
 
   Definition product_universal' (A B : Trunc n) (C : subuniverse_Type) :
     (A.1 * B.1 -> C.1.1) = ((O subU A).1.1*(O subU B).1.1 -> C.1.1).
-    apply univalence_axiom; exact (product_universal A B C).
+    apply path_universe_uncurried; exact (product_universal A B C).
   Defined.
   
   (* Definition subuniverse_product' (A B : Trunc n) : Equiv  (O subU (A.1*B.1 ; trunc_prod (H:=A.2) (H0 := B.2))).1.1 ((O subU A).1.1*(O subU B).1.1). *)
@@ -824,7 +829,7 @@ Section Reflective_Subuniverse.
 
   Lemma paths_are_sheaves (S:subuniverse_Type) (x y:S.1.1) : (subuniverse_HProp subU (x=y ; istrunc_paths S.1.1 n x y (H:= @trunc_succ _ _ S.1.2))).1.
     (* assert ((x=y) = (@pullback Unit Unit S.1.1 (λ u, x) (λ u, y))). *)
-    (*   apply univalence_axiom. *)
+    (*   apply path_universe_uncurried. *)
     (*   unfold pullback. *)
     (*   exists (λ X, existT (λ _, {_ : Unit | x=y}) tt (existT (λ _, x=y) tt X)). *)
     (*   apply isequiv_adjointify with (g := λ X : {_ : Unit | {_ : Unit | x=y}}, X.2.2). *)
@@ -856,7 +861,7 @@ Section Reflective_Subuniverse.
     specialize (foo (λ w, O_rec P S f w o O_rec P T g w) (λ w, O_rec P RR (λ v : P .1, f v o g v) w)). simpl in foo.
     apply foo; clear foo.
     apply path_forall; intro v. unfold compose; simpl.
-    path_via ((λ v : P .1, f v o g v) v).
+    transitivity ((λ v : P .1, f v o g v) v).
     - apply path_forall; intro r; simpl.
       pose (foo := ap10 (O_rec_retr P S f) v). unfold compose in foo; simpl in foo.
       rewrite foo. unfold compose; simpl.
@@ -900,7 +905,7 @@ Section Reflective_Subuniverse.
     pose (adj := eisadj _ (IsEquiv := foo)).
     specialize (adj f). simpl in adj. unfold compose in adj. unfold compose.
 
-    path_via (ap10 (ap
+    transitivity (ap10 (ap
                       (λ (f : ((O subU P) .1) .1 → (Q .1) .1) (x : P .1), f (O_unit subU P x))
                       (eissect
                          (λ (f : ((O subU P) .1) .1 → (Q .1) .1) 

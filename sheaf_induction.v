@@ -246,7 +246,7 @@ Section Type_to_separated_Type.
       apply path_forall; intro t; simpl.
       apply unique_subuniverse; apply truncn_unique.
       unfold Oj; simpl.
-      apply univalence_axiom.
+      apply path_universe_uncurried.
       exists (kpsic_func_univ_func a b p X t).
       apply isequiv_adjointify with (g := kpsic_func_univ_inv a b p X t);
         [exact (fst (kpsic_func_univ_eq a b p X t)) | exact (snd (kpsic_func_univ_eq a b p X t))].
@@ -263,7 +263,7 @@ Section Type_to_separated_Type.
 
       assert (((O nj (a = b; istrunc_paths T.2 a b)) .1) .1 =
        ((O nj (b = a; istrunc_paths T.2 b a)) .1) .1).
-        repeat apply ap.
+        repeat apply (ap pr1); apply ap.
         apply truncn_unique.
         apply equal_inverse.
       apply (transport  idmap X^).
@@ -307,8 +307,22 @@ Section Type_to_separated_Type.
     apply (moveR_transport_V idmap _ _ x).
     unfold pr1_path.
 
-    rewrite <- ap10_ap_postcompose; rewrite eisretr.
-    rewrite ap10_ap_postcompose; unfold ap10, path_forall; rewrite eisretr.
+    unfold kpsic_func. simpl.
+
+    pose (foo := isequiv_eq_dep_subset (λ a0 : T.1 → subuniverse_Type nj,
+                     istrunc_truncation minus_one
+                       (hfiber
+                          (λ t t' : T.1,
+                           O nj (t = t'; istrunc_paths T.2 t t')) a0))
+                                       (λ t' : T.1, O nj (a = t'; istrunc_paths T.2 a t');
+                                        truncation_incl (a; 1))
+                                       (λ t' : T.1, O nj (b = t'; istrunc_paths T.2 b t');
+                                        truncation_incl (b; 1))).
+    assert (bar := eissect _ (IsEquiv := foo)). simpl in bar.
+    unfold Sect in bar. simpl in bar.
+    rewrite bar. clear bar; clear foo.
+
+    unfold ap10, path_forall; rewrite eisretr.
 
     assert (rew := eissect _ (IsEquiv := isequiv_unique_subuniverse (O nj (a = a; istrunc_paths T .2 a a)) (O nj (b = a; istrunc_paths T .2 b a)))). unfold Sect in rew; simpl in rew; unfold pr1_path in rew.
     rewrite rew; clear rew.
@@ -316,7 +330,7 @@ Section Type_to_separated_Type.
     assert (rew := eissect _ (IsEquiv := isequiv_truncn_unique (O nj (a = a; istrunc_paths T .2 a a)).1 (O nj (b = a; istrunc_paths T .2 b a)).1)). unfold Sect in rew; simpl in rew; unfold pr1_path in rew.
     rewrite rew; clear rew.
 
-    unfold univalence_axiom.
+    unfold path_universe_uncurried.
     assert (rew := equal_equiv_inv (eisretr _ (IsEquiv := isequiv_equiv_path ((O nj (a = a; istrunc_paths T .2 a a)) .1) .1 ((O nj (b = a; istrunc_paths T .2 b a)) .1) .1)
 
                                             {|
@@ -404,15 +418,15 @@ Section Type_to_separated_Type.
     apply (@equiv_inj _ _ _ (O_equiv nj (a = b; istrunc_paths T .2 a b) (O nj (b = a; istrunc_paths T .2 b a)))).
     rewrite O_rec_retr.
     apply path_forall; intro v. simpl in v.
-    path_via (O_unit nj (b = a; istrunc_paths T .2 b a) (v ^)).
+    transitivity (O_unit nj (b = a; istrunc_paths T .2 b a) (v ^)).
     apply ap. apply concat_p1.
     unfold compose; simpl.
 
     pose (foo := kpsic_aux).
     specialize (foo (a = b; istrunc_paths T .2 a b) (b = a; istrunc_paths T .2 b a) v (equal_inverse a b)).
-    path_via (O_unit nj (b = a; istrunc_paths T .2 b a)
+    transitivity (O_unit nj (b = a; istrunc_paths T .2 b a)
                      (transport idmap (equal_inverse a b) v)); try exact foo.
-    apply ap. unfold equal_inverse. unfold univalence_axiom.
+    apply ap. unfold equal_inverse. unfold path_universe_uncurried.
     exact (ap10 (equal_equiv_inv (eisretr _ (IsEquiv := isequiv_equiv_path (a = b) (b = a)) {|
                                             equiv_fun := inverse;
                                             equiv_isequiv := isequiv_adjointify inverse inverse
@@ -459,7 +473,7 @@ Section Type_to_separated_Type.
 
     simpl in *.
 
-    apply (@equiv_inj _ _ _ (isequiv_equiv_path _ _)); unfold univalence_axiom; rewrite eisretr.
+    apply (@equiv_inj _ _ _ (isequiv_equiv_path _ _)); unfold path_universe_uncurried; rewrite eisretr.
 
     apply equal_equiv.
     unfold kpsic_func_univ_func, δ. simpl.
@@ -472,7 +486,7 @@ Section Type_to_separated_Type.
     unfold compose; simpl. destruct u.
     unfold ap10, pr1_path.
 
-    path_via (function_lift nj (a = b; istrunc_paths T.2 a b) (b = a; istrunc_paths T.2 b a) (transport idmap (equal_inverse a b)) (transport idmap (equiv_nj_inverse nj T a b) ^
+    transitivity (function_lift nj (a = b; istrunc_paths T.2 a b) (b = a; istrunc_paths T.2 b a) (transport idmap (equal_inverse a b)) (transport idmap (equiv_nj_inverse nj T a b) ^
                                                                                                                                     (transport idmap (ap pr1 (ap pr1 (apD10 (ap pr1 p) a)))
                                                                                                                                                (O_unit nj (a = a; istrunc_paths T.2 a a) 1)))).
 
@@ -481,7 +495,7 @@ Section Type_to_separated_Type.
                                                                                                                                    (O_unit nj (a = a; istrunc_paths T.2 a a) 1))))).
     apply path_forall; intro v. apply ap. hott_simpl.
     unfold equal_inverse.
-    unfold univalence_axiom.
+    unfold path_universe_uncurried.
     unfold equiv_inv.
     destruct (isequiv_equiv_path (a = b) (b = a)). unfold Sect in *. unfold equiv_path in *. simpl in *. clear eisadj.
     specialize (eisretr  {|
@@ -546,26 +560,32 @@ Section Type_to_separated_Type.
     [apply retr_kpsic_inv | apply sect_kpsic_inv].
   Defined.
 
-  Definition kernel_pair_separated_is_clΔ T : (clΔ T).1 =
+    Definition kernel_pair_separated_is_clΔ_equiv T : (clΔ T).1 <~>
     kernel_pair (toIm (λ t : pr1 T, λ t', nj.(O) (t = t'; istrunc_paths T.2 t t'))).
     symmetry.
-    apply univalence_axiom.
     exists (@kpsic_inv T).
     apply isequiv_kpsic_inv.
+  Defined.
+
+  Definition kernel_pair_separated_is_clΔ_path T : (clΔ T).1 =
+    kernel_pair (toIm (λ t : pr1 T, λ t', nj.(O) (t = t'; istrunc_paths T.2 t t'))).
+    apply path_universe_uncurried.
+    exact (kernel_pair_separated_is_clΔ_equiv T).
   Defined.
   
   Lemma separated_unit_coeq_Δ_coeq (T:Trunc (trunc_S n)) :
     separated_unit T o (λ x : (clΔ T) .1, fst x .1) = separated_unit T o (λ x : (clΔ T) .1, snd x .1).
     apply path_forall; intro x.
-    path_via ((separated_unit T o (λ x : (clΔ T) .1, fst x .1) o kpsic_inv (T:=T) o kpsic_func (T:=T)) x).
-      unfold compose; simpl. repeat apply ap. exact (retr_kpsic_inv x)^.
+    transitivity ((separated_unit T o (λ x : (clΔ T) .1, fst x .1) o kpsic_inv (T:=T) o kpsic_func (T:=T)) x).
+      (* reflexivity. *)
+      unfold compose. repeat apply ap. apply (ap fst). apply (ap pr1). exact (retr_kpsic_inv x)^.
 
-    path_via ((separated_unit T o (λ x0 : (clΔ T) .1, snd x0 .1) o kpsic_inv (T:=T) o kpsic_func (T:=T)) x).
-      unfold compose; simpl. generalize (kpsic_func x). intro y.
-      destruct y as [a [b p]]; exact p.
+    transitivity ((separated_unit T o (λ x0 : (clΔ T) .1, snd x0 .1) o kpsic_inv (T:=T) o kpsic_func (T:=T)) x).
+      unfold compose. generalize (kpsic_func x). intro y.
+      destruct y as [a [b p]]. exact p.
 
-    unfold compose; simpl.
-      repeat apply ap. exact (retr_kpsic_inv x).
+    unfold compose.
+      apply ap. apply (ap snd); apply (ap pr1). exact (retr_kpsic_inv x).
   Defined.
   
   (* Lemma separated_unit_coeq T : *)
@@ -573,9 +593,42 @@ Section Type_to_separated_Type.
   (*   apply Im_is_coequalizer_kernel_pair. *)
   (* Defined. *)
 
+        (* Set Printing Universes. *)
+
   Lemma separated_unit_coeq_Δ T :
     is_coequalizer (existT _ (separated_unit T) (separated_unit_coeq_Δ_coeq T)).
-    pose coequalizer_is_coequalizer.
+    pose coequalizer_transport_source.
+    specialize (i (kernel_pair (separated_unit T)) T.1 (clΔ T).1 (separation T).1.1 (inj1 (f:= separated_unit T)) (inj2 (f:= separated_unit T)) (fst o pr1) (snd o pr1)).
+    specialize (i (kernel_pair_separated_is_clΔ_equiv T)).
+    specialize (i (separated_unit T)).
+    
+    specialize (i (path_forall ((separated_unit T) o inj1 (f:=separated_unit T)) ((separated_unit T) o inj2 (f:=separated_unit T)) (λ x, x.2.2))).
+    transparent assert (comm : ((separated_unit T) o inj1 (f:=separated_unit T) = (separated_unit T) o inj2 (f:=separated_unit T))).
+      apply path_forall; intro x. unfold compose; simpl.
+      exact x.2.2.
+
+
+      assert (cm : separated_unit@{Top.5710 Top.5711 Top.5711 Top.5711 Top.5710
+               Top.5711 Top.5710 Top.5710} T
+             o inj1@{Top.5710 Top.5586 Top.5583}
+                 (f:=separated_unit@{Top.5710 Top.5711 Top.5586 Top.5596
+                       Top.5594 Top.5599 Top.5598 Top.5593} T) =
+             separated_unit@{Top.5710 Top.5711 Top.5711 Top.5711 Top.5710
+               Top.5711 Top.5710 Top.5710} T
+             o inj2@{Top.5710 Top.5586 Top.5583}
+                 (f:=separated_unit@{Top.5710 Top.5711 Top.5586 Top.5596
+                       Top.5594 Top.5599 Top.5598 Top.5593} T)).
+    
+    specialize (i comm).
+      transparent assert (m : (∃ m : T.1 → ((separation T).1).1,
+            m o inj1 (f:=separated_unit T) = m o inj2 (f:=separated_unit T))).
+      exists (separated_unit T).
+      apply path_forall; intro x; exact x.2.2.
+    (* specialize (i m). *)
+
+    pose (epi_coeq_kernel_pair). unfold epi_coeq_kernel_pair_comm in i0.
+    assert (g : (clΔ T).1 → T.1).
+      unfold clΔ. simpl.
     
 
     apply isequiv_adjointify with (g:= ff).
@@ -733,7 +786,7 @@ Section Type_to_separated_Type.
   Definition closure_naturality E F A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) (Γ : F -> E) :
     {b : F & pr1 (pr1 (nj.(O) ((hfiber (pr1 m) (Γ b)) ; (pr2 m) (Γ b))))} = {b : F & hfiber (pr1 (pr2 (cloture' m))) (Γ b)}.
     destruct m as [m Trm]; simpl.
-    apply univalence_axiom.
+    apply path_universe_uncurried.
     exists (closure_naturality_fun _ _).
     apply (isequiv_adjointify _ _ (closure_naturality_retr _ _) (closure_naturality_sect _ _)).
   Defined.

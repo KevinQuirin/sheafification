@@ -4,6 +4,7 @@ Require Import hit.Connectedness hit.minus1Trunc.
 Require Import univalence lemmas epi_mono.
 
 Set Universe Polymorphism.
+Global Set Primitive Projections.
 Set Implicit Arguments.
 
 Local Open Scope path_scope.
@@ -101,7 +102,7 @@ Section Coequalizer_universal_property.
 End Coequalizer_universal_property.
 
 Section CoequalizersTransport.
-  
+
   Lemma coequalizer_transport_end
           (A B X Q:Type)
           (f g:A -> B)
@@ -134,9 +135,9 @@ Section CoequalizersTransport.
     destruct m as [m cm]; simpl in *.
     destruct p as [p ep]; destruct ep as [q retr sect adj]; simpl in *.
     apply path_forall; intro x.
-    path_via ((m o φ o q o p) x).
+    transitivity ((m o φ o q o p) x).
     unfold compose; simpl. repeat apply ap. exact (sect x)^.
-    path_via ((m o Ɣ o q o p) x).
+    transitivity ((m o Ɣ o q o p) x).
     unfold compose; simpl. generalize (p x); intro y. 
     exact ((ap m (ap10 eq1 y)) @ (ap10 cm y) @ (ap m (ap10 eq2 y))^).
 
@@ -149,12 +150,14 @@ Section CoequalizersTransport.
         (f g:A -> B)
         (φ Ɣ:X -> B)
         (p : X <~> A)
-        (m : (∃ m : B → Q, m o f = m o g))
-        (m_coeq : is_coequalizer m)
+        (* (m : (∃ m : B → Q, m o f = m o g)) *)
+        (m : B -> Q)
+        (cm : m o f = m o g)
+        (m_coeq : is_coequalizer (m;cm))
         (eq1 : φ o p^-1 = f)
         (eq2 : Ɣ o p^-1 = g)
-  : @is_coequalizer X B φ Ɣ Q (m.1; coequalizer_transport_source_comm p m eq1 eq2).
-    destruct m as [m cm]; simpl in *.
+  : @is_coequalizer X B φ Ɣ Q (m; coequalizer_transport_source_comm p (m;cm) eq1 eq2).
+    (* destruct m as [m cm]; simpl in *. *)
     pose (oadj := @other_adj _ _ p (equiv_isequiv p)).
     assert (Eq : IsEquiv p^-1) by apply isequiv_inverse.
     assert (Ep : IsEquiv p) by exact (equiv_isequiv p).
@@ -338,8 +341,9 @@ Section CoequalizersEpimorphisms.
   Qed.
 
   Definition kernel_pair A B (f : A -> B) := pullback f f.
-  Definition inj1 A B (f : A -> B) : kernel_pair f -> A := pr1 (P:=_).
-  Definition inj2 A B (f : A -> B) : kernel_pair f -> A := fun x => pr1 (P:=_) (pr2 (P:=_) x).
+  
+  Definition inj1 A B (f : A -> B) : kernel_pair f -> A := pr1.
+  Definition inj2 A B (f : A -> B) : kernel_pair f -> A := fun x => pr1 (pr2 x).
 
   Definition epi_coeq_kernel_pair_comm (C B:Type) (f:C -> B) 
   : f o (@inj1 C B f) = f o (@inj2 C B f).
@@ -347,35 +351,37 @@ Section CoequalizersEpimorphisms.
   Defined.
     
   Theorem epi_coeq_kernel_pair_eq (C B:Type) (f:C -> B) (f_epi : is_epi f)
-  : coequalizer (@inj1 C B f) (@inj2 C B f) = B.
+  : coequalizer (@inj1 C B f) (@inj2 C B f) <~> B.
   Proof.
-    apply path_universe_uncurried.
+    (* apply path_universe_uncurried. *)
     exists (@kp_coeq_mono B C f).
     apply coeq_is_equiv.
     exact f_epi.
-  Qed.
+  Defined.
 
   Theorem epi_coeq_kernel_pair (C B:Type) (f:C -> B) (f_epi : is_epi f)
   : is_coequalizer (f ; epi_coeq_kernel_pair_comm f).
-    (* pose (pp := epi_coeq_kernel_pair_eq f_epi). *)
-    (* pose (foo := @coequalizer_transport (kernel_pair f) C B (coequalizer (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1)) (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1) pp). *)
-    (* simpl in foo. *)
-    (* specialize (foo (coeq (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1); *)
-    (*                  path_forall _ _ (@pp_coeq _ _ (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1)))). *)
-    (* simpl in foo. *)
-    (* specialize (foo (coequalizer_is_coequalizer (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1))). *)
-    (* simpl in foo. *)
-    (* specialize (foo (f; epi_coeq_kernel_pair_comm f)). *)
-    (* simpl in foo. *)
+    pose (pp := epi_coeq_kernel_pair_eq f_epi).
+    pose (foo := @coequalizer_transport_end (kernel_pair f) C B (coequalizer (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1)) (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1) (path_universe pp)).
+    specialize (foo (coeq (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1);
+                     path_forall _ _ (@pp_coeq _ _ (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1)))).
+    specialize (foo (coequalizer_is_coequalizer (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1))).
+    specialize (foo (f; epi_coeq_kernel_pair_comm f)).
+    unfold path_universe in foo. unfold path_universe_uncurried in foo.
+    rewrite eisretr in foo.
+    simpl in foo.
+    specialize (foo 1).
+    apply foo.
 
-    (* eapply foo. *)
-
-    (* assert (f = transport idmap (pp^)^ *)
-    (*          o coeq (λ x : kernel_pair f, x.1) (λ x : kernel_pair f, (x.2).1)). *)
-    (* rewrite inv_V. unfold pp.  *)
-
-    (* apply path_forall; intro w. unfold compose; simpl. *)
-  Admitted.
-    
-
+    simpl.
+    unfold epi_coeq_kernel_pair_comm; simpl.
+    apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+    unfold ap10 at 1, path_forall at 1; rewrite eisretr.
+    apply path_forall; intro x.
+    rewrite (ap10_ap_postcompose (kp_coeq_mono (f:=f)) (path_forall coeql coeqr pp_coeq) x).
+    unfold ap10, path_forall; rewrite eisretr.
+    simpl.
+    unfold kp_coeq_mono.
+    exact (coequalizer_rectnd_beta_pp f (λ a : pullback f f, (a.2).2) x)^.
+  Qed.
 End CoequalizersEpimorphisms. 

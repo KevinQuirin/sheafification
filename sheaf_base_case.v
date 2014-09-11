@@ -35,7 +35,7 @@ Section Reflective_Subuniverse_base_case.
 
   Definition Oj_equiv (P : Trunc minus_one) (Q : {T : Trunc minus_one & pr1 (is_classical T)}) :
       (pr1 P -> pr1 (pr1 Q)) -> pr1 (pr1 (Oj P)) -> pr1 (pr1 Q).
-    intros f jp. apply (pr2 Q). intro notQ. apply jp. intro p. exact (notQ (f p)). Defined.
+    intros f jp. apply (pr2 Q). intro notQ. unfold Oj in jp; simpl in jp. apply jp. intro p. exact (notQ (f p)). Defined.
   
   Definition subuniverse_Prop : subuniverse_struct minus_one.
   apply (Build_subuniverse_struct is_classical Oj Oj_unit). 
@@ -50,7 +50,7 @@ End Reflective_Subuniverse_base_case.
 Section J.
   
   Definition J :=
-    pr1 (nchar_to_sub (pr1 (P:=_) o Oj)).
+    pr1 (nchar_to_sub (pr1 o Oj)).
   (* {P : HProp & j (pr1 P)} *)
 
   Definition Oj_J_Contr (χ:J) : Contr ((j χ.1).1).

@@ -601,39 +601,14 @@ Section Type_to_separated_Type.
     specialize (i (kernel_pair (separated_unit T)) T.1 (clΔ T).1 (separation T).1.1 (inj1 (f:= separated_unit T)) (inj2 (f:= separated_unit T)) (fst o pr1) (snd o pr1)).
     specialize (i (kernel_pair_separated_is_clΔ_equiv T)).
     specialize (i (separated_unit T)).
-    
     specialize (i (path_forall ((separated_unit T) o inj1 (f:=separated_unit T)) ((separated_unit T) o inj2 (f:=separated_unit T)) (λ x, x.2.2))).
+
+
+    
     transparent assert (comm : ((separated_unit T) o inj1 (f:=separated_unit T) = (separated_unit T) o inj2 (f:=separated_unit T))).
       apply path_forall; intro x. unfold compose; simpl.
       exact x.2.2.
 
-
-      assert (cm : separated_unit@{Top.5710 Top.5711 Top.5711 Top.5711 Top.5710
-               Top.5711 Top.5710 Top.5710} T
-             o inj1@{Top.5710 Top.5586 Top.5583}
-                 (f:=separated_unit@{Top.5710 Top.5711 Top.5586 Top.5596
-                       Top.5594 Top.5599 Top.5598 Top.5593} T) =
-             separated_unit@{Top.5710 Top.5711 Top.5711 Top.5711 Top.5710
-               Top.5711 Top.5710 Top.5710} T
-             o inj2@{Top.5710 Top.5586 Top.5583}
-                 (f:=separated_unit@{Top.5710 Top.5711 Top.5586 Top.5596
-                       Top.5594 Top.5599 Top.5598 Top.5593} T)).
-    
-    specialize (i comm).
-      transparent assert (m : (∃ m : T.1 → ((separation T).1).1,
-            m o inj1 (f:=separated_unit T) = m o inj2 (f:=separated_unit T))).
-      exists (separated_unit T).
-      apply path_forall; intro x; exact x.2.2.
-    (* specialize (i m). *)
-
-    pose (epi_coeq_kernel_pair). unfold epi_coeq_kernel_pair_comm in i0.
-    assert (g : (clΔ T).1 → T.1).
-      unfold clΔ. simpl.
-    
-
-    apply isequiv_adjointify with (g:= ff).
-    - intros [m p]; unfold ff. clear ff. simpl.
-   
   Admitted.
 
   Definition sep_eq_inv_Δ (P : Trunc (trunc_S n)) (Q :{T : Trunc (trunc_S n) & separated T})

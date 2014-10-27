@@ -4,15 +4,15 @@
 
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations.
-Require Import equiv.
+Require Import equivalence.
 
 Generalizable Variables A X n.
 
-Definition squash := Truncation minus_one.
+Definition squash := Trunc -1.
 
 Definition Truncation_on_eq : forall A (x y : A) n, 
-                                Truncation n (x = y) = (truncation_incl (n := trunc_S n) x = truncation_incl (n := trunc_S n) y). Admitted.  
+                                Trunc n (x = y) = (tr (n := trunc_S n) x = tr (n := trunc_S n) y). Admitted.  
 
 Definition squash_extensionality  (T T' : Type) : 
-  (T <-> T') -> truncation_incl (n := minus_one) T = truncation_incl T'.
+  (T <-> T') -> tr (n := -1) T = tr T'.
 Admitted.

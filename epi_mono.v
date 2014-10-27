@@ -1,6 +1,6 @@
 Require Export Utf8_core.
 Require Import HoTT TruncType.
-Require Import hit.Connectedness hit.minus1Trunc.
+Require Import hit.Connectedness hit.Truncations.
 Require Import univalence lemmas.
 
 Set Universe Polymorphism.
@@ -11,13 +11,16 @@ Local Open Scope equiv_scope.
 
 Section Embeddings.
 
+  Context `{ua: Univalence}.
+  Context `{fs: Funext}.
+
   Definition IsMono (A B : Type) (f : A -> B) := forall x y, IsEquiv (ap f (x:=x) (y:=y)).
 
   Definition IsMonof (A B : Type) (f : A -> B) := forall (X:Type) (x y : X -> A), 
                                                     IsEquiv (ap (fun u => f o u) (x:=x) (y:=y)).
 
-  Lemma is_mono_IsMono (A B : Type) (f : A -> B)
-  : is_mono f <-> IsMono f.
+  Lemma IsEmbedding_IsMono (A B : Type) (f : A -> B)
+  : IsEmbedding f <-> IsMono f.
     
     assert (forall b:B, forall x y:hfiber f b, (x=y) = (hfiber (ap f) (x.2 @ y.2^))).
     { intros u [x p] [y q]. simpl.
@@ -83,26 +86,32 @@ End Embeddings.
 
 Section Surjections.
 
-  Lemma epi_prod (W X Y Z:Type) (f:X -> Y) (g:W -> Z) (epif : is_epi f) (epig : is_epi g)
-  : is_epi (λ x, (f (fst x), g (snd x))).
+  Context `{ua: Univalence}.
+  Context `{fs: Funext}.
+
+  Lemma epi_prod (W X Y Z:Type) (f:X -> Y) (g:W -> Z) (epif : IsSurjection f) (epig : IsSurjection g)
+  : IsSurjection (λ x, (f (fst x), g (snd x))).
   Proof.
+    apply BuildIsSurjection.
     intros [y z]. 
     specialize (epif y); specialize (epig z).
-    generalize dependent epif; apply minus1Trunc_rect_nondep; intro x; try apply allpath_hprop.
-    generalize dependent epig; apply minus1Trunc_rect_nondep; intro w; try apply allpath_hprop.
-    apply min1.
+    generalize dependent (center _ (Contr_internal := epif)); apply Trunc_rect_nondep; intro x; try apply allpath_hprop.
+    generalize dependent (center _ (Contr_internal := epig)); apply Trunc_rect_nondep; intro w; try apply allpath_hprop.
+    apply tr.
     exists (x.1,w.1). simpl.
     apply path_prod; [exact x.2 | exact w.2].
   Qed.
 
   Lemma epi_two_out_of_three_1 (A B C:Type) (f:A -> B) (g:B -> C) (h : A -> C) (π : forall a,  g (f a) = h a)
-  : is_epi f -> is_epi g -> is_epi h.
-    intros Ef Eg. intros c. unfold is_epi in *.
-    generalize dependent (Eg c).
-    apply minus1Trunc_rect_nondep; try apply allpath_hprop. intros [b p].
-    generalize dependent (Ef b).
-    apply minus1Trunc_rect_nondep; try apply allpath_hprop. intros [a q].
-    apply min1.
+  : IsSurjection f -> IsSurjection g -> IsSurjection h.
+    intros Ef Eg.
+    apply BuildIsSurjection.
+    intros c. 
+    generalize dependent (@center _ (Eg c)).
+    apply Trunc_rect_nondep; try apply allpath_hprop. intros [b p].
+    generalize dependent (@center _ (Ef b)).
+    apply Trunc_rect_nondep; try apply allpath_hprop. intros [a q].
+    apply tr.
     exists a.
     rewrite <- (π a).
     rewrite q.
@@ -110,18 +119,20 @@ Section Surjections.
   Qed.
 
   Lemma epi_two_out_of_three_2 (A B C:Type) (f:A -> B) (g:B -> C) (h : A -> C) (π : forall a,  g (f a) = h a)
-  : is_epi f -> is_epi h -> is_epi g.
-    intros Ef Eh. intros c. unfold is_epi in *.
-    generalize dependent (Eh c).
-    apply minus1Trunc_rect_nondep; try apply allpath_hprop. intros [a p].
-    apply min1.
+  : IsSurjection f -> IsSurjection h -> IsSurjection g.
+    intros Ef Eh.
+    apply BuildIsSurjection.
+    intros c. 
+    generalize dependent (@center _ (Eh c)).
+    apply Trunc_rect_nondep; try apply allpath_hprop. intros [a p].
+    apply tr.
 
     exists (f a).
     exact ((π a) @ p).
   Qed.
 
   Lemma epi_two_out_of_three_3 (A B C:Type) (f:A -> B) (g:B -> C) (h : A -> C) (π : forall a,  g (f a) = h a)
-  : is_epi g -> is_epi h -> is_epi f.
+  : IsSurjection g -> IsSurjection h -> IsSurjection f.
   Admitted.
             
   Definition IsEpi A B (f:A -> B)

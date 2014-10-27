@@ -1,13 +1,18 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations.
 
-Require Import epi_mono equiv truncation univalence.
+(* Require Import univalence. *)
+Require Import equivalence.
+Require Import epi_mono.
 
 Set Universe Polymorphism.
 Global Set Primitive Projections.
 Set Implicit Arguments.
 
 Section SubObject_CLassifier.
+
+Context `{ua: Univalence}.
+Context `{fs: Funext}.
 
 Definition hfiber {A B : Type} (f : A -> B) (y : B) := { x : A & f x = y }.
 
@@ -74,7 +79,8 @@ Definition sub_eq_char_sect B : Sect (sub_to_char (B:=B)) (char_to_sub (B:=B)).
   rewrite transport_arrow. rewrite transport_const. unfold hfiber_eq.
   erewrite moveR_transport_V. assert ((existT (fun b => {a : A | f a = b}) (f t) (t; idpath)).1 = f t).
   reflexivity. exact X.
-  rewrite transport_path_universe_uncurried. reflexivity.
+  pose (p := transport_path_universe {| equiv_fun := hfiber_eqL f; equiv_isequiv := hfiber_eq_eq f |}). unfold path_universe in p. simpl in p.
+  rewrite p. reflexivity.
 Defined.
   
 Instance sub_eq_char_eq B : IsEquiv (sub_to_char (B:=B)).
@@ -95,21 +101,21 @@ Definition subobject_diagram A B (f : A -> B) :
   apply path_forall; intro a. unfold compose, sub_to_char; simpl. exact 1.
 Defined.
 
-Definition nsub_to_char n B : {A : Type & {f : A -> B & forall b, IsTrunc n (hfiber f b)}} -> B -> Trunc n :=
+Definition nsub_to_char n B : {A : Type & {f : A -> B & forall b, IsTrunc n (hfiber f b)}} -> B -> Trunk n :=
   λ f b, (hfiber (f.2.1) b; (f.2.2) b).
  
 Instance projContr B (P : B -> {T : Type & Contr_internal T}) (b:B) : Contr_internal ((P b).1)
  := (P b).2.
 
-Instance nhfiber_pi1_eq n B (P : B -> Trunc n) (b:B) : IsEquiv (hfiber_pi1L (fun b => (P b).1) (b:=b)).
+Instance nhfiber_pi1_eq n B (P : B -> Trunk n) (b:B) : IsEquiv (hfiber_pi1L (fun b => (P b).1) (b:=b)).
 apply (hfiber_pi1_eq (fun b => (P b).1)).
 Defined.
 
-Definition nhfiber_pi1 n B (P : B -> Trunc n) (b : B) : 
+Definition nhfiber_pi1 n B (P : B -> Trunk n) (b : B) : 
   hfiber (@pr1 _ (λ b0 : B, (P b0).1)) b = (P b).1 :=
   hfiber_pi1 (fun b => (P b).1) b.
 
-Instance nchar_to_sub_eq n B (P : B -> Trunc n) (b:B) : IsEquiv (λ x:(P b).1, 
+Instance nchar_to_sub_eq n B (P : B -> Trunk n) (b:B) : IsEquiv (λ x:(P b).1, 
 (existT (λ x, x.1 = b) (existT (λ b, (P b).1) b x) idpath)).
 apply (isequiv_adjointify  (λ x : (P b) .1, (existT (λ x, x.1 = b) (existT (λ b, (P b).1) b x) idpath)) (fun X => transport (λ b, (P b).1) (X.2) (X.1.2))).
 - intro x; destruct x as [[b' P'] eqb']. simpl in *.
@@ -118,16 +124,16 @@ apply (isequiv_adjointify  (λ x : (P b) .1, (existT (λ x, x.1 = b) (existT (λ
   reflexivity.
 - intro x. reflexivity. Defined. 
 
-Definition nchar_to_sub_compat n B (P : B -> Trunc n) : 
+Definition nchar_to_sub_compat n B (P : B -> Trunk n) : 
   forall b, IsTrunc n (hfiber (A:={b : B & (P b).1}) (B:=B) (@pr1 _ (fun b => (P b).1)) b).
-  intro. unfold hfiber. unfold Trunc in *.
+  intro. unfold hfiber. unfold Trunk in *.
   eapply (@trunc_equiv ((P b).1) ({x : {b0 : B & (P b0).1} & x.1 = b})
                        (λ x:((P b).1), (existT (λ x, x.1 = b) (existT (λ b, (P b).1) b x) idpath))).
   exact ((P b).2).
   exact (nchar_to_sub_eq _ _).
 Defined.
 
-Definition nchar_to_sub n B : (B -> Trunc n) -> {A : Type & {f : A -> B & forall b, IsTrunc n (hfiber f b)}} :=
+Definition nchar_to_sub n B : (B -> Trunk n) -> {A : Type & {f : A -> B & forall b, IsTrunc n (hfiber f b)}} :=
   λ P, ({b : B & (P b).1} ; (@pr1 _ _; nchar_to_sub_compat _)).
 
 Definition ntransport_arrow n {A : Type} {B C : A -> Type}
@@ -175,19 +181,19 @@ Definition nsub_eq_char_sect n B : Sect (nsub_to_char n (B:=B))(nchar_to_sub (n:
   destruct eq; exact trans.
 
   apply path_sigma with (p := X).
-  apply allpath_hprop.
+  apply path_ishprop.
 Defined. 
 
 Instance nsub_eq_char_eq n B : IsEquiv (nsub_to_char n (B:=B)) := 
   isequiv_adjointify _ (nchar_to_sub (B:=B)) (nsub_eq_char_retr (n:=n) (B:=B)) (nsub_eq_char_sect n (B:=B)).
 
-Definition nsub_eq_char n B : {A : Type & {f : A -> B & forall b, IsTrunc n (hfiber f b)}} = (B -> Trunc n).
+Definition nsub_eq_char n B : {A : Type & {f : A -> B & forall b, IsTrunc n (hfiber f b)}} = (B -> Trunk n).
   apply path_universe_uncurried.
   exists (nsub_to_char n (B:=B)).
   exact (nsub_eq_char_eq _ _).
 Defined.
 
-Definition nterminal n A B (f : {f : A -> B & forall b, IsTrunc n (hfiber f b)}) : A -> {A' : Trunc n & (A'.1)} :=
+Definition nterminal n A B (f : {f : A -> B & forall b, IsTrunc n (hfiber f b)}) : A -> {A' : Trunk n & (A'.1)} :=
   λ a, (((hfiber (f.1) ((f.1) a)) ; (f.2) ((f.1) a)); (a; idpath)).
 
 Definition nsubobject_diagram n A B (f : {f : A -> B & forall b, IsTrunc n (hfiber f b)}) : 

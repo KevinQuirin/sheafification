@@ -1,6 +1,6 @@
 Require Export Utf8_core.
 Require Import HoTT.
-Require Import hit.Connectedness hit.minus1Trunc types.Paths.
+Require Import hit.Connectedness hit.Truncations Types.Paths.
 Require Import univalence.
 
 Set Universe Polymorphism.
@@ -9,6 +9,10 @@ Set Implicit Arguments.
 Local Open Scope path_scope.
 Local Open Scope equiv_scope.
 
+Section Lemmas.
+
+Context `{ua: Univalence}.
+Context `{fs: Funext}.
 
 Lemma path_sigma_1 (A : Type) (P : A → Type) (u : ∃ x, P x)
 : path_sigma P u u 1 1 = 1.
@@ -68,3 +72,5 @@ Lemma ap_conjug_ap10 (A B:Type) (f g : A -> B) φ (r : f = g) (p : forall x, φ 
 : (ap f (p x))^ @ (ap10 r (φ x)) @ (ap g (p x)) = ap10 r x.
   destruct r. simpl. rewrite concat_p1. apply concat_Vp.
 Qed.
+
+End Lemmas.

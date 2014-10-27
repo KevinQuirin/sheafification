@@ -1,6 +1,6 @@
 Require Export Utf8_core.
 Require Import HoTT TruncType.
-Require Import types.Forall.
+Require Import Types.Forall.
 (* Require Import hit.Connectedness hit.minus1Trunc. *)
 (* Require Import univalence lemmas epi_mono. *)
 
@@ -114,6 +114,8 @@ Defined.
 
 Section Coequalizer_universal_property.
 
+  Context `{fs : Funext}.
+
   Definition is_coequalizer {A B} {f g : A -> B} {X} (coequalizer : {m : B -> X & m o f =  m o g}) :=
     forall Y, IsEquiv (fun x : X -> Y => 
                          existT (fun m => m o f =  m o g) (x o pr1 coequalizer) (ap (fun u => x o u) (pr2 coequalizer))).
@@ -161,6 +163,8 @@ Section Coequalizer_universal_property.
 End Coequalizer_universal_property.
 
 Section CoequalizersTransport.
+
+  Context `{fs : Funext}.
 
   Lemma coequalizer_transport_end
           (A B X Q:Type)
@@ -325,212 +329,212 @@ Section CoequalizersTransport.
   
 End CoequalizersTransport.
 
-Section CoequalizersEpimorphisms.
+(* Section CoequalizersEpimorphisms. *)
 
-  (** Coequalizers are epimorphisms *)
+(*   (** Coequalizers are epimorphisms *) *)
 
-  (* Lemma coeq_is_epi (A B:Type) (f g:A -> B) (q := @coeq A B f g) *)
-  (* : is_epi q. *)
+(*   (* Lemma coeq_is_epi (A B:Type) (f g:A -> B) (q := @coeq A B f g) *) *)
+(*   (* : is_epi q. *) *)
 
-  (*   unfold is_epi. *)
-  (*   refine (coequalizer_rect f g _ _ _). *)
-  (*     intro b. apply min1. exists b. reflexivity. *)
+(*   (*   unfold is_epi. *) *)
+(*   (*   refine (coequalizer_rect f g _ _ _). *) *)
+(*   (*     intro b. apply min1. exists b. reflexivity. *) *)
 
-  (*     intro a; simpl. *)
+(*   (*     intro a; simpl. *) *)
       
-  (*   intros x; destruct x. *)
-  (*   apply min1. exists b. exact 1. *)
-  (* Defined. *)
+(*   (*   intros x; destruct x. *) *)
+(*   (*   apply min1. exists b. exact 1. *) *)
+(*   (* Defined. *) *)
 
-  (** Epimorphisms are coequalizers (of their kernel pair) *)
+(*   (** Epimorphisms are coequalizers (of their kernel pair) *) *)
 
-  Definition kp_coeq_mono {B C :Type} (f : C -> B) (P := pullback f f) (Q := coequalizer (λ x:P, x.1) (λ x:P, x.2.1)) (q := coeq (f:=(λ x:P, x.1)) (g:=(λ x:P, x.2.1)))
-  : Q -> B
-    := @coequalizer_rectnd P C (λ x:P, x.1) (λ x:P, x.2.1) B f (λ a, a.2.2).
+(*   Definition kp_coeq_mono {B C :Type} (f : C -> B) (P := pullback f f) (Q := coequalizer (λ x:P, x.1) (λ x:P, x.2.1)) (q := coeq (f:=(λ x:P, x.1)) (g:=(λ x:P, x.2.1))) *)
+(*   : Q -> B *)
+(*     := @coequalizer_rectnd P C (λ x:P, x.1) (λ x:P, x.2.1) B f (λ a, a.2.2). *)
 
-  Lemma kp_coeq_is_mono_transport_lemma
-        {B : Type}
-        {C : Type}
-        (f : C → B)
-        (P := pullback f f : Type)
-        (Q := coequalizer (λ x : P, x.1) (λ x : P, (x.2).1) : Type)
-        (e := coeq (f:=(λ x : P, x.1)) (g:=(λ x : P, (x.2).1))
-              : C → coequalizer (λ x : P, x.1) (λ x : P, (x.2).1))
-        (p := kp_coeq_mono f
-              : let P0 := pullback f f in
-                let Q0 := coequalizer (λ x : P0, x.1) (λ x : P0, (x.2).1) in
-                let q := coeq (f:=(λ x : P0, x.1)) (g:=(λ x : P0, (x.2).1)) in Q0 → B)
-        (b : B)
-        (c : C)
-        (c' : C)
-        (pcc : e c = e c')
-  : transport (λ x : Q, p x = b) pcc = concat (ap p pcc)^.
-  destruct pcc; simpl.
-  apply path_forall; intro x.
-  rewrite transport_1.
-  rewrite concat_1p.
-  exact 1.
-  Defined.
+(*   Lemma kp_coeq_is_mono_transport_lemma *)
+(*         {B : Type} *)
+(*         {C : Type} *)
+(*         (f : C → B) *)
+(*         (P := pullback f f : Type) *)
+(*         (Q := coequalizer (λ x : P, x.1) (λ x : P, (x.2).1) : Type) *)
+(*         (e := coeq (f:=(λ x : P, x.1)) (g:=(λ x : P, (x.2).1)) *)
+(*               : C → coequalizer (λ x : P, x.1) (λ x : P, (x.2).1)) *)
+(*         (p := kp_coeq_mono f *)
+(*               : let P0 := pullback f f in *)
+(*                 let Q0 := coequalizer (λ x : P0, x.1) (λ x : P0, (x.2).1) in *)
+(*                 let q := coeq (f:=(λ x : P0, x.1)) (g:=(λ x : P0, (x.2).1)) in Q0 → B) *)
+(*         (b : B) *)
+(*         (c : C) *)
+(*         (c' : C) *)
+(*         (pcc : e c = e c') *)
+(*   : transport (λ x : Q, p x = b) pcc = concat (ap p pcc)^. *)
+(*   destruct pcc; simpl. *)
+(*   apply path_forall; intro x. *)
+(*   rewrite transport_1. *)
+(*   rewrite concat_1p. *)
+(*   exact 1. *)
+(*   Defined. *)
 
-  Definition kp_coeq_is_mono_ap_lemma
-             (B : Type)
-             (C : Type)
-             (f : C → B)
-             (P := pullback f f : Type)
-             (Q := coequalizer (λ x : P, x.1) (λ x : P, (x.2).1) : Type)
-             (e := coeq (f:=(λ x : P, x.1)) (g:=(λ x : P, (x.2).1))
-                   : C → coequalizer (λ x : P, x.1) (λ x : P, (x.2).1))
-             (p := kp_coeq_mono f
-                   : let P0 := pullback f f in
-                     let Q0 := coequalizer (λ x : P0, x.1) (λ x : P0, (x.2).1) in
-                     let q := coeq (f:=(λ x : P0, x.1)) (g:=(λ x : P0, (x.2).1)) in Q0 → B)
-             (b : B)
-             (c : C)
-             (c' : C)
-             (fcc : f c = f c')
-  : (ap p (path_coeq (c; (c'; fcc)))) = fcc
-    := coequalizer_rectnd_beta_pp B f (λ a : pullback f f, (a.2).2) (c;(c';fcc)).
+(*   Definition kp_coeq_is_mono_ap_lemma *)
+(*              (B : Type) *)
+(*              (C : Type) *)
+(*              (f : C → B) *)
+(*              (P := pullback f f : Type) *)
+(*              (Q := coequalizer (λ x : P, x.1) (λ x : P, (x.2).1) : Type) *)
+(*              (e := coeq (f:=(λ x : P, x.1)) (g:=(λ x : P, (x.2).1)) *)
+(*                    : C → coequalizer (λ x : P, x.1) (λ x : P, (x.2).1)) *)
+(*              (p := kp_coeq_mono f *)
+(*                    : let P0 := pullback f f in *)
+(*                      let Q0 := coequalizer (λ x : P0, x.1) (λ x : P0, (x.2).1) in *)
+(*                      let q := coeq (f:=(λ x : P0, x.1)) (g:=(λ x : P0, (x.2).1)) in Q0 → B) *)
+(*              (b : B) *)
+(*              (c : C) *)
+(*              (c' : C) *)
+(*              (fcc : f c = f c') *)
+(*   : (ap p (path_coeq (c; (c'; fcc)))) = fcc *)
+(*     := coequalizer_rectnd_beta_pp B f (λ a : pullback f f, (a.2).2) (c;(c';fcc)). *)
 
-  Lemma foo (A B: Type) (x y : A) (f g : A -> A) (P:= λ a, f a= f x)  (p : x = y)
-  : transport P p 1 = ap f p^.
-  destruct p.
-  reflexivity.
-  Qed.
+(*   Lemma foo (A B: Type) (x y : A) (f g : A -> A) (P:= λ a, f a= f x)  (p : x = y) *)
+(*   : transport P p 1 = ap f p^. *)
+(*   destruct p. *)
+(*   reflexivity. *)
+(*   Qed. *)
   
-  Lemma kp_coeq_is_mono (B C :Type) (f : C -> B) (P := pullback f f) (Q := coequalizer (λ x:P, x.1) (λ x:P, x.2.1)) (e := coeq (f:=(λ x:P, x.1)) (g:=(λ x:P, x.2.1))) (p := @kp_coeq_mono B C f) 
-  : is_mono p.
-    intros b. 
-    apply hprop_allpath.
-    intros [q π] [q' π'].
-    revert π'. revert π.
-    revert q'. revert q.
+(*   Lemma kp_coeq_is_mono (B C :Type) (f : C -> B) (P := pullback f f) (Q := coequalizer (λ x:P, x.1) (λ x:P, x.2.1)) (e := coeq (f:=(λ x:P, x.1)) (g:=(λ x:P, x.2.1))) (p := @kp_coeq_mono B C f)  *)
+(*   : is_mono p. *)
+(*     intros b.  *)
+(*     apply hprop_allpath. *)
+(*     intros [q π] [q' π']. *)
+(*     revert π'. revert π. *)
+(*     revert q'. revert q. *)
 
-    refine (coequalizer_rect2 (λ x : pullback f f, x.1)
-                              (λ x : pullback f f, (x.2).1) _ _ _ _).
-    { intros b' c' π π'.
-      apply @path_sigma' with (p:= (@path_coeq P C (λ x : P, x.1) (λ x : P, (x.2).1) (b';(c';π @ π'^)))).
-      simpl.
-      pose (p1 := kp_coeq_is_mono_transport_lemma (C:=C) f b _ _ (@path_coeq P C (λ x : P, x.1) (λ x : P, (x.2).1) (b';(c';π @ π'^)))).
-      apply (transport (λ U, U π = π') p1^); clear p1.
-      pose (p1 := kp_coeq_is_mono_ap_lemma _ _ f b b' c' (π @ π'^)).
-      apply (transport (λ U, U^ @ π = π') p1^).
-      apply (transport (λ U, U @ π = _) (inv_pV _ _)^).
-      apply (transport (λ U, U = _) (concat_pp_p _ _ _)^).
-      apply (transport (λ U, π' @ U = π') (concat_Vp _)^).
-      apply (transport (λ U, U = _) (concat_p1 _)^).
-      reflexivity. }
+(*     refine (coequalizer_rect2 (λ x : pullback f f, x.1) *)
+(*                               (λ x : pullback f f, (x.2).1) _ _ _ _). *)
+(*     { intros b' c' π π'. *)
+(*       apply @path_sigma' with (p:= (@path_coeq P C (λ x : P, x.1) (λ x : P, (x.2).1) (b';(c';π @ π'^)))). *)
+(*       simpl. *)
+(*       pose (p1 := kp_coeq_is_mono_transport_lemma (C:=C) f b _ _ (@path_coeq P C (λ x : P, x.1) (λ x : P, (x.2).1) (b';(c';π @ π'^)))). *)
+(*       apply (transport (λ U, U π = π') p1^); clear p1. *)
+(*       pose (p1 := kp_coeq_is_mono_ap_lemma _ _ f b b' c' (π @ π'^)). *)
+(*       apply (transport (λ U, U^ @ π = π') p1^). *)
+(*       apply (transport (λ U, U @ π = _) (inv_pV _ _)^). *)
+(*       apply (transport (λ U, U = _) (concat_pp_p _ _ _)^). *)
+(*       apply (transport (λ U, π' @ U = π') (concat_Vp _)^). *)
+(*       apply (transport (λ U, U = _) (concat_p1 _)^). *)
+(*       reflexivity. } *)
     
-    { intros w [x [y q]]. simpl in *.
-      apply path_forall; intros π.
-      apply path_forall; intros π'.
-      rewrite transport_forall_constant. simpl.
-      rewrite transport_forall. simpl.
-      destruct π'.
-      hott_simpl.
-      repeat rewrite (transport_paths_l _ 1).
-      hott_simpl.
+(*     { intros w [x [y q]]. simpl in *. *)
+(*       apply path_forall; intros π. *)
+(*       apply path_forall; intros π'. *)
+(*       rewrite transport_forall_constant. simpl. *)
+(*       rewrite transport_forall. simpl. *)
+(*       destruct π'. *)
+(*       hott_simpl. *)
+(*       repeat rewrite (transport_paths_l _ 1). *)
+(*       hott_simpl. *)
 
-      unfold path_sigma'. simpl.
-      Search path_sigma.
+(*       unfold path_sigma'. simpl. *)
+(*       Search path_sigma. *)
  
       
-    generalize dependent q'. generalize dependent q.
+(*     generalize dependent q'. generalize dependent q. *)
 
-    refine (coequalizer_rect (λ x : pullback f f, x.1) (λ x : pullback f f, (x.2).1) _ _ _).
-    { intros b0 π.
-      refine (coequalizer_rect (λ x : pullback f f, x.1) (λ x : pullback f f, (x.2).1) _ _ _).
-      { intros b1 π'.
-        apply @path_sigma' with (p:= (@path_coeq P C (λ x : P, x.1) (λ x : P, (x.2).1) (b0;(b1;π @ π'^)))).
-        simpl.
+(*     refine (coequalizer_rect (λ x : pullback f f, x.1) (λ x : pullback f f, (x.2).1) _ _ _). *)
+(*     { intros b0 π. *)
+(*       refine (coequalizer_rect (λ x : pullback f f, x.1) (λ x : pullback f f, (x.2).1) _ _ _). *)
+(*       { intros b1 π'. *)
+(*         apply @path_sigma' with (p:= (@path_coeq P C (λ x : P, x.1) (λ x : P, (x.2).1) (b0;(b1;π @ π'^)))). *)
+(*         simpl. *)
 
-        pose (p1 := kp_coeq_is_mono_transport_lemma (C:=C) f b _ _ (@path_coeq P C (λ x : P, x.1) (λ x : P, (x.2).1) (b0;(b1;π @ π'^)))).
-        apply (transport (λ U, U π = π') p1^); clear p1.
-        pose (p1 := kp_coeq_is_mono_ap_lemma _ _ f b b0 b1 (π @ π'^)).
-        apply (transport (λ U, U^ @ π = π') p1^).
-        apply (transport (λ U, U @ π = _) (inv_pV _ _)^).
-        apply (transport (λ U, U = _) (concat_pp_p _ _ _)^).
-        apply (transport (λ U, π' @ U = π') (concat_Vp _)^).
-        apply (transport (λ U, U = _) (concat_p1 _)^).
-        reflexivity.
-      }
+(*         pose (p1 := kp_coeq_is_mono_transport_lemma (C:=C) f b _ _ (@path_coeq P C (λ x : P, x.1) (λ x : P, (x.2).1) (b0;(b1;π @ π'^)))). *)
+(*         apply (transport (λ U, U π = π') p1^); clear p1. *)
+(*         pose (p1 := kp_coeq_is_mono_ap_lemma _ _ f b b0 b1 (π @ π'^)). *)
+(*         apply (transport (λ U, U^ @ π = π') p1^). *)
+(*         apply (transport (λ U, U @ π = _) (inv_pV _ _)^). *)
+(*         apply (transport (λ U, U = _) (concat_pp_p _ _ _)^). *)
+(*         apply (transport (λ U, π' @ U = π') (concat_Vp _)^). *)
+(*         apply (transport (λ U, U = _) (concat_p1 _)^). *)
+(*         reflexivity. *)
+(*       } *)
       
-      { intros [x [y q]]; simpl in *.
-        (* apply path_forall; intro π'. destruct π'. simpl. *)
+(*       { intros [x [y q]]; simpl in *. *)
+(*         (* apply path_forall; intro π'. destruct π'. simpl. *) *)
 
-        pose (@dpath_forall _ _ (coequalizer _ _) (λ w, p w = f y) (λ w, λ π', (coeq b0; π) = (w; π'))). _ _ (path_coeq (x; (y; q)))).
-        Search transport.
+(*         pose (@dpath_forall _ _ (coequalizer _ _) (λ w, p w = f y) (λ w, λ π', (coeq b0; π) = (w; π'))). _ _ (path_coeq (x; (y; q)))). *)
+(*         Search transport. *)
 
 
-        pose (@transport_forall (coequalizer _ _) (λ w, p w = f y) (λ w, λ π', (coeq b0; π) = (w; π')) _ _ (path_coeq (x; (y; q)))).
-        simpl in p0.
-        apply (transport (λ U, U = _) (p0 _ 1)^).
+(*         pose (@transport_forall (coequalizer _ _) (λ w, p w = f y) (λ w, λ π', (coeq b0; π) = (w; π')) _ _ (path_coeq (x; (y; q)))). *)
+(*         simpl in p0. *)
+(*         apply (transport (λ U, U = _) (p0 _ 1)^). *)
 
         
 
 
-    destruct q as [c], q' as [c']. 
+(*     destruct q as [c], q' as [c'].  *)
 
-    apply @path_sigma' with (p:= (@path_coeq P C (λ x : P, x.1) (λ x : P, (x.2).1) (c;(c';π @ π'^)))).
+(*     apply @path_sigma' with (p:= (@path_coeq P C (λ x : P, x.1) (λ x : P, (x.2).1) (c;(c';π @ π'^)))). *)
 
-    pose (p1 := kp_coeq_is_mono_transport_lemma (C:=C) (f:=f) b (@path_coeq P C (λ x : P, x.1) (λ x : P, (x.2).1) (c;(c';π @ π'^)))).
-    apply (transport (λ U, U π = π') p1^); clear p1.
+(*     pose (p1 := kp_coeq_is_mono_transport_lemma (C:=C) (f:=f) b (@path_coeq P C (λ x : P, x.1) (λ x : P, (x.2).1) (c;(c';π @ π'^)))). *)
+(*     apply (transport (λ U, U π = π') p1^); clear p1. *)
 
-    pose (p1 := kp_coeq_is_mono_ap_lemma f b c c' (π @ π'^)).
-    apply (transport (λ U, U^ @ π = π') p1^).
-    rewrite inv_pV. hott_simpl.
-  Qed.
+(*     pose (p1 := kp_coeq_is_mono_ap_lemma f b c c' (π @ π'^)). *)
+(*     apply (transport (λ U, U^ @ π = π') p1^). *)
+(*     rewrite inv_pV. hott_simpl. *)
+(*   Qed. *)
 
-  Lemma coeq_is_equiv (B C :Type) (f : C -> B) (P := pullback f f) (Q := coequalizer (λ x:P, x.1) (λ x:P, x.2.1)) (e := coeq (λ x:P, x.1) (λ x:P, x.2.1)) (p := @kp_coeq_mono B C f) (f_epi : is_epi f)
-  : IsEquiv p.
-    apply epi_mono_equiv.
-    -  assert (forall c, p (e c) = f c).
-       intro c; exact 1.
-       apply (epi_two_out_of_three_2 p (λ c, 1) (@coeq_is_epi P C (λ x:P, x.1) (λ x:P, x.2.1)) f_epi).
-    - apply kp_coeq_is_mono. 
-  Qed.
+(*   Lemma coeq_is_equiv (B C :Type) (f : C -> B) (P := pullback f f) (Q := coequalizer (λ x:P, x.1) (λ x:P, x.2.1)) (e := coeq (λ x:P, x.1) (λ x:P, x.2.1)) (p := @kp_coeq_mono B C f) (f_epi : is_epi f) *)
+(*   : IsEquiv p. *)
+(*     apply epi_mono_equiv. *)
+(*     -  assert (forall c, p (e c) = f c). *)
+(*        intro c; exact 1. *)
+(*        apply (epi_two_out_of_three_2 p (λ c, 1) (@coeq_is_epi P C (λ x:P, x.1) (λ x:P, x.2.1)) f_epi). *)
+(*     - apply kp_coeq_is_mono.  *)
+(*   Qed. *)
 
-  Definition kernel_pair A B (f : A -> B) := pullback f f.
+(*   Definition kernel_pair A B (f : A -> B) := pullback f f. *)
   
-  Definition inj1 A B (f : A -> B) : kernel_pair f -> A := pr1.
-  Definition inj2 A B (f : A -> B) : kernel_pair f -> A := fun x => pr1 (pr2 x).
+(*   Definition inj1 A B (f : A -> B) : kernel_pair f -> A := pr1. *)
+(*   Definition inj2 A B (f : A -> B) : kernel_pair f -> A := fun x => pr1 (pr2 x). *)
 
-  Definition epi_coeq_kernel_pair_comm (C B:Type) (f:C -> B) 
-  : f o (@inj1 C B f) = f o (@inj2 C B f).
-    apply path_forall; intro x. exact x.2.2.
-  Defined.
+(*   Definition epi_coeq_kernel_pair_comm (C B:Type) (f:C -> B)  *)
+(*   : f o (@inj1 C B f) = f o (@inj2 C B f). *)
+(*     apply path_forall; intro x. exact x.2.2. *)
+(*   Defined. *)
     
-  Theorem epi_coeq_kernel_pair_eq (C B:Type) (f:C -> B) (f_epi : is_epi f)
-  : coequalizer (@inj1 C B f) (@inj2 C B f) <~> B.
-  Proof.
-    (* apply path_universe_uncurried. *)
-    exists (@kp_coeq_mono B C f).
-    apply coeq_is_equiv.
-    exact f_epi.
-  Defined.
+(*   Theorem epi_coeq_kernel_pair_eq (C B:Type) (f:C -> B) (f_epi : is_epi f) *)
+(*   : coequalizer (@inj1 C B f) (@inj2 C B f) <~> B. *)
+(*   Proof. *)
+(*     (* apply path_universe_uncurried. *) *)
+(*     exists (@kp_coeq_mono B C f). *)
+(*     apply coeq_is_equiv. *)
+(*     exact f_epi. *)
+(*   Defined. *)
 
-  Theorem epi_coeq_kernel_pair (C B:Type) (f:C -> B) (f_epi : is_epi f)
-  : is_coequalizer (f ; epi_coeq_kernel_pair_comm f).
-    pose (pp := epi_coeq_kernel_pair_eq f_epi).
-    pose (foo := @coequalizer_transport_end (kernel_pair f) C B (coequalizer (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1)) (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1) (path_universe pp)).
-    specialize (foo (coeq (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1);
-                     path_forall _ _ (@path_coeq _ _ (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1)))).
-    specialize (foo (coequalizer_is_coequalizer (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1))).
-    specialize (foo (f; epi_coeq_kernel_pair_comm f)).
-    unfold path_universe in foo. unfold path_universe_uncurried in foo.
-    rewrite eisretr in foo.
-    simpl in foo.
-    specialize (foo 1).
-    apply foo.
+(*   Theorem epi_coeq_kernel_pair (C B:Type) (f:C -> B) (f_epi : is_epi f) *)
+(*   : is_coequalizer (f ; epi_coeq_kernel_pair_comm f). *)
+(*     pose (pp := epi_coeq_kernel_pair_eq f_epi). *)
+(*     pose (foo := @coequalizer_transport_end (kernel_pair f) C B (coequalizer (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1)) (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1) (path_universe pp)). *)
+(*     specialize (foo (coeq (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1); *)
+(*                      path_forall _ _ (@path_coeq _ _ (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1)))). *)
+(*     specialize (foo (coequalizer_is_coequalizer (λ x:(kernel_pair f), x.1) (λ x:(kernel_pair f), x.2.1))). *)
+(*     specialize (foo (f; epi_coeq_kernel_pair_comm f)). *)
+(*     unfold path_universe in foo. unfold path_universe_uncurried in foo. *)
+(*     rewrite eisretr in foo. *)
+(*     simpl in foo. *)
+(*     specialize (foo 1). *)
+(*     apply foo. *)
 
-    simpl.
-    unfold epi_coeq_kernel_pair_comm; simpl.
-    apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
-    unfold ap10 at 1, path_forall at 1; rewrite eisretr.
-    apply path_forall; intro x.
-    rewrite (ap10_ap_postcompose (kp_coeq_mono (f:=f)) (path_forall coeql coeqr path_coeq) x).
-    unfold ap10, path_forall; rewrite eisretr.
-    simpl.
-    unfold kp_coeq_mono.
-    exact (coequalizer_rectnd_beta_pp f (λ a : pullback f f, (a.2).2) x)^.
-  Qed.
-End CoequalizersEpimorphisms. 
+(*     simpl. *)
+(*     unfold epi_coeq_kernel_pair_comm; simpl. *)
+(*     apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)). *)
+(*     unfold ap10 at 1, path_forall at 1; rewrite eisretr. *)
+(*     apply path_forall; intro x. *)
+(*     rewrite (ap10_ap_postcompose (kp_coeq_mono (f:=f)) (path_forall coeql coeqr path_coeq) x). *)
+(*     unfold ap10, path_forall; rewrite eisretr. *)
+(*     simpl. *)
+(*     unfold kp_coeq_mono. *)
+(*     exact (coequalizer_rectnd_beta_pp f (λ a : pullback f f, (a.2).2) x)^. *)
+(*   Qed. *)
+(* End CoequalizersEpimorphisms.  *)

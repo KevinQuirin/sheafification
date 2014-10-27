@@ -10,6 +10,7 @@ Local Open Scope path_scope.
 Local Open Scope equiv_scope.
 Local Open Scope type_scope.
 
+Section Univalence.
 Context `{ua: Univalence}.
 Context `{fs: Funext}.
 
@@ -32,8 +33,8 @@ Context `{fs: Funext}.
 
 Theorem log_equiv_is_equiv (A B:Type) {H : IsHProp A} {H' : IsHProp B} (f : A -> B) (g : B -> A) : 
   IsEquiv f.
-  assert (Sect f g). intro x. apply allpath_hprop; assumption.
-  assert (Sect g f). intro x. apply allpath_hprop; assumption.
+  assert (Sect f g). intro x. apply path_ishprop; assumption.
+  assert (Sect g f). intro x. apply path_ishprop; assumption.
   apply BuildIsEquiv with (eisretr := X0) (eissect := X).
   intro. destruct (H' (f (g (f x))) (f x)). rewrite <- contr. symmetry. apply contr.
 Defined.
@@ -53,7 +54,7 @@ Defined.
 Lemma eq_dep_subset : forall A (B:A -> Type) (_:forall a, IsHProp (B a)) 
                              (u v : sigT B),
                         u.1 = v.1 -> u = v.
-  intros. apply (path_sigma _ _ _ X0). destruct u; destruct v; simpl in X0; destruct X0. apply allpath_hprop. 
+  intros. apply (path_sigma _ _ _ X0). destruct u; destruct v; simpl in X0; destruct X0. apply path_ishprop. 
 Defined.
 
 Lemma isequiv_eq_dep_subset {A:Type} {B:A -> Type} (X : ∀ a : A, IsHProp (B a)) (u v : {a:A & B a})
@@ -70,7 +71,8 @@ Lemma isequiv_eq_dep_subset {A:Type} {B:A -> Type} (X : ∀ a : A, IsHProp (B a)
     simpl in p; destruct p. unfold eq_dep_subset.
     pose (foo := @ap_existT). unfold path_sigma' in foo.
     rewrite <- foo.
-    simpl. unfold allpath_hprop.
+    simpl. unfold path_ishprop.
     destruct (center (G=H)). reflexivity.
-Defined.
+Defined. 
 
+End Univalence.

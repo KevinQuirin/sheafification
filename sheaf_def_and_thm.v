@@ -1,6 +1,6 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
-Require Import lemmas epi_mono equiv truncation univalence sub_object_classifier limit_colimit modalities.
+Require Import lemmas epi_mono equivalence truncation univalence sub_object_classifier limit_colimit modalities.
 Require Import sheaf_base_case.
 
 Set Universe Polymorphism.
@@ -15,8 +15,12 @@ Local Open Scope type_scope.
 Arguments trunc_arrow {H} {A} {B} {n} H0: simpl never.
 Arguments trunc_sigma {A} {P} {n} H H0: simpl never.
 Arguments istrunc_paths {A} {n} H x y: simpl never.
-Arguments truncn_unique {n} A B H: simpl never.
+Arguments truncn_unique _ {n} A B H: simpl never.
 
+
+  Context `{ua: Univalence}.
+  Context `{fs: Funext}.
+  
 Variable n0 : trunc_index.
 
 Definition n := trunc_S n0.
@@ -31,10 +35,10 @@ Variable j_is_nj_unit : forall P x ,
 (* Left Exactness *)
 
 Definition islex n (subU : subuniverse_struct n)
-  := forall (X Y:Trunc n) (f : X.1 -> Y.1) (y:Y.1), (O subU (existT (λ T, IsTrunc n T) (hfiber f y) (trunc_sigma X.2 (λ a, istrunc_paths (trunc_succ (H:=Y.2)) _ _)))).1.1 = {rx : (O subU X).1.1 & function_lift subU X Y f rx = O_unit subU Y y}.
+  := forall (X Y:Trunk n) (f : X.1 -> Y.1) (y:Y.1), (O subU (existT (λ T, IsTrunc n T) (hfiber f y) (trunc_sigma X.2 (λ a, istrunc_paths (trunc_succ (H:=Y.2)) _ _)))).1.1 = {rx : (O subU X).1.1 & function_lift subU X Y f rx = O_unit subU Y y}.
 
 
-Lemma lex_compat_func (X Y:Trunc n) (f: X.1 -> Y.1) (y:Y.1)
+Lemma lex_compat_func (X Y:Trunk n) (f: X.1 -> Y.1) (y:Y.1)
 : forall a:{a:X.1 & f a = y}, (function_lift nj X Y f (O_unit nj _ a.1) = O_unit nj Y y).
   intros a. simpl.
   pose (foo := ap10 (O_rec_retr X (O nj Y) (λ x : X .1, O_unit nj Y (f x))) a.1). unfold compose in foo; simpl in foo.
@@ -43,18 +47,18 @@ Defined.
 
 Variable islex_nj : islex nj.
 
-Variable lex_compat : forall (X Y:Trunc n) (f: X.1 -> Y.1) (y:Y.1) (a:{a:X.1 & f a = y}),
+Variable lex_compat : forall (X Y:Trunk n) (f: X.1 -> Y.1) (y:Y.1) (a:{a:X.1 & f a = y}),
                        ((equiv_path _ _ (islex_nj X Y f y)) o (O_unit nj _)) a = (O_unit nj _ a.1; lex_compat_func X Y f a).
 
 Section Sheafification.
 
-  Definition nJ := {T : Trunc n & (nj.(O) T).1.1}.
+  Definition nJ := {T : Trunk n & (nj.(O) T).1.1}.
 
-  Definition incl_Aeq_Eeq (E:Type) (χ:E -> Trunc n) (x:{e:E & (χ e).1})
+  Definition incl_Aeq_Eeq (E:Type) (χ:E -> Trunk n) (x:{e:E & (χ e).1})
   : {e':{e:E & (χ e).1} & x.1 = e'.1} -> {e':E & x.1 = e'}
     := λ X, (X.1.1;X.2).
 
-  Definition eq_dense_1 (E:Type) (χ:E -> Trunc n) (x:{e:E & (χ e).1})
+  Definition eq_dense_1 (E:Type) (χ:E -> Trunk n) (x:{e:E & (χ e).1})
   : {e':{e:E & (χ e).1} & x.1 = e'.1} <~> (χ x.1).1.
     exists (λ X:(∃ e' : ∃ e : E, (χ e) .1, x .1 = e' .1), (transport (λ u, (χ u).1) (X.2)^ X.1.2)).
     apply isequiv_adjointify with (g := (λ X, ((x.1;X);1)) : ((χ x.1).1 -> {e':{e:E & (χ e).1} & x.1 = e'.1})).
@@ -62,14 +66,14 @@ Section Sheafification.
     - intro u. destruct u as [[e' e] p]. simpl in *. destruct p. simpl. exact 1.
   Defined.
 
-  Definition is_dense_eq (E:Type) (char : E -> Trunc n) := forall e:E, ({e':E & e=e'}) = (O nj (char e)).1.1.
+  Definition is_dense_eq (E:Type) (char : E -> Trunk n) := forall e:E, ({e':E & e=e'}) = (O nj (char e)).1.1.
 
-  Definition is_dense_diag (E:Type) (char : E -> Trunc n) (dense_eq : is_dense_eq char)
+  Definition is_dense_diag (E:Type) (char : E -> Trunk n) (dense_eq : is_dense_eq char)
     := forall x:{e:E & (char e).1}, forall u:{e':{e:E & (char e).1} & x.1 = e'.1}, (equiv_path _ _ (dense_eq x.1)) o (incl_Aeq_Eeq char x) = (O_unit nj _) o ((eq_dense_1 char x)).
 
   Record EnJ (E:Type) :=
     {
-      char :> E -> Trunc n ;
+      char :> E -> Trunk n ;
       dense_eq : forall e:E, ({e':E & e=e'}) = (O nj (char e)).1.1 ;
       dense_diag : forall x:{e:E & (char e).1}, forall u:{e':{e:E & (char e).1} & x.1 = e'.1}, (equiv_path _ _ (dense_eq x.1)) o (incl_Aeq_Eeq char x) = (O_unit nj _) o ((eq_dense_1 char x))
                                                                                                                                                                        (* For A a subobject of E, and x:A, this diagram commute : *)
@@ -102,17 +106,17 @@ Section Sheafification.
     rewrite (dense_eq χ) in X; apply X.
   Defined.
 
-  Definition E_to_χmono_map (T:Trunc (trunc_S n)) E (χ : E -> J) (f : E -> (pr1 T)) : 
+  Definition E_to_χmono_map (T:Trunk (trunc_S n)) E (χ : E -> J) (f : E -> (pr1 T)) : 
     (nchar_to_sub (pr1 o χ)).1 -> T.1 := f o pr1.
 
-  Definition E_to_χ_map (T:Trunc (trunc_S n)) E (χ : EnJ E) (f : E -> (pr1 T)) : 
+  Definition E_to_χ_map (T:Trunk (trunc_S n)) E (χ : EnJ E) (f : E -> (pr1 T)) : 
     (nchar_to_sub χ).1 -> T.1 := f o pr1.
 
   Definition separated T :=  ∀ E (χ : EnJ E), IsMono (E_to_χ_map T (E:=E) χ).
   
   Definition Snsheaf_struct T := (separated T) /\ (∀ E (χ : E -> J), IsEquiv (E_to_χmono_map T (E:=E) (χ:=χ))). 
 
-  Definition SnType_j_Type := {T : Trunc (trunc_S n) & Snsheaf_struct T}.
+  Definition SnType_j_Type := {T : Trunk (trunc_S n) & Snsheaf_struct T}.
 
   Definition separated_is_HProp T : IsHProp (separated T).
     repeat (apply trunc_forall).
@@ -122,7 +126,7 @@ Section Sheafification.
     apply trunc_prod.
   Defined.
 
-  Definition nj_inter_f (A : Trunc n) (φ : A.1 -> Trunc n) : 
+  Definition nj_inter_f (A : Trunk n) (φ : A.1 -> Trunk n) : 
     (nj.(O) ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2))).1.1 ->
     (nj.(O) ({a:A.1 & (nj.(O) (φ a)).1.1}; trunc_sigma (A.2) (fun a => (nj.(O) (φ a)).1.2))).1.1
     := function_lift
@@ -131,7 +135,7 @@ Section Sheafification.
          ({a:A.1 & (nj.(O) (φ a)).1.1}; trunc_sigma (A.2) (fun a => (nj.(O) (φ a)).1.2))
          (λ X, (X.1;nj.(O_unit) _ X.2)).
 
-  Definition nj_inter_g (A : Trunc n) (φ : A.1 -> Trunc n) : 
+  Definition nj_inter_g (A : Trunk n) (φ : A.1 -> Trunk n) : 
     (nj.(O) ({a:A.1 & (nj.(O) (φ a)).1.1}; trunc_sigma (A.2) (fun a => (nj.(O) (φ a)).1.2))).1.1 ->
     (nj.(O) ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2))).1.1.
     apply O_rec. intro X.
@@ -139,7 +143,7 @@ Section Sheafification.
     apply nj.(O_unit). exact (X.1;φa).
   Defined.
 
-  Instance nj_inter_equiv (A : Trunc n) (φ : A.1 -> Trunc n) : IsEquiv (nj_inter_f A φ).
+  Instance nj_inter_equiv (A : Trunk n) (φ : A.1 -> Trunk n) : IsEquiv (nj_inter_f A φ).
   apply (isequiv_adjointify _ (nj_inter_g A φ)).
   - intro x. unfold nj_inter_f, nj_inter_g. simpl in *.
     transitivity (function_lift nj
@@ -277,10 +281,11 @@ Section Sheafification.
                 x).
   Defined.
 
-  Definition nj_inter (A : Trunc n) (φ : A.1 -> Trunc n) : 
+  Definition nj_inter (A : Trunk n) (φ : A.1 -> Trunk n) : 
     nj.(O) ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2)) =
     nj.(O) ({a:A.1 & (nj.(O) (φ a)).1.1}; trunc_sigma (A.2) (fun a => (nj.(O) (φ a)).1.2)).
     apply unique_subuniverse. apply truncn_unique.
+    exact fs.
     apply path_universe_uncurried. exact (BuildEquiv _ _ _ (nj_inter_equiv _ _)).
   Defined.
 
@@ -292,7 +297,7 @@ Section Sheafification.
             trunc_sigma (HC c) (fun a => (O nj (hfiber f a .1; HB a .1)).1 .2)).
     assert ((hfiber (g o f) c; function_trunc_compo n f g HB HC c) =
             ({ w : (hfiber g c) & hfiber f (pr1 w) }; trunc_sigma (HC c) (fun w => HB w.1))).
-    apply truncn_unique. apply fibers_composition.
+    apply truncn_unique. exact fs. apply fibers_composition.
     apply (transport (fun X => O nj X = _) (inverse X)). clear X.
     apply (nj_inter (hfiber g c; HC c) (fun w => (hfiber f w .1; HB w.1))).
   Defined.
@@ -314,6 +319,7 @@ Section Sheafification.
     rewrite (O_modal (φ x)).
     repeat apply ap.
     apply truncn_unique.
+    exact fs.
     eapply concat; try exact (hfiber_pi1 ( (λ t : _, pr1 (pr1 (φ t)))) x).
     symmetry. apply (hfiber_mono (pr1 ) (g:=pr1 )).
     intros X Y. apply subset_is_subobject. intro.
@@ -335,7 +341,7 @@ Section Sheafification.
                                   (λ e : _,
                                          IsHProp_IsTrunc (nchar_to_sub_compat (λ t : _, (χ (t.1)) .1) e) n0) 
                                   (nchar_to_sub_compat (λ t : E, (φ t) .1)) x)).
-    apply truncn_unique. apply (inter_symm (fun b => ((χ b) .1) .1) (fun b => ((φ b) .1) .1)).
+    apply truncn_unique. exact fs. apply (inter_symm (fun b => ((χ b) .1) .1) (fun b => ((φ b) .1) .1)).
     apply (transport (fun x => O nj x = _ ) (inverse X)). clear X.
     pose (X := (nj_fibers_compose x (λ e : {b : E | ((φ b) .1) .1},
                                            IsHProp_IsTrunc
@@ -345,6 +351,7 @@ Section Sheafification.
     
     apply ap. apply truncn_unique. simpl.
     (* etransitivity. *)
+    exact fs.
     apply path_universe_uncurried.
     eapply transitive_equiv.
     apply equiv_sigma_contr.
@@ -360,8 +367,8 @@ Section Sheafification.
   Defined.
 
   Definition nTjTiseparated_eq_fun_univ (E:Type) (χ:EnJ E) φ1 φ2
-             (p: E_to_χ_map (subuniverse_Type nj; subuniverse_Type_is_TruncSn (subU:=nj)) χ φ1 =
-                 E_to_χ_map (subuniverse_Type nj; subuniverse_Type_is_TruncSn (subU:=nj)) χ φ2)
+             (p: E_to_χ_map (subuniverse_Type nj; subuniverse_Type_is_TrunkSn (subU:=nj)) χ φ1 =
+                 E_to_χ_map (subuniverse_Type nj; subuniverse_Type_is_TrunkSn (subU:=nj)) χ φ2)
              (x:E)
   :  ((φ1 x).1.1 -> (φ2 x).1.1).
     unfold E_to_χ_map in p.
@@ -375,9 +382,9 @@ Section Sheafification.
   Defined.
   
   Lemma nTjTiseparated_eq_fun_univ_invol (E:Type) (χ:EnJ E) φ1 φ2 (p: E_to_χ_map
-                                                                        (subuniverse_Type nj; subuniverse_Type_is_TruncSn (subU:=nj)) χ φ1 =
+                                                                        (subuniverse_Type nj; subuniverse_Type_is_TrunkSn (subU:=nj)) χ φ1 =
                                                                       E_to_χ_map
-                                                                        (subuniverse_Type nj; subuniverse_Type_is_TruncSn (subU:=nj)) χ φ2) (x:E)
+                                                                        (subuniverse_Type nj; subuniverse_Type_is_TrunkSn (subU:=nj)) χ φ2) (x:E)
   : forall (y:(φ2 x).1.1), nTjTiseparated_eq_fun_univ p x (nTjTiseparated_eq_fun_univ p^ x y) = y.
   Proof.
     intro y. unfold nTjTiseparated_eq_fun_univ; simpl.
@@ -398,7 +405,7 @@ Section Sheafification.
          ). unfold compose in foo; simpl in foo.
     apply (transport (λ u, u = y) foo^). clear foo.
 
-    pose (fooo := @transport_arrow_space_dep_path n nj (φ1 x) (φ2 x) (χ x) (λ v, (ap10 p (x;v))..1..1)).
+    pose (fooo := @transport_arrow_space_dep_path n nj fs (φ1 x) (φ2 x) (χ x) (λ v, (ap10 p (x;v))..1..1)).
     simpl in fooo.
 
     transitivity (O_rec (χ x)
@@ -439,15 +446,16 @@ Section Sheafification.
 
   Definition nTjTiseparated_eq_inv (E:Type) (χ:EnJ E) φ1 φ2 :
     E_to_χ_map
-      (subuniverse_Type nj; subuniverse_Type_is_TruncSn (subU:=nj)) χ φ1 =
+      (subuniverse_Type nj; subuniverse_Type_is_TrunkSn (subU:=nj)) χ φ1 =
     E_to_χ_map 
-      (subuniverse_Type nj; subuniverse_Type_is_TruncSn (subU:=nj)) χ φ2
+      (subuniverse_Type nj; subuniverse_Type_is_TrunkSn (subU:=nj)) χ φ2
     -> φ1 = φ2.
     intro p.
     simpl in *.
     unfold E_to_χ_map in p; simpl in p.
     apply path_forall; intro x.
     apply unique_subuniverse; apply truncn_unique.
+    exact fs.
     apply path_universe_uncurried.
     exists (nTjTiseparated_eq_fun_univ p x).
     apply isequiv_adjointify with (g := nTjTiseparated_eq_fun_univ (inverse p) x).
@@ -455,7 +463,7 @@ Section Sheafification.
     - exact (transport (λ u, ∀ y : ((φ1 x) .1) .1, nTjTiseparated_eq_fun_univ (inverse p) x (nTjTiseparated_eq_fun_univ u x y) = y) (inv_V p) (nTjTiseparated_eq_fun_univ_invol (inverse p) x)).
   Defined.
 
-  Lemma nTjTiseparated_eq : separated (subuniverse_Type nj ; @subuniverse_Type_is_TruncSn _ nj).
+  Lemma nTjTiseparated_eq : separated (subuniverse_Type nj ; @subuniverse_Type_is_TrunkSn _ nj).
     intros E χ φ1 φ2.
     apply isequiv_adjointify with (g := @nTjTiseparated_eq_inv E χ φ1 φ2).
     - intro p. 
@@ -496,7 +504,7 @@ Section Sheafification.
   Defined.
 
   Lemma nType_j_Type_is_SnType_j_Type : Snsheaf_struct (subuniverse_Type nj ;
-                                                        @subuniverse_Type_is_TruncSn _ nj).
+                                                        @subuniverse_Type_is_TrunkSn _ nj).
   Proof.
     split.
     apply nTjTiseparated_eq.
@@ -505,7 +513,7 @@ Section Sheafification.
   Defined.
 
   Definition nType_j_Type_sheaf : SnType_j_Type :=
-    ((subuniverse_Type nj; @subuniverse_Type_is_TruncSn _ nj);nType_j_Type_is_SnType_j_Type).
+    ((subuniverse_Type nj; @subuniverse_Type_is_TrunkSn _ nj);nType_j_Type_is_SnType_j_Type).
 
   Instance dep_prod_SnType_j_Type_eq
            (A : Type)
@@ -550,7 +558,7 @@ Section Sheafification.
     apply path_forall; intro a.
     refine (@ap10 _ _ (λ u, x u a) (λ u, y u a) _ u).
     pose ((fst (B a).2) E χ (λ v, x v a) (λ v, y v a)).
-    exact (equiv_inv (path_forall _ _ (λ t, apD10 ((apD10 H) t) a))).
+    exact (equiv_inv (IsEquiv := i) (path_forall _ _ (λ t, apD10 ((apD10 H) t) a))).
   Defined.
 
   Lemma ap_path_forall (A B C:Type) (f:A -> B) (g h:B -> C) (eq:forall x, g x = h x)              
@@ -651,33 +659,33 @@ Section Sheafification.
     exact (dep_prod_SnType_j_Type_eq _).
   Defined.
 
-  Definition closed E (χ : E -> Trunc n) := forall e, IsEquiv (nj.(O_unit) (χ e)).
+  Definition closed E (χ : E -> Trunk n) := forall e, IsEquiv (nj.(O_unit) (χ e)).
   
   Definition closed' E A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) := closed (nsub_to_char n (A;m)).
 
-  Definition cloture E (χ : E -> Trunc n) : E -> Trunc n := pr1 o nj.(O) o χ.
+  Definition cloture E (χ : E -> Trunk n) : E -> Trunk n := pr1 o nj.(O) o χ.
   
   Definition cloture' E A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) :=
     nchar_to_sub (cloture (nsub_to_char n (A;m))).
 
-  Definition cloture_is_closed (E :Type) (χ : E -> Trunc n) : closed (cloture χ).
-    intro. apply O_modal_equiv.
+  Definition cloture_is_closed (E :Type) (χ : E -> Trunk n) : closed (cloture χ).
+    intro. apply O_modal_equiv. exact fs.
   Defined.
 
   Lemma cloture_is_closed' (A:Type) (E:Type) (m : {f : A -> E & forall e:E, IsTrunc n (hfiber f e)}) : closed' (pr2 (cloture' m)).
     unfold closed', cloture'. 
     rewrite (eta_sigma (nchar_to_sub (cloture (nsub_to_char n (A; m))))).
     pose (f := cloture_is_closed (nsub_to_char n (A; m))). 
-    rewrite <- (@nsub_eq_char_retr n _ (cloture (nsub_to_char n (A; m)))) in f.
+    rewrite <- (@nsub_eq_char_retr ua fs n _ (cloture (nsub_to_char n (A; m)))) in f.
     exact f.
   Defined.
   
-  Definition δ (T:Trunc (trunc_S n)) : T.1 * T.1-> Trunc n.
+  Definition δ (T:Trunk (trunc_S n)) : T.1 * T.1-> Trunk n.
     intros x. exists (fst x = snd x). apply istrunc_paths.
     exact T.2.
   Defined.
 
-  Definition Δ (T:Trunc (trunc_S n)) := nchar_to_sub (δ T).
+  Definition Δ (T:Trunk (trunc_S n)) := nchar_to_sub (δ T).
   
   Definition clδ T := pr1  o nj.(O) o (δ T).
 
@@ -701,10 +709,10 @@ Section Sheafification.
   Definition O_invol_ : forall T, O nj T = (O nj) ( pr1 ((O nj) T))
     := λ T, (O_modal (O nj T)).
 
-  Lemma OO_unit_idmap (T:Trunc n)
+  Lemma OO_unit_idmap (T:Trunk n)
   : O_unit nj (O nj T).1 = equiv_path _ _ ((O_invol_ T)..1..1).
     unfold O_invol_. unfold O_modal.
-    pose (rew := eissect _ (IsEquiv := isequiv_unique_subuniverse (O nj T) (O nj (O nj T) .1)) (truncn_unique (O nj T) .1 (O nj (O nj T) .1) .1
+    pose (rew := eissect _ (IsEquiv := isequiv_unique_subuniverse (O nj T) (O nj (O nj T) .1)) (truncn_unique fs (O nj T) .1 (O nj (O nj T) .1) .1
                                                                                                               (path_universe_uncurried
                                                                                                                  {|
                                                                                                                    equiv_fun := O_unit nj (O nj T) .1;
@@ -720,7 +728,7 @@ Section Sheafification.
   Defined.
 (* End In modalities *)
         
-  Lemma dicde_l (E:Type) (φ:E -> Trunc n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1}) (e:clA)
+  Lemma dicde_l (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1}) (e:clA)
   : (∃ rx : ((O nj (φ e .1)) .1) .1,
        rx =
       e.2) =(∃ rx : ((O nj (φ e .1)) .1) .1,
@@ -748,7 +756,7 @@ Section Sheafification.
     
   Lemma dicde_ll
         (E : Type)
-        (φ : E → Trunc n)
+        (φ : E → Trunk n)
         (A := ∃ e : E, (φ e) .1 : Type)
         (clA := ∃ e : E, ((O nj (φ e)) .1) .1 : Type)
         (a : ∃ e : E, ((O nj (φ e)) .1) .1)
@@ -773,7 +781,7 @@ Section Sheafification.
   destruct u. simpl. exact 1.
   Defined.
 
-  Lemma dense_into_cloture_dense_eq (E:Type) (φ:E -> Trunc n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
+  Lemma dense_into_cloture_dense_eq (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
   : is_dense_eq (λ e:clA, ({π : (φ e.1).1 & O_unit nj _ π = e.2} ; trunc_sigma (φ e .1) .2
               (λ a : (φ e .1) .1,
                istrunc_paths (trunc_succ (H:=(O nj (φ e.1)).1.2)) (O_unit nj (φ e .1) a) e .2))).
@@ -810,7 +818,7 @@ Section Sheafification.
     destruct q. apply equal_equiv. simpl. done.
   Defined.
 
-  Lemma dense_into_cloture_dense_diag (E:Type) (φ:E -> Trunc n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
+  Lemma dense_into_cloture_dense_diag (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
   : is_dense_diag (dense_into_cloture_dense_eq φ).
     intros x p.
     unfold compose. unfold dense_into_cloture_dense_eq.
@@ -842,7 +850,7 @@ Section Sheafification.
     apply dicde_ll. exact π. exact π'.
   Qed.
   
-  Definition dense_into_cloture (E:Type) (φ:E -> Trunc n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
+  Definition dense_into_cloture (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
   : EnJ clA.
     refine (Build_EnJ (dense_into_cloture_dense_eq φ) _).
     apply dense_into_cloture_dense_diag.

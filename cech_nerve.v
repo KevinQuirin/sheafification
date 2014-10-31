@@ -76,7 +76,26 @@ Section hPullback.
         exists (y1,IHn).
         exact q.
   Defined.
-  
+
+  Lemma one_pullback {X Y:Type} (f:Y -> X)
+  : hPullback f (S 0) <~> Y.
+    transparent assert (ff: (hPullback f 1 -> Y)).
+    { intros [x [[y tt] p]].
+      simpl in *. 
+      exact y. }
+    transparent assert (gg : (Y -> hPullback f 1)).
+    { intro y. exists (f y).
+      exists (y,tt).
+      reflexivity. }
+    refine (equiv_adjointify ff gg _ _).
+    - intro x. unfold ff, gg. 
+      reflexivity.
+    - intros [x [[y tt] p]]. unfold ff, gg.
+      simpl in *.
+      destruct p, tt.
+      reflexivity.
+  Qed.
+
 End hPullback.
 
 Section Cech_Nerve.
@@ -102,4 +121,13 @@ Section Cech_Nerve.
 
   Axiom GiraudAxiom : forall {X Y:Type} (f : Y -> X) (issurj_f : IsSurjection f), colimit (Cech_nerve_diagram f) <~> X.
 
+  Lemma istrunc_cech_nerve {X Y:Type} (f : Y -> X) (m:trunc_index) (TrX : IsTrunc m X) (TrY : IsTrunc m Y) (issurj_f : IsSurjection f)
+  : IsTrunc m (colimit (Cech_nerve_diagram f)).
+    pose (GiraudAxiom f issurj_f).
+    apply path_universe_uncurried in e.
+    rewrite e.
+    exact TrX.
+  Qed.
+
+  
 End Cech_Nerve.

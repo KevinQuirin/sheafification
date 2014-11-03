@@ -32,6 +32,28 @@ Section hPullback.
 
   Definition hPullback {X Y:Type} (f:Y -> X) (n:nat) : Type := {x:X & hPullback' f n x}.
 
+
+  Lemma trunc_unit (m:trunc_index) : IsTrunc m Unit.
+    induction m.
+    exact contr_unit.
+    apply trunc_succ.
+  Qed.
+  
+  Lemma trunc_hPullback' (m:trunc_index) {X Y:Type} (f:Y -> X) (n:nat)
+  : IsTrunc m Y -> IsTrunc m X -> forall x, IsTrunc m (hPullback' f n x).
+    intros TrY TrX x.
+    induction n.
+    - exact (trunc_unit m).
+    - refine trunc_sigma.
+  Qed.
+
+  Lemma trunc_hPullback (m:trunc_index) {X Y:Type} (f:Y -> X) (n:nat)
+  : IsTrunc m Y -> IsTrunc m X -> IsTrunc m (hPullback f n).
+    intros TrY TrX.
+    refine trunc_sigma.
+    intro a. apply (trunc_hPullback' m f n TrY TrX a).
+  Qed.
+
   Lemma test_pullback {X Y:Type} (f:Y -> X) : hPullback f 2 <~> pullback f f.
     unfold hPullback, hPullback', pullback. simpl.
 

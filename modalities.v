@@ -55,10 +55,17 @@ Section Reflective_Subuniverse.
 
   Variable n:trunc_index.
 
-  Variable subU : subuniverse_struct n.
+  (* Variable subU : subuniverse_struct n. *)
 
   Context `{ua: Univalence}.
   Context `{fs: Funext}.
+
+  Lemma foo (subU : Trunk n -> Type) (A B :Trunk n) (x: subU A) (y: subU B)
+        
+  : Type.
+    unfold Trunk in *.
+    Set Printing All.
+    Set Printing Universes.
   
   Definition subuniverse_Type := 
   {T : Trunk n & pr1 (subU.(subuniverse_HProp) T)}.
@@ -543,9 +550,13 @@ Section Reflective_Subuniverse.
     (A.1 * B.1 -> C.1.1) = ((O subU A).1.1*(O subU B).1.1 -> C.1.1).
     apply path_universe_uncurried; exact (product_universal A B C).
   Defined.
-  
-  (* Definition subuniverse_product' (A B : Trunk n) : Equiv  (O subU (A.1*B.1 ; trunc_prod (H:=A.2) (H0 := B.2))).1.1 ((O subU A).1.1*(O subU B).1.1). *)
 
+  
+  Definition subuniverse_product' (A B : Trunk n) : (O subU (A.1*B.1 ; trunc_prod (H:=A.2) (H0 := B.2))).1.1 = ((O subU A).1.1*(O subU B).1.1).
+    Set Printing Universes. 
+  Admitted.
+
+  
   (*   pose (eta := λ u:A.1*B.1, (O_unit subU A (fst u), O_unit subU B (snd u))). *)
     
   (*   pose (foo := product_universal' A B (((O subU A).1.1*(O subU B).1.1 ; trunc_prod (H := (O subU A).1.2) (H0 := (O subU B).1.2)) ; subuniverse_product (O subU A) (O subU B))); simpl in foo. *)
@@ -700,136 +711,21 @@ Section Reflective_Subuniverse.
 (*   Defined. *)
   
   Lemma pullback_sheaves (A B C : subuniverse_Type) (f : A.1.1 -> C.1.1) (g : B.1.1 -> C.1.1) : (subU.(subuniverse_HProp) (pullback f g ; istrunc_pullback A.1 B.1 C.1 f g)).1.
-(*     rewrite <- subuniverse_iff_O. *)
-(*     apply O_unit_retract_equiv with (μ := pullback_μ A B C f g). *)
-(*     intro x; destruct x as [F [G prf]]; simpl in *. *)
-(*     unfold pullback_μ; simpl. *)
-    
-(*     pose (foo := apD10 (O_rec_retr (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) A (λ x : pullback f g, x .1)) (F;(G;prf))); unfold compose in foo; simpl in foo. *)
-(*     pose (bar := apD10 (O_rec_retr (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) B (λ x : pullback f g, x .2.1)) (F;(G;prf))); unfold compose in bar; simpl in bar. *)
 
-(*     assert ( *)
-(*         (O_rec (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) A *)
-(*                (λ x0 : pullback f g, x0 .1) *)
-(*                (O_unit subU (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) *)
-(*                        (F; (G; prf))); *)
-(*          (O_rec (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) B *)
-(*                 (λ x0 : pullback f g, (x0 .2) .1) *)
-(*                 (O_unit subU (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) *)
-(*                         (F; (G; prf))); *)
-(*           pullback_μ_eq A B C f g *)
-(*                         (O_unit subU (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) *)
-(*                                 (F; (G; prf))))) *)
-(*         = *)
-(*         existT (λ U, {b:B.1.1 | f U = g b}) F *)
-(*          (O_rec (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) B *)
-(*                 (λ x0 : pullback f g, (x0 .2) .1) *)
-(*                 (O_unit subU (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) *)
-(*                         (F; (G; prf))); *)
-(*           transport *)
-(*             (λ U, f U = g (O_rec (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) B *)
-(*                                  (λ x0 : pullback f g, (x0 .2) .1) *)
-(*                                  (O_unit subU (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) *)
-(*                                          (F; (G; prf))))) *)
-(*             foo *)
-(*             (pullback_μ_eq A B C f g *)
-(*                            (O_unit subU (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) *)
-(*                                    (F; (G; prf))))) *)
-(*       ). *)
-
-(*     rewrite <- foo. *)
-(*     apply eq_dep_sumT with (prf := idpath). simpl. exact idpath. *)
-(*     rewrite X; clear X. *)
-    
-(*     assert ( *)
-(*         (F; *)
-(*          (O_rec (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) B *)
-(*                 (λ x0 : pullback f g, (x0 .2) .1) *)
-(*                 (O_unit subU (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) *)
-(*                         (F; (G; prf))); *)
-(*           transport *)
-(*             (λ U : (A .1) .1, *)
-(*                    f U = *)
-(*                    g *)
-(*                      (O_rec (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) B *)
-(*                             (λ x0 : pullback f g, (x0 .2) .1) *)
-(*                             (O_unit subU (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) *)
-(*                                     (F; (G; prf))))) foo *)
-(*             (pullback_μ_eq A B C f g *)
-(*                            (O_unit subU (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) *)
-(*                                    (F; (G; prf)))))) *)
-(*         = *)
-(*         existT (λ U, {b:B.1.1 | f U = g b}) F *)
-(*          (existT (λ U:B.1.1, f F = g U) G *)
-(*           (transport *)
-(*             (λ U : B.1.1, f F = g U) *)
-(*             bar *)
-(*             (transport *)
-(*             (λ U : (A .1) .1, *)
-(*                    f U = *)
-(*                    g *)
-(*                      (O_rec (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) B *)
-(*                             (λ x0 : pullback f g, (x0 .2) .1) *)
-(*                             (O_unit subU (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) *)
-(*                                     (F; (G; prf))))) foo *)
-(*             (pullback_μ_eq A B C f g *)
-(*                            (O_unit subU (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) *)
-(*                                    (F; (G; prf))))))) *)
-(*       ). *)
-(*     rewrite <- bar. apply eq_dep_sumT with (prf := idpath). simpl. *)
-(*     apply eq_dep_sumT with (prf := idpath). simpl. exact idpath. *)
-(*     rewrite X; clear X. *)
-     
-(*     repeat apply eq_dep_sumT with (prf := idpath); simpl. *)
-
-(*     apply (moveR_transport_p (λ U : (B .1) .1, f F = g U) bar) . *)
-(*     apply (moveR_transport_p (λ U : (A .1) .1, *)
-(*       f U = *)
-(*       g *)
-(*         (O_rec (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) B *)
-(*            (λ x0 : pullback f g, (x0 .2) .1) *)
-(*            (O_unit subU (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) *)
-(*               (F; (G; prf))))) foo). *)
-(*     unfold foo, bar, pullback_μ_eq. simpl. clear foo; clear bar. *)
-(*     set (AA := (O_rec (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) A *)
-(*            (λ x0 : pullback f g, x0 .1) *)
-(*            (O_unit subU (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) *)
-(*               (F; (G; prf))))). *)
-(*     set (BB := (O_rec (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) B *)
-(*                    (λ x0 : pullback f g, (x0 .2) .1) *)
-(*                    (O_unit subU *)
-(*                       (pullback f g; istrunc_pullback A .1 B .1 C .1 f g) *)
-(*                       (F; (G; prf))))). *)
-
-(*     repeat rewrite (transport_paths_Fl). repeat rewrite (transport_paths_Fr). *)
-(*     hott_simpl. *)
-(*     unfold function_lift_modal, function_lift_square, function_lift_compose, function_lift_modal_square, path_forall, compose. simpl. *)
-(*     repeat rewrite (eisretr apD10). hott_simpl. *)
-(*     (* rewrite equalf_fed. rewrite equalf_fed. *) *)
-(*     repeat rewrite (transport_paths_Fl). repeat rewrite inverse_ap. *)
-(*     repeat rewrite inv_V. *)
-(*     hott_simpl. *)
-    
-
-(* (* We know that AA=F and BB=G, but can't rewrite now *) *)
-
-(*     unfold path_forall. *)
-
-(*     (*          admit. *) *)
   Admitted.
 
-  Lemma istrunc_unit (m:trunc_index) : IsTrunc m Unit.
+  Lemma trunc_unit (m:trunc_index) : IsTrunc m Unit.
     induction m.
     - exact contr_unit.
     - apply trunc_succ.
   Defined.
   
-  (* Lemma unit_modal : (subU.(subuniverse_HProp) (existT (λ T, IsTrunc n T) (Unit) (istrunc_unit n))).1. *)
-  (*   rewrite <- subuniverse_iff_O. *)
-  (*   apply O_unit_retract_equiv with (μ := λ x:(subU.(O) (Unit;istrunc_unit n)).1.1, tt). *)
-  (*   intro u. *)
-  (*   destruct u; exact idpath. *)
-  (* Defined. *)
+  Lemma subuniverse_unit : (subU.(subuniverse_HProp) (existT (λ T, IsTrunc n T) (Unit) (trunc_unit n))).1.
+    rewrite <- subuniverse_iff_O.
+    apply O_unit_retract_equiv with (μ := λ x:(subU.(O) (Unit;trunc_unit n)).1.1, tt).
+    intro u.
+    destruct u; exact idpath.
+  Defined.
 
   Lemma paths_are_sheaves (S:subuniverse_Type) (x y:S.1.1) : (subuniverse_HProp subU (x=y ; istrunc_paths S.1.1 n x y (H:= @trunc_succ _ _ S.1.2))).1.
     (* assert ((x=y) = (@pullback Unit Unit S.1.1 (λ u, x) (λ u, y))). *)
@@ -840,11 +736,11 @@ Section Reflective_Subuniverse.
     (*   - intro u. destruct u as [tt1 [tt2 u]]. simpl. *)
     (*     destruct tt1; destruct tt2. exact idpath. *)
     (*   - intro u. destruct u. exact idpath. *)
-    (* - assert ((x = y; istrunc_paths (H := @trunc_succ _ _ S.1.2) (S .1).1 n x y) = (@pullback Unit Unit S.1.1 (λ u, x) (λ u, y) ; istrunc_pullback (Unit;istrunc_unit n) (Unit;istrunc_unit n) S.1 (λ u, x) (λ u, y))). *)
+    (* - assert ((x = y; istrunc_paths (H := @trunc_succ _ _ S.1.2) (S .1).1 n x y) = (@pullback Unit Unit S.1.1 (λ u, x) (λ u, y) ; istrunc_pullback (Unit;trunc_unit n) (Unit;trunc_unit n) S.1 (λ u, x) (λ u, y))). *)
     (*   apply eq_dep_sumT with (prf := X). *)
     (*   apply allpath_hprop. *)
     (*   rewrite X0. simpl. *)
-    (*   apply (pullback_sheaves ((Unit;istrunc_unit n);unit_modal) ((Unit;istrunc_unit n);unit_modal) S). *)
+    (*   apply (pullback_sheaves ((Unit;trunc_unit n);unit_modal) ((Unit;trunc_unit n);unit_modal) S). *)
   Admitted.
 
 

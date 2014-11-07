@@ -17,41 +17,41 @@ Arguments trunc_sigma {A} {P} {n} H H0: simpl never.
 Arguments istrunc_paths {A} {n} H x y: simpl never.
 Arguments truncn_unique _ {n} A B H: simpl never.
 
+Section Definitions.
+
 
   Context `{ua: Univalence}.
   Context `{fs: Funext}.
   
-Variable n0 : trunc_index.
+  Parameter n0 : trunc_index.
 
-Definition n := trunc_S n0.
+  Definition n := trunc_S n0.
 
-Variable nj : subuniverse_struct n.
+  Parameter nj : subuniverse_struct n.
 
-Variable j_is_nj : forall P, (j P).1 = (nj.(O) (P.1; IsHProp_IsTrunc P.2 n0)).1.1.
+  Parameter j_is_nj : forall P, (j P).1 = (nj.(O) (P.1; IsHProp_IsTrunc P.2 n0)).1.1.
 
-Variable j_is_nj_unit : forall P x ,
+  Parameter j_is_nj_unit : forall P x ,
                           transport idmap (j_is_nj P) (Oj_unit P x) = nj.(O_unit) (P.1; IsHProp_IsTrunc P.2 n0) x.
 
 (* Left Exactness *)
 
-Definition islex n (subU : subuniverse_struct n)
-  := forall (X Y:Trunk n) (f : X.1 -> Y.1) (y:Y.1), (O subU (existT (λ T, IsTrunc n T) (hfiber f y) (trunc_sigma X.2 (λ a, istrunc_paths (trunc_succ (H:=Y.2)) _ _)))).1.1 = {rx : (O subU X).1.1 & function_lift subU X Y f rx = O_unit subU Y y}.
+  Definition islex n (subU : subuniverse_struct n)
+    := forall (X Y:Trunk n) (f : X.1 -> Y.1) (y:Y.1), (O subU (existT (λ T, IsTrunc n T) (hfiber f y) (trunc_sigma X.2 (λ a, istrunc_paths (trunc_succ (H:=Y.2)) _ _)))).1.1 = {rx : (O subU X).1.1 & function_lift X Y f rx = O_unit subU Y y}.
 
 
-Lemma lex_compat_func (X Y:Trunk n) (f: X.1 -> Y.1) (y:Y.1)
-: forall a:{a:X.1 & f a = y}, (function_lift nj X Y f (O_unit nj _ a.1) = O_unit nj Y y).
-  intros a. simpl.
-  pose (foo := ap10 (O_rec_retr X (O nj Y) (λ x : X .1, O_unit nj Y (f x))) a.1). unfold compose in foo; simpl in foo.
-  exact (transport (λ U, O_rec X (O nj Y) (λ x : X .1, O_unit nj Y (f x)) (O_unit nj X a.1) = O_unit nj Y U) a.2 foo).
-Defined.
-
-Variable islex_nj : islex nj.
-
-Variable lex_compat : forall (X Y:Trunk n) (f: X.1 -> Y.1) (y:Y.1) (a:{a:X.1 & f a = y}),
-                       ((equiv_path _ _ (islex_nj X Y f y)) o (O_unit nj _)) a = (O_unit nj _ a.1; lex_compat_func X Y f a).
-
-Section Sheafification.
-
+  Lemma lex_compat_func (X Y:Trunk n) (f: X.1 -> Y.1) (y:Y.1)
+  : forall a:{a:X.1 & f a = y}, (function_lift nj X Y f (O_unit nj _ a.1) = O_unit nj Y y).
+    intros a. simpl.
+    pose (foo := ap10 (O_rec_retr X (O nj Y) (λ x : X .1, O_unit nj Y (f x))) a.1). unfold compose in foo; simpl in foo.
+    exact (transport (λ U, O_rec X (O nj Y) (λ x : X .1, O_unit nj Y (f x)) (O_unit nj X a.1) = O_unit nj Y U) a.2 foo).
+  Defined.
+  
+  Parameter islex_nj : islex nj.
+  
+  Parameter lex_compat : forall (X Y:Trunk n) (f: X.1 -> Y.1) (y:Y.1) (a:{a:X.1 & f a = y}),
+                          ((equiv_path _ _ (islex_nj X Y f y)) o (O_unit nj _)) a = (O_unit nj _ a.1; lex_compat_func X Y f a).
+  
   Definition nJ := {T : Trunk n & (nj.(O) T).1.1}.
 
   Definition incl_Aeq_Eeq (E:Type) (χ:E -> Trunk n) (x:{e:E & (χ e).1})
@@ -855,4 +855,4 @@ Section Sheafification.
     refine (Build_EnJ (dense_into_cloture_dense_eq φ) _).
     apply dense_into_cloture_dense_diag.
   Defined.
-End Sheafification.
+End Definitions.

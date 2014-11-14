@@ -1,5 +1,5 @@
 Require Export Utf8_core.
-Require Import HoTT HoTT.hit.Truncations Connectedness.
+Require Import HoTT HoTT.hit.Truncations Connectedness Types.Record.
 Require Import coequalizers.
 
 
@@ -21,7 +21,44 @@ Section Diagram.
   Global Arguments diagram1 [G] D [i j] f x : rename.
   
 
-  Notation "D .1" := (@diagram1 _ D _ _) (at level 3).
+  (* Notation "D .1" := (@diagram1 _ D _ _) (at level 3). *)
+
+  Context `{fs : Funext}.
+  Context `{ua : Univalence}.
+          
+  Definition graph_sigT := {gr0 : Type & gr0 -> gr0 -> Type}.
+  Definition diagram_sigT (G:graph) := {diag0 : G -> Type & forall (i j : G), G i j -> (diag0 i -> diag0 j)}.
+
+  Lemma graph_is_graph_sigT : graph_sigT = graph.
+    apply path_universe_uncurried.
+    unfold graph_sigT.
+    issig (Build_graph) graph0 graph1.
+  Defined.
+
+  Lemma diagram_is_diagram_sigT (G : graph)
+  : diagram_sigT G <~> (diagram G).
+    unfold diagram_sigT.
+    issig (@Build_diagram G) (@diagram0 G) (@diagram1 G).
+  Defined.
+   
+  Lemma path_diagram (G:graph) (D1 D2: diagram G)
+  : {path_type : (diagram0 D1) = (diagram0 D2) 
+    & forall (i j:G), forall x:G i j, diagram1 D1 x == (equiv_path _ _ (ap10 path_type j)^) o (diagram1 D2 x) o (equiv_path _ _ (ap10 path_type i)) }
+    -> D1 = D2.
+  Proof.
+    intros [path_type path_map].
+    destruct D1 as [T1 m1], D2 as [T2 m2]; simpl in *.
+    destruct path_type. simpl in path_map.
+    assert (p : m1 = m2).
+
+    apply path_forall; intro i.
+    apply path_forall; intro j.
+    apply path_forall; intro x.
+    apply path_forall; intro X.
+    exact (path_map i j x X).
+    destruct p.
+    reflexivity.
+  Defined.
   
 End Diagram.
 

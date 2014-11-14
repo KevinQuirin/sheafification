@@ -535,10 +535,10 @@ Section Type_to_separated_Type.
       rewrite transport_pV. exact 1.
   Qed.
 
-  Lemma hPullback_separatd_unit_is_cl_diag (T:Trunk (n.+1)) (k:nat)
+  Lemma hPullback_separated_unit_is_cl_diag (T:Trunk (n.+1)) (k:nat)
   : (hPullback n (separated_unit T) (S k) (@separated_Type_is_Trunk_Sn T) T.2)
     <~> {y : hProduct T.1 (S k) & (@cl_char_hPullback T T idmap k y).1}.
-      Set Printing Universes. 
+      (* Set Printing Universes.  *)
     simpl.
     apply equiv_functor_sigma_id.
     intros P.
@@ -547,29 +547,46 @@ Section Type_to_separated_Type.
     induction k.
     - simpl. apply (equiv_adjointify idmap idmap (λ _, 1) (λ _,1)).
     - simpl. destruct P as [a [b P]].
-      apply equiv_functor_prod'.
-      + simpl.
-        unfold cloture_hpullback.nj.
-        refine (equiv_adjointify _ _ _ _).
-    Focus 1. intro p.
-      unfold separated_unit, toIm in p. simpl in p.
-      pose (p' := (ap10 p..1 a)..1..1). simpl in p'.
-      transparent assert (X: (((O nj (a = b; istrunc_paths T.2 a b)) .1) .1 =
-       ((O nj (b = a; istrunc_paths T.2 b a)) .1) .1)).
-        repeat apply (ap pr1); apply ap.
-        apply truncn_unique. exact fs.
-        apply equal_inverse.
-      apply (transport  idmap X^).
-      refine (transport idmap p' _). apply O_unit. reflexivity.
-        pose (separated_unit_paths_are_nj_paths T a b).
-        unfold nj in *.
-        unfold cloture_hpullback.nj.
-        unfold n, cloture_hpullback.n in *; simpl in *.
-        exact e.
-        admit.
-      + specialize (IHk (b,P)). simpl. apply IHk.
+      apply equiv_functor_prod'. simpl.
+      pose (separated_unit_paths_are_nj_paths T a b).
+      admit.
+      apply IHk.
   Defined.
-  
+
+  Definition Cech_nerve_separated_unit T
+    := Cech_nerve_diagram n (separated_unit T) (@separated_Type_is_Trunk_Sn T) T.2.
+
+  Definition cl_diagonal_projections T (k:nat) (p: {p:nat & Peano.le p (S k)})
+  : {y : hProduct T.1 (S (S k)) & (@cl_char_hPullback T T idmap (S k) y).1} -> {y : hProduct T.1 (S k) & (@cl_char_hPullback T T idmap k y).1}.
+    intro X.
+    apply hPullback_separated_unit_is_cl_diag.
+    apply forget_hPullback.
+    exact ((hPullback_separated_unit_is_cl_diag T (S k))^-1 X).
+    exact p.
+  Defined.
+
+  Definition cl_diagonal_diagram (T:Trunk (trunc_S n)) : diagram (Cech_nerve_graph).
+    refine (Build_diagram _ _ _).
+    - exact (λ k, {y : hProduct T.1 (S k) & (@cl_char_hPullback T T idmap k y).1}).
+    - intros i j [p q] a.  simpl in *. 
+      apply cl_diagonal_projections. 
+      exists (nat_interval_to_nat i q). destruct p.
+      abstract (apply (nat_interval_bounded i q)).
+      simpl in *.
+      rewrite p in a. exact a.
+  Defined.
+
+  Lemma diagrams_are_equal (T:Trunk (trunc_S n))
+  : (Cech_nerve_separated_unit T) = cl_diagonal_diagram T.
+    simpl.
+    unfold Cech_nerve_separated_unit, Cech_nerve_diagram, cl_diagonal_diagram.
+  Admitted.
+
+  Definition separated_Type_is_colimit (T:Trunk (trunc_S n))
+  : (separated_Type T) = colimit (Cech_nerve_separated_unit T)
+    := (path_universe_uncurried (GiraudAxiom n (separated_unit T) (@separated_Type_is_Trunk_Sn T) T.2 (@IsSurjection_toIm _ _ (λ t t' : T.1, O nj (t = t'; istrunc_paths T.2 t t')))))^.
+
+    
   Definition sep_eq_inv_Δ (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T})
   : (P .1 → (Q .1) .1) -> (separated_Type P → (Q .1) .1).
     intros f.

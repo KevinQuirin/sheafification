@@ -1,7 +1,7 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
 
-Require Import equivalence truncation univalence sub_object_classifier.
+Require Import univalence.
 
 Set Universe Polymorphism.
 Global Set Primitive Projections.
@@ -49,7 +49,7 @@ End Pullback.
 
 Section Images.
   
-  Definition Im {A B} (f : A -> B) := {b : B & squash (hfiber f b)}.
+  Definition Im {A B} (f : A -> B) := {b : B & Trunc (-1) (hfiber f b)}.
 
   Definition toIm {A B} (f : A -> B) : A -> Im f := fun a => (f a; tr (a;idpath)).
 

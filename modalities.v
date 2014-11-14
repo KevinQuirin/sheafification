@@ -55,17 +55,10 @@ Section Reflective_Subuniverse.
 
   Variable n:trunc_index.
 
-  (* Variable subU : subuniverse_struct n. *)
+  Variable subU : subuniverse_struct n.
 
   Context `{ua: Univalence}.
   Context `{fs: Funext}.
-
-  Lemma foo (subU : Trunk n -> Type) (A B :Trunk n) (x: subU A) (y: subU B)
-        
-  : Type.
-    unfold Trunk in *.
-    Set Printing All.
-    Set Printing Universes.
   
   Definition subuniverse_Type := 
   {T : Trunk n & pr1 (subU.(subuniverse_HProp) T)}.

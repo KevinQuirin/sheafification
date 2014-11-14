@@ -37,7 +37,7 @@ Section Definitions.
 (* Left Exactness *)
 
   Definition islex n (subU : subuniverse_struct n)
-    := forall (X Y:Trunk n) (f : X.1 -> Y.1) (y:Y.1), (O subU (existT (λ T, IsTrunc n T) (hfiber f y) (trunc_sigma X.2 (λ a, istrunc_paths (trunc_succ (H:=Y.2)) _ _)))).1.1 = {rx : (O subU X).1.1 & function_lift X Y f rx = O_unit subU Y y}.
+    := forall (X Y:Trunk n) (f : X.1 -> Y.1) (y:Y.1), (O subU (existT (λ T, IsTrunc n T) (hfiber f y) (trunc_sigma X.2 (λ a, istrunc_paths (trunc_succ (H:=Y.2)) _ _)))).1.1 = {rx : (O subU X).1.1 & function_lift subU X Y f rx = O_unit subU Y y}.
 
 
   Lemma lex_compat_func (X Y:Trunk n) (f: X.1 -> Y.1) (y:Y.1)

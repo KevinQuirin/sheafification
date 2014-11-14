@@ -1,7 +1,7 @@
 Require Export Utf8_core.
 Require Import HoTT TruncType.
 Require Import hit.Connectedness hit.Truncations.
-Require Import univalence lemmas.
+Require Import univalence lemmas limit_colimit.
 
 Set Universe Polymorphism.
 Set Implicit Arguments.
@@ -88,6 +88,18 @@ Section Surjections.
 
   Context `{ua: Univalence}.
   Context `{fs: Funext}.
+
+  Lemma IsSurjection_toIm (X Y:Type) (f:X -> Y)
+  : IsSurjection (toIm f).
+    apply BuildIsSurjection.
+    intros [b p]; generalize dependent p.
+    apply Trunc_rect.
+    intro a; apply istrunc_truncation.
+    intros [a p].
+    apply tr.
+    exists a. apply path_sigma' with p.
+    apply path_ishprop.
+  Defined.
 
   Lemma epi_prod (W X Y Z:Type) (f:X -> Y) (g:W -> Z) (epif : IsSurjection f) (epig : IsSurjection g)
   : IsSurjection (λ x, (f (fst x), g (snd x))).

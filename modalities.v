@@ -1,6 +1,6 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
-Require Import equivalence truncation univalence sub_object_classifier limit_colimit.
+Require Import equivalence univalence sub_object_classifier epi_mono.
 
 Set Universe Polymorphism.
 Global Set Primitive Projections.

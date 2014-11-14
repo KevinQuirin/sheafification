@@ -1,13 +1,23 @@
 Require Export Utf8_core.
 Require Import HoTT TruncType.
 Require Import hit.Connectedness hit.Truncations.
-Require Import univalence lemmas limit_colimit.
+Require Import univalence lemmas.
 
 Set Universe Polymorphism.
 Set Implicit Arguments.
 
 Local Open Scope path_scope.
 Local Open Scope equiv_scope.
+
+Section Images.
+  
+  Definition Im {A B} (f : A -> B) := {b : B & Trunc (-1) (hfiber f b)}.
+
+  Definition toIm {A B} (f : A -> B) : A -> Im f := fun a => (f a; tr (a;idpath)).
+
+  Definition fromIm {A B} (f : A -> B) : Im f -> B := fun im => pr1 im.
+  
+End Images.
 
 Section Embeddings.
 

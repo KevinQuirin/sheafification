@@ -1,6 +1,6 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
-Require Import lemmas epi_mono equivalence truncation univalence sub_object_classifier limit_colimit modalities.
+Require Import lemmas epi_mono equivalence univalence sub_object_classifier modalities.
 Require Import sheaf_base_case.
 
 Set Universe Polymorphism.

@@ -1,6 +1,6 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
-Require Import lemmas epi_mono equivalence truncation univalence sub_object_classifier limit_colimit modalities.
+Require Import lemmas epi_mono equivalence univalence sub_object_classifier modalities.
 Require Import nat_lemmas.
 Require Import colimit.
 Require Import cech_nerve.
@@ -284,7 +284,7 @@ Section Type_to_separated_Type.
       pose (inj := pr1 : (separated_Type T) -> Ωj.1).
       transparent assert (X : (IsMono inj)).
       intros x y. apply subset_is_subobject. intro.
-      unfold squash. apply istrunc_truncation.
+      apply istrunc_truncation.
       assert (inj (separated_unit T a) = inj (separated_unit T b)).
       unfold inj, separated_unit. simpl.
       apply path_forall; intro t; simpl.
@@ -580,6 +580,28 @@ Section Type_to_separated_Type.
   : (Cech_nerve_separated_unit T) = cl_diagonal_diagram T.
     simpl.
     unfold Cech_nerve_separated_unit, Cech_nerve_diagram, cl_diagonal_diagram.
+    apply path_diagram.
+    transparent assert ( path_type : ((λ n0 : nat,
+                ∃ P : T.1 ∧ hProduct T.1 n0,
+                (char_hPullback n (separated_unit T) n0
+                   (separated_Type_is_Trunk_Sn (T:=T)) T.2 P).1) =
+               (λ k : nat,
+                ∃ y : T.1 ∧ hProduct T.1 k, (cl_char_hPullback idmap k y).1))).
+    - apply path_forall; intro k.
+      apply path_universe_uncurried.
+      apply  hPullback_separated_unit_is_cl_diag.
+    - exists path_type. 
+      intros i j [x q] [P X].
+      unfold compose; simpl in *.
+      unfold path_type. simpl.
+      unfold ap10, path_forall; rewrite eisretr.
+      unfold hPullback_separated_unit_is_cl_diag.
+      unfold equiv_functor_sigma_id, equiv_functor_sigma.
+      rewrite transport_path_universe_uncurried.
+      apply (transport (λ U, _ = U _) _ _).
+      
+      
+      
   Admitted.
 
   Definition separated_Type_is_colimit (T:Trunk (trunc_S n))

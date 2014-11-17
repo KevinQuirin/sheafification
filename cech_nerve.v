@@ -297,11 +297,12 @@ Section Cech_Nerve.
     intro n.
     exact (hPullback m f (S n) TrX TrY).
     intros i j.
-    intros [p q] a. destruct p.
+    intros [p q] a.
+    (* destruct p. *)
     apply forget_hPullback.
-    exact a.
+    exact (transport (λ u, hPullback m f u.+1 TrX TrY) p a).
     exists (nat_interval_to_nat i q).
-    abstract (apply (nat_interval_bounded i q)).
+    destruct p; apply (nat_interval_bounded i q).
   Defined.
 
   Axiom GiraudAxiom : forall (m:trunc_index) {X Y:Type} (f : Y -> X) (TrX : IsTrunc (trunc_S m) X) (TrY : IsTrunc (trunc_S m) Y) (issurj_f : IsSurjection f), colimit (Cech_nerve_diagram m f TrX TrY) <~> X.

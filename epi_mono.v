@@ -103,7 +103,7 @@ Section Surjections.
   : IsSurjection (toIm f).
     apply BuildIsSurjection.
     intros [b p]; generalize dependent p.
-    apply Trunc_rect.
+    apply Trunc_ind.
     intro a; apply istrunc_truncation.
     intros [a p].
     apply tr.
@@ -117,8 +117,8 @@ Section Surjections.
     apply BuildIsSurjection.
     intros [y z]. 
     specialize (epif y); specialize (epig z).
-    generalize dependent (center _ (Contr_internal := epif)); apply Trunc_rect_nondep; intro x; try apply allpath_hprop.
-    generalize dependent (center _ (Contr_internal := epig)); apply Trunc_rect_nondep; intro w; try apply allpath_hprop.
+    generalize dependent (center _ (Contr_internal := epif)); apply Trunc_ind; intro x; try apply istrunc_truncation.
+    generalize dependent (center _ (Contr_internal := epig)); apply Trunc_ind; intro w; try apply istrunc_truncation.
     apply tr.
     exists (x.1,w.1). simpl.
     apply path_prod; [exact x.2 | exact w.2].
@@ -130,9 +130,9 @@ Section Surjections.
     apply BuildIsSurjection.
     intros c. 
     generalize dependent (@center _ (Eg c)).
-    apply Trunc_rect_nondep; try apply allpath_hprop. intros [b p].
+    apply Trunc_ind; try (intro; apply istrunc_truncation). intros [b p].
     generalize dependent (@center _ (Ef b)).
-    apply Trunc_rect_nondep; try apply allpath_hprop. intros [a q].
+    apply Trunc_ind; try (intro; apply istrunc_truncation). intros [a q].
     apply tr.
     exists a.
     rewrite <- (π a).
@@ -146,7 +146,8 @@ Section Surjections.
     apply BuildIsSurjection.
     intros c. 
     generalize dependent (@center _ (Eh c)).
-    apply Trunc_rect_nondep; try apply allpath_hprop. intros [a p].
+    apply Trunc_ind; try (intro; apply istrunc_truncation). intros [a p].
+  
     apply tr.
 
     exists (f a).

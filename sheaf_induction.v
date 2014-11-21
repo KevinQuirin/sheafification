@@ -567,12 +567,14 @@ Section Type_to_separated_Type.
   Definition cl_diagonal_diagram (T:Trunk (trunc_S n)) : diagram (Cech_nerve_graph).
     refine (Build_diagram _ _ _).
     - exact (λ k, {y : hProduct T.1 (S k) & (@cl_char_hPullback T T idmap k y).1}).
-    - intros i j [p q] a.  simpl in *. 
-      apply cl_diagonal_projections. 
-      exists (nat_interval_to_nat i q). 
-      destruct p; apply (nat_interval_bounded i q).
-      simpl in *.
-      exact (transport (λ u, ∃ y : T.1 ∧ hProduct T.1 u, (cl_char_hPullback idmap u y).1) p a).
+    - intros i j [p q] a. simpl in *.
+      apply cl_diagonal_projections.
+      destruct p. exact q.
+      (* exists (nat_interval_to_nat i q). *)
+      (* destruct p; apply (nat_interval_bounded i q). *)
+      destruct p. exact a.
+      (* simpl in *. *)
+      (* exact (transport (λ u, ∃ y : T.1 ∧ hProduct T.1 u, (cl_char_hPullback idmap u y).1) p a). *)
   Defined.
 
   Lemma diagrams_are_equal (T:Trunk (trunc_S n))
@@ -597,12 +599,23 @@ Section Type_to_separated_Type.
       pose (rew := transport_path_universe_V_uncurried (hPullback_separated_unit_is_cl_diag T j) ).
       rewrite rew; clear rew.
       unfold cl_diagonal_projections. rewrite eissect.
+      destruct p.
+
       apply (ap (λ u, forget_hPullback n (separated_unit T) (j.+1) _ T.2 u _)).
-      destruct p. repeat rewrite transport_1.
-      pose (rew := transport_path_universe (hPullback_separated_unit_is_cl_diag T i)).
+      simpl.
+      repeat rewrite transport_1.
+      pose (rew := transport_path_universe (hPullback_separated_unit_is_cl_diag T (j.+1))).
       rewrite rew; clear rew.
       rewrite eissect.
       reflexivity.
+
+      
+      (* apply (ap (λ u, forget_hPullback n (separated_unit T) (j.+1) _ T.2 u _)). *)
+      (* destruct p. repeat rewrite transport_1. *)
+      (* pose (rew := transport_path_universe (hPullback_separated_unit_is_cl_diag T i)). *)
+      (* rewrite rew; clear rew. *)
+      (* rewrite eissect. *)
+      (* reflexivity. *)
   Qed.
 
   Definition separated_Type_is_colimit_Cech_nerve (T:Trunk (trunc_S n))
@@ -614,19 +627,92 @@ Section Type_to_separated_Type.
     apply (transport (λ u, _ = colimit u) (diagrams_are_equal T)).
     exact (separated_Type_is_colimit_Cech_nerve T).
   Qed.
-    
+  
   Definition sep_eq_inv_Δ (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T})
   : (P .1 → (Q .1) .1) -> (separated_Type P → (Q .1) .1).
-    intros f. destruct Q as [Q sepQ]; unfold separated in sepQ. 
+    intros f.
+    destruct Q as [Q sepQ]; unfold separated in sepQ. 
     rewrite (separated_Type_is_colimit).
     refine (colimit_rectnd _ _ _ _ _).
     - simpl in *. intros i. 
-      specialize (sepQ (∃ y : P.1 ∧ hProduct P.1 i, (cl_char_hPullback idmap i y).1) (@dense_into_cloture _ _ (P.1 ∧ hProduct P.1 i) (char_hPullback _ idmap i P.2 P.2))).
+      induction i as [| i fi].
+      + simpl in *. exact (λ X, f (fst X.1)).
+      + simpl in *. exact (λ X, f (fst X.1)).
+    - intros i j [p [q Hq]]; simpl in *.
+      destruct p. simpl.
+      intros [[a [b x]] X].
+      induction j.
+      + simpl.
+        induction q. simpl in x. destruct x.   
+        unfold forget_hPullback.
+        unfold forget_pullback'. hott_simpl.
+        unfold hPullbacks_are_same. simpl.
+        unfold equiv_functor_sigma', equiv_functor_sigma. simpl. hott_simpl.
+        rewrite transport_path_universe_uncurried.
+        (* unfold path_universe_uncurried. simpl. *)
+        pose @transport_path_universe_V_uncurried.
+        unfold path_universe in p.
+        rewrite p.
+      
+      destruct p.
+      (* intro x. *)
+      (* destruct x as [[a x] X]. simpl in *. *)
+      
+      apply ap10.
+      apply (transport (λ u, _ = nat_rect _ _
+                    (λ (i0 : nat)
+                       (_ : (∃ y : P.1 ∧ hProduct P.1 i0, (cl_char_hPullback idmap i0 y).1)
+                            → Q.1)
+                       (X : ∃ y : P.1 ∧ P.1 ∧ hProduct P.1 i0,
+                              (cl_char_hPullback idmap i0.+1 y).1), f (fst X.1)) u) p^). 
+        
+      apply path_forall; intro x. simpl in x.
+      unfold nat_interval_bounded.
+
+      destruct x as [[[a b] x] P].
+      simpl in *. 
+      simpl.
+      
+      
+
+      
+        path_via (((λ (i0 : nat)
+      (_ : (∃ y : P.1 ∧ hProduct P.1 i0, (cl_char_hPullback idmap i0 y).1)
+           → Q.1)
+      (X : ∃ y : P.1 ∧ P.1 ∧ hProduct P.1 i0,
+             (cl_char_hPullback idmap i0.+1 y).1), f (fst X.1)) 0 (λ X : ∃ y : P.1 ∧ Unit, (cl_char_hPullback idmap 0 y).1, f (fst X.1))) x).
+        admit.
+        + simpl in *.
+        
+        
+        
+      
+      
+      assert (((λ i0 : nat,
+                       (∃ y : P.1 ∧ hProduct P.1 i0, (cl_char_hPullback idmap i0 y).1) → Q.1) j x)
+              =
+              ((λ i0 : nat,
+      (∃ y : P.1 ∧ hProduct P.1 i0, (cl_char_hPullback idmap i0 y).1) → Q.1) j x)).
+      induction i, j.
+      + simpl in *. destruct q.
+      + simpl in *. destruct q.
+      + simpl in *.
+        assert (X : i= 0). rewrite Peano.pred_Sn. rewrite (Peano.pred_Sn i).
+        apply ap. exact p.
+        unfold forget_hPullback, forget_pullback'. simpl in *.
+        induction X.
+        destruct X.
+        
+        
+
+        assert (pp := ap Peano.pred p). simpl in pp. destruct pp.
+        
+
+
+        
+              specialize (sepQ (∃ y : P.1 ∧ hProduct P.1 i, (cl_char_hPullback idmap i y).1) (@dense_into_cloture _ _ (P.1 ∧ hProduct P.1 i) (char_hPullback _ idmap i P.2 P.2))).
       unfold E_to_χ_map, compose in sepQ. simpl in sepQ.
       unfold IsMono in sepQ. simpl in sepQ.
-      induction i.
-      + simpl in *. exact (λ X, f (fst X.1)).
-      + simpl in *.
         specialize (sepQ (λ y, f (fst y.1)) (λ y, f (fst (snd y.1)))).
         destruct sepQ as [inv retr sect _]. simpl in *.
         unfold compose in inv; simpl in inv.

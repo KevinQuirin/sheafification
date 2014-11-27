@@ -140,7 +140,7 @@ Section hPullback.
     induction n. exact P. simpl in *. exact P.1.
   Defined.
 
-  Definition forget_pullback (m:trunc_index) {X Y:Type} (f:Y -> X) (n:nat) (TrX : IsTrunc (trunc_S m) X) (TrY : IsTrunc (trunc_S m) Y) (P : hPullback m f (S n) TrX TrY) : forall p:{p:nat & p <= n}, hPullback m f n TrX TrY.
+  Definition forget_hPullback (m:trunc_index) {X Y:Type} (f:Y -> X) (n:nat) (TrX : IsTrunc (trunc_S m) X) (TrY : IsTrunc (trunc_S m) Y) (P : hPullback m f (S n) TrX TrY) : forall p:{p:nat & p <= n}, hPullback m f n TrX TrY.
     intros [p Hp].
     induction n. exact tt.
     exists (forget_hProduct Y (S n) P.1 (p;Hp)).
@@ -328,7 +328,7 @@ Section Old_pullback.
       apply ap10 in p. specialize (p a). exact (p..1).
   Defined.
 
-  Definition forget_hPullback (m:trunc_index) {X Y:Type} (f:Y -> X) (n:nat) (TrX : IsTrunc (trunc_S m) X) (TrY : IsTrunc (trunc_S m) Y) (P : hPullback m f (S n) TrX TrY) : forall p:{p:nat & p <= n}, hPullback m f n TrX TrY.
+  Definition forget_hPullback_ (m:trunc_index) {X Y:Type} (f:Y -> X) (n:nat) (TrX : IsTrunc (trunc_S m) X) (TrY : IsTrunc (trunc_S m) Y) (P : hPullback m f (S n) TrX TrY) : forall p:{p:nat & p <= n}, hPullback m f n TrX TrY.
     intro p.
     apply (equiv_path _ _ (hPullbacks_are_same m f n TrX TrY)).
     apply forget_pullback'.
@@ -344,59 +344,59 @@ Section Old_pullback.
   Parameter cd : f c = f d.
   Parameter de : f d = f e.
   
-  Goal forall (m:trunc_index) (TrX : IsTrunc (trunc_S m) X) (TrY : IsTrunc (trunc_S m) Y) , forall Hp: 1 <= 3, True=True.
+  (* Goal forall (m:trunc_index) (TrX : IsTrunc (trunc_S m) X) (TrY : IsTrunc (trunc_S m) Y) , forall Hp: 1 <= 3, True=True. *)
 
-    intros.
-    (* pose (forget_hPullback m f 3 TrX TrY P p). simpl. *)
-    simpl in *.
-    transparent assert (foo : (hPullback m f 4 TrX TrY)).
-    simpl. exists (a,(b,(c,(d,tt)))). simpl.
-    repeat split.
-    exact ab. exact bc. exact cd.
-    pose (forget_pullback m f 3 TrX TrY foo (existT (λ x, x <= 3) (S 0) Hp)). simpl.
-    transparent assert (bar : (hPullback m f 3 TrX TrY)).
-    exists (a,(c,(d,tt))). simpl.
-    exact (ab@bc,(cd,tt)).
+  (*   intros. *)
+  (*   (* pose (forget_hPullback m f 3 TrX TrY P p). simpl. *) *)
+  (*   simpl in *. *)
+  (*   transparent assert (foo : (hPullback m f 4 TrX TrY)). *)
+  (*   simpl. exists (a,(b,(c,(d,tt)))). simpl. *)
+  (*   repeat split. *)
+  (*   exact ab. exact bc. exact cd. *)
+  (*   pose (forget_pullback m f 3 TrX TrY foo (existT (λ x, x <= 3) (S 0) Hp)). simpl. *)
+  (*   transparent assert (bar : (hPullback m f 3 TrX TrY)). *)
+  (*   exists (a,(c,(d,tt))). simpl. *)
+  (*   exact (ab@bc,(cd,tt)). *)
 
-    assert (h0 = bar).
-    unfold h0, bar; simpl.
-    unfold forget_pullback.
-    simpl.
-    apply path_sigma' with 1. simpl.
-    unfold forget_char_hPullback. simpl.
-    destruct (decidable_paths_nat 0 (S 0)).
-    pose (succ_not_0 0 p). destruct e0.
+  (*   assert (h0 = bar). *)
+  (*   unfold h0, bar; simpl. *)
+  (*   unfold forget_pullback. *)
+  (*   simpl. *)
+  (*   apply path_sigma' with 1. simpl. *)
+  (*   unfold forget_char_hPullback. simpl. *)
+  (*   destruct (decidable_paths_nat 0 (S 0)). *)
+  (*   pose (succ_not_0 0 p). destruct e0. *)
 
-    simpl.
-    destruct (decidable_paths_nat 3 (S 0)).
-    pose (ap pred p). simpl in p0.
-    pose (succ_not_0 1 p0^). destruct e0.
+  (*   simpl. *)
+  (*   destruct (decidable_paths_nat 3 (S 0)). *)
+  (*   pose (ap pred p). simpl in p0. *)
+  (*   pose (succ_not_0 1 p0^). destruct e0. *)
 
-    simpl.
-    destruct (neq_0_succ 1 (neq_symm 0 1 n)).2. simpl in p.
-    assert (1 = (neq_0_succ 1 (neq_symm 0 1 n)).2).
+  (*   simpl. *)
+  (*   destruct (neq_0_succ 1 (neq_symm 0 1 n)).2. simpl in p. *)
+  (*   assert (1 = (neq_0_succ 1 (neq_symm 0 1 n)).2). *)
     
-    assert (1=p). admit. destruct X0. auto.
+  (*   assert (1=p). admit. destruct X0. auto. *)
     
-    destruct (decidable_paths_nat 3 0). simpl.
-    pose (succ_not_0 2 p^). destruct e0.
+  (*   destruct (decidable_paths_nat 3 0). simpl. *)
+  (*   pose (succ_not_0 2 p^). destruct e0. *)
 
-    simpl.
-    pose ((neq_0_succ 0 (neq_symm 0 0 n)).2). simpl in p.
-    pose (succ_not_0 ((neq_0_succ 0 (neq_symm 0 0 n)).1) p^).
-    destruct e0.
+  (*   simpl. *)
+  (*   pose ((neq_0_succ 0 (neq_symm 0 0 n)).2). simpl in p. *)
+  (*   pose (succ_not_0 ((neq_0_succ 0 (neq_symm 0 0 n)).1) p^). *)
+  (*   destruct e0. *)
 
     
     
     
-    unfold decidable_paths_nat.
-    unfold char_hPullbacks_are_same.
-    unfold ap10, path_forall; repeat rewrite eisretr.
-    simpl.
+    (* unfold decidable_paths_nat. *)
+    (* unfold char_hPullbacks_are_same. *)
+    (* unfold ap10, path_forall; repeat rewrite eisretr. *)
+    (* simpl. *)
 
 
 
-    simpl.
+    (* simpl. *)
 
 
     
@@ -438,7 +438,7 @@ Section Cech_Nerve.
 
   Lemma trunc_cech_nerve (m:trunc_index) {X Y:Type} (f : Y -> X) (TrX : IsTrunc (trunc_S m) X) (TrY : IsTrunc (trunc_S m) Y) (issurj_f : IsSurjection f)
   : IsTrunc (m.+1) (colimit (Cech_nerve_diagram m f TrX  TrY)).
-    pose (GiraudAxiom m f TrX TrY issurj_f).
+    pose (e := GiraudAxiom m f TrX TrY issurj_f).
     apply path_universe_uncurried in e.
     rewrite e.
     exact TrX.

@@ -1,6 +1,6 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
-Require Import equivalence univalence sub_object_classifier epi_mono.
+Require Import equivalence univalence sub_object_classifier epi_mono cech_nerve.
 
 Set Universe Polymorphism.
 Global Set Primitive Projections.
@@ -546,7 +546,6 @@ Section Reflective_Subuniverse.
 
   
   Definition subuniverse_product' (A B : Trunk n) : (O subU (A.1*B.1 ; trunc_prod (H:=A.2) (H0 := B.2))).1.1 = ((O subU A).1.1*(O subU B).1.1).
-    Set Printing Universes. 
   Admitted.
 
   
@@ -706,12 +705,6 @@ Section Reflective_Subuniverse.
   Lemma pullback_sheaves (A B C : subuniverse_Type) (f : A.1.1 -> C.1.1) (g : B.1.1 -> C.1.1) : (subU.(subuniverse_HProp) (pullback f g ; istrunc_pullback A.1 B.1 C.1 f g)).1.
 
   Admitted.
-
-  Lemma trunc_unit (m:trunc_index) : IsTrunc m Unit.
-    induction m.
-    - exact contr_unit.
-    - apply trunc_succ.
-  Defined.
   
   Lemma subuniverse_unit : (subU.(subuniverse_HProp) (existT (λ T, IsTrunc n T) (Unit) (trunc_unit n))).1.
     rewrite <- subuniverse_iff_O.
@@ -720,6 +713,9 @@ Section Reflective_Subuniverse.
     destruct u; exact idpath.
   Defined.
 
+  Definition OUnit_is_Unit : (((O subU (Unit; trunc_unit n)).1).1 = Unit)
+    := ((O_modal ((((Unit; trunc_unit n) : Trunk n); subuniverse_unit) : subuniverse_Type))..1..1)^.
+  
   Lemma paths_are_sheaves (S:subuniverse_Type) (x y:S.1.1) : (subuniverse_HProp subU (x=y ; istrunc_paths S.1.1 n x y (H:= @trunc_succ _ _ S.1.2))).1.
     (* assert ((x=y) = (@pullback Unit Unit S.1.1 (λ u, x) (λ u, y))). *)
     (*   apply path_universe_uncurried. *)

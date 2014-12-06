@@ -36,8 +36,12 @@ Section Embeddings.
     { intros u [x p] [y q]. simpl.
       etransitivity; try exact (L425 (x;p) (y;q)).
       apply path_universe_uncurried. unfold hfiber.
-      exists ((λ r, (r.1; moveL_pV q (ap f r.1) p r.2)) : (∃ r : x = y, ap f r @ q = p) -> (∃ x0 : x = y, ap f x0 = p @ q ^)).
-      apply isequiv_adjointify with (g := (λ r, (r.1; moveR_pM q p (ap f r.1) r.2)) : (∃ x0 : x = y, ap f x0 = p @ q ^) -> (∃ r : x = y, ap f r @ q = p)).
+      refine (equiv_adjointify _ _ _ _).
+      - intro r.
+        exists r.1.
+        exact (moveL_pV q (ap f r.1) p r.2).
+      - intro r. exists r.1.
+        exact (moveR_pM q p (ap f r.1) r.2).
       - intros [r Ɣ]; apply @path_sigma' with (p:=1); simpl. destruct q; simpl. hott_simpl.
       - intros [r Ɣ]; apply @path_sigma' with (p:=1); simpl. destruct q; simpl. hott_simpl. }
 
@@ -49,30 +53,26 @@ Section Embeddings.
     - intros H b x y; simpl. specialize (X b x y). rewrite X.
       exact (fcontr_isequiv (ap f) (H x.1 y.1) (x.2@y.2^)). 
   Qed.
-
   
   Definition IsMonof_to_isMono (A B : Type) (f : A -> B) : IsMonof f -> IsMono f.
     intro H. intros x y.
     unfold IsMonof in H.
     specialize (H A). specialize (H (fun _ => x) (fun _ => y)).
     destruct H as [inv retr sect _]. unfold compose in inv.
-    apply isequiv_adjointify with (g := fun (H:f x = f y) =>
-                                          ap10 (inv (path_forall
-                                                       (A:=A)
-                                                       (fun _ => f x)
-                                                       (fun _ => f y)
-                                                       (fun x => H)))
-                                               x).
+    refine (isequiv_adjointify _ _ _ _).
+    - intro H.
+      refine (apD10 (f := λ _, x) (g := λ _, y) (inv _) _).
+      apply path_forall; intro u; exact H. exact x.
     - intro u.
       etransitivity; try exact (ap10_ap_postcompose f (g:=(λ _ : A, x)) (g' := (λ _ : A, y)) (inv (path_forall (λ _ : A, f x) (λ _ : A, f y) (λ _ : A, u))) x)^.
       rewrite retr.
       unfold ap10. unfold path_forall.
       rewrite eisretr.
-      exact idpath.
+      reflexivity.
     - intro u. destruct u; simpl in *. 
       rewrite path_forall_1.
       apply (transport (fun u => ap10 u x = 1) (sect 1)^).
-      exact idpath.
+      reflexivity.
   Defined.
 
   Definition IsMono_to_IsMonof (A B : Type) (f : A -> B) : IsMono f -> IsMonof f.
@@ -85,7 +85,7 @@ Section Embeddings.
       apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
       apply path_forall; intro u. 
       apply (transport (λ U, U = ap10 p u) (ap10_ap_postcompose f _ u)^).
-      unfold ap10 at 1, path_forall. rewrite eisretr. rewrite eisretr. exact 1.
+      unfold ap10 at 1, path_forall. rewrite eisretr. rewrite eisretr. reflexivity.
     - intro p; unfold φ; destruct p. simpl.
       pose (foo := path_forall _ _ (fun y =>  (@eissect _ _ _ (H (a y) (a y)) idpath))).
       simpl in foo. rewrite foo.
@@ -153,11 +153,7 @@ Section Surjections.
     exists (f a).
     exact ((π a) @ p).
   Qed.
-
-  Lemma epi_two_out_of_three_3 (A B C:Type) (f:A -> B) (g:B -> C) (h : A -> C) (π : forall a,  g (f a) = h a)
-  : IsSurjection g -> IsSurjection h -> IsSurjection f.
-  Admitted.
-            
+       
   Definition IsEpi A B (f:A -> B)
     := forall C:Type, forall (x y : B -> C) , IsEquiv (ap (fun u => u o f) (x:=x) (y:=y)).
 

@@ -26,7 +26,7 @@ Lemma IsEquiv_unique : forall (A B:Type), forall (h : A -> B), forall (f g : IsE
 Proof.
   intros.
   apply path_ishprop.
-Defined. 
+Defined.
 
 Instance Contr_IsEquiv A B (f : A -> B) (a : IsEquiv f): IsTrunc minus_two (IsEquiv f).
 apply BuildContr with (center := a).
@@ -82,10 +82,14 @@ Defined.
 
 Definition equiv_is_mono (A B:Type) (f: A -> B) : IsEquiv f -> IsMono f :=
   fun H x y => equiv_is_mono_eq _ _ _.
-
+  
 Instance Tn_is_TSn : forall n, IsTrunc (trunc_S n) (Trunk n). (* Cf HoTT *)
-Admitted.
-
+intro n.
+assert (Trunk n = TruncType n).
+apply path_universe_uncurried. apply issig_trunctype.
+symmetry in X. destruct X.
+apply istrunc_trunctype.
+Qed.
 
 Definition truncn_unique n (A B : Trunk n) : A.1 = B.1 -> A = B.
   intro e. apply eq_dep_subset. intro. apply hprop_trunc. exact e.
@@ -101,43 +105,14 @@ Definition isequiv_truncn_unique n (A B : Trunk n)
     destruct p; simpl. unfold truncn_unique. simpl.
     destruct A as [A TrA]. simpl.
     apply (transport (λ U, path_sigma' (λ T, IsTrunc n T) 1 U = 1) (@contr (TrA = TrA) _ 1)^).
-    exact 1.
+    reflexivity.
   - intro p; unfold truncn_unique; simpl.
     destruct A as [A TrA], B as [B TrB]. simpl in p. destruct p. simpl.
     assert (fo := path_ishprop TrA TrB). destruct fo.
     unfold path_ishprop.
     apply (transport (λ U, ap pr1 (path_sigma' (λ T : Type, IsTrunc n T) 1 U) = 1) (@contr (TrA = TrA) _ 1)^).
-    exact idpath.   
+    reflexivity.   
 Defined.
-
-Lemma IsMono_IsHProp_fibers_center (A B:Type) (f:A->B) (H: IsMonof f) (b:B) (x y:A) (p:f x = b) (q:f y = b)
-: (existT _ x p = existT (fun u => f u = b) y q).
-  unfold IsMonof in H.
-  (* specialize (H A (λ u, x) (λ _, y)). *)
-  assert (r := ap10 (@equiv_inv _ _ _ (H A (λ _, x) (λ _, y)) (path_forall _ _ (λ _, (p@q^)))) x). simpl in r.
-
-
-  destruct r.
-  apply @path_sigma' with (p:=1); simpl.
-  (* assert (X : ap f r = p@q^). unfold r; rewrite eisretr; exact idpath. *)
-  (* assert (foo := moveR_Vp _ _ _ X). simpl in *. *)
-  (* assert ((ap f r)^@ p = q). admit. *)
-  (* hott_simpl. *)
-  (* etransitivity. Focus 2. exact X0. *)
-  (* destruct p. hott_simpl. *)
-  (* symmetry. apply fooo. *)
-Admitted.
-
-Lemma IsMono_IsHProp_fibers (A B:Type) (f:A->B) : IsMono f -> forall b:B, IsHProp (hfiber f b).
-  intros H b x y; simpl.
-  destruct x as [x p], y as [y q].
-
-  (* exists (IsMono_IsHProp_fibers_center H x y p q). *)
-
-  (* intro z. unfold IsMono_IsHProp_fibers_center. *)
-  (* simpl. hott_simpl. simpl.  *)
-Admitted.
-
 
 Definition HProp_contr A (B : A -> Type) (BProp : forall a, IsHProp (B a)) (a a' : A )
            (b : B a) (b' : B a') (e : a = a') : 
@@ -187,7 +162,7 @@ Defined.
 Lemma equal_equiv (A B:Type) (f g : A -> B) (eq_f : IsEquiv f) (eq_g : IsEquiv g)
 : f = g -> (BuildEquiv _ _ f eq_f) = (BuildEquiv _ _ g eq_g).
   intro H. destruct H. assert (eq_f = eq_g).
-  apply path_ishprop. destruct X. exact 1.
+  apply path_ishprop. destruct X. reflexivity.
 Qed.
 
 Lemma equal_inverse A (a b:A)
@@ -195,7 +170,7 @@ Lemma equal_inverse A (a b:A)
   apply path_universe_uncurried.
   exists inverse.
   apply @isequiv_adjointify with (g := inverse);
-    intro u; destruct u; exact 1.
+    intro u; destruct u; reflexivity.
 Defined.
 
 Definition equiv_VV (A B:Type) (f:A -> B) (H:IsEquiv f)
@@ -213,7 +188,7 @@ Defined.
 Lemma equal_equiv_inv (A B:Type) (f g: Equiv A B)
 : f=g -> equiv_fun f = equiv_fun g.
   intro H. destruct H.
-  exact 1.
+  reflexivity.
 Qed.
 
 Definition transport_path_universe_uncurried A B (f:A -> B) feq
@@ -222,6 +197,12 @@ Definition transport_path_universe_uncurried A B (f:A -> B) feq
   apply equal_equiv_inv in s.
   exact s.
 Defined.
+
+Lemma moveL_equiv_V  : forall (X Y:Type), forall (f: X -> Y), forall (H:IsEquiv f), forall (x:Y) (y:X), x = f y -> f^-1 x = y.
+  intros X Y φ H u v HH.
+  apply (@equiv_inj _ _ _ H).
+  rewrite eisretr. exact HH.
+Qed.
 
 
 End Things.

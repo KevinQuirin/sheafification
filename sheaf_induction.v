@@ -49,7 +49,7 @@ Section Type_to_separated_Type.
     destruct T as [T TrT]; simpl in *.
     apply (@trunc_sigma _ (fun P => _)). 
     apply (@trunc_forall _ _ (fun P => _)). intro. 
-    exact (@subuniverse_Type_is_TrunkSn _ nj).
+    exact (@subuniverse_Type_is_TrunkSn _ nj ua).
     intro φ. exact (IsHProp_IsTrunc (istrunc_truncation _ _) n). 
   Defined.
 
@@ -100,7 +100,7 @@ Section Type_to_separated_Type.
   Definition T_nType_j_Type_isSheaf : forall T, Snsheaf_struct (pr1 T -> subuniverse_Type nj;
                                                     T_nType_j_Type_trunc T).
     intro.
-    apply (dep_prod_SnType_j_Type (fun x:pr1 T => ((subuniverse_Type nj ; @subuniverse_Type_is_TrunkSn _ nj);nType_j_Type_is_SnType_j_Type))).
+    apply (dep_prod_SnType_j_Type (fun x:pr1 T => ((existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj ua));nType_j_Type_is_SnType_j_Type))).
   Defined.
 
   Definition T_nType_j_Type_sheaf T : SnType_j_Type :=  ((pr1 T -> subuniverse_Type nj; T_nType_j_Type_trunc T); T_nType_j_Type_isSheaf _).
@@ -264,39 +264,46 @@ Section Type_to_separated_Type.
                                                  (path_sigma (λ T : Type, IsTrunc n T) 
                                                              (A; TrA) (A; TrA) 1 u))))
                                      (O_unit nj (A; TrA) v)) X^).
-    simpl. exact 1.
+    simpl. reflexivity.
+    Defined.
+    
+  Definition separated_unit_paths_are_nj_paths_fun T (a b:T.1) : (separated_unit T a = separated_unit T b) -> (O nj (a=b; istrunc_paths T.2 a b)).1.1.
+    intro p.
+    unfold separated_unit, toIm in p. simpl in p.
+    pose (p' := (ap10 p..1 a)..1..1). simpl in p'.
+    transparent assert (X: (((O nj (a = b; istrunc_paths T.2 a b)) .1) .1 =
+                            ((O nj (b = a; istrunc_paths T.2 b a)) .1) .1)).
+    repeat apply (ap pr1); apply ap.
+    apply truncn_unique. exact fs.
+    apply equal_inverse.
+    apply (transport  idmap X^).
+    apply (transport idmap p'). apply O_unit. reflexivity.
   Defined.
 
-  Theorem separated_unit_paths_are_nj_paths T (a b:T.1) : (separated_unit T a = separated_unit T b) <~> (O nj (a=b; istrunc_paths T.2 a b)).1.1.
-  Proof.
-    refine (equiv_adjointify _ _ _ _).
-    - intro p.
-      unfold separated_unit, toIm in p. simpl in p.
-      pose (p' := (ap10 p..1 a)..1..1). simpl in p'.
-      transparent assert (X: (((O nj (a = b; istrunc_paths T.2 a b)) .1) .1 =
-       ((O nj (b = a; istrunc_paths T.2 b a)) .1) .1)).
-        repeat apply (ap pr1); apply ap.
-        apply truncn_unique. exact fs.
-        apply equal_inverse.
-      apply (transport  idmap X^).
-      apply (transport idmap p'). apply O_unit. reflexivity.
-    - intro p.
-      pose (Ωj := (T.1 -> subuniverse_Type nj; T_nType_j_Type_trunc T)).
-      pose (inj := pr1 : (separated_Type T) -> Ωj.1).
-      transparent assert (X : (IsMono inj)).
-      intros x y. apply subset_is_subobject. intro.
-      apply istrunc_truncation.
-      assert (inj (separated_unit T a) = inj (separated_unit T b)).
-      unfold inj, separated_unit. simpl.
-      apply path_forall; intro t; simpl.
-      apply unique_subuniverse; apply truncn_unique. exact fs.
-      unfold Oj; simpl. 
-      apply path_universe_uncurried.
-      exists (kpsic_func_univ_func a b p X t).
-      apply isequiv_adjointify with (g := kpsic_func_univ_inv a b p X t);
-        [exact (fst (kpsic_func_univ_eq a b p X t)) | exact (snd (kpsic_func_univ_eq a b p X t))].
-      exact (@equiv_inv _ _ _ (X (separated_unit T a) (separated_unit T b)) X0).
-    - intro x.
+  Definition separated_unit_paths_are_nj_paths_inv T (a b:T.1) : (O nj (a=b; istrunc_paths T.2 a b)).1.1 -> (separated_unit T a = separated_unit T b).
+    intro p.
+    pose (Ωj := (T.1 -> subuniverse_Type nj; T_nType_j_Type_trunc T)).
+    pose (inj := pr1 : (separated_Type T) -> Ωj.1).
+    transparent assert (X : (IsMono inj)).
+    intros x y. apply subset_is_subobject. intro.
+    apply istrunc_truncation.
+    assert (inj (separated_unit T a) = inj (separated_unit T b)).
+    unfold inj, separated_unit. simpl.
+    apply path_forall; intro t; simpl.
+    apply unique_subuniverse; apply truncn_unique. exact fs.
+    unfold Oj; simpl. 
+    apply path_universe_uncurried.
+    exists (kpsic_func_univ_func a b p X t).
+    apply isequiv_adjointify with (g := kpsic_func_univ_inv a b p X t);
+      [exact (fst (kpsic_func_univ_eq a b p X t)) | exact (snd (kpsic_func_univ_eq a b p X t))].
+    exact (@equiv_inv _ _ _ (X (separated_unit T a) (separated_unit T b)) X0).
+  Defined.
+
+  Lemma separated_unit_paths_are_nj_paths_retr T (a b:T.1)
+  : Sect (separated_unit_paths_are_nj_paths_inv T a b) (separated_unit_paths_are_nj_paths_fun (b:=b)).
+    unfold separated_unit_paths_are_nj_paths_fun, separated_unit_paths_are_nj_paths_inv.
+
+      intro x.
       apply (moveR_transport_V idmap _ _ x).
       unfold pr1_path. simpl.
 
@@ -429,7 +436,12 @@ Section Type_to_separated_Type.
                                                                                          match u as p in (_ = y) return ((p ^) ^ = p) with
                                                                                            | 1 => 1
                                                                                          end) |})) v)^.
-    - intro p.
+  Qed.
+  
+  Lemma separated_unit_paths_are_nj_paths_sect T (a b:T.1)
+  : Sect (separated_unit_paths_are_nj_paths_fun (b:=b)) (separated_unit_paths_are_nj_paths_inv T a b).
+    unfold separated_unit_paths_are_nj_paths_fun, separated_unit_paths_are_nj_paths_inv.
+      intro p.
       simpl.
       unfold separated_unit, toIm in p. simpl in p.
 
@@ -498,7 +510,7 @@ Section Type_to_separated_Type.
 
       pose (bar := equal_equiv_inv eisretr). simpl in bar.
       rewrite bar.
-      exact 1.
+      reflexivity.
       
 
       transparent assert (X : ((function_lift nj (a = b; istrunc_paths T.2 a b)
@@ -527,30 +539,38 @@ Section Type_to_separated_Type.
         unfold truncn_unique. unfold eq_dep_subset.
 
         (* unfold path_sigma'. *)
-        pose (rew := @pr1_path_sigma). unfold pr1_path in rew. rewrite rew. exact 1. }
+        pose (rew := @pr1_path_sigma). unfold pr1_path in rew. rewrite rew. reflexivity. }
 
       apply (transport (λ u, u (transport idmap (equiv_nj_inverse nj T a b) ^
                                 (transport idmap (ap pr1 (ap pr1 (apD10 (ap pr1 p) a)))
                                            (O_unit nj (a = a; istrunc_paths T.2 a a) 1))) = transport idmap (ap pr1 (ap pr1 (apD10 (ap pr1 p) a)))
                                                                                                       (O_unit nj (a = a; istrunc_paths T.2 a a) 1)) X^).
-      rewrite transport_pV. exact 1.
+      rewrite transport_pV. reflexivity.
+  Qed.
+
+  Theorem separated_unit_paths_are_nj_paths T (a b:T.1) : (separated_unit T a = separated_unit T b) <~> (O nj (a=b; istrunc_paths T.2 a b)).1.1.
+  Proof.
+    refine (equiv_adjointify _ _ _ _).
+    - apply separated_unit_paths_are_nj_paths_fun.
+    - apply separated_unit_paths_are_nj_paths_inv.
+    - apply separated_unit_paths_are_nj_paths_retr.
+    - apply separated_unit_paths_are_nj_paths_sect.
   Qed.
 
   Lemma hPullback_separated_unit_is_cl_diag (T:Trunk (n.+1)) (k:nat)
   : (hPullback n (separated_unit T) (S k) (@separated_Type_is_Trunk_Sn T) T.2)
-    <~> {y : hProduct T.1 (S k) & (@cl_char_hPullback T T idmap k y).1}.
-      (* Set Printing Universes.  *)
+      <~> {y : hProduct T.1 (S k) & (@cl_char_hPullback' T T idmap k y).1}.
     simpl.
     apply equiv_functor_sigma_id.
     intros P.
     simpl.
-    rewrite cl_char_hPullback_is_'.
     induction k.
     - simpl. apply (equiv_adjointify idmap idmap (λ _, 1) (λ _,1)).
     - simpl. destruct P as [a [b P]].
       apply equiv_functor_prod'. simpl.
-      pose (separated_unit_paths_are_nj_paths T a b).
-      admit.
+      refine (equiv_adjointify (@separated_unit_paths_are_nj_paths_fun T a b) (@separated_unit_paths_are_nj_paths_inv T a b) _ _).
+      apply separated_unit_paths_are_nj_paths_retr.
+      apply separated_unit_paths_are_nj_paths_sect.
       apply IHk.
   Defined.
 
@@ -558,16 +578,16 @@ Section Type_to_separated_Type.
     := Cech_nerve_diagram n (separated_unit T) (@separated_Type_is_Trunk_Sn T) T.2.
 
   Definition cl_diagonal_projections T (k:nat) (p: {p:nat & Peano.le p (S k)})
-  : {y : hProduct T.1 (S (S k)) & (@cl_char_hPullback T T idmap (S k) y).1} -> {y : hProduct T.1 (S k) & (@cl_char_hPullback T T idmap k y).1}.
+  : {y : hProduct T.1 (S (S k)) & (@cl_char_hPullback' T T idmap (S k) y).1} -> {y : hProduct T.1 (S k) & (@cl_char_hPullback' T T idmap k y).1}.
     intro X.
-    apply hPullback_separated_unit_is_cl_diag.
-    refine (forget_hPullback _ _ _ _ _ _ p).
-    exact ((hPullback_separated_unit_is_cl_diag T (S k))^-1 X).
+    exists (forget_hProduct T.1 (S k) X.1 p).
+    apply forget_cl_char_hPullback'.
+    exact X.2.
   Defined.
 
   Definition cl_diagonal_diagram (T:Trunk (trunc_S n)) : diagram (Cech_nerve_graph).
     refine (Build_diagram _ _ _).
-    - exact (λ k, {y : hProduct T.1 (S k) & (@cl_char_hPullback T T idmap k y).1}).
+    - exact (λ k, {y : hProduct T.1 (S k) & (@cl_char_hPullback' T T idmap k y).1}).
     - intros i j [p q] a. simpl in *.
       apply cl_diagonal_projections.
       destruct p. exact q.
@@ -584,7 +604,7 @@ Section Type_to_separated_Type.
                 (char_hPullback n (separated_unit T) n0
                    (separated_Type_is_Trunk_Sn (T:=T)) T.2 P).1) =
                (λ k : nat,
-                ∃ y : T.1 ∧ hProduct T.1 k, (cl_char_hPullback idmap k y).1))).
+                ∃ y : T.1 ∧ hProduct T.1 k, (cl_char_hPullback' idmap k y).1))).
     - apply path_forall; intro k.
       apply path_universe_uncurried.
       apply hPullback_separated_unit_is_cl_diag.
@@ -594,454 +614,263 @@ Section Type_to_separated_Type.
       unfold path_type. simpl.
       unfold ap10, path_forall; rewrite eisretr.
       pose (rew := transport_path_universe_V_uncurried (hPullback_separated_unit_is_cl_diag T j) ).
-      rewrite rew; clear rew.
-      unfold cl_diagonal_projections. rewrite eissect.
-      destruct p.
+      (* rewrite rew; clear rew. *)
+      (* destruct p. *)
+      (* symmetry; apply moveL_equiv_V; symmetry. *)
+      (* destruct q as [q Hq]. *)
 
-      apply (ap (λ u, forget_hPullback n (separated_unit T) (j.+1) _ T.2 u _)).
-      simpl.
-      repeat rewrite transport_1.
-      pose (rew := transport_path_universe (hPullback_separated_unit_is_cl_diag T (j.+1))).
-      rewrite rew; clear rew.
-      unfold functor_sigma. simpl.
-      apply path_sigma' with 1; simpl. 
-      rewrite eissect.
-      reflexivity.
-  Qed.
+      
+      
+      (* unfold hPullback_separated_unit_is_cl_diag. *)
+      (* unfold equiv_functor_sigma_id, equiv_functor_sigma, functor_sigma. *)
+      (* repeat rewrite transport_path_universe_uncurried. *)
+
+      (* apply path_sigma' with 1. *)
+      (* rewrite transport_1. *)
+      (* induction q; simpl. *)
+      (* { reflexivity. } *)
+      (* { unfold functor_prod. *)
+      (*   induction j. *)
+      (*   { simpl. *)
+      (*     unfold forget_char_hPullback, forget_cl_char_hPullback'. simpl. *)
+
+      
+      
+  Admitted.
 
   Definition separated_Type_is_colimit_Cech_nerve (T:Trunk (trunc_S n))
-  : (separated_Type T) = colimit (Cech_nerve_separated_unit T)
-    := (path_universe_uncurried (GiraudAxiom n (separated_unit T) (@separated_Type_is_Trunk_Sn T) T.2 (@IsSurjection_toIm _ _ (λ t t' : T.1, O nj (t = t'; istrunc_paths T.2 t t')))))^.
+    := Giraud n (separated_unit T) (@separated_Type_is_Trunk_Sn T) T.2 (@IsSurjection_toIm _ _ (λ t t' : T.1, O nj (t = t'; istrunc_paths T.2 t t'))).
 
-  Definition separated_Type_is_colimit (T:Trunk (trunc_S n))
-  : (separated_Type T) = colimit (cl_diagonal_diagram T).
-    apply (transport (λ u, _ = colimit u) (diagrams_are_equal T)).
-    exact (separated_Type_is_colimit_Cech_nerve T).
-  Qed.
+  Definition diagonal_commute (T:Trunk (trunc_S n))
+  : forall i, (cl_diagonal_diagram T) i -> (separated_Type T).
+    simpl; intro i.
+    intro u.
+    apply separated_unit. exact (fst u.1).
+  Defined.
 
+  Arguments diagonal_commute T [i] x.
+
+  Definition diagonal_pp (T:Trunk (trunc_S n))
+  : forall i j, forall (g : Cech_nerve_graph i j), forall (x : cl_diagonal_diagram T i),
+      (@diagonal_commute T) _ (diagram1 (cl_diagonal_diagram T) g x) = (@diagonal_commute T) _ x.
+    intros i j [p [q Hq]] x; simpl in *.
+    destruct p.
+    unfold diagonal_commute. simpl.
+    destruct q.
+    - simpl. destruct x as [x p]. simpl in p.
+      symmetry.
+      apply separated_unit_paths_are_nj_paths_inv.
+      exact (fst p).
+    - reflexivity.
+  Defined.
+
+  Definition separated_Type_is_colimit_cl_diagonal_diagram (T:Trunk (trunc_S n))
+  : is_colimit (Cech_nerve_graph)
+               (cl_diagonal_diagram T)
+               (separated_Type T)
+               (diagonal_commute T)
+               (@diagonal_pp T).
+    intro X.
+    pose (i := separated_Type_is_colimit_Cech_nerve T X); destruct i as [inv retr sect _];
+    unfold Sect, compose in *; simpl in *.
+    
+    unfold Cech_nerve_commute in *.
+    refine (isequiv_adjointify _ _ _ _).
+    - intros [q p]. simpl in q,p.
+      clear retr; clear sect; simpl in *.
+      apply inv. clear inv.
+      refine (exist _ _ _).
+      intros i u; apply (q i).
+      apply (hPullback_separated_unit_is_cl_diag T i).
+      exact u.
+      intros i j [a [b Hb]] x.
+      destruct a.
+
+  Admitted.
+
+  Lemma sep_eq_inv_lemma (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T}) (f : P.1 -> Q.1.1)
+  : ∀ (i j : Cech_nerve_graph) (f0 : Cech_nerve_graph i j)
+      (x : (cl_diagonal_diagram P) i),
+      f (fst (diagram1 (cl_diagonal_diagram P) f0 x).1) = f (fst x.1).
+    intros i j [p [q Hq]]; destruct p;
+    intros [[a [b x]] X];
+    destruct q; [
+    exact (ap10 (equiv_inv (IsEquiv := Q.2 (∃ y : P.1 ∧ hProduct P.1 (S j), (cl_char_hPullback' idmap (S j) y).1) (cl_char_hPullback'_is_dense P P idmap (S j)) (λ x, f (fst x.1)) (λ x, f (fst (snd x.1))))
+                     (path_forall _ _ (λ u, ap f (fst u.2.1)))) ((a,(b,x));X))^ |
+    reflexivity].
+  Defined.
+      
   Definition sep_eq_inv (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T})
-  : (P .1 → (Q .1) .1) -> (colimit (cl_diagonal_diagram P) → (Q .1) .1).
-    intros f.
-    apply (equiv_inv (IsEquiv := colimit_is_colimit _ (cl_diagonal_diagram P) Q.1.1)).
-    exists (λ i, λ x, f (fst x.1)).
-    intros i j [p [q Hq]]. destruct p.
-    intros [[a [b x]] X].
-    induction q. 
-    exact (ap10 (equiv_inv (IsEquiv := Q.2 (∃ y : P.1 ∧ hProduct P.1 (S j), (cl_char_hPullback idmap (S j) y).1) (@dense_into_cloture _ _ (P.1 ∧ hProduct P.1 (S j)) (char_hPullback _ idmap (S j) P.2 P.2)) (λ x, f (fst x.1)) (λ x, f (fst (snd x.1))))
-                     (path_forall _ _ (λ u, ap f (fst u.2.1)))) ((a,(b,x));X))^.
-    reflexivity.
-  Defined.
-
-  Definition sep_eq_inv2 (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T})
-  : (P .1 → (Q .1) .1) -> (colimit (cl_diagonal_diagram P) → (Q .1) .1).
-    intro f.
-    refine (colimit_rectnd _ _ _ _ _).
-    - exact (λ i, λ x, f (fst x.1)).
-    - intros i j [p [q Hq]]. destruct p.
-    intros [[a [b x]] X].
-    induction q.
-    exact (ap10 (equiv_inv (IsEquiv := Q.2 (∃ y : P.1 ∧ hProduct P.1 (S j), (cl_char_hPullback idmap (S j) y).1) (@dense_into_cloture _ _ (P.1 ∧ hProduct P.1 (S j)) (char_hPullback _ idmap (S j) P.2 P.2)) (λ x, f (fst x.1)) (λ x, f (fst (snd x.1))))
-                     (path_forall _ _ (λ u, ap f (fst u.2.1)))) ((a,(b,x));X))^.
-    reflexivity.
-  Defined.
-
-  Definition sep_eq_inv3 (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T})
   : (P .1 → (Q .1) .1) -> ((separated_Type P) → (Q .1) .1).
-    intros f.
-    apply (transport (λ u, u -> Q.1.1) (separated_Type_is_colimit P)^).
-    exact (sep_eq_inv2 Q f).
+    intro f.
+    apply (equiv_inv (IsEquiv := (separated_Type_is_colimit_cl_diagonal_diagram P Q.1.1))).
+    exists (λ i, λ x, f (fst x.1)).
+    apply sep_eq_inv_lemma.
   Defined.
 
-  
-  Definition colimits_commute0 (T:Trunk (trunc_S n)) i (x : (cl_diagonal_diagram T) i)
-  : @colim _ (cl_diagonal_diagram T) _ x = colim (((fst x.1,tt); O_unit nj (Unit;trunc_unit n) tt) : (cl_diagonal_diagram T) 0).
-    simpl in *.
-    induction i.
-    - apply ap.
-      refine (path_sigma _ _ _ _ _).
-      refine (path_prod _ _ _ _).
-      reflexivity.
-      apply path_ishprop.
-      simpl.
-      refine (path_ishprop _ _).
-      unfold cl_char_hPullback, char_hPullback, cloture, compose; simpl.
-      rewrite OUnit_is_Unit.
-      apply trunc_unit. exact ua. exact fs.
-    - assert (p := @pp _ (cl_diagonal_diagram T) (S i) i). simpl in p.
-      transparent assert (X : (nat_interval i.+1)).
-      exists ((S i)).
-      apply Peano.le_n.
-      specialize (p (1,X) x). simpl in p.
-      specialize (IHi (cl_diagonal_projections T X x)).
-      
-      etransitivity; try exact p^.
-      etransitivity; try exact IHi.
-      reflexivity.
-  Qed.
-
-  Definition colimits_commute (T:Trunk (trunc_S n)) i (x : (cl_diagonal_diagram T) (S i)) (p: {p:nat & Peano.le p (S i)})
-  : @colim _ (cl_diagonal_diagram T) _ x = @colim _ (cl_diagonal_diagram T) _ (cl_diagonal_projections T p x)
-    := (@pp _ (cl_diagonal_diagram T) (S i) i (1,p) x)^.
-
-  Definition separated_unit_is_colim0 (T:Trunk (trunc_S n)) x
-  : (separated_unit T x)  = equiv_path _ _ (separated_Type_is_colimit T)^ (colim (((x,tt); O_unit nj (Unit;trunc_unit n) tt) : (cl_diagonal_diagram T) 0)).
-    simpl.
-  Admitted.
-
-  Definition separated_unit_is_colim (T:Trunk (trunc_S n)) (i:Cech_nerve_graph) x
-  : (separated_unit T (fst x.1))  = equiv_path _ _ (separated_Type_is_colimit T)^ (@colim _ (cl_diagonal_diagram T) i x).
-    simpl.
-    induction i. 
-    - pose (separated_unit_is_colim0 T (fst x.1)). simpl in p.
-      etransitivity; try exact p.
-      apply ap. apply ap.
-      refine (path_sigma _ _ _ _ _).
-      refine (path_prod _ _ _ _).
-      reflexivity.
-      apply path_ishprop.
-      simpl.
-      refine (path_ishprop _ _).
-      unfold cl_char_hPullback, char_hPullback, cloture, compose; simpl.
-      rewrite OUnit_is_Unit.
-      apply trunc_unit. exact ua. exact fs.
-    - simpl.
-      specialize (IHi (cl_diagonal_projections T ((S i); Peano.le_n (S i)) x)).
-      simpl in IHi.
-      etransitivity; try apply IHi.
-      symmetry. apply ap.
-      apply colimits_commute.
+  (* in Lemmas *)
+  Lemma VpV (X:Type) (x y:X) (p q:x=y): p=q -> p^= q^.
+  intro H. destruct H. auto.
   Defined.
-
-
-
-  Arguments cl_diagonal_projections T k p x : simpl never.
-
-  Lemma separated_unit_is_colim_projections0 
-        (P : Trunk n.+1)
-        (j : nat)
-        (Hq : Peano.le 0 j.+1)
-        (b1 : P.1)
-        (b : hProduct P.1 j)
-        (q : (cl_char_hPullback idmap j.+1 (b1, (b1, b))).1)
-        (μ : (char_hPullback n idmap j P.2 P.2 (b1, b)).1)
-  :
-    separated_unit_is_colim P
-                            (cl_diagonal_projections P (0; Hq) ((b1, (b1, b)); q)) @
-                            ap (transport idmap (separated_Type_is_colimit P)^)
-                            (pp Cech_nerve_graph (cl_diagonal_diagram P) j.+1 j 
-                                (1, (0; Hq)) ((b1, (b1, b)); q)) =
-    separated_unit_is_colim P
-                            (cl_diagonal_projections P (j.+1; Peano.le_n j.+1) ((b1, (b1, b)); q)) @
-                            ap (transport idmap (separated_Type_is_colimit P)^)
-                            (pp Cech_nerve_graph (cl_diagonal_diagram P) j.+1 j
-                                (1, (j.+1; Peano.le_n j.+1)) ((b1, (b1, b)); q)).
-    induction j.
-    { simpl.
-      destruct b, μ.
-      repeat rewrite concat_pp_p.
-      apply whiskerL.
-      repeat rewrite <- ap_pp.
-      apply ap.
-      
-      unfold cl_diagonal_projections; simpl.
-      unfold forget_hPullback, forget_char_hPullback; simpl.
-      destruct ((decidable_paths_nat 0 (S 0))).
-    Admitted.
-    
-    
-  Lemma separated_unit_is_colim_projections
-        (P : Trunk n.+1)
-        (Q : ∃ T : Trunk n.+1, separated T)
-        (f : separated_Type P → (Q.1).1)
-        (j : nat)
-        (q : nat)
-        (Hq : Peano.le q.+1 j.+1)
-        (x : ∃ y : P.1 ∧ P.1 ∧ hProduct P.1 j, (cl_char_hPullback idmap j.+1 y).1)
-  :   separated_unit_is_colim P (cl_diagonal_projections P (q.+1; Hq) x) @
-                              ap (transport idmap (separated_Type_is_colimit P)^)
-                              (pp Cech_nerve_graph (cl_diagonal_diagram P) j.+1 j (1, (q.+1; Hq)) x) =
-      separated_unit_is_colim P
-                              (cl_diagonal_projections P (j.+1; Peano.le_n j.+1) x) @
-                              ap (transport idmap (separated_Type_is_colimit P)^)
-                              (pp Cech_nerve_graph (cl_diagonal_diagram P) j.+1 j (1, (j.+1; Peano.le_n j.+1)) x).
-    
-    generalize dependent q.       
-    induction j.
-    { intros q Hq.
-      assert (0 = q).
-      apply Peano.le_pred in Hq. simpl in Hq.
-      admit.
-      destruct X.
-      assert (Peano.le_n (S 0) = Hq).
-      refine (path_ishprop _ _).
-      admit.
-      destruct X.
-      reflexivity.
-    }
-    { intros q Hq.
-      simpl.
-      destruct (decidable_paths_nat (S j) q).
-      { destruct p.
-        assert (Peano.le_n j.+2 = Hq).
-        admit.
-        destruct X.
-        reflexivity.
-      }
-      simpl.
-  Admitted.
       
   Definition separated_equiv : forall (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T}),
                                  IsEquiv (fun f : separated_Type P -> pr1 (pr1 Q) =>
                                             f o (separated_unit P)).
-    (* rewrite (separated_Type_is_colimit). *)
     intros P Q.
     refine (isequiv_adjointify _ _ _ _).
-    - intros f x.
-      refine (sep_eq_inv2 Q f _).
-      apply (equiv_path _ _ (separated_Type_is_colimit P)). exact x.
+    - apply sep_eq_inv.
     - intros f.
-      unfold compose. apply path_forall; intro x. simpl.
-      pose (rew := separated_unit_is_colim P (i:=0) ((x,tt); O_unit nj (Unit;trunc_unit n) tt)); simpl in rew. rewrite rew; clear rew.
-      unfold sep_eq_inv2.
-      rewrite transport_pV.
-      apply colimit_rectnd_compute.
-    - intros f. unfold sep_eq_inv2, compose; simpl.
-      apply path_forall. intro x.
-      assert (y : {y : _ & (transport idmap (separated_Type_is_colimit P)^ y) = x}).
-      { exists (transport idmap (separated_Type_is_colimit P) x).
-        apply (transport_Vp idmap (separated_Type_is_colimit P) x). }
-      destruct y as [y Py].
-      destruct Py.
-      rewrite (transport_pV idmap (separated_Type_is_colimit P) y).
-      revert y.
-      refine (colimit_rect _ _ _ _ _).
-      { intros i x.
+      Opaque sep_eq_inv_lemma.
+      apply path_forall; intro x. 
+      unfold compose; simpl.
+      unfold sep_eq_inv.
+      unfold equiv_inv.
+      destruct (separated_Type_is_colimit_cl_diagonal_diagram P (Q.1).1) as [inv retr _ _].
+      unfold Sect in retr; simpl in retr.
+      simpl.
+      unfold diagonal_commute in retr.
+      specialize (retr (λ (i : nat)
+      (x0 : ∃ y : P.1 ∧ hProduct P.1 i, (cl_char_hPullback' idmap i y).1),
+                        f (fst x0.1); sep_eq_inv_lemma Q f)).
+      exact (ap10 (apD10 (retr..1) 0) ((x,tt);tt)).
+    - intros f. unfold sep_eq_inv, compose; simpl.
+      apply moveL_equiv_V.
+      apply path_sigma' with 1. simpl.
+      apply path_forall; intro i.
+      apply path_forall; intro j.
+      apply path_forall; intros [p [q Hq]].
+      apply path_forall; intro x.
+      destruct p. simpl in *.
+      induction q.
+      { Transparent sep_eq_inv_lemma.
+        Opaque cl_diagonal_projections.
+        Opaque cl_char_hPullback'_is_dense.
         simpl.
-        apply (ap f).
-        apply separated_unit_is_colim.        
-      }
-      
-      { intros i j [f0 [q Hq]] x. destruct f0.
-        rewrite transport_paths_FlFr.
+        rewrite ap_V. apply VpV.
+        destruct x as [[x1 [x2 x]] y]. simpl in *.
+        refine (@apD10 _ _ (ap10
+                              ((ap (E_to_χ_map Q.1 (cl_char_hPullback'_is_dense P P idmap j.+1)))^-1
+                                                                                                 (path_forall
+                                                                                                    (λ
+                                                                                                       u : ∃
+                                                                                                             b : ∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
+                                                                                                                   ((O cloture_hpullback.nj
+                                                                                                                       (fst y0 = fst (snd y0);
+                                                                                                                        istrunc_paths P.2 (fst y0) (fst (snd y0)))).1).1
+                                                                                                                   ∧ (cl_char_hPullback' idmap j (snd y0)).1,
+                                                                                                             ((cl_char_hPullback'_is_dense P P idmap j.+1) b).1,
+                                                                                                       f (separated_unit P (fst (u.1).1)))
+                                                                                                    (λ
+                                                                                                       u : ∃
+                                                                                                             b : ∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
+                                                                                                                   ((O cloture_hpullback.nj
+                                                                                                                       (fst y0 = fst (snd y0);
+                                                                                                                        istrunc_paths P.2 (fst y0) (fst (snd y0)))).1).1
+                                                                                                                   ∧ (cl_char_hPullback' idmap j (snd y0)).1,
+                                                                                                             ((cl_char_hPullback'_is_dense P P idmap j.+1) b).1,
+                                                                                                       f (separated_unit P (fst (snd (u.1).1))))
+                                                                                                    (λ
+                                                                                                       u : ∃
+                                                                                                             b : ∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
+                                                                                                                   ((O cloture_hpullback.nj
+                                                                                                                       (fst y0 = fst (snd y0);
+                                                                                                                        istrunc_paths P.2 (fst y0) (fst (snd y0)))).1).1
+                                                                                                                   ∧ (cl_char_hPullback' idmap j (snd y0)).1,
+                                                                                                             ((cl_char_hPullback'_is_dense P P idmap j.+1) b).1,
+                                                                                                       ap (λ x0 : P.1, f (separated_unit P x0)) (fst (u.2).1)))))
+                (λ x, ap f
+     (separated_unit_paths_are_nj_paths_inv P (fst x.1) 
+                                            (fst (snd x.1)) (fst x.2)))
+                _
+                ((x1, (x2, x)); y)).
+        apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_apD10 _ _ _ _)) _).
+        unfold ap10.
+        rewrite eissect.
+        
+        apply moveL_equiv_V.
+        apply (@equiv_inj _ _ _ (isequiv_apD10 _ _ _ _)).
+        unfold path_forall. rewrite eisretr.
+        clear y. clear x. clear x1. clear x2.
+        apply path_forall. intros [[[b1 [b2 b]] q] [π p]].
         simpl in *.
-        rewrite (@colimit_rectnd_beta_pp _ (cl_diagonal_diagram P) (Q.1).1 (λ (i : nat)
-           (x0 : ∃ y : P.1 ∧ hProduct P.1 i, (cl_char_hPullback idmap i y).1),
-                                                                            f (separated_unit P (fst x0.1))) _ j.+1 j (1, (q;Hq)) x).
-        simpl.
-        destruct q.
-        { simpl.
-          rewrite inv_V.
-          assert (rew : ap
-                    (λ x0 : colimit (cl_diagonal_diagram P),
-                            f (transport idmap (separated_Type_is_colimit P)^ x0))
-                    (pp Cech_nerve_graph (cl_diagonal_diagram P) j.+1 j (1, (0; Hq)) x)
-                  =
-                  ap (f o (transport idmap (separated_Type_is_colimit P)^)) (pp Cech_nerve_graph (cl_diagonal_diagram P) j.+1 j (1, (0; Hq)) x)) by auto.
-          apply (transport (λ u, _ @ u = _) rew^). clear rew.
-          rewrite ap_compose.
-          rewrite concat_pp_p.
-          rewrite <- ap_pp.
-          apply moveR_pM.
-          rewrite <- ap_V. rewrite <- ap_V.
-          rewrite <- ap_pp.
-          simpl.
-          unfold colimits_commute.
-          rewrite inv_V.
-          
-          Arguments path_forall {H A P f g} p.
-          simpl.
+        
+        unfold E_to_χ_map.
+        destruct π as [π μ]. destruct π. simpl in *.
 
-          destruct x as [[x1 [x2 x]] y].
-          simpl in *.
-          (* unfold equiv_inv. *)
+        unfold compose.
 
-          refine (@apD10 _ _ (ap10 ((let (equiv_inv, eisretr, eissect, _) :=
-                                   Q.2
-                                     (∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
-                                        (cl_char_hPullback idmap j.+1 y0).1)
-                                     (dense_into_cloture (char_hPullback n idmap j.+1 P.2 P.2))
-                                     (λ
-                                        x0 : ∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
-                                               (cl_char_hPullback idmap j.+1 y0).1,
-                                        f (separated_unit P (fst x0.1)))
-                                     (λ
-                                        x0 : ∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
-                                               (cl_char_hPullback idmap j.+1 y0).1,
-                                        f (separated_unit P (fst (snd x0.1)))) in
-                               equiv_inv)
-                                (path_forall
-                                   (λ
-                                      u : ∃
-                                            (b : ∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
-                                                   (cl_char_hPullback idmap j.+1 y0).1)
-                                            (π : fst b.1 = fst (snd b.1)
-                                                 ∧ (char_hPullback n idmap j P.2 P.2 (snd b.1)).1),
-                                            O_unit sheaf_def_and_thm.nj
-                                                   (existT (λ T, IsTrunc n T) (fst b.1 = fst (snd b.1)
-                                                                               ∧ (char_hPullback n idmap j P.2 P.2 (snd b.1)).1)
-                                                           (λ
-                                                              x0
-                                                              y0 : fst b.1 = fst (snd b.1)
-                                                                   ∧ (char_hPullback n idmap j P.2 P.2 (snd b.1)).1,
-                                                                   trunc_equiv (fst x0 = fst y0 ∧ snd x0 = snd y0)
-                                                                               (path_prod_uncurried x0 y0))) π = b.2,
-                                      ap (λ x0 : P.1, f (separated_unit P x0)) (fst (u.2).1)))))
-                        (λ x, ap f
-                                 ((separated_unit_is_colim P
-                                                           (cl_diagonal_projections P (j.+1; Peano.le_n j.+1)
-                                                                                    x) @
-                                                           ap (transport idmap (separated_Type_is_colimit P)^)
-                                                           (pp Cech_nerve_graph (cl_diagonal_diagram P) j.+1 j
-                                                               (1, (j.+1; Peano.le_n j.+1)) x)) @
-                                                                                                (separated_unit_is_colim P
-                                                                                                                         (cl_diagonal_projections P (0; Hq) x) @
-                                                                                                                         ap (transport idmap (separated_Type_is_colimit P)^)
-                                                                                                                         (pp Cech_nerve_graph (cl_diagonal_diagram P) j.+1 j 
-                                                                                                                             (1, (0; Hq)) x))^))
-                        _
-                        ((x1, (x2, x)); y) ).
-
-
-          apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_apD10 _ _ _ _)) _).
-          unfold ap10.
-          rewrite eissect.
-          simpl.
-
-          assert (forall (X Y:Type), forall (f: X -> Y), forall (H:IsEquiv f), forall (x:Y) (y:X), x = f y -> f^-1 x = y).
-          intros X Y φ H u v HH.
-          apply (@equiv_inj _ _ _ H).
-          rewrite eisretr. exact HH.
-
-          apply X.
-          clear X.
-
-          apply (@equiv_inj _ _ _ (isequiv_apD10 _ _ _ _)).
-          unfold path_forall. rewrite eisretr.
-          clear y. clear x. clear x1. clear x2.
-
-          apply path_forall. intros [[[b1 [b2 b]] q] [π p]].
-          simpl in *.
-
-          unfold E_to_χ_map.
-          destruct π as [π μ]. destruct π. simpl in *.
-
-          unfold compose.
-          pose (@apD10_ap_precompose
-                  (∃
-                      (b0 : ∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
-                              (cl_char_hPullback idmap j.+1 y0).1)
-                      (π : fst b0.1 = fst (snd b0.1)
-                           ∧ (char_hPullback n idmap j P.2 P.2 (snd b0.1)).1),
-                      O_unit sheaf_def_and_thm.nj
-                             (existT (λ T, IsTrunc n T) (fst b0.1 = fst (snd b0.1)
-                                                         ∧ (char_hPullback n idmap j P.2 P.2 (snd b0.1)).1)
-                                     (λ
-                                        x
-                                        y : fst b0.1 = fst (snd b0.1)
-                                            ∧ (char_hPullback n idmap j P.2 P.2 (snd b0.1)).1,
-                                            trunc_equiv (fst x = fst y ∧ snd x = snd y)
-                                                        (path_prod_uncurried x y))) π = b0.2)
-                  (∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j, (cl_char_hPullback idmap j.+1 y0).1)
+        pose (@apD10_ap_precompose
+                (∃
+              b0 : ∃ P0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
+                   ((O cloture_hpullback.nj
+                       (fst P0 = fst (snd P0);
+                       istrunc_paths P.2 (fst P0) (fst (snd P0)))).1).1
+                   ∧ (cl_char_hPullback' idmap j (snd P0)).1,
+              ((cl_char_hPullback'_is_dense P P idmap j.+1) b0).1)
+                  (∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j, (cl_char_hPullback' idmap j.+1 y0).1)
                   (λ _, Q.1.1)
                   pr1
                   _
                   _
-                  ((let (equiv_inv, eisretr, eissect, _) :=
-                        isequiv_apD10
-                          (∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
-                             (cl_char_hPullback idmap j.+1 y0).1)
-                          (λ
-                             _ : ∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
-                                   (cl_char_hPullback idmap j.+1 y0).1, 
-                             (Q.1).1)
-                          (λ
-                             x : ∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
-                                   (cl_char_hPullback idmap j.+1 y0).1,
-                             f (separated_unit P (fst x.1)))
-                          (λ
-                             x : ∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
-                                   (cl_char_hPullback idmap j.+1 y0).1,
-                             f (separated_unit P (fst (snd x.1)))) in
-                    equiv_inv)
-                     (λ
-                        x : ∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
-                              (cl_char_hPullback idmap j.+1 y0).1,
-                        ap f
-                           ((separated_unit_is_colim P
-                                                     (cl_diagonal_projections P (j.+1; Peano.le_n j.+1) x) @
-                                                     ap (transport idmap (separated_Type_is_colimit P)^)
-                                                     (pp Cech_nerve_graph (cl_diagonal_diagram P) j.+1 j
-                                                         (1, (j.+1; Peano.le_n j.+1)) x)) @
-                                                                                          (separated_unit_is_colim P
-                                                                                                                   (cl_diagonal_projections P (0; Hq) x) @
-                                                                                                                   ap (transport idmap (separated_Type_is_colimit P)^)
-                                                                                                                   (pp Cech_nerve_graph (cl_diagonal_diagram P) j.+1 j
-                                                                                                                       (1, (0; Hq)) x))^)))
+                  (apD10^-1
+           (λ
+            x : ∃ P0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
+                ((O cloture_hpullback.nj
+                    (fst P0 = fst (snd P0);
+                    istrunc_paths P.2 (fst P0) (fst (snd P0)))).1).1
+                ∧ (cl_char_hPullback' idmap j (snd P0)).1,
+            ap f
+              (separated_unit_paths_are_nj_paths_inv P 
+                 (fst x.1) (fst (snd x.1)) (fst x.2))))
                   (((b1, (b1, b)); q); ((1, μ); p))).
 
-          apply (transport (λ u, 1 = u) p0^).
-          destruct (isequiv_apD10
-             (∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
-              (cl_char_hPullback idmap j.+1 y0).1)
-             (λ
-              _ : ∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
-                  (cl_char_hPullback idmap j.+1 y0).1, 
-              (Q.1).1)
-             (λ
-              x : ∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
-                  (cl_char_hPullback idmap j.+1 y0).1,
-              f (separated_unit P (fst x.1)))
-             (λ
-              x : ∃ y0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
-                  (cl_char_hPullback idmap j.+1 y0).1,
-                f (separated_unit P (fst (snd x.1))))) as [inv retr sect adj].
+        apply (transport (λ u, 1 = u) p0^). clear p0.
 
-          unfold Sect in retr. clear p0.
-          rewrite retr.
-          clear adj; clear sect; clear retr; clear inv.
-
-          path_via (ap f (idpath ((separated_unit P b1)))). apply ap.
-          simpl.
-          clear p.
-          apply moveL_pV.
-          rewrite concat_1p.
-          simpl.
-          apply separated_unit_is_colim_projections0. simpl. exact μ.
-        }
-        { simpl.
-          rewrite concat_1p.
-          assert (rew : ap
-                    (λ x0 : colimit (cl_diagonal_diagram P),
-                            f (transport idmap (separated_Type_is_colimit P)^ x0))
-                    (pp Cech_nerve_graph (cl_diagonal_diagram P) j.+1 j (1, (q.+1; Hq)) x)
-                  =
-                  ap (f o (transport idmap (separated_Type_is_colimit P)^)) (pp Cech_nerve_graph (cl_diagonal_diagram P) j.+1 j (1, (q.+1; Hq)) x)) by auto.
-          apply (transport (λ u, _ @ u = _) rew^); clear rew.
-          rewrite ap_compose. 
-          rewrite <- ap_pp.
-          apply ap.
-          unfold colimits_commute.
-          rewrite ap_V.
-          rewrite inv_V. simpl.
-          exact (separated_unit_is_colim_projections Q f Hq x).
-        }
+        rewrite eisretr. simpl.
+        unfold separated_unit_paths_are_nj_paths_inv.
+        simpl.
+        path_via (ap f (idpath ((separated_unit P b1)))). apply ap.
+        apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_eq_dep_subset _ _ _)) _).
+        rewrite eissect.
+        simpl.
+        apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+        unfold path_forall, ap10; rewrite eisretr.
+        apply path_forall; intro x.
+        simpl.
+        apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_unique_subuniverse _ _)) _).
+        rewrite eissect. simpl.
+        apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_truncn_unique _ _)) _).
+        rewrite eissect. simpl.
+        apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_universe)) _).
+        rewrite eissect.
+        simpl; unfold compose; simpl.
+        unfold equiv_path; simpl.
+        apply equal_equiv.
+        unfold kpsic_func_univ_func. simpl. 
+        apply (@equiv_inj  _ _ _ (O_equiv nj _ _)).
+        rewrite O_rec_retr.
+        apply path_forall; intro y.
+        unfold compose; simpl.
+        unfold δ; simpl.
+          
+        pose (p0 := ap10 (O_rec_retr (b1 = b1; istrunc_paths P.2 b1 b1) (O nj (b1 = x; istrunc_paths P.2 b1 x)) (λ v : b1 = b1, O_unit nj (b1 = x; istrunc_paths P.2 b1 x) (v^ @ y))) 1).
+        unfold compose in p0; simpl in p0.
+        rewrite concat_1p in p0.
+        etransitivity; try exact p0^. clear p0.
+        apply ap.
+        exact (density_lemma_hPullback P P idmap j ((b1,(b1,b)) ; q) ((1,μ);p))^.
       }
+      { reflexivity. }
   Qed.
       
 
   Definition separation_reflective_subuniverse
-  : subuniverse_struct (trunc_S n).
-    refine(Build_subuniverse_struct
+  : subuniverse_struct (trunc_S n)
+    := Build_subuniverse_struct
           (λ T, existT (λ T, IsHProp T) (separated T) (separated_is_HProp (T:=T)))
           separation
           separated_unit
-          _).
-    exact fs.
-    unfold separation. simpl.
-    pose separated_equiv.
-    unfold n.
-    (* exact i. *) admit.
-  Qed.
+          separated_equiv.
       
   (**** From separated to sheaf ****)
 
@@ -1128,6 +957,8 @@ Section Type_to_separated_Type.
 
   Definition closure_naturality E F A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) (Γ : F -> E) :
     {b : F & pr1 (pr1 (nj.(O) ((hfiber (pr1 m) (Γ b)) ; (pr2 m) (Γ b))))} = {b : F & hfiber (pr1 (pr2 (cloture' m))) (Γ b)}.
+    unfold hfiber; simpl.
+                     
     destruct m as [m Trm]; simpl.
     apply path_universe_uncurried.
     exists (closure_naturality_fun _ _).
@@ -1170,7 +1001,7 @@ Section Type_to_separated_Type.
     assert ((λ X2 : ((P e) .1) .1, O_unit nj (Q e) (f e X2)) = (λ X2 : ((P e) .1) .1, O_unit nj (Q e) (h e))).
       apply path_forall; intro X2.
       rewrite <- H  with (X := X2).
-      exact idpath.
+      reflexivity.
     apply (transport _ foo).
     exact (ap10 (ap (equiv_inv (IsEquiv := O_equiv nj (((P e) .1) .1; IsHProp_IsTrunc ((P e) .1) .2 n0)
           (O nj (Q e)))) X) (g e)).
@@ -1248,7 +1079,7 @@ Section Type_to_separated_Type.
   Defined.
 
   Lemma ap_equalf (A B C:Type) (x y : C -> B) (a : A) eq (φ : A -> C): (ap10 (ap (x:=x) (y:=y) (λ (f : C -> B), λ (t:A), f (φ t)) eq)) a = ap10 eq (φ a).
-    destruct eq; simpl. exact idpath.
+    destruct eq; simpl. reflexivity.
   Qed.
   
   Definition closed_to_sheaf_inv
@@ -1281,64 +1112,8 @@ Section Type_to_separated_Type.
     intro X.
     destruct m as [m Trm].
     apply path_forall; intro b.
-    unfold closed_to_sheaf_inv, E_to_χmono_map, nsub_to_char, compose, hfiber, O_rec in *; simpl in *.
-
-    destruct (@snd (separated
-            (@proj1_sig (Trunk (trunc_S n))
-               (fun T : Trunk (trunc_S n) => Snsheaf_struct T) B)) (forall (E0 : Type) (χ0 : forall _ : E0, J),
-          @IsEquiv
-            (forall _ : E0,
-             @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
-               (@proj1_sig (Trunk (trunc_S n))
-                  (fun T : Trunk (trunc_S n) => Snsheaf_struct T) B))
-            (forall
-               _ : @sig E0
-                     (fun b0 : E0 =>
-                      @proj1_sig Type
-                        (fun T : Type => IsTrunc (trunc_S minus_two) T)
-                        (@proj1_sig HProp
-                           (fun b1 : HProp =>
-                            not
-                              (not
-                                 (@proj1_sig Type
-                                    (fun T : Type =>
-                                     IsTrunc (trunc_S minus_two) T) b1)))
-                           (χ0 b0))),
-             @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
-               (@proj1_sig (Trunk (trunc_S n))
-                  (fun T : Trunk (trunc_S n) => Snsheaf_struct T) B))
-            (fun
-               (f : forall _ : E0,
-                    @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
-                      (@proj1_sig (Trunk (trunc_S n))
-                         (fun T : Trunk (trunc_S n) => Snsheaf_struct T) B))
-               (t : @sig E0
-                      (fun b0 : E0 =>
-                       @proj1_sig Type
-                         (fun T : Type => IsTrunc (trunc_S minus_two) T)
-                         (@proj1_sig HProp
-                            (fun b1 : HProp =>
-                             not
-                               (not
-                                  (@proj1_sig Type
-                                     (fun T : Type =>
-                                      IsTrunc (trunc_S minus_two) T) b1)))
-                            (χ0 b0)))) =>
-             f
-               (@proj1_sig E0
-                  (fun b0 : E0 =>
-                   @proj1_sig Type
-                     (fun T : Type => IsTrunc (trunc_S minus_two) T)
-                     (@proj1_sig HProp
-                        (fun b1 : HProp =>
-                         not
-                           (not
-                              (@proj1_sig Type
-                                 (fun T : Type =>
-                                  IsTrunc (trunc_S minus_two) T) b1)))
-                        (χ0 b0))) t))) (@projT2 (Trunk (trunc_S n))
-         (fun T : Trunk (trunc_S n) => Snsheaf_struct T)
-         B) E χ) as [inv_B retr_B sect_B adj_B].
+    unfold closed_to_sheaf_inv, E_to_χmono_map, nsub_to_char, compose, hfiber in *; simpl in *.
+    destruct (snd B.2 E χ) as [inv_B retr_B sect_B adj_B].
 
 
     destruct (closed (inv_B (λ t : {b0 : E & pr1 (pr1 (P:= (λ b1:HProp, ~ ~ (pr1 b1))) (χ b0))}, m (X t)) (pr1 b))) as [inv_closed retr_closed sect_closed adj_closed].
@@ -1382,7 +1157,7 @@ Section Type_to_separated_Type.
    
     exact (inverse foo).
     rewrite sect_closed.
-    exact idpath.
+    reflexivity.
   Defined.
 
   Definition closed_to_sheaf_sect
@@ -1399,62 +1174,7 @@ Section Type_to_separated_Type.
     intro X; unfold closed_to_sheaf_inv; simpl in *.
     apply path_forall; intro b.
     unfold E_to_χmono_map, nsub_to_char, compose, hfiber, O_rec in *; simpl in *.
-        destruct (@snd (separated
-            (@proj1_sig (Trunk (trunc_S n))
-               (fun T : Trunk (trunc_S n) => Snsheaf_struct T) B)) (forall (E0 : Type) (χ0 : forall _ : E0, J),
-          @IsEquiv
-            (forall _ : E0,
-             @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
-               (@proj1_sig (Trunk (trunc_S n))
-                  (fun T : Trunk (trunc_S n) => Snsheaf_struct T) B))
-            (forall
-               _ : @sig E0
-                     (fun b0 : E0 =>
-                      @proj1_sig Type
-                        (fun T : Type => IsTrunc (trunc_S minus_two) T)
-                        (@proj1_sig HProp
-                           (fun b1 : HProp =>
-                            not
-                              (not
-                                 (@proj1_sig Type
-                                    (fun T : Type =>
-                                     IsTrunc (trunc_S minus_two) T) b1)))
-                           (χ0 b0))),
-             @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
-               (@proj1_sig (Trunk (trunc_S n))
-                  (fun T : Trunk (trunc_S n) => Snsheaf_struct T) B))
-            (fun
-               (f : forall _ : E0,
-                    @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
-                      (@proj1_sig (Trunk (trunc_S n))
-                         (fun T : Trunk (trunc_S n) => Snsheaf_struct T) B))
-               (t : @sig E0
-                      (fun b0 : E0 =>
-                       @proj1_sig Type
-                         (fun T : Type => IsTrunc (trunc_S minus_two) T)
-                         (@proj1_sig HProp
-                            (fun b1 : HProp =>
-                             not
-                               (not
-                                  (@proj1_sig Type
-                                     (fun T : Type =>
-                                      IsTrunc (trunc_S minus_two) T) b1)))
-                            (χ0 b0)))) =>
-             f
-               (@proj1_sig E0
-                  (fun b0 : E0 =>
-                   @proj1_sig Type
-                     (fun T : Type => IsTrunc (trunc_S minus_two) T)
-                     (@proj1_sig HProp
-                        (fun b1 : HProp =>
-                         not
-                           (not
-                              (@proj1_sig Type
-                                 (fun T : Type =>
-                                  IsTrunc (trunc_S minus_two) T) b1)))
-                        (χ0 b0))) t))) (@projT2 (Trunk (trunc_S n))
-         (fun T : Trunk (trunc_S n) => Snsheaf_struct T)
-         B) E χ) as [inv_B retr_B sect_B adj_B].
+    destruct (snd B.2 E χ) as [inv_B retr_B sect_B adj_B].
     destruct (closed (inv_B (λ t : {b0 : E & pr1 (pr1 (P:= (λ b1:HProp, ~ ~ (pr1 b1))) (χ b0))}, m (X (pr1 t))) b)) as [inv_closed retr_closed sect_closed adj_closed].
 
     rewrite (ap10 (eissect _ (IsEquiv :=
@@ -1495,21 +1215,47 @@ Section Type_to_separated_Type.
     exact (inverse (@cloture_fun_ E χ (λ x, (hfiber m (Y x); Trm (Y x))) (λ e p, pr2 (E_to_Y'A _ _ closed _ b retr_B (e;p))) (λ b, match j_is_nj (χ b) .1 in (_ = y) return y with | 1%path => (χ b) .2 end) h X0 b)).
     
     rewrite sect_closed.
-    exact idpath.
+    reflexivity.
   Defined.
 
-  Definition closed_to_sheaf (A:Trunk (trunc_S n)) (B:SnType_j_Type) (m : {f : (pr1 A) -> (pr1 (pr1 B)) & forall b, IsTrunc n (hfiber f b)})
+  Lemma compose_equiv {A B C D:Type} (φ : A -> B) (u v : B -> C) (f : C -> D)
+        (equiv_compose_φ : IsEquiv (ap (λ x, x o φ) (x:= f o u) (y := f o v)))
+        (Monof_f : IsMonof f)
+  : IsEquiv (ap (λ x, x o φ) (x:=u) (y:=v)).
+    unfold IsMonof in *; simpl in *.
+
+    pose (e1 := (Monof_f B u v)).
+    pose (e2 := (equiv_compose_φ)).
+    pose (e3 := @isequiv_inverse _ _ _ (Monof_f A (u o φ) (v o φ))).
+
+    assert (((ap (λ u0 : A → C, f o u0))^-1 o (ap (λ x : B → D, x o φ) o (ap (λ u0 : B → C, f o u0) (x:=u) (y:=v)))) = (ap (λ x : B → C, x o φ))).
+    apply path_forall; intro p.
+    unfold compose; simpl.
+    apply (@equiv_inj _ _ _ (Monof_f A (u o φ) (v o φ))). rewrite eisretr.
+    destruct p; reflexivity.
+
+    destruct X. exact (@isequiv_compose _ _ _ (@isequiv_compose _ _ _ e1 _ _ e2) _ _ e3).
+  Qed.
+
+      
+  Definition closed_to_sheaf (A:Trunk (trunc_S n)) (B:SnType_j_Type) (m : {f : (pr1 A) -> (pr1 (pr1 B)) & forall b, IsTrunc n (hfiber f b)}) (Monom : IsMono m.1)
   : closed' m  -> Snsheaf_struct A.
-    intros x. split.
-    - admit. (*TO DO*)
-    - exact (λ E χ, isequiv_adjointify _ (@closed_to_sheaf_inv A B m x E χ) (@closed_to_sheaf_retr A B m x E χ) (@closed_to_sheaf_sect A B m x E χ)).
+    intro cl_m.
+    split.
+    - destruct m as [m Hm]. destruct B as [[B TrB] [Bsep Bsheaf]]. simpl in *. clear Bsheaf.
+      unfold closed', closed, nsub_to_char in cl_m; simpl in cl_m.
+      intros T χ f g. unfold E_to_χ_map in *; simpl in *.
+      specialize (Bsep T χ (m o f) (m o g)).
+      unfold E_to_χ_map in *; simpl in *.
+      assert (Monofm := IsMono_to_IsMonof Monom).
+      exact (@compose_equiv ({t:T & (χ t).1}) T A.1 B pr1 f g m Bsep Monofm).
+    - exact (λ E χ, isequiv_adjointify _ (@closed_to_sheaf_inv A B m cl_m E χ) (@closed_to_sheaf_retr A B m cl_m E χ) (@closed_to_sheaf_sect A B m cl_m E χ)).
   Defined.
-
 
   Definition mono_is_hfiber (T U : Type) (m : T -> U) (Monom : IsMono m) :
     ∀ b , IsTrunc n (hfiber m b).
     intro. apply IsHProp_IsTrunc.
-    apply (IsMono_IsHProp_fibers Monom).
+    apply IsEmbedding_IsMono. exact Monom.
   Defined.
 
   Definition separated_to_sheaf_Type (T U: Type) (m : T -> U) (Monom : IsMono m) : Type  :=
@@ -1522,17 +1268,6 @@ Section Type_to_separated_Type.
     intro a.
     apply (@trunc_succ _ _).
     exact (pr2 (pr1 (nj.(O) (nsub_to_char n (T.1; (m ; mono_is_hfiber Monom)) a)))).
-  Defined.
-  
-  Definition separated_to_sheaf (T:{T : Trunk (trunc_S n) & separated T}) (U:SnType_j_Type) m Monom :
-     Snsheaf_struct (@separated_to_sheaf_Type T.1.1 U.1.1 m Monom; @separated_to_sheaf_IsTrunc_Sn _ _ m Monom).
-    pose (foo := closed_to_sheaf (separated_to_sheaf_Type (m:=m) Monom; (@separated_to_sheaf_IsTrunc_Sn _ _ m  Monom)) U).
-    unfold separated_to_sheaf_Type in *; simpl in *.
-
-    specialize (foo (pr2 (cloture' (m;mono_is_hfiber Monom)))).
-    apply foo.
-
-    apply cloture_is_closed'.
   Defined.
 
   Definition IsMono_fromIm_inv {A B} (f : A -> B) (x y : Im f): x.1 = y.1 -> x=y.
@@ -1549,10 +1284,79 @@ Section Type_to_separated_Type.
       destruct (path_ishprop s r); simpl in *.
       reflexivity.
     - intro a.
-      unfold IsMono_fromIm_inv, path_ishprop, center.
+      unfold IsMono_fromIm_inv, path_ishprop.
       destruct a, x as [x s]; simpl.
-      destruct (istrunc_truncation -1 (hfiber f x) s s) as [center contr].
-      rewrite (contr idpath); reflexivity.
+      rewrite (contr 1); reflexivity.
+  Defined.
+
+  Lemma Sigma_IsHProp_O (T: Type) (χ : T -> Trunk n) (H : forall x, IsHProp (χ x).1)
+  : forall x, IsHProp ((O nj (χ x)).1.1).
+    intro x. specialize (H x).
+    assert (((O nj (χ x)).1).1 = ((O sheaf_def_and_thm.nj
+                                     ((χ x).1; IsHProp_IsTrunc H sheaf_def_and_thm.n0)).1).1).
+    repeat apply (ap pr1). apply ap. apply truncn_unique. exact fs. reflexivity.
+    rewrite X. apply (transport IsHProp (j_is_nj ((χ x).1;H))). apply _j.
+  Qed.
+
+  Lemma transport'_1 (A : Type) (P : A → Type) (x : A) (u : P x) v (H : 1=v)
+  : transport P v u = u.
+    destruct H. reflexivity.
+  Qed.
+  
+  Lemma IsMono_IsHProp_cloture (T: Type) (χ : T -> Trunk n) (Monom : IsMono (pr1 : (sigT (pr1 o χ)) -> T))
+  : forall x, IsHProp ((O nj (χ x)).1.1).
+    apply Sigma_IsHProp_O.
+    intro x.
+    apply hprop_allpath.
+    intros u v.
+    specialize (Monom (x;u) (x;v)).
+    pose (equiv_inv (IsEquiv := Monom) 1)..2. simpl in p.
+    etransitivity; try exact p.
+    unfold pr1_path. rewrite eisretr. reflexivity.
+  Defined.
+
+  Lemma IsMono_cloture (T: Type) (χ : T -> Trunk n) (Monom : IsMono (pr1 : (sigT (pr1 o χ)) -> T))
+  : IsMono (pr1 : (sigT (pr1 o pr1 o ((O nj) o χ))) -> T).
+
+    intros [x px] [y py].
+    simpl; refine (isequiv_adjointify _ _ _ _).
+    - intro p. apply path_sigma' with p. 
+      refine (path_ishprop _ _). apply IsMono_IsHProp_cloture. exact Monom.
+    - intro p. simpl. destruct p. simpl.
+      destruct (path_ishprop px py). reflexivity.
+    - intro p.
+      unfold path_sigma'. simpl.
+      pose (IsMono_IsHProp_cloture Monom y).
+      apply eta'_path_sigma. apply path_ishprop.
+  Qed.
+
+  Lemma IsMono_cloture' (T U:Type) (m : U -> T) (Monom : IsMono m)
+  : IsMono (cloture' (m;mono_is_hfiber Monom)).2.1.
+    unfold cloture', cloture, nsub_to_char, nchar_to_sub; simpl.
+    pose (@IsMono_cloture T (λ b0 : T, (hfiber m b0; mono_is_hfiber Monom (b:=b0)))).
+    unfold compose in *; simpl in *.
+    refine (i _).
+    apply IsEmbedding_IsMono.
+    intro x. unfold Overture.hfiber. simpl.
+    pose (snd (IsEmbedding_IsMono m) Monom).
+    apply (hprop_allpath).
+    intros [[p p'] pp] [[q q'] qq]. simpl in *.
+    refine (path_sigma' _ _ _).
+    apply path_sigma' with (pp @ qq^).
+    refine (path_ishprop _ _).
+    simpl.
+    destruct pp. destruct qq. hott_simpl.
+    destruct (path_ishprop (transport (λ x : T, hfiber m x) 1 p') q').
+    reflexivity.
+  Defined.
+                                    
+  Definition separated_to_sheaf (T:{T : Trunk (trunc_S n) & separated T}) (U:SnType_j_Type) m Monom :
+    Snsheaf_struct (@separated_to_sheaf_Type T.1.1 U.1.1 m Monom; @separated_to_sheaf_IsTrunc_Sn _ _ m Monom).
+    refine (closed_to_sheaf _ _ _ _).
+    exact U.
+    exact ((pr2 (cloture' (m;mono_is_hfiber Monom)))).
+    exact (@IsMono_cloture' U.1.1 T.1.1 m Monom).
+    apply cloture_is_closed'.
   Defined.
 
   Definition sheafification_Type (T:Trunk (trunc_S n)) :=
@@ -1569,8 +1373,8 @@ Section Type_to_separated_Type.
   Definition sheafification_trunc (T:Trunk (trunc_S n)) : Trunk (trunc_S n) :=
     (sheafification_Type T ; sheafification_istrunc  (T:=T)). 
 
-  Definition sheafification_ (T:Trunk (trunc_S n)) : Snsheaf_struct (sheafification_trunc T) :=
-    separated_to_sheaf (separated_Type T; separated_Type_is_Trunk_Sn (T:=T)) (T_nType_j_Type_sheaf T) (IsMono_fromIm (f:=_)).
+  Definition sheafification_ (T:Trunk (trunc_S n)) : Snsheaf_struct (sheafification_trunc T)
+    := separated_to_sheaf (((existT (IsTrunc (trunc_S n)) (separated_Type T) (separated_Type_is_Trunk_Sn (T:=T)))); @separated_Type_is_separated T) (T_nType_j_Type_sheaf T) (IsMono_fromIm (f:=_)).
 
   Definition sheafification (T:Trunk (trunc_S n)) : SnType_j_Type :=
     ((sheafification_Type T ; sheafification_istrunc  (T:=T)); sheafification_ T).

@@ -16,26 +16,23 @@ Context `{fs: Funext}.
 
 Lemma path_sigma_1 (A : Type) (P : A → Type) (u : ∃ x, P x)
 : path_sigma P u u 1 1 = 1.
-  destruct u. exact 1.
-Defined.
-
-Lemma L425_inv A B (f:A -> B) (y:B) (x x': hfiber f y)
-: ((∃ Ɣ : x .1 = x' .1, ap f Ɣ @ x' .2 = x .2) -> (x=x')).
-  intros [r q]. destruct x as [x p], x' as [x' p']; simpl in *.
-    destruct r. apply @path_sigma' with (p:=1). hott_simpl.
+  destruct u. reflexivity.
 Defined.
 
 Lemma L425 A B (f:A -> B) (y:B) (x x': hfiber f y)
 : (x=x') = {Ɣ:x.1=x'.1 & (ap f Ɣ) @ x'.2 = x.2}.
   apply path_universe_uncurried.
-  exists ((λ p, match p with 1 => (1;concat_1p x.2) end) : x = x' -> (∃ Ɣ : x .1 = x' .1, ap f Ɣ @ x' .2 = x .2)).
-  apply isequiv_adjointify with (g := L425_inv x x').
+  refine (equiv_adjointify _ _ _ _).
+  - intro p. destruct p.
+    exists 1. apply concat_1p.
+  - intros [r q]. destruct x as [x p], x' as [x' p']; simpl in *.
+    destruct r. apply @path_sigma' with (p:=1). hott_simpl. 
   - intros [Ɣ q].
     destruct x as [x p], x' as [x' p']; simpl in *.
     destruct Ɣ. hott_simpl. destruct q. hott_simpl.
-    destruct p'. exact 1. 
-  -  intro p; destruct p; hott_simpl.
-     destruct x as [x p]. simpl. destruct p. simpl. apply path_sigma_1.
+    destruct p'. reflexivity. 
+  - intro p; destruct p; hott_simpl.
+    destruct x as [x p]. simpl. destruct p. simpl. apply path_sigma_1.
 Qed.
 
 Lemma concat_ap (A B:Type) (f : A -> B) (x y: A) (equiv_inv : B -> A) (eisretr : Sect equiv_inv f) (eissect : Sect f equiv_inv) :
@@ -56,21 +53,17 @@ Proof.
   hott_simpl.
 Qed.
 
-Lemma moveL_pV_moveR_pM (A:Type) (x y z:A) (p : x = z) (q : y = z) (r : y = x)
-: forall Ɣ, (moveL_pV p r q (moveR_pM p q r Ɣ)) = Ɣ.
-  intro Ɣ. 
-  unfold moveR_pM, moveL_pV. destruct p. hott_simpl.
-Qed.
-
-
 Lemma isequiv_ap10 : forall (A B: Type) f g, IsEquiv (@ap10 A B f g).
   intros A B f g.
   apply isequiv_apD10.
 Defined.
 
-Lemma ap_conjug_ap10 (A B:Type) (f g : A -> B) φ (r : f = g) (p : forall x, φ x = x) x
-: (ap f (p x))^ @ (ap10 r (φ x)) @ (ap g (p x)) = ap10 r x.
-  destruct r. simpl. rewrite concat_p1. apply concat_Vp.
+Lemma eta'_path_sigma:
+  ∀ (A : Type) (P : A → Type) (u v : ∃ x, P x) (p : u = v) q (pp : p..2 = q),
+    path_sigma P u v p ..1 q = p.
+  intros A P u bu p q pp.
+  destruct pp.
+  apply eta_path_sigma.
 Qed.
-
+  
 End Lemmas.

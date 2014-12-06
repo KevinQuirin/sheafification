@@ -337,75 +337,6 @@ Section Old_pullback.
     exact p.
   Defined.
 
-  Parameters X Y:Type. Parameter f : Y -> X.
-  Parameters a b c d e g h:Y.
-  Parameter ab : f a = f b.
-  Parameter bc : f b = f c.
-  Parameter cd : f c = f d.
-  Parameter de : f d = f e.
-  
-  (* Goal forall (m:trunc_index) (TrX : IsTrunc (trunc_S m) X) (TrY : IsTrunc (trunc_S m) Y) , forall Hp: 1 <= 3, True=True. *)
-
-  (*   intros. *)
-  (*   (* pose (forget_hPullback m f 3 TrX TrY P p). simpl. *) *)
-  (*   simpl in *. *)
-  (*   transparent assert (foo : (hPullback m f 4 TrX TrY)). *)
-  (*   simpl. exists (a,(b,(c,(d,tt)))). simpl. *)
-  (*   repeat split. *)
-  (*   exact ab. exact bc. exact cd. *)
-  (*   pose (forget_pullback m f 3 TrX TrY foo (existT (λ x, x <= 3) (S 0) Hp)). simpl. *)
-  (*   transparent assert (bar : (hPullback m f 3 TrX TrY)). *)
-  (*   exists (a,(c,(d,tt))). simpl. *)
-  (*   exact (ab@bc,(cd,tt)). *)
-
-  (*   assert (h0 = bar). *)
-  (*   unfold h0, bar; simpl. *)
-  (*   unfold forget_pullback. *)
-  (*   simpl. *)
-  (*   apply path_sigma' with 1. simpl. *)
-  (*   unfold forget_char_hPullback. simpl. *)
-  (*   destruct (decidable_paths_nat 0 (S 0)). *)
-  (*   pose (succ_not_0 0 p). destruct e0. *)
-
-  (*   simpl. *)
-  (*   destruct (decidable_paths_nat 3 (S 0)). *)
-  (*   pose (ap pred p). simpl in p0. *)
-  (*   pose (succ_not_0 1 p0^). destruct e0. *)
-
-  (*   simpl. *)
-  (*   destruct (neq_0_succ 1 (neq_symm 0 1 n)).2. simpl in p. *)
-  (*   assert (1 = (neq_0_succ 1 (neq_symm 0 1 n)).2). *)
-    
-  (*   assert (1=p). admit. destruct X0. auto. *)
-    
-  (*   destruct (decidable_paths_nat 3 0). simpl. *)
-  (*   pose (succ_not_0 2 p^). destruct e0. *)
-
-  (*   simpl. *)
-  (*   pose ((neq_0_succ 0 (neq_symm 0 0 n)).2). simpl in p. *)
-  (*   pose (succ_not_0 ((neq_0_succ 0 (neq_symm 0 0 n)).1) p^). *)
-  (*   destruct e0. *)
-
-    
-    
-    
-    (* unfold decidable_paths_nat. *)
-    (* unfold char_hPullbacks_are_same. *)
-    (* unfold ap10, path_forall; repeat rewrite eisretr. *)
-    (* simpl. *)
-
-
-
-    (* simpl. *)
-
-
-    
-    
-
-    
-    
-    
-
 End Old_pullback.
 
 Section Cech_Nerve.
@@ -434,6 +365,29 @@ Section Cech_Nerve.
     (* destruct p; apply (nat_interval_bounded i q). *)
   Defined.
 
+  Definition Cech_nerve_commute (m:trunc_index) {X Y:Type} (f: Y -> X) (TrX : IsTrunc (trunc_S m) X) (TrY : IsTrunc (trunc_S m) Y)
+  : forall i, (Cech_nerve_diagram m f TrX TrY) i -> X.
+    intro i. simpl. intro P.
+    exact (f (fst P.1)).
+  Defined.
+
+  Definition Cech_nerve_pp (m:trunc_index) {X Y:Type} (f: Y -> X) (TrX : IsTrunc (trunc_S m) X) (TrY : IsTrunc (trunc_S m) Y)
+  : forall i j, forall (g : Cech_nerve_graph i j), forall (x : (Cech_nerve_diagram m f TrX TrY) i),
+      (Cech_nerve_commute m f TrX TrY) _ (diagram1 (Cech_nerve_diagram m f TrX TrY) g x) = (Cech_nerve_commute m f TrX TrY) _ x.
+    intros i j g x. simpl in *.
+    unfold Cech_nerve_commute. simpl.
+    destruct g as [p [q Hq]]. destruct p. simpl.
+    destruct q; [exact (fst (x.2))^ | reflexivity].
+  Defined.
+
+
+  Axiom Giraud : forall (m:trunc_index) {X Y:Type} (f : Y -> X) (TrX : IsTrunc (trunc_S m) X) (TrY : IsTrunc (trunc_S m) Y) (issurj_f : IsSurjection f),
+                   is_colimit (Cech_nerve_graph)
+                              (Cech_nerve_diagram m f TrX TrY)
+                              X
+                              (Cech_nerve_commute m f TrX TrY)
+                              (Cech_nerve_pp m f TrX TrY).
+  
   Axiom GiraudAxiom : forall (m:trunc_index) {X Y:Type} (f : Y -> X) (TrX : IsTrunc (trunc_S m) X) (TrY : IsTrunc (trunc_S m) Y) (issurj_f : IsSurjection f), colimit (Cech_nerve_diagram m f TrX TrY) <~> X.
 
   Lemma trunc_cech_nerve (m:trunc_index) {X Y:Type} (f : Y -> X) (TrX : IsTrunc (trunc_S m) X) (TrY : IsTrunc (trunc_S m) Y) (issurj_f : IsSurjection f)
@@ -442,5 +396,6 @@ Section Cech_Nerve.
     apply path_universe_uncurried in e.
     rewrite e.
     exact TrX.
-  Qed.  
+  Qed.
+  
 End Cech_Nerve.

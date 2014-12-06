@@ -69,11 +69,34 @@ Section Lemmas.
     Qed.
 
     Lemma ge_succ_succ (m:nat) : forall n, (S m <= n) -> {k : nat & S k = n}.
-    Admitted.
-    
+      intros n p.
+      induction p.
+      - exists m; reflexivity.
+      - exists m0. reflexivity.
+    Qed.
+
     Lemma succ_not_0 (n:nat) : 0 <> S n.
+      (* discriminate *)
     Admitted.
-  
+
+    Lemma le_0_is_0 (n:nat) : n <= 0 -> n = 0.
+      induction n.
+      - auto.
+      - intro H. destruct (not_lt_0 n H).
+    Qed.
+
+    Lemma le_0 (n:nat) : 0 <= n.
+      induction n.
+      - apply le_n.
+      - apply le_S. exact IHn.
+    Qed.
+
+    Lemma not_le_S (n:nat) : ~ (S n <= n).
+      induction n.
+      - intro H. destruct (not_lt_0 0 H).
+      - intro H. apply IHn. apply le_pred in H; exact H.
+    Qed.
+      
 End Lemmas.
 
 Section HSet_nat.
@@ -91,12 +114,32 @@ Section HSet_nat.
     left. destruct p; reflexivity.
     right. intro H. apply e.
     apply eq_S. exact H.
-  Qed.
+  Defined.
 
   Lemma ishset_nat : IsHSet nat.
     apply hset_decpaths. exact decidable_paths_nat.
   Defined.
-  
+
+  Lemma decidable_le : forall (n m:nat), (n <= m) + ~(n <= m).
+    intros n m.
+    induction n, m.
+    - left. apply le_n.
+    - left. apply le_0.
+    - destruct IHn.
+      + right. intro H. destruct (not_lt_0 n H).
+      + right. intro H. destruct (not_lt_0 n H).
+    - destruct IHn.
+      + destruct (decidable_paths_nat n (S m)).
+        * destruct p.
+          right.
+          intro H. apply (not_le_S n H).
+        * left. exact (le_neq_lt n (S m) n0 l).
+      + destruct (decidable_paths_nat (S n) (S m)).
+        * destruct p. left. apply le_n.
+        * right. intro H. apply n0.
+          apply le_S. apply le_pred in H; exact H.
+  Qed.
+
 End HSet_nat.
 
 Section nat_interval.
@@ -124,54 +167,4 @@ Section nat_interval.
     admit.
   Qed.
 
-  (* Fixpoint nat_interval (n:nat) : Type := *)
-  (*   match n with *)
-  (*     |0 => Empty *)
-  (*     |S 0 => {p:nat & p = S 0} *)
-  (*     |S m => {p:nat & p = S m} + nat_interval m *)
-  (*   end. *)
-
-  (* Definition nat_interval_to_nat (n:nat) : nat_interval n -> nat. *)
-  (*   induction n as [| m IH]. *)
-  (*   - intros q; destruct q. *)
-  (*   - destruct m as [| p IH2]. *)
-  (*     + intros q; exact q.1. *)
-  (*     + intros q. destruct q. *)
-  (*       * exact s.1. *)
-  (*       * exact (IH n). *)
-  (* Defined. *)
-
-  (* Global Coercion nat_interval_to_nat : nat_interval >-> nat. *)
-
-  (* Lemma nat_interval_bounded (n:nat) : forall q:nat_interval n, q <= n. *)
-  (*   induction n as [| m IH]. *)
-  (*   - intro q; destruct q. *)
-  (*   - induction m as [| p IH2]. *)
-  (*     + intro q; simpl in q. destruct q as [q p]. simpl. destruct p. apply le_n. *)
-  (*     + intro q; destruct q. destruct s as [s k]. simpl. destruct k. apply le_n. *)
-  (*       specialize (IH n). auto. *)
-  (* Qed. *)
-
-  (* Lemma ishset_nat_interval (n:nat) : IsHSet (nat_interval n). *)
-  (*   induction n. *)
-  (*   - simpl. apply trunc_succ. *)
-  (*   - simpl. *)
-  (*     induction n. *)
-  (*     refine (trunc_sigma). *)
-  (*     exact ishset_nat. *)
-  (*     intro a. refine (trunc_succ). *)
-  (*     apply istrunc_paths. exact ishset_nat. *)
-
-
-  (*     pose (trunc_sum). *)
-  (*     specialize (i (minus_two)). simpl in i. *)
-  (*     specialize (i (∃ p : nat, p = n.+2)). *)
-  (*     assert ( IsTrunc 0 (∃ p : nat, p = n.+2)). *)
-  (*       refine trunc_sigma. exact ishset_nat. *)
-  (*       intro a. apply istrunc_paths. refine trunc_succ; exact ishset_nat. *)
-  (*     specialize (i X). *)
-  (*     specialize (i (nat_interval n.+1) IHn). *)
-  (*     exact i. *)
-  (*     admit. *)
-  (* Qed. *)
 End nat_interval.

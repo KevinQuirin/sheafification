@@ -44,7 +44,7 @@ Definition hfiber_pi1L B (P : B -> Type) (b : B) :
 
 Definition hfiber_pi1R B (P : B -> Type) (b : B) : 
   P b -> hfiber (@pr1 B (λ b0 : B, P b0)) b.
-  intro e. exists (b;e). exact idpath. Defined.
+  intro e. exists (b;e). reflexivity. Defined.
 
 Definition hfiber_pi1_eissect B (P : B -> Type) (b : B) : Sect (hfiber_pi1L P (b:=b)) (hfiber_pi1R P b).
 intro t; destruct t as [[b' e] eq]. induction eq. reflexivity. Defined.
@@ -98,7 +98,7 @@ Definition terminal A B (f : A -> B) : A -> {A' : Type & A'} :=
 
 Definition subobject_diagram A B (f : A -> B) : 
   @pr1 _ (idmap) o terminal f = sub_to_char (A;f) o f.
-  apply path_forall; intro a. unfold compose, sub_to_char; simpl. exact 1.
+  apply path_forall; intro a. unfold compose, sub_to_char; simpl. reflexivity.
 Defined.
 
 Definition nsub_to_char n B : {A : Type & {f : A -> B & forall b, IsTrunc n (hfiber f b)}} -> B -> Trunk n :=

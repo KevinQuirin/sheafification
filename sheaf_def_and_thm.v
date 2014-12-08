@@ -874,7 +874,10 @@ Section Definitions.
     =
     transport (λ u:{e:E & (φ e)}, α (u.1 ; transport idmap (eq u.1)^ u.2))
               xy^.
-  Admitted.
+  simpl.
+  destruct (eisretr apD10 eq). simpl. unfold compose; simpl.
+  exact (@path_sigma_transport_transport E φ χ α (path_forall χ φ eq0) x y xy).
+  Defined.
   Opaque path_sigma_transport'.
 
   Definition transport_density_sigma (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
@@ -919,13 +922,7 @@ Section Definitions.
       simpl in χdiag.
       etransitivity; try exact χdiag.
       apply ap.
-      assert (foo := @path_sigma_transport'_transport E (pr1 o α) (pr1 o pr1 o O nj o φ) (pr1 o χ) p x.1 z.1.1).
-      destruct z as [z1 z2]; simpl.
-      Transparent path_sigma_transport'.
-      unfold path_sigma_transport'. simpl.
-      (*** TO DO ***)
-      admit.
+      exact (ap10 (@path_sigma_transport'_transport E (pr1 o α) (pr1 o pr1 o O nj o φ) (pr1 o χ) p x.1 z.1.1 z.2) z.1.2). 
   Defined.
-      
       
 End Definitions.

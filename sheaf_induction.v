@@ -916,478 +916,423 @@ Section Type_to_separated_Type.
       simpl in p. exact p.
   Defined.
 
-  (* Definition separated_modality : Modality (trunc_S n). *)
-  (*   refine (Build_Modality _ separation_reflective_subuniverse _). *)
-  (*   intros A B. simpl in *. *)
-  (*   destruct A as [A sepA]. simpl in sepA. *)
-  (*   unfold separated. *)
-  (*   intros E χ f g. simpl in *. *)
-  (*   refine (isequiv_adjointify _ _ _ _). *)
-  (*   - unfold E_to_χ_map; simpl. intros H. unfold compose in H; simpl in H. *)
-  (*     apply path_forall; intro x. *)
-  (*     refine (path_sigma _ _ _ _ _). *)
-  (*     apply (ap10 (f := (pr1 o f)) (g := (pr1 o g))). *)
-  (*     apply (equiv_inv (IsEquiv := sepA E χ (pr1 o f) (pr1 o g))). *)
-  (*     apply path_forall; intro y. exact (ap10 H y)..1. *)
-
-  (*     pose (B (g x).1).2. *)
-  (*     simpl in p. *)
-  (*     specialize (p {e':E & e' = x}). *)
-  (*     specialize (p (density_sigma χ x)). *)
-
-  (*     unfold equiv_inv. *)
-  (*     unfold IsMono in p; simpl in p. *)
-  (*     specialize (p (λ z, transport (λ u, (B (g u).1).1.1) z.2 (g z.1).2)). *)
-  (*     specialize (p (λ z, transport (λ u, (B (g u).1).1.1) z.2 (transport (λ x0 : A.1, ((B x0).1).1) *)
-  (*                                                                         (ap10 *)
-  (*                                                                            ((let (equiv_inv, eisretr, eissect, _) := *)
-  (*                                                                                  sepA E χ (pr1 o f) (pr1 o g) in *)
-  (*                                                                              equiv_inv) *)
-  (*                                                                               (path_forall (E_to_χ_map A χ (pr1 o f)) *)
-  (*                                                                                            (E_to_χ_map A χ (pr1 o g)) *)
-  (*                                                                                            (λ y : (nchar_to_sub χ).1, (ap10 H y) ..1))) z.1) *)
-  (*                                                                         (f z.1).2))). *)
-  (*     pose (X := λ X, (ap10 (equiv_inv (IsEquiv := p) X) (x;1))^); simpl in X; apply X. clear X. *)
-  (*     unfold E_to_χ_map, compose; simpl. *)
-  (*     apply path_forall; intros [[a b] c]; simpl in *. *)
-  (*     apply ap. clear b. *)
-
-  (*     etransitivity; try exact ((ap10 H (a;c))..2)^. simpl. *)
-  (*     apply (ap (λ u, transport _ u (f a).2)). *)
-  (*     unfold pr1_path. *)
-
-  (*     pose (ap10_ap_precompose (pr1 : {e:E & (χ e).1} -> E) ((let (equiv_inv, eisretr, eissect, _) := *)
-  (*          sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1) in *)
-  (*      equiv_inv) *)
-  (*       (path_forall (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1) *)
-  (*          (λ x0 : ∃ b : E, (χ b).1, (g x0.1).1) *)
-  (*          (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 H y)))) (a;c)). simpl in p0. *)
-  (*     apply (transport (λ u, _ = u) p0); clear p0. *)
-
-  (*     pose (eisretr _ (IsEquiv := sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1)) (path_forall (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1) *)
-  (*          (λ x0 : ∃ b : E, (χ b).1, (g x0.1).1) *)
-  (*          (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 H y)))). *)
-  (*     unfold Sect, equiv_inv, E_to_χ_map, compose in p0. *)
-  (*     apply (transport (λ u, _ = ap10 u _) p0^). *)
-  (*     exact (apD10 (eisretr (apD10 (f:=(λ x0 : ∃ b : E, (χ b).1, (f x0.1).1)) (g:=(λ x0 : ∃ b : E, (χ b).1, (g x0.1).1))) (IsEquiv := isequiv_apD10 _ _ (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1) (λ x0 : ∃ b : E, (χ b).1, (g x0.1).1)) (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 H y))) (a;c))^. *)
-      
-  (*   - intro p. unfold E_to_χ_map in *; simpl in *. *)
-  (*     apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)). *)
-  (*     apply path_forall; intro e. *)
-
-  (*     rewrite ap10_ap_precompose. *)
-  (*     unfold ap10 at 1, path_forall at 1. rewrite eisretr. *)
-  (*     unfold path_sigma. *)
-  (*     apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_sigma))). *)
-  (*     apply isequiv_inverse. *)
-  (*     rewrite eissect. simpl. *)
-  (*     unfold compose in *. *)
-
-  (*     (* Set Printing All. *) *)
-  (*     pose (help := (@exist *)
-  (*       (@paths (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A) *)
-  (*          (@proj1_sig *)
-  (*             _ *)
-  (*             _ *)
-  (*             (f *)
-  (*                (@proj1_sig E *)
-  (*                   (fun b : E => *)
-  (*                    @proj1_sig Type *)
-  (*                      (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                      (@char E χ b)) e))) *)
-  (*          (@proj1_sig *)
-  (*             (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A) *)
-  (*             (fun *)
-  (*                x : @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*                      A => *)
-  (*              @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*                (@proj1_sig (Trunk (trunc_S n)) *)
-  (*                   (fun T : Trunk (trunc_S n) => *)
-  (*                    @proj1_sig Type *)
-  (*                      (fun T0 : Type => IsTrunc (trunc_S minus_two) T0) *)
-  (*                      (@subuniverse_HProp (trunc_S n) *)
-  (*                         separation_reflective_subuniverse T)) *)
-  (*                   (B x))) *)
-  (*             (g *)
-  (*                (@proj1_sig E *)
-  (*                   (fun b : E => *)
-  (*                    @proj1_sig Type *)
-  (*                      (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                      (@char E χ b)) e)))) *)
-  (*       (fun *)
-  (*          p0 : @paths *)
-  (*                 (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A) *)
-  (*                 (@proj1_sig *)
-  (*                    (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*                       A) *)
-  (*                    (fun *)
-  (*                       x : @proj1_sig Type *)
-  (*                             (fun T : Type => IsTrunc (trunc_S n) T) A => *)
-  (*                     @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*                       (@proj1_sig (Trunk (trunc_S n)) *)
-  (*                          (fun T : Trunk (trunc_S n) => *)
-  (*                           @proj1_sig Type *)
-  (*                             (fun T0 : Type => *)
-  (*                              IsTrunc (trunc_S minus_two) T0) *)
-  (*                             (@subuniverse_HProp (trunc_S n) *)
-  (*                                separation_reflective_subuniverse T)) *)
-  (*                          (B x))) *)
-  (*                    (f *)
-  (*                       (@proj1_sig E *)
-  (*                          (fun b : E => *)
-  (*                           @proj1_sig Type *)
-  (*                             (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                             (@char E χ b)) e))) *)
-  (*                 (@proj1_sig *)
-  (*                    (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*                       A) *)
-  (*                    (fun *)
-  (*                       x : @proj1_sig Type *)
-  (*                             (fun T : Type => IsTrunc (trunc_S n) T) A => *)
-  (*                     @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*                       (@proj1_sig (Trunk (trunc_S n)) *)
-  (*                          (fun T : Trunk (trunc_S n) => *)
-  (*                           @proj1_sig Type *)
-  (*                             (fun T0 : Type => *)
-  (*                              IsTrunc (trunc_S minus_two) T0) *)
-  (*                             (@subuniverse_HProp (trunc_S n) *)
-  (*                                separation_reflective_subuniverse T)) *)
-  (*                          (B x))) *)
-  (*                    (g *)
-  (*                       (@proj1_sig E *)
-  (*                          (fun b : E => *)
-  (*                           @proj1_sig Type *)
-  (*                             (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                             (@char E χ b)) e))) => *)
-  (*        @paths *)
-  (*          (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*             (@proj1_sig (Trunk (trunc_S n)) *)
-  (*                (fun T : Trunk (trunc_S n) => *)
-  (*                 @proj1_sig Type *)
-  (*                   (fun T0 : Type => IsTrunc (trunc_S minus_two) T0) *)
-  (*                   (@subuniverse_HProp (trunc_S n) *)
-  (*                      separation_reflective_subuniverse T)) *)
-  (*                (B *)
-  (*                   (@proj1_sig *)
-  (*                      (@proj1_sig Type *)
-  (*                         (fun T : Type => IsTrunc (trunc_S n) T) A) *)
-  (*                      (fun *)
-  (*                         x : @proj1_sig Type *)
-  (*                               (fun T : Type => IsTrunc (trunc_S n) T) A => *)
-  (*                       @proj1_sig Type *)
-  (*                         (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*                         (@proj1_sig (Trunk (trunc_S n)) *)
-  (*                            (fun T : Trunk (trunc_S n) => *)
-  (*                             @proj1_sig Type *)
-  (*                               (fun T0 : Type => *)
-  (*                                IsTrunc (trunc_S minus_two) T0) *)
-  (*                               (@subuniverse_HProp *)
-  (*                                  (trunc_S n) *)
-  (*                                  separation_reflective_subuniverse T)) *)
-  (*                            (B x))) *)
-  (*                      (g *)
-  (*                         (@proj1_sig E *)
-  (*                            (fun b : E => *)
-  (*                             @proj1_sig Type *)
-  (*                               (fun T : Type => *)
-  (*                                IsTrunc sheaf_def_and_thm.n T) *)
-  (*                               (@char E χ b)) e)))))) *)
-  (*          (@transport *)
-  (*             (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A) *)
-  (*             (fun *)
-  (*                x : @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*                      A => *)
-  (*              @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*                (@proj1_sig (Trunk (trunc_S n)) *)
-  (*                   (fun T : Trunk (trunc_S n) => *)
-  (*                    @proj1_sig Type *)
-  (*                      (fun T0 : Type => IsTrunc (trunc_S minus_two) T0) *)
-  (*                      (@subuniverse_HProp (trunc_S n) *)
-  (*                         separation_reflective_subuniverse T)) *)
-  (*                   (B x))) *)
-  (*             (@proj1_sig *)
-  (*                (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A) *)
-  (*                (fun *)
-  (*                   x : @proj1_sig Type *)
-  (*                         (fun T : Type => IsTrunc (trunc_S n) T) A => *)
-  (*                 @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*                   (@proj1_sig (Trunk (trunc_S n)) *)
-  (*                      (fun T : Trunk (trunc_S n) => *)
-  (*                       @proj1_sig Type *)
-  (*                         (fun T0 : Type => IsTrunc (trunc_S minus_two) T0) *)
-  (*                         (@subuniverse_HProp (trunc_S n) *)
-  (*                            separation_reflective_subuniverse T)) *)
-  (*                      (B x))) *)
-  (*                (f *)
-  (*                   (@proj1_sig E *)
-  (*                      (fun b : E => *)
-  (*                       @proj1_sig Type *)
-  (*                         (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                         (@char E χ b)) e))) *)
-  (*             (@proj1_sig *)
-  (*                (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A) *)
-  (*                (fun *)
-  (*                   x : @proj1_sig Type *)
-  (*                         (fun T : Type => IsTrunc (trunc_S n) T) A => *)
-  (*                 @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*                   (@proj1_sig (Trunk (trunc_S n)) *)
-  (*                      (fun T : Trunk (trunc_S n) => *)
-  (*                       @proj1_sig Type *)
-  (*                         (fun T0 : Type => IsTrunc (trunc_S minus_two) T0) *)
-  (*                         (@subuniverse_HProp (trunc_S n) *)
-  (*                            separation_reflective_subuniverse T)) *)
-  (*                      (B x))) *)
-  (*                (g *)
-  (*                   (@proj1_sig E *)
-  (*                      (fun b : E => *)
-  (*                       @proj1_sig Type *)
-  (*                         (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                         (@char E χ b)) e))) p0 *)
-  (*             (@proj2_sig *)
-  (*                (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A) *)
-  (*                (fun *)
-  (*                   x : @proj1_sig Type *)
-  (*                         (fun T : Type => IsTrunc (trunc_S n) T) A => *)
-  (*                 @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*                   (@proj1_sig (Trunk (trunc_S n)) *)
-  (*                      (fun T : Trunk (trunc_S n) => *)
-  (*                       @proj1_sig Type *)
-  (*                         (fun T0 : Type => IsTrunc (trunc_S minus_two) T0) *)
-  (*                         (@subuniverse_HProp (trunc_S n) *)
-  (*                            separation_reflective_subuniverse T)) *)
-  (*                      (B x))) *)
-  (*                (f *)
-  (*                   (@proj1_sig E *)
-  (*                      (fun b : E => *)
-  (*                       @proj1_sig Type *)
-  (*                         (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                         (@char E χ b)) e)))) *)
-  (*          (@proj2_sig *)
-  (*             (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A) *)
-  (*             (fun *)
-  (*                x : @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*                      A => *)
-  (*              @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*                (@proj1_sig (Trunk (trunc_S n)) *)
-  (*                   (fun T : Trunk (trunc_S n) => *)
-  (*                    @proj1_sig Type *)
-  (*                      (fun T0 : Type => IsTrunc (trunc_S minus_two) T0) *)
-  (*                      (@subuniverse_HProp (trunc_S n) *)
-  (*                         separation_reflective_subuniverse T)) *)
-  (*                   (B x))) *)
-  (*             (g *)
-  (*                (@proj1_sig E *)
-  (*                   (fun b : E => *)
-  (*                    @proj1_sig Type *)
-  (*                      (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                      (@char E χ b)) e)))) *)
-  (*       (@pr1_path *)
-  (*          (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A) *)
-  (*          (fun x : @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A => *)
-  (*           @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*             (@proj1_sig (Trunk (trunc_S n)) *)
-  (*                (fun T : Trunk (trunc_S n) => *)
-  (*                 @proj1_sig Type *)
-  (*                   (fun T0 : Type => IsTrunc (trunc_S minus_two) T0) *)
-  (*                   (@subuniverse_HProp (trunc_S n) *)
-  (*                      separation_reflective_subuniverse T)) *)
-  (*                (B x))) *)
-  (*          (f *)
-  (*             (@proj1_sig E *)
-  (*                (fun b : E => *)
-  (*                 @proj1_sig Type *)
-  (*                   (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                   (@char E χ b)) e)) *)
-  (*          (g *)
-  (*             (@proj1_sig E *)
-  (*                (fun b : E => *)
-  (*                 @proj1_sig Type *)
-  (*                   (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                   (@char E χ b)) e)) *)
-  (*          (@ap10 *)
-  (*             (@sig E *)
-  (*                (fun b : E => *)
-  (*                 @proj1_sig Type *)
-  (*                   (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                   (@char E χ b))) *)
-  (*             (@sig *)
-  (*                (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A) *)
-  (*                (fun *)
-  (*                   x : @proj1_sig Type *)
-  (*                         (fun T : Type => IsTrunc (trunc_S n) T) A => *)
-  (*                 @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*                   (@proj1_sig (Trunk (trunc_S n)) *)
-  (*                      (fun T : Trunk (trunc_S n) => *)
-  (*                       @proj1_sig Type *)
-  (*                         (fun T0 : Type => IsTrunc (trunc_S minus_two) T0) *)
-  (*                         (@subuniverse_HProp (trunc_S n) *)
-  (*                            separation_reflective_subuniverse T)) *)
-  (*                      (B x)))) *)
-  (*             (fun *)
-  (*                x : @sig E *)
-  (*                      (fun b : E => *)
-  (*                       @proj1_sig Type *)
-  (*                         (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                         (@char E χ b)) => *)
-  (*              f *)
-  (*                (@proj1_sig E *)
-  (*                   (fun b : E => *)
-  (*                    @proj1_sig Type *)
-  (*                      (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                      (@char E χ b)) x)) *)
-  (*             (fun *)
-  (*                x : @sig E *)
-  (*                      (fun b : E => *)
-  (*                       @proj1_sig Type *)
-  (*                         (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                         (@char E χ b)) => *)
-  (*              g *)
-  (*                (@proj1_sig E *)
-  (*                   (fun b : E => *)
-  (*                    @proj1_sig Type *)
-  (*                      (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                      (@char E χ b)) x)) p e)) *)
-  (*       (@pr2_path *)
-  (*          (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A) *)
-  (*          (fun x : @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A => *)
-  (*           @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*             (@proj1_sig (Trunk (trunc_S n)) *)
-  (*                (fun T : Trunk (trunc_S n) => *)
-  (*                 @proj1_sig Type *)
-  (*                   (fun T0 : Type => IsTrunc (trunc_S minus_two) T0) *)
-  (*                   (@subuniverse_HProp (trunc_S n) *)
-  (*                      separation_reflective_subuniverse T)) *)
-  (*                (B x))) *)
-  (*          (f *)
-  (*             (@proj1_sig E *)
-  (*                (fun b : E => *)
-  (*                 @proj1_sig Type *)
-  (*                   (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                   (@char E χ b)) e)) *)
-  (*          (g *)
-  (*             (@proj1_sig E *)
-  (*                (fun b : E => *)
-  (*                 @proj1_sig Type *)
-  (*                   (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                   (@char E χ b)) e)) *)
-  (*          (@ap10 *)
-  (*             (@sig E *)
-  (*                (fun b : E => *)
-  (*                 @proj1_sig Type *)
-  (*                   (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                   (@char E χ b))) *)
-  (*             (@sig *)
-  (*                (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A) *)
-  (*                (fun *)
-  (*                   x : @proj1_sig Type *)
-  (*                         (fun T : Type => IsTrunc (trunc_S n) T) A => *)
-  (*                 @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) *)
-  (*                   (@proj1_sig (Trunk (trunc_S n)) *)
-  (*                      (fun T : Trunk (trunc_S n) => *)
-  (*                       @proj1_sig Type *)
-  (*                         (fun T0 : Type => IsTrunc (trunc_S minus_two) T0) *)
-  (*                         (@subuniverse_HProp (trunc_S n) *)
-  (*                            separation_reflective_subuniverse T)) *)
-  (*                      (B x)))) *)
-  (*             (fun *)
-  (*                x : @sig E *)
-  (*                      (fun b : E => *)
-  (*                       @proj1_sig Type *)
-  (*                         (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                         (@char E χ b)) => *)
-  (*              f *)
-  (*                (@proj1_sig E *)
-  (*                   (fun b : E => *)
-  (*                    @proj1_sig Type *)
-  (*                      (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                      (@char E χ b)) x)) *)
-  (*             (fun *)
-  (*                x : @sig E *)
-  (*                      (fun b : E => *)
-  (*                       @proj1_sig Type *)
-  (*                         (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                         (@char E χ b)) => *)
-  (*              g *)
-  (*                (@proj1_sig E *)
-  (*                   (fun b : E => *)
-  (*                    @proj1_sig Type *)
-  (*                      (fun T : Type => IsTrunc sheaf_def_and_thm.n T) *)
-  (*                      (@char E χ b)) x)) p e)))). simpl in help. *)
-  (*     refine (path_sigma' _ _ _); clear help. *)
-  (*     { pose (ap10_ap_precompose (pr1 : {e:E & (χ e).1} -> E) ((let (equiv_inv, eisretr, eissect, _) := *)
-  (*                                                                   sepA E χ (pr1 o f) (pr1 o g) in *)
-  (*                                                               equiv_inv) *)
-  (*                                                                (path_forall (pr1 o f o pr1) (pr1 o g o pr1) *)
-  (*                                                                             (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 p y)))) e). *)
-  (*       apply (transport (λ u, u=_) p0). clear p0. *)
-
-  (*       pose (eisretr _ (IsEquiv := sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1)) (path_forall (λ x : ∃ b : E, (χ b).1, (f x.1).1) *)
-  (*          (λ x : ∃ b : E, (χ b).1, (g x.1).1) *)
-  (*          (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 p y)))). *)
-  (*       unfold Sect, equiv_inv, E_to_χ_map, compose in p0. unfold compose; simpl. *)
-  (*       apply (transport (λ u, ap10 u e = _) p0^). *)
-  (*       exact (apD10 (eisretr (apD10 (f:=(λ x0 : ∃ b : E, (χ b).1, (f x0.1).1)) (g:=(λ x0 : ∃ b : E, (χ b).1, (g x0.1).1))) (IsEquiv := isequiv_apD10 _ _ (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1) (λ x0 : ∃ b : E, (χ b).1, (g x0.1).1)) (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 p y))) e). } *)
-  (*     { simpl. *)
-  (*       repeat rewrite transport_paths_FlFr; simpl. *)
-  (*       repeat rewrite ap_const. *)
-  (*       repeat rewrite ap_idmap. *)
-  (*       repeat rewrite concat_p1. unfold pr2_path. simpl. *)
-  (*       hott_simpl. *)
-  (*       repeat rewrite ap_V. simpl. *)
-
-  (*       admit. *)
-  (*     } *)
-  (*   - intro p. destruct p. simpl. *)
-  (*     apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_forall f f))). apply isequiv_inverse. *)
-  (*     rewrite eissect. simpl. *)
-  (*     apply path_forall; intro x. simpl. *)
-  (*     apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_sigma))). apply isequiv_inverse. *)
-  (*     unfold path_sigma. *)
-  (*     rewrite eissect. simpl. *)
-
-  (*     refine (path_sigma' _ _ _). *)
-  (*     { refine (apD10 _ _). intros y. reflexivity. *)
-  (*       unfold equiv_inv. *)
-  (*       path_via (ap10 ((let (equiv_inv, eisretr, eissect, _) := *)
-  (*                            sepA E χ (pr1 o f) (pr1 o f) in *)
-  (*                        equiv_inv) *)
-  (*                         1)). *)
-  (*       apply ap. apply ap. apply path_forall_1. *)
-  (*       apply (moveR_equiv_V (f := path_forall _ _) (H := isequiv_path_forall _ _)). *)
-  (*       etransitivity; try (symmetry; apply path_forall_1). *)
-  (*       apply moveR_equiv_V. reflexivity. *)
-  (*     } *)
-  (*     { simpl. *)
-  (*       repeat rewrite transport_paths_FlFr; simpl. *)
-  (*       repeat rewrite ap_const; simpl. *)
-  (*       repeat rewrite ap_idmap. *)
-  (*       unfold pr2_path. simpl. *)
-  (*       rewrite concat_p1. *)
-  (*       rewrite <- inv_pp. *)
-  (*       apply (ap inverse (y := 1^)). simpl. *)
-  (*       unfold moveR_equiv_V. simpl. *)
-  (*       unfold path_forall_1. *)
-  (*       unfold eta_path_forall. simpl. *)
-  (*       hott_simpl. *)
-  (*       pose @eisretr. unfold Sect in s. *)
-
-  (*       pose (eissect (ap (E_to_χ_map A χ)) 1). simpl in p. *)
-
-        
-        
-        
-        
-
-        
-  (*     unfold equiv_inv, pr1_path. *)
-  (*     simpl. *)
-  (*     apply path_sigma' with X. *)
-        
+  Definition separated_modality : Modality (trunc_S n).
+    refine (Build_Modality _ separation_reflective_subuniverse _).
+    intros A B. simpl in *.
+    destruct A as [A sepA]. simpl in sepA.
+    unfold separated.
+    intros E χ f g. simpl in *.
+    refine (isequiv_adjointify _ _ _ _).
+    - unfold E_to_χ_map; simpl. intros H. unfold compose in H; simpl in H.
+      apply path_forall; intro x.
+      refine (path_sigma _ _ _ _ _).
+      apply (ap10 (f := (pr1 o f)) (g := (pr1 o g))).
+      apply (equiv_inv (IsEquiv := sepA E χ (pr1 o f) (pr1 o g))).
+      apply path_forall; intro y. exact (ap10 H y)..1.
+      (* pose (p := sepA). *)
+      (* specialize (p {e':E & e' = x} (density_sigma χ x) (λ x, (f x.1).1) (λ x, (g x.1).1)). *)
+      (* pose (X := λ X, (ap10 (equiv_inv (IsEquiv := p) X) (x;1))); simpl in X; apply X. clear X. *)
+      (* apply path_forall; intro y. exact (ap10 H (y.1.1;y.2))..1. *)
       
 
+      simpl.
+      pose (p := (B (g x).1).2).
+      simpl in p.
+      specialize (p {e':E & e' = x}).
+      specialize (p (density_sigma χ x)).
+
+      unfold equiv_inv.
+      unfold IsMono in p; simpl in p.
+      specialize (p (λ z, transport (λ u, (B (g u).1).1.1) z.2 (transport (λ x0 : A.1, ((B x0).1).1)
+                                                                          (ap10
+                                                                             ((let (equiv_inv, eisretr, eissect, _) :=
+                                                                                   sepA E χ (pr1 o f) (pr1 o g) in
+                                                                               equiv_inv)
+                                                                                (path_forall (E_to_χ_map A χ (pr1 o f))
+                                                                                             (E_to_χ_map A χ (pr1 o g))
+                                                                                             (λ y : (nchar_to_sub χ).1, (ap10 H y) ..1))) z.1)
+                                                                          (f z.1).2))).
+      specialize (p (λ z, transport (λ u, (B (g u).1).1.1) z.2 (g z.1).2)).
+      (* specialize (p (λ z, transport (λ u, (B (g u).1).1.1) *)
+      (*                               z.2 *)
+      (*                               (transport (λ x0 : A.1, ((B x0).1).1) *)
+      (*                                          (ap10 *)
+      (*                                             ((let (equiv_inv, eisretr, eissect, _) := *)
+      (*                                                   sepA (∃ e' : E, e' = z.1) (density_sigma χ z.1) *)
+      (*                                                        (λ x0 : ∃ e' : E, e' = z.1, (f x0.1).1) *)
+      (*                                                        (λ x0 : ∃ e' : E, e' = z.1, (g x0.1).1) in *)
+      (*                                               equiv_inv) *)
+      (*                                                (path_forall *)
+      (*                                                   (E_to_χ_map A (density_sigma χ z.1) *)
+      (*                                                               (λ x0 : ∃ e' : E, e' = z.1, (f x0.1).1)) *)
+      (*                                                   (E_to_χ_map A (density_sigma χ z.1) *)
+      (*                                                               (λ x0 : ∃ e' : E, e' = z.1, (g x0.1).1)) *)
+      (*                                                   (λ y : ∃ b : ∃ e' : E, e' = z.1, (χ b.1).1, *)
+      (*                                                      (ap10 H ((y.1).1; y.2)) ..1))) (z.1; 1)) *)
+      (*                                          (f z.1).2))). *)
+      (* specialize (p (λ z, transport (λ u, (B (g u).1).1.1) z.2 (g z.1).2)). *)
+      pose (X := λ X, (ap10 (equiv_inv (IsEquiv := p) X) (x;1))); simpl in X; apply X. clear X.
+      unfold E_to_χ_map, compose; simpl.
+      apply path_forall; intros [[a b] c]; simpl in *.
+      apply ap. clear b.
+
+      etransitivity; try exact ((ap10 H (a;c))..2). simpl.
+      apply (ap (λ u, transport _ u (f a).2)).
+      unfold pr1_path.
+
+      pose (p0 := ap10_ap_precompose (pr1 : {e:E & (χ e).1} -> E) ((let (equiv_inv, eisretr, eissect, _) :=
+           sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1) in
+       equiv_inv)
+        (path_forall (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1)
+           (λ x0 : ∃ b : E, (χ b).1, (g x0.1).1)
+           (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 H y)))) (a;c)). simpl in p0.
+
+      (* pose (foo := λ x:{e:{e:E & e=x} & (χ e.1).1}, ((x.1.1;x.2):{e:E & (χ e).1})). *)
+
+      
+      apply (transport (λ u, u = _) p0); clear p0.
+
+      pose (eisretr _ (IsEquiv := sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1)) (path_forall (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1)
+           (λ x0 : ∃ b : E, (χ b).1, (g x0.1).1)
+           (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 H y)))).
+      unfold Sect, equiv_inv, E_to_χ_map, compose in p0.
+      apply (transport (λ u, ap10 u _ = _) p0^).
+      exact (apD10 (eisretr (apD10 (f:=(λ x0 : ∃ b : E, (χ b).1, (f x0.1).1)) (g:=(λ x0 : ∃ b : E, (χ b).1, (g x0.1).1))) (IsEquiv := isequiv_apD10 _ _ (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1) (λ x0 : ∃ b : E, (χ b).1, (g x0.1).1)) (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 H y))) (a;c)).
+      
+    - intro p. unfold E_to_χ_map in *; simpl in *.
+      apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+      apply path_forall; intro e.
+
+      rewrite ap10_ap_precompose.
+      unfold ap10 at 1, path_forall at 1. rewrite eisretr.
+
+      unfold path_sigma.
+      apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_sigma))).
+      apply isequiv_inverse.
+      rewrite eissect. simpl.
+      unfold compose in *.
+
+      (* Set Printing All. *)
+      pose (help := (@exist
+        _
+        (fun
+           p0  =>
+         @paths
+           _
+           (@transport
+              _
+              (fun
+                 x : @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
+                       A =>
+               @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
+                 (@proj1_sig (Trunk (trunc_S n))
+                    (fun T : Trunk (trunc_S n) =>
+                     @proj1_sig Type
+                       (fun T0 : Type => IsTrunc (trunc_S minus_two) T0)
+                       (@subuniverse_HProp (trunc_S n)
+                          separation_reflective_subuniverse T))
+                    (B x)))
+              (@proj1_sig
+                 (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A)
+                 (fun
+                    x : @proj1_sig Type
+                          (fun T : Type => IsTrunc (trunc_S n) T) A =>
+                  @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
+                    (@proj1_sig (Trunk (trunc_S n))
+                       (fun T : Trunk (trunc_S n) =>
+                        @proj1_sig Type
+                          (fun T0 : Type => IsTrunc (trunc_S minus_two) T0)
+                          (@subuniverse_HProp (trunc_S n)
+                             separation_reflective_subuniverse T))
+                       (B x)))
+                 (f
+                    (@proj1_sig E
+                       (fun b : E =>
+                        @proj1_sig Type
+                          (fun T : Type => IsTrunc sheaf_def_and_thm.n T)
+                          (@char E χ b)) e)))
+              (@proj1_sig
+                 (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A)
+                 (fun
+                    x : @proj1_sig Type
+                          (fun T : Type => IsTrunc (trunc_S n) T) A =>
+                  @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
+                    (@proj1_sig (Trunk (trunc_S n))
+                       (fun T : Trunk (trunc_S n) =>
+                        @proj1_sig Type
+                          (fun T0 : Type => IsTrunc (trunc_S minus_two) T0)
+                          (@subuniverse_HProp (trunc_S n)
+                             separation_reflective_subuniverse T))
+                       (B x)))
+                 (g
+                    (@proj1_sig E
+                       (fun b : E =>
+                        @proj1_sig Type
+                          (fun T : Type => IsTrunc sheaf_def_and_thm.n T)
+                          (@char E χ b)) e))) p0
+              (@proj2_sig
+                 (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A)
+                 (fun
+                    x : @proj1_sig Type
+                          (fun T : Type => IsTrunc (trunc_S n) T) A =>
+                  @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
+                    (@proj1_sig (Trunk (trunc_S n))
+                       (fun T : Trunk (trunc_S n) =>
+                        @proj1_sig Type
+                          (fun T0 : Type => IsTrunc (trunc_S minus_two) T0)
+                          (@subuniverse_HProp (trunc_S n)
+                             separation_reflective_subuniverse T))
+                       (B x)))
+                 (f
+                    (@proj1_sig E
+                       (fun b : E =>
+                        @proj1_sig Type
+                          (fun T : Type => IsTrunc sheaf_def_and_thm.n T)
+                          (@char E χ b)) e))))
+           (@proj2_sig
+              (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A)
+              (fun
+                 x : @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
+                       A =>
+               @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
+                 (@proj1_sig (Trunk (trunc_S n))
+                    (fun T : Trunk (trunc_S n) =>
+                     @proj1_sig Type
+                       (fun T0 : Type => IsTrunc (trunc_S minus_two) T0)
+                       (@subuniverse_HProp (trunc_S n)
+                          separation_reflective_subuniverse T))
+                    (B x)))
+              (g
+                 (@proj1_sig E
+                    (fun b : E =>
+                     @proj1_sig Type
+                       (fun T : Type => IsTrunc sheaf_def_and_thm.n T)
+                       (@char E χ b)) e))))
+        (ap pr1 (ap10 p e))
+        (pr2_path (ap10 p e)))). simpl in help.
+      refine (path_sigma' _ _ _); clear help.
+      { pose (ap10_ap_precompose (pr1 : {e:E & (χ e).1} -> E) ((let (equiv_inv, eisretr, eissect, _) :=
+                                                                    sepA E χ (pr1 o f) (pr1 o g) in
+                                                                equiv_inv)
+                                                                 (path_forall (pr1 o f o pr1) (pr1 o g o pr1)
+                                                                              (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 p y)))) e).
+        apply (transport (λ u, u=_) p0). clear p0.
+
+        pose (p0 := eisretr _ (IsEquiv := sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1)) (path_forall (λ x : ∃ b : E, (χ b).1, (f x.1).1)
+           (λ x : ∃ b : E, (χ b).1, (g x.1).1)
+           (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 p y)))).
+        unfold Sect, equiv_inv, E_to_χ_map, compose in p0. unfold compose; simpl.
+        apply (transport (λ u, ap10 u e = _) p0^).
+        exact (apD10 (eisretr (apD10 (f:=(λ x0 : ∃ b : E, (χ b).1, (f x0.1).1)) (g:=(λ x0 : ∃ b : E, (χ b).1, (g x0.1).1))) (IsEquiv := isequiv_apD10 _ _ (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1) (λ x0 : ∃ b : E, (χ b).1, (g x0.1).1)) (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 p y))) e). }
+      { destruct e as [a c]. simpl in *.
+        repeat rewrite transport_paths_FlFr; simpl.
+        repeat rewrite ap_const.
+        repeat rewrite ap_idmap.
+        repeat rewrite concat_p1. unfold pr2_path. simpl.
+        hott_simpl.
+        repeat rewrite ap_V. simpl.
+        
         
 
-  (*     refine (@path_sigma' _ _ _ _ _ _ _ _ ). *)
+
+        admit.
+      }
+    - intro p.
+      destruct p. simpl.
+      apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_forall f f))). apply isequiv_inverse.
+      rewrite eissect. simpl.
+      apply path_forall; intro x. simpl.
+      apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_sigma))). apply isequiv_inverse.
+      unfold path_sigma.
+      rewrite eissect. simpl.
+
+      refine (path_sigma' _ _ _).
+      { refine (apD10 _ _). intro y; reflexivity.
+        unfold equiv_inv.
+        path_via (ap10 ((let (equiv_inv, eisretr, eissect, _) :=
+                             sepA E χ (pr1 o f) (pr1 o f) in
+                         equiv_inv)
+                          1)).
+        apply ap. apply ap. apply path_forall_1.
+        apply (moveR_equiv_V (f := path_forall _ _) (H := isequiv_path_forall _ _)).
+        etransitivity; try (symmetry; apply path_forall_1).
+        apply moveR_equiv_V. reflexivity.
+      }
+      { simpl.
+        repeat rewrite transport_paths_FlFr; simpl.
+        repeat rewrite ap_const; simpl.
+        repeat rewrite ap_idmap.
+        unfold pr2_path. simpl.
+        rewrite concat_p1.
+        unfold moveR_equiv_V. simpl.
+        unfold path_forall_1.
+        unfold eta_path_forall. simpl.
+        hott_simpl.
+        apply moveR_Vp.
+        rewrite concat_p1.
+
+        assert ((λ x0 : ∃ b : ∃ e' : E, e' = x, (χ b.1).1,
+            ap (transport (λ u : E, ((B (f u).1).1).1) (x0.1).2)
+              (ap
+                 (λ u : (f (x0.1).1).1 = (f (x0.1).1).1,
+                  transport (λ x1 : A.1, ((B x1).1).1) u (f (x0.1).1).2)
+                 (transport
+                    (λ
+                     u : ((λ x1 : E, (f x1).1) o pr1) ((x0.1).1; x0.2) =
+                         ((λ x1 : E, (f x1).1) o pr1) ((x0.1).1; x0.2), 
+                     u = 1)
+                    (ap10_ap_precompose pr1
+                       ((let (equiv_inv, eisretr, eissect, _) :=
+                             sepA E χ (λ x1 : E, (f x1).1)
+                               (λ x1 : E, (f x1).1) in
+                         equiv_inv)
+                          (path_forall (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
+                             (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
+                             (λ y : ∃ b : E, (χ b).1, 1))) 
+                       ((x0.1).1; x0.2))
+                    (transport
+                       (λ
+                        u : (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1) =
+                            (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1),
+                        ap10 u ((x0.1).1; x0.2) = 1)
+                       (eisretr (ap (E_to_χ_map A χ))
+                          (path_forall (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
+                             (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
+                             (λ y : ∃ b : E, (χ b).1, 1)))^
+                       (apD10 (eisretr apD10 (λ y : ∃ b : E, (χ b).1, 1))
+                          ((x0.1).1; x0.2)))) @ 1))
+                  =
+                  (λ x0 : ∃ b : ∃ e' : E, e' = x, (χ b.1).1,
+            ap (transport (λ u : E, ((B (f u).1).1).1) (x0.1).2)
+              (ap
+     (λ u : (f (x0.1).1).1 = (f (x0.1).1).1,
+      transport (λ x1 : A.1, ((B x1).1).1) u (f (x0.1).1).2)
+     ((ap10_ap_precompose pr1
+         ((let (equiv_inv, eisretr, eissect, _) :=
+               sepA E χ (λ x1 : E, (f x1).1) (λ x1 : E, (f x1).1) in
+           equiv_inv)
+            (path_forall (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
+               (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
+               (λ y : ∃ b : E, (χ b).1, 1))) ((x0.1).1; x0.2))^ @
+      ((ap
+          (λ
+           x1 : (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1) =
+                (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1),
+           ap10 x1 ((x0.1).1; x0.2))
+          (eisretr (ap (E_to_χ_map A χ))
+             (path_forall (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
+                (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
+                (λ y : ∃ b : E, (χ b).1, 1)))^)^ @
+       apD10 (eisretr apD10 (λ y : ∃ b : E, (χ b).1, 1)) ((x0.1).1; x0.2)))))).
+        apply path_forall; intro x0. apply ap. rewrite concat_p1.
+        rewrite transport_paths_l. rewrite transport_paths_Fl. simpl.
+        reflexivity.
+
+        apply (transport (λ U,
+                          (ap10
+     ((let (equiv_inv, eisretr, eissect, _) :=
+           (B (f x).1).2 (∃ e' : E, e' = x) (density_sigma χ x)
+             (λ z : ∃ e' : E, e' = x,
+              transport (λ u : E, ((B (f u).1).1).1) z.2
+                (transport (λ x0 : A.1, ((B x0).1).1)
+                   (ap10
+                      ((let (equiv_inv, eisretr, eissect, _) :=
+                            sepA E χ (pr1 o f) (pr1 o f) in
+                        equiv_inv)
+                         (path_forall (E_to_χ_map A χ (pr1 o f))
+                            (E_to_χ_map A χ (pr1 o f))
+                            (λ y : ∃ b : E, (χ b).1, 1))) z.1) 
+                   (f z.1).2))
+             (λ z : ∃ e' : E, e' = x,
+              transport (λ u : E, ((B (f u).1).1).1) z.2 (f z.1).2) in
+       equiv_inv)
+        (path_forall
+           (λ x0 : ∃ b : ∃ e' : E, e' = x, (χ b.1).1,
+            transport (λ u : E, ((B (f u).1).1).1) 
+              (x0.1).2
+              (transport (λ x1 : A.1, ((B x1).1).1)
+                 (ap10
+                    ((let (equiv_inv, eisretr, eissect, _) :=
+                          sepA E χ (λ x1 : E, (f x1).1) (λ x1 : E, (f x1).1) in
+                      equiv_inv)
+                       (path_forall (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
+                          (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
+                          (λ y : ∃ b : E, (χ b).1, 1))) 
+                    (x0.1).1) (f (x0.1).1).2))
+           (λ x0 : ∃ b : ∃ e' : E, e' = x, (χ b.1).1,
+            transport (λ u : E, ((B (f u).1).1).1) (x0.1).2 (f (x0.1).1).2)
+           U)) 
+     (x; 1)) = _) X^).
+        
+
+        unfold equiv_inv. pose (ap10
+     ((let (equiv_inv, eisretr, eissect, _) :=
+           (B (f x).1).2 (∃ e' : E, e' = x) (density_sigma χ x)
+             (λ z : ∃ e' : E, e' = x,
+              transport (λ u : E, ((B (f u).1).1).1) z.2
+                (transport (λ x0 : A.1, ((B x0).1).1)
+                   (ap10
+                      ((let (equiv_inv, eisretr, eissect, _) :=
+                            sepA E χ (pr1 o f) (pr1 o f) in
+                        equiv_inv)
+                         (path_forall (E_to_χ_map A χ (pr1 o f))
+                            (E_to_χ_map A χ (pr1 o f))
+                            (λ y : ∃ b : E, (χ b).1, 1))) z.1) 
+                   (f z.1).2))
+             (λ z : ∃ e' : E, e' = x,
+              transport (λ u : E, ((B (f u).1).1).1) z.2 (f z.1).2) in
+       equiv_inv)
+        (path_forall
+           (λ x0 : ∃ b : ∃ e' : E, e' = x, (χ b.1).1,
+            transport (λ u : E, ((B (f u).1).1).1) 
+              (x0.1).2
+              (transport (λ x1 : A.1, ((B x1).1).1)
+                 (ap10
+                    ((let (equiv_inv, eisretr, eissect, _) :=
+                          sepA E χ (λ x1 : E, (f x1).1) (λ x1 : E, (f x1).1) in
+                      equiv_inv)
+                       (path_forall (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
+                          (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
+                          (λ y : ∃ b : E, (χ b).1, 1))) 
+                    (x0.1).1) (f (x0.1).1).2))
+           (λ x0 : ∃ b : ∃ e' : E, e' = x, (χ b.1).1,
+            transport (λ u : E, ((B (f u).1).1).1) (x0.1).2 (f (x0.1).1).2)
+           (λ x0 : ∃ b : ∃ e' : E, e' = x, (χ b.1).1,
+            ap (transport (λ u : E, ((B (f u).1).1).1) (x0.1).2)
+              (ap
+                 (λ u : (f (x0.1).1).1 = (f (x0.1).1).1,
+                  transport (λ x1 : A.1, ((B x1).1).1) u (f (x0.1).1).2)
+                 (transport
+                    (λ
+                     u : ((λ x1 : E, (f x1).1) o pr1) ((x0.1).1; x0.2) =
+                         ((λ x1 : E, (f x1).1) o pr1) ((x0.1).1; x0.2), 
+                     u = 1)
+                    (ap10_ap_precompose pr1
+                       ((let (equiv_inv, eisretr, eissect, _) :=
+                             sepA E χ (λ x1 : E, (f x1).1)
+                               (λ x1 : E, (f x1).1) in
+                         equiv_inv)
+                          (path_forall (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
+                             (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
+                             (λ y : ∃ b : E, (χ b).1, 1))) 
+                       ((x0.1).1; x0.2))
+                    (transport
+                       (λ
+                        u : (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1) =
+                            (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1),
+                        ap10 u ((x0.1).1; x0.2) = 1)
+                       (eisretr (ap (E_to_χ_map A χ))
+                          (path_forall (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
+                             (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
+                             (λ y : ∃ b : E, (χ b).1, 1)))^
+                       (apD10 (eisretr apD10 (λ y : ∃ b : E, (χ b).1, 1))
+                          ((x0.1).1; x0.2)))) @ 1)))) 
+     (x; 1)). simpl in p.
+
+
+        
+
+      refine (@path_sigma' _ _ _ _ _ _ _ _ ).
       
     
   (**** From separated to sheaf ****)

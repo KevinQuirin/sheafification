@@ -1,6 +1,6 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
-Require Import lemmas epi_mono equivalence univalence sub_object_classifier modalities.
+Require Import lemmas epi_mono equivalence univalence sub_object_classifier reflective_subuniverse modalities.
 Require Import sheaf_base_case.
 
 Set Universe Polymorphism.
@@ -23,35 +23,13 @@ Section Definitions.
   Context `{ua: Univalence}.
   Context `{fs: Funext}.
 
-  
-  (* Left Exactness *)
-
-  (* Definition islex_fun n (subU : subuniverse_struct n) *)
-  (*            (X Y:Trunk n) (f : X.1 -> Y.1) (y:Y.1) *)
-  (* : {rx : (O subU X).1.1 & function_lift subU X Y f rx = O_unit subU Y y} *)
-  (*   -> *)
-  (*   (O subU (existT (λ T, IsTrunc n T) (hfiber f y) (trunc_sigma X.2 (λ a, istrunc_paths (trunc_succ (H:=Y.2)) _ _)))).1.1. *)
-    
-  (*   intros [x e]. *)
-  (*   generalize x. apply O_rec. intro x'. *)
-    
-
-  Definition islex n (subU : subuniverse_struct n)
-    := forall (X Y:Trunk n) (f : X.1 -> Y.1) (y:Y.1), (O subU (existT (λ T, IsTrunc n T) (hfiber f y) (trunc_sigma X.2 (λ a, istrunc_paths (trunc_succ (H:=Y.2)) _ _)))).1.1 = {rx : (O subU X).1.1 & function_lift subU X Y f rx = O_unit subU Y y}.
-
-
-  Lemma lex_compat_func n (subU : subuniverse_struct n) (X Y:Trunk n) (f: X.1 -> Y.1) (y:Y.1)
-  : forall a:{a:X.1 & f a = y}, (function_lift subU X Y f (O_unit subU _ a.1) = O_unit subU Y y).
-    intros a. simpl.
-    pose (foo := ap10 (O_rec_retr X (O subU Y) (λ x : X .1, O_unit subU Y (f x))) a.1). unfold compose in foo; simpl in foo.
-    exact (transport (λ U, O_rec X (O subU Y) (λ x : X .1, O_unit subU Y (f x)) (O_unit subU X a.1) = O_unit subU Y U) a.2 foo).
-  Defined.
-  
   Parameter n0 : trunc_index.
 
   Definition n := trunc_S n0.
 
-  Parameter nj : subuniverse_struct n.
+  Parameter mod_nj : Modality n.
+
+  Definition nj := underlying_subu n mod_nj.
 
   Parameter j_is_nj : forall P, (j P).1 = (nj.(O) (P.1; IsHProp_IsTrunc P.2 n0)).1.1.
 
@@ -59,10 +37,11 @@ Section Definitions.
                           transport idmap (j_is_nj P) (Oj_unit P x) = nj.(O_unit) (P.1; IsHProp_IsTrunc P.2 n0) x.
 
   
-  Parameter islex_nj : islex nj.
+  Parameter islex_mod_nj : IsLex mod_nj.
+
+  Definition islex_nj := islex_to_hfibers_preservation mod_nj islex_mod_nj.
+  Definition lex_compat := islex_to_hfibers_preservation_compat mod_nj islex_mod_nj.
   
-  Parameter lex_compat : forall (X Y:Trunk n) (f: X.1 -> Y.1) (y:Y.1) (a:{a:X.1 & f a = y}),
-                          ((equiv_path _ _ (islex_nj X Y f y)) o (O_unit nj _)) a = (O_unit nj _ a.1; lex_compat_func nj X Y f a).
   
   Definition nJ := {T : Trunk n & (nj.(O) T).1.1}.
 
@@ -753,12 +732,12 @@ Section Definitions.
         (π' : ∃ π : (φ a .1) .1, O_unit nj (φ a .1) π = a .2)
   : equiv_path _ _ (dicde_l φ a) (a .2; 1) =
     (O_unit nj (φ a .1) π' .1;
-     lex_compat_func nj (φ a .1) (O nj (φ a .1)) .1 (O_unit nj (φ a .1)) π').
+     islex_compat_func mod_nj (φ a .1) (O nj (φ a .1)) .1 (O_unit nj (φ a .1)) _ π').
     unfold dicde_l.   
     unfold path_universe_uncurried.
     rewrite eisretr. simpl. hott_simpl.
     apply @path_sigma' with (p := π'.2^). simpl. destruct π' as [b p]. simpl. destruct p. simpl.
-    unfold lex_compat_func. simpl.
+    unfold islex_compat_func. simpl.
     apply ap10_O_retr_sect.
   Defined.
     

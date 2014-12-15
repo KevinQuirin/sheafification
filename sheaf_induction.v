@@ -916,6 +916,18 @@ Section Type_to_separated_Type.
       simpl in p. exact p.
   Defined.
 
+  (* Definition ap_exist (A B: Type) (P : A -> Type) (x:A) (f g:(∃ x, P x) -> B) (p: f=g) *)
+  (* : (ap (x:=f) (y:=g) (λ h : (∃ x, P x) -> B, h o exist P x) p) = (ap (x:=f) (y:=g) (λ h : (∃ x, P x) -> B, h o exist P x) p). *)
+
+  (*   pose ((ap (x:=f) (y:=g) (λ h : (∃ x0 : A, P x0) → B, h o pr1))). *)
+  (*   pose (ap10 (ap (x:=f) (y:=g) (λ h : (∃ x0 : A, P x0) → B, h o exist P x) p)). simpl in p0. *)
+  (*   unfold compose in *. *)
+  (*   transparent assert (X : (f o exist P x = g o exist P x)). *)
+  (*   unfold compose; simpl. *)
+  (*   apply path_forall; intro y. exact (ap10 p (x;y)). *)
+    
+  (* Qed. *)
+
   Definition separated_modality : Modality (trunc_S n).
     refine (Build_Modality _ separation_reflective_subuniverse _).
     intros A B. simpl in *.
@@ -929,12 +941,6 @@ Section Type_to_separated_Type.
       apply (ap10 (f := (pr1 o f)) (g := (pr1 o g))).
       apply (equiv_inv (IsEquiv := sepA E χ (pr1 o f) (pr1 o g))).
       apply path_forall; intro y. exact (ap10 H y)..1.
-      (* pose (p := sepA). *)
-      (* specialize (p {e':E & e' = x} (density_sigma χ x) (λ x, (f x.1).1) (λ x, (g x.1).1)). *)
-      (* pose (X := λ X, (ap10 (equiv_inv (IsEquiv := p) X) (x;1))); simpl in X; apply X. clear X. *)
-      (* apply path_forall; intro y. exact (ap10 H (y.1.1;y.2))..1. *)
-      
-
       simpl.
       pose (p := (B (g x).1).2).
       simpl in p.
@@ -953,24 +959,7 @@ Section Type_to_separated_Type.
                                                                                              (λ y : (nchar_to_sub χ).1, (ap10 H y) ..1))) z.1)
                                                                           (f z.1).2))).
       specialize (p (λ z, transport (λ u, (B (g u).1).1.1) z.2 (g z.1).2)).
-      (* specialize (p (λ z, transport (λ u, (B (g u).1).1.1) *)
-      (*                               z.2 *)
-      (*                               (transport (λ x0 : A.1, ((B x0).1).1) *)
-      (*                                          (ap10 *)
-      (*                                             ((let (equiv_inv, eisretr, eissect, _) := *)
-      (*                                                   sepA (∃ e' : E, e' = z.1) (density_sigma χ z.1) *)
-      (*                                                        (λ x0 : ∃ e' : E, e' = z.1, (f x0.1).1) *)
-      (*                                                        (λ x0 : ∃ e' : E, e' = z.1, (g x0.1).1) in *)
-      (*                                               equiv_inv) *)
-      (*                                                (path_forall *)
-      (*                                                   (E_to_χ_map A (density_sigma χ z.1) *)
-      (*                                                               (λ x0 : ∃ e' : E, e' = z.1, (f x0.1).1)) *)
-      (*                                                   (E_to_χ_map A (density_sigma χ z.1) *)
-      (*                                                               (λ x0 : ∃ e' : E, e' = z.1, (g x0.1).1)) *)
-      (*                                                   (λ y : ∃ b : ∃ e' : E, e' = z.1, (χ b.1).1, *)
-      (*                                                      (ap10 H ((y.1).1; y.2)) ..1))) (z.1; 1)) *)
-      (*                                          (f z.1).2))). *)
-      (* specialize (p (λ z, transport (λ u, (B (g u).1).1.1) z.2 (g z.1).2)). *)
+
       pose (X := λ X, (ap10 (equiv_inv (IsEquiv := p) X) (x;1))); simpl in X; apply X. clear X.
       unfold E_to_χ_map, compose; simpl.
       apply path_forall; intros [[a b] c]; simpl in *.
@@ -986,10 +975,6 @@ Section Type_to_separated_Type.
         (path_forall (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1)
            (λ x0 : ∃ b : E, (χ b).1, (g x0.1).1)
            (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 H y)))) (a;c)). simpl in p0.
-
-      (* pose (foo := λ x:{e:{e:E & e=x} & (χ e.1).1}, ((x.1.1;x.2):{e:E & (χ e).1})). *)
-
-      
       apply (transport (λ u, u = _) p0); clear p0.
 
       pose (eisretr _ (IsEquiv := sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1)) (path_forall (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1)
@@ -1011,8 +996,7 @@ Section Type_to_separated_Type.
       apply isequiv_inverse.
       rewrite eissect. simpl.
       unfold compose in *.
-
-      (* Set Printing All. *)
+      unfold pr1_path, pr2_path.
       pose (help := (@exist
         _
         (fun
@@ -1131,15 +1115,66 @@ Section Type_to_separated_Type.
         repeat rewrite concat_p1. unfold pr2_path. simpl.
         hott_simpl.
         repeat rewrite ap_V. simpl.
-        
-        
 
+        match goal with
+          |[ |- _ @ ap10 ?X _ = _] => set (t := X)
+        end.
+        
+        pose (p0 := @ap10_ap_precompose {e:{e:E & e=a} & (χ e.1).1} {e:E &e=a} (((B (g a).1).1).1) pr1 _ _ t ((a;1);c)). simpl in p0.
+        rewrite <- p0; clear p0.
+        unfold t; clear t.
+        unfold equiv_inv.
+        pose (rew := eisretr _ (IsEquiv := (B (g a).1).2 (∃ e' : E, e' = a) (density_sigma χ a)
+                (λ z : ∃ e' : E, e' = a,
+                 transport (λ u : E, ((B (g u).1).1).1) z.2
+                   (transport (λ x0 : A.1, ((B x0).1).1)
+                      (ap10
+                         ((let (equiv_inv, eisretr, eissect, _) :=
+                               sepA E χ (λ x : E, (f x).1) (λ x : E, (g x).1) in
+                           equiv_inv)
+                            (path_forall (λ x : ∃ b : E, (χ b).1, (f x.1).1)
+                               (λ x : ∃ b : E, (χ b).1, (g x.1).1)
+                               (λ y : ∃ b : E, (χ b).1, (ap10 p y) ..1))) z.1)
+                      (f z.1).2))
+                (λ z : ∃ e' : E, e' = a,
+                   transport (λ u : E, ((B (g u).1).1).1) z.2 (g z.1).2))).
+        unfold Sect in rew. rewrite rew; clear rew.
+        pose (ap10_path_forall (λ x : ∃ b : ∃ e' : E, e' = a, (χ b.1).1,
+         transport (λ u : E, ((B (g u).1).1).1) (x.1).2
+           (transport (λ x0 : A.1, ((B x0).1).1)
+              (ap10
+                 ((let (equiv_inv, eisretr, eissect, _) :=
+                       sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1) in
+                   equiv_inv)
+                    (path_forall (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1)
+                       (λ x0 : ∃ b : E, (χ b).1, (g x0.1).1)
+                       (λ y : ∃ b : E, (χ b).1, (ap10 p y) ..1))) 
+                 (x.1).1) (f (x.1).1).2))
+              (λ x : ∃ b : ∃ e' : E, e' = a, (χ b.1).1,
+                 transport (λ u : E, ((B (g u).1).1).1) (x.1).2 (g (x.1).1).2)).
+        rewrite p0. clear p0.
+        simpl.
+        repeat rewrite transport_paths_FlFr.
+        repeat rewrite ap_const.
+        repeat rewrite ap_idmap. simpl.
+        unfold E_to_χ_map, compose. simpl.
+        repeat rewrite concat_p1.
+        rewrite concat_p_pp.
 
-        admit.
+        match goal with
+          |[ |- _ = ?X] =>  path_via (1 @ X)
+        end.
+        apply whiskerR.
+        apply moveR_Vp.
+        rewrite concat_p1.
+        apply ap.
+        rewrite concat_p_pp.
+        apply whiskerR.
+        rewrite ap_V.
+        reflexivity.
       }
     - intro p.
-      destruct p. simpl.
-      apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_forall f f))). apply isequiv_inverse.
+      apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_forall f g))). apply isequiv_inverse.
       rewrite eissect. simpl.
       apply path_forall; intro x. simpl.
       apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_sigma))). apply isequiv_inverse.
@@ -1147,7 +1182,26 @@ Section Type_to_separated_Type.
       rewrite eissect. simpl.
 
       refine (path_sigma' _ _ _).
-      { refine (apD10 _ _). intro y; reflexivity.
+      { destruct p. simpl.
+        
+        
+        refine (apD10 _ _). intro y; reflexivity.
+        (* path_via (ap10 (idpath (pr1 o f))). *)
+        (* apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_ap10 _ _)) _). *)
+        (* pose (equiv := sepA E χ (pr1 o f) (pr1 o f)). *)
+        (* path_via (((ap (E_to_χ_map A χ))^-1 *)
+        (*    (path_forall (E_to_χ_map A χ (pr1 o f))  *)
+        (*                 (E_to_χ_map A χ (pr1 o f)) (λ y : ∃ b : E, (χ b).1, 1)))). *)
+        (* apply eissect. *)
+
+        
+        (* path_via (idpath (pr1 o f)). *)
+        (* apply moveR_equiv_V. simpl. apply path_forall_1. *)
+        (* symmetry. apply eissect. *)
+
+        
+
+        
         unfold equiv_inv.
         path_via (ap10 ((let (equiv_inv, eisretr, eissect, _) :=
                              sepA E χ (pr1 o f) (pr1 o f) in
@@ -1159,175 +1213,209 @@ Section Type_to_separated_Type.
         apply moveR_equiv_V. reflexivity.
       }
       { simpl.
-        repeat rewrite transport_paths_FlFr; simpl.
-        repeat rewrite ap_const; simpl.
+        destruct p. 
+        repeat rewrite transport_paths_FlFr.
+        repeat rewrite ap_const.
         repeat rewrite ap_idmap.
-        unfold pr2_path. simpl.
+        unfold pr2_path.
         rewrite concat_p1.
         unfold moveR_equiv_V. simpl.
         unfold path_forall_1.
         unfold eta_path_forall. simpl.
         hott_simpl.
         apply moveR_Vp.
-        rewrite concat_p1.
-
-        assert ((λ x0 : ∃ b : ∃ e' : E, e' = x, (χ b.1).1,
-            ap (transport (λ u : E, ((B (f u).1).1).1) (x0.1).2)
-              (ap
-                 (λ u : (f (x0.1).1).1 = (f (x0.1).1).1,
-                  transport (λ x1 : A.1, ((B x1).1).1) u (f (x0.1).1).2)
-                 (transport
-                    (λ
-                     u : ((λ x1 : E, (f x1).1) o pr1) ((x0.1).1; x0.2) =
-                         ((λ x1 : E, (f x1).1) o pr1) ((x0.1).1; x0.2), 
-                     u = 1)
-                    (ap10_ap_precompose pr1
-                       ((let (equiv_inv, eisretr, eissect, _) :=
-                             sepA E χ (λ x1 : E, (f x1).1)
-                               (λ x1 : E, (f x1).1) in
+        transparent assert (XX : ((λ z : ∃ e' : E, e' = x,
+             transport (λ u : E, ((B (f u).1).1).1) z.2
+               (transport (λ x0 : A.1, ((B x0).1).1)
+                  (ap10
+                     ((let (equiv_inv, eisretr, eissect, _) :=
+                           sepA E χ (pr1 o f) (pr1 o f) in
+                       equiv_inv)
+                        (path_forall (E_to_χ_map A χ (pr1 o f))
+                           (E_to_χ_map A χ (pr1 o f))
+                           (λ y : ∃ b : E, (χ b).1, 1))) z.1) 
+                  (f z.1).2)) ==
+            (λ z : ∃ e' : E, e' = x,
+               transport (λ u : E, ((B (f u).1).1).1) z.2 (f z.1).2))).
+        { intro u. apply ap.
+          path_via (transport (λ x0 : A.1, ((B x0).1).1) 1 (f u.1).2); try auto.
+          apply (ap (λ p, transport (λ x0 : A.1, ((B x0).1).1) p (f u.1).2)). simpl.
+          refine (apD10 _ _). intro v. reflexivity.
+          path_via (ap10 ((let (equiv_inv, eisretr, eissect, _) :=
+                             sepA E χ (pr1 o f) (pr1 o f) in
                          equiv_inv)
-                          (path_forall (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
-                             (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
-                             (λ y : ∃ b : E, (χ b).1, 1))) 
-                       ((x0.1).1; x0.2))
-                    (transport
-                       (λ
-                        u : (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1) =
-                            (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1),
-                        ap10 u ((x0.1).1; x0.2) = 1)
-                       (eisretr (ap (E_to_χ_map A χ))
-                          (path_forall (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
-                             (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
-                             (λ y : ∃ b : E, (χ b).1, 1)))^
-                       (apD10 (eisretr apD10 (λ y : ∃ b : E, (χ b).1, 1))
-                          ((x0.1).1; x0.2)))) @ 1))
-                  =
-                  (λ x0 : ∃ b : ∃ e' : E, e' = x, (χ b.1).1,
-            ap (transport (λ u : E, ((B (f u).1).1).1) (x0.1).2)
-              (ap
-     (λ u : (f (x0.1).1).1 = (f (x0.1).1).1,
-      transport (λ x1 : A.1, ((B x1).1).1) u (f (x0.1).1).2)
-     ((ap10_ap_precompose pr1
-         ((let (equiv_inv, eisretr, eissect, _) :=
-               sepA E χ (λ x1 : E, (f x1).1) (λ x1 : E, (f x1).1) in
-           equiv_inv)
-            (path_forall (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
-               (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
-               (λ y : ∃ b : E, (χ b).1, 1))) ((x0.1).1; x0.2))^ @
-      ((ap
-          (λ
-           x1 : (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1) =
-                (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1),
-           ap10 x1 ((x0.1).1; x0.2))
-          (eisretr (ap (E_to_χ_map A χ))
-             (path_forall (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
-                (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
-                (λ y : ∃ b : E, (χ b).1, 1)))^)^ @
-       apD10 (eisretr apD10 (λ y : ∃ b : E, (χ b).1, 1)) ((x0.1).1; x0.2)))))).
-        apply path_forall; intro x0. apply ap. rewrite concat_p1.
-        rewrite transport_paths_l. rewrite transport_paths_Fl. simpl.
-        reflexivity.
-
-        apply (transport (λ U,
-                          (ap10
-     ((let (equiv_inv, eisretr, eissect, _) :=
-           (B (f x).1).2 (∃ e' : E, e' = x) (density_sigma χ x)
-             (λ z : ∃ e' : E, e' = x,
-              transport (λ u : E, ((B (f u).1).1).1) z.2
-                (transport (λ x0 : A.1, ((B x0).1).1)
-                   (ap10
-                      ((let (equiv_inv, eisretr, eissect, _) :=
-                            sepA E χ (pr1 o f) (pr1 o f) in
-                        equiv_inv)
-                         (path_forall (E_to_χ_map A χ (pr1 o f))
-                            (E_to_χ_map A χ (pr1 o f))
-                            (λ y : ∃ b : E, (χ b).1, 1))) z.1) 
-                   (f z.1).2))
-             (λ z : ∃ e' : E, e' = x,
-              transport (λ u : E, ((B (f u).1).1).1) z.2 (f z.1).2) in
-       equiv_inv)
-        (path_forall
-           (λ x0 : ∃ b : ∃ e' : E, e' = x, (χ b.1).1,
-            transport (λ u : E, ((B (f u).1).1).1) 
-              (x0.1).2
-              (transport (λ x1 : A.1, ((B x1).1).1)
-                 (ap10
-                    ((let (equiv_inv, eisretr, eissect, _) :=
-                          sepA E χ (λ x1 : E, (f x1).1) (λ x1 : E, (f x1).1) in
-                      equiv_inv)
-                       (path_forall (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
-                          (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
-                          (λ y : ∃ b : E, (χ b).1, 1))) 
-                    (x0.1).1) (f (x0.1).1).2))
-           (λ x0 : ∃ b : ∃ e' : E, e' = x, (χ b.1).1,
-            transport (λ u : E, ((B (f u).1).1).1) (x0.1).2 (f (x0.1).1).2)
-           U)) 
-     (x; 1)) = _) X^).
+                            1)).
+          apply ap. apply ap. apply path_forall_1.
+          apply (moveR_equiv_V (f := path_forall _ _) (H := isequiv_path_forall _ _)).
+          etransitivity; try (symmetry; apply path_forall_1).
+          apply moveR_equiv_V. reflexivity. }
         
+        match goal with
+          |[ |- @ap10 ?XXX ?XY ?Xf ?Xg ?XH ?Xu = ?X2 ] => 
+           assert (foo := λ p, apD10 (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_ap10 Xf Xg)) (isequiv_inverse _) (ap10 XH) XX p) (x;1))
+        end.
+        transitivity (XX (x;1)).
+        apply foo.
+        { unfold XX; clear foo; clear XX.
+          unfold path_forall_1, eta_path_forall.
+          unfold moveR_equiv_V. simpl.
+          rewrite eissect.
+          apply moveR_equiv_V. simpl.
+          apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+          unfold ap10 at 2. unfold path_forall at 3. rewrite eisretr.
+          apply path_forall; intros [[b p] c]. simpl in *. destruct p. simpl.
+          
+                                                                            
+          (* repeat rewrite transport_paths_FlFr. *)
+          (* hott_simpl. *)
+          unfold E_to_χ_map.
+          rewrite ap10_ap_precompose. simpl.
+          rewrite (eisretr ap10). simpl.
+          hott_simpl.
+          (* rewrite ap_V. rewrite inv_V. *)
+          apply ap.
+          unfold compose; simpl.
+          repeat rewrite transport_paths_FlFr.
+          hott_simpl.
+          rewrite ap_V. rewrite inv_V.
+          unfold compose; simpl.
+          rewrite concat_pp_p.
+          apply moveR_Vp.
+          apply moveL_pM.
+          symmetry.
 
-        unfold equiv_inv. pose (ap10
-     ((let (equiv_inv, eisretr, eissect, _) :=
-           (B (f x).1).2 (∃ e' : E, e' = x) (density_sigma χ x)
-             (λ z : ∃ e' : E, e' = x,
-              transport (λ u : E, ((B (f u).1).1).1) z.2
-                (transport (λ x0 : A.1, ((B x0).1).1)
-                   (ap10
-                      ((let (equiv_inv, eisretr, eissect, _) :=
-                            sepA E χ (pr1 o f) (pr1 o f) in
-                        equiv_inv)
-                         (path_forall (E_to_χ_map A χ (pr1 o f))
-                            (E_to_χ_map A χ (pr1 o f))
-                            (λ y : ∃ b : E, (χ b).1, 1))) z.1) 
-                   (f z.1).2))
-             (λ z : ∃ e' : E, e' = x,
-              transport (λ u : E, ((B (f u).1).1).1) z.2 (f z.1).2) in
-       equiv_inv)
-        (path_forall
-           (λ x0 : ∃ b : ∃ e' : E, e' = x, (χ b.1).1,
-            transport (λ u : E, ((B (f u).1).1).1) 
-              (x0.1).2
-              (transport (λ x1 : A.1, ((B x1).1).1)
-                 (ap10
-                    ((let (equiv_inv, eisretr, eissect, _) :=
-                          sepA E χ (λ x1 : E, (f x1).1) (λ x1 : E, (f x1).1) in
-                      equiv_inv)
-                       (path_forall (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
-                          (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
-                          (λ y : ∃ b : E, (χ b).1, 1))) 
-                    (x0.1).1) (f (x0.1).1).2))
-           (λ x0 : ∃ b : ∃ e' : E, e' = x, (χ b.1).1,
-            transport (λ u : E, ((B (f u).1).1).1) (x0.1).2 (f (x0.1).1).2)
-           (λ x0 : ∃ b : ∃ e' : E, e' = x, (χ b.1).1,
-            ap (transport (λ u : E, ((B (f u).1).1).1) (x0.1).2)
-              (ap
-                 (λ u : (f (x0.1).1).1 = (f (x0.1).1).1,
-                  transport (λ x1 : A.1, ((B x1).1).1) u (f (x0.1).1).2)
-                 (transport
-                    (λ
-                     u : ((λ x1 : E, (f x1).1) o pr1) ((x0.1).1; x0.2) =
-                         ((λ x1 : E, (f x1).1) o pr1) ((x0.1).1; x0.2), 
-                     u = 1)
-                    (ap10_ap_precompose pr1
-                       ((let (equiv_inv, eisretr, eissect, _) :=
-                             sepA E χ (λ x1 : E, (f x1).1)
-                               (λ x1 : E, (f x1).1) in
-                         equiv_inv)
-                          (path_forall (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
-                             (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
-                             (λ y : ∃ b : E, (χ b).1, 1))) 
-                       ((x0.1).1; x0.2))
-                    (transport
-                       (λ
-                        u : (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1) =
-                            (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1),
-                        ap10 u ((x0.1).1; x0.2) = 1)
-                       (eisretr (ap (E_to_χ_map A χ))
-                          (path_forall (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
-                             (λ x1 : ∃ b : E, (χ b).1, (f x1.1).1)
-                             (λ y : ∃ b : E, (χ b).1, 1)))^
-                       (apD10 (eisretr apD10 (λ y : ∃ b : E, (χ b).1, 1))
-                          ((x0.1).1; x0.2)))) @ 1)))) 
-     (x; 1)). simpl in p.
+          match goal with
+            |[|- _ = _ @ (apD10 ?X _)^] => set (foo := X)
+          end.
+
+          
+          pose (apD10_ap_precompose (pr1 : {e:E & (χ e).1} -> E) foo (b;c))^.
+          simpl in p.
+          rewrite p. clear p. unfold foo; clear foo.
+          
+          apply (transport (λ U, _ = _ @ U) (apD10_V (ap (λ h : ∀ x : E, (f x).1 = (f x).1, h oD pr1)
+         ((ap ap10
+             (ap
+                (let (equiv_inv, eisretr, eissect, _) :=
+                     sepA E χ (λ x : E, (f x).1) (λ x : E, (f x).1) in
+                 equiv_inv) (eissect apD10 1)) @
+           ap apD10
+             (eissect
+                (ap (λ (f0 : E → A.1) (x : ∃ b0 : E, (χ b0).1), f0 x.1)) 1 @
+                (eissect apD10 1)^)) @ eisretr apD10 (λ v : E, 1))) (b;c))).
+          rewrite concat_pp_p.
+          apply (transport (λ U, _ = _ @ U) (apD10_pp (eisretr apD10 (λ y : ∃ b0 : E, (χ b0).1, 1)) (ap (λ h : ∀ x : E, (f x).1 = (f x).1, h oD pr1)
+         ((ap ap10
+             (ap
+                (let (equiv_inv, eisretr, eissect, _) :=
+                     sepA E χ (λ x : E, (f x).1) (λ x : E, (f x).1) in
+                 equiv_inv) (eissect apD10 1)) @
+           ap apD10
+             (eissect
+                (ap (λ (f0 : E → A.1) (x : ∃ b0 : E, (χ b0).1), f0 x.1)) 1 @
+                (eissect apD10 1)^)) @ eisretr apD10 (λ v : E, 1)))^ (b;c))).
+
+          match goal with
+            |[|- _ = _ @ apD10 ?X _] => set (foo := X)
+          end. simpl in foo.
+          
+          set (bc := (b;c)).
+          refine (apD10 (g := λ bc, ap
+                                      (λ
+                                         x : (λ x : ∃ b0 : E, (χ b0).1, (f x.1).1) =
+                                             (λ x : ∃ b0 : E, (χ b0).1, (f x.1).1), ap10 x bc)
+                                      (eisretr (ap (λ (f0 : E → A.1) (x : ∃ b0 : E, (χ b0).1), f0 x.1))
+                                               (path_forall (λ x0 : ∃ b0 : E, (χ b0).1, (f x0.1).1)
+                                                            (λ x0 : ∃ b0 : E, (χ b0).1, (f x0.1).1)
+                                                            (λ y : ∃ b0 : E, (χ b0).1, 1))) @ apD10 foo bc) _ _).
+          clear bc. clear c. clear b.
+          unfold foo; clear foo.
+          etransitivity; try exact (@apD _ (λ U : (λ x0 : E, (f x0).1) = (λ x0 : E, (f x0).1),
+                              ∀ a : ∃ e : E, (χ e).1,
+                                ap10 (ap (λ h : E → A.1, h o pr1) U) a = ap10 U a.1) (ap10_ap_precompose (pr1 : {e:E & (χ e).1} -> E)) 1
+                     ((let (equiv_inv, eisretr, eissect, _) :=
+                           sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (f x0).1) in
+                       equiv_inv)
+                        (path_forall (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1)
+                                     (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1) (λ y : ∃ b : E, (χ b).1, 1)))
+                     (ap
+                        (let (equiv_inv, eisretr, eissect, _) :=
+                             sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (f x0).1) in
+                         equiv_inv) (path_forall_1 (λ x : ∃ b : E, (χ b).1, (f x.1).1)) @
+                        eissect (ap (E_to_χ_map A χ)) 1)^)^.
+
+          simpl.
+          apply (moveR_transport_p (λ U : (λ x0 : E, (f x0).1) = (λ x0 : E, (f x0).1),
+      ∀ a : ∃ e : E, (χ e).1,
+        ap10 (ap (λ h : E → A.1, h o pr1) U) a = ap10 U a.1)).
+          unfold ap10_ap_precompose, apD10_ap_precompose.
+          simpl.
+          apply path_forall; intro u; simpl.
+
+          rewrite transport_forall_constant. simpl.
+          rewrite transport_paths_FlFr. hott_simpl.
+          unfold path_forall_1, eta_path_forall. simpl.
+          rewrite <- ap_pp.
+          repeat rewrite concat_pp_p.
+          (* apply moveL_Vp. *)
+          (* rewrite concat_p1. *)
+          repeat rewrite ap_pp.
+          repeat rewrite <- ap_compose.
+          repeat rewrite apD10_pp.
+          unfold compose; simpl. unfold E_to_χ_map, compose; simpl.
+          repeat rewrite concat_p_pp.
+          match goal with
+            |[|- ?X1 @ ?X2 = ((?Y1 @ ?Y2) @ ?Y3) @ ?Y4] =>
+              set (P1 := X1);
+                set (P2 := X2);
+                set (P3 := Y1);
+                set (P4:= Y2);
+                set (P5:= Y3);
+                set (P6:= Y4)
+          end. simpl in *.
+          pose (apD10 (f := (λ x : ∃ b : E, (χ b).1, (f x.1).1)) (apD10^-1 (λ y : ∃ b0 : E, (χ b0).1, 1)) u).
+          assert (p=1).
+          unfold p.
+          rewrite eisretr. reflexivity.
+
+
+          
+          
+          match goal with
+            |[|- ?X = _ ] => set (foo := X)
+          end. simpl in foo.
+
+          
+          
+          pose ((ap (λ h : E → A.1, h o (pr1 : {e:E & (χ e).1} -> E))
+             ((let (equiv_inv, eisretr, eissect, _) :=
+                   sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (f x0).1) in
+               equiv_inv)
+                (path_forall (λ x : ∃ b : E, (χ b).1, (f x.1).1)
+                   (λ x : ∃ b : E, (χ b).1, (f x.1).1)
+                   (λ x : ∃ b : E, (χ b).1, 1))))). simpl in p.
+
+          pose (@apD).
+          rewrite ap_pp.
+          rewrite ap10_ap_precompose.
+          rewrite path_forall_1.
+          
+          repeat rewrite ap_pp. simpl.
+          repeat rewrite inv_pp.
+          match goal with
+            |[|- _ = (((?X1 @ ?X2) ] => set (foo := X)
+          end.
+          
+          
+
+          match goal with |[|- _ = (_ @ ?X) @ _ ] => set (bar := X) end.
+          
+          admit. }
+        { unfold XX; clear foo; clear XX. simpl.
+          unfold path_forall_1, eta_path_forall.
+          unfold moveR_equiv_V. simpl. hott_simpl. }
+          
+          
 
 
         

@@ -1360,60 +1360,133 @@ Section Type_to_separated_Type.
           (* apply moveL_Vp. *)
           (* rewrite concat_p1. *)
           repeat rewrite ap_pp.
-          repeat rewrite <- ap_compose.
+          (* repeat rewrite <- ap_compose. *)
           repeat rewrite apD10_pp.
           unfold compose; simpl. unfold E_to_χ_map, compose; simpl.
           repeat rewrite concat_p_pp.
+          symmetry.
           match goal with
-            |[|- ?X1 @ ?X2 = ((?Y1 @ ?Y2) @ ?Y3) @ ?Y4] =>
-              set (P1 := X1);
-                set (P2 := X2);
-                set (P3 := Y1);
-                set (P4:= Y2);
-                set (P5:= Y3);
-                set (P6:= Y4)
+            |[|- ?X1 @ ?X2 @ ?X3 @ ?X4 @ ?X5 @ ?X6 = _] =>
+             set (P1 := X1);
+               set (P2 := X2);
+               set (P3 := X3);
+               set (P4 := X4);
+               set (P5 := X5);
+               set (P6 := X6)
+               (* set (P7 := X7) *)         
           end. simpl in *.
-          pose (apD10 (f := (λ x : ∃ b : E, (χ b).1, (f x.1).1)) (apD10^-1 (λ y : ∃ b0 : E, (χ b0).1, 1)) u).
-          assert (p=1).
-          unfold p.
-          rewrite eisretr. reflexivity.
-
-
-          
-          
-          match goal with
-            |[|- ?X = _ ] => set (foo := X)
-          end. simpl in foo.
-
-          
-          
-          pose ((ap (λ h : E → A.1, h o (pr1 : {e:E & (χ e).1} -> E))
-             ((let (equiv_inv, eisretr, eissect, _) :=
-                   sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (f x0).1) in
-               equiv_inv)
-                (path_forall (λ x : ∃ b : E, (χ b).1, (f x.1).1)
-                   (λ x : ∃ b : E, (χ b).1, (f x.1).1)
-                   (λ x : ∃ b : E, (χ b).1, 1))))). simpl in p.
-
-          pose (@apD).
-          rewrite ap_pp.
-          rewrite ap10_ap_precompose.
-          rewrite path_forall_1.
-          
-          repeat rewrite ap_pp. simpl.
-          repeat rewrite inv_pp.
-          match goal with
-            |[|- _ = (((?X1 @ ?X2) ] => set (foo := X)
-          end.
-          
+          assert (X123 : P1 @ P2 @ P3 = 1).
+          { clear P4; clear P5; clear P6.
+            unfold P1, P2, P3; clear P1; clear P2; clear P3.
+            pose (IsEq := sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (f x0).1)).
           
 
-          match goal with |[|- _ = (_ @ ?X) @ _ ] => set (bar := X) end.
-          
-          admit. }
+
+            admit. }
+          rewrite X123; clear X123.
+          assert (X456 : P4 @ P5 @ P6 = 1).
+          { unfold P4, P5, P6; clear P6; clear P5; clear P4; clear P3; clear P2; clear P1.
+            
+
+
+            admit. }
+          rewrite concat_1p.
+          exact X456. }
+        
         { unfold XX; clear foo; clear XX. simpl.
           unfold path_forall_1, eta_path_forall.
           unfold moveR_equiv_V. simpl. hott_simpl. }
+      }
+  Defined.
+
+  
+  Lemma separated_lex : IsLex (separated_modality).
+    intros X x y C.
+    (* intros X x y [[c Tc] p]. *)
+    (* simpl in *. *)
+    Arguments trunc_succ {n} A H {x y}.
+
+    pose (X0 := λ u v:X.1, path_contr (Contr0 := C) (separated_unit X u) (separated_unit X v) ).
+    unfold path_contr in X0.
+    unfold separated_unit, toIm, separated_Type, Im, Overture.hfiber in *; simpl in *.
+    
+    destruct C as [[c Tc] p]. simpl in *.
+
+    assert (Contr X.1).
+    generalize dependent Tc.
+    refine (@Trunc_ind (-1) _ _ _ _).
+    intros [a q] p.
+    destruct q.
+    refine (BuildContr _ _ _).
+    exact a.
+    intro u.
+    pose (X0 := @path_contr (separated_Type X) (BuildContr _ (λ t' : X.1, O nj (a = t'; istrunc_paths X.2 a t'); tr (a; 1)) p) (separated_unit X a) (separated_unit X u)).
+    unfold separated_unit, toIm, separated_Type, Im, Overture.hfiber in *; simpl in *.
+    pose (X01 := X0..1); pose (X02 := X0..2). unfold path_contr in *; simpl in *.
+    unfold X0 in X01, X02. simpl in *.
+
+    assert (tr (a) = tr (n:=-1) (u) -> a = u).
+    intro H. destruct H.
+
+    unfold pr1_path in X02.
+    rewrite ap_pp in X02.
+    rewrite transport_pp in X02.
+    simpl in *.
+    
+    pose proof (moveL_transport_V _ _ _ _ X02).
+    pose ((ap pr1
+              (p (λ t' : X.1, O nj (a = t'; istrunc_paths X.2 a t'); tr (a; 1)))^)). simpl in p0.
+    pose ((p (λ t' : X.1, O nj (u = t'; istrunc_paths X.2 u t'); tr (u; 1)))). simpl.
+    
+
+    pose (transport_pp (λ
+           b : X.1
+               → ∃ T : Trunk sheaf_def_and_thm.n, (subuniverse_HProp nj T).1,
+           Trunc (-1)
+             (∃ x0 : X.1,
+                (λ t' : X.1, O nj (x0 = t'; istrunc_paths X.2 x0 t')) = b))
+                       ((p (λ t' : X.1, O nj (a = t'; istrunc_paths X.2 a t'); tr (a; 1)))^)
+                       (p (λ t' : X.1, O nj (u = t'; istrunc_paths X.2 u t'); tr (u; 1)))
+
+
+    
+    pose (X1 := ap10 X0).
+
+    assert (separated_unit X a = separated_unit X u).
+    
+
+    generalize dependent Tc.
+    refine (@Trunc_ind (-1)
+                     (Overture.hfiber (λ t t' : X.1, O nj (t = t'; istrunc_paths X.2 t t')) c)
+                     (λ Tc, (∀ y0 : separated_Type X, (c; Tc) = y0)
+                            → Contr
+                                (separated_Type (x = y; @trunc_succ n (x = y) (istrunc_paths X.2 x y)))) _ _).
+    intros [a q]. intro p.
+    destruct q. simpl in *.
+    unfold separated_Type, Im, Overture.hfiber in *; simpl in *.
+      
+    assert ((O nj (x = y ;(istrunc_paths X.2 x y)) ).1.1).
+    {
+
+
+
+      
+      specialize (p (λ u : X.1, O nj (x = u; istrunc_paths X.2 x u); tr (x; 1))).
+      pose (pp := (ap10 p..1 y)..1..1). simpl in pp.
+      apply (transport idmap pp).
+      apply O_unit.
+      reflexivity.
+
+      intro u. simpl in *.
+      unfold pr1_path.
+      transport_idmap_ap
+      pose (p (λ u : X.1, O nj (y = u; istrunc_paths X.2 y u); tr (y; 1))).
+      pose (pp := (ap10 p0..1 a)..1..1). simpl in pp.
+
+
+    }
+      
+      
           
           
 

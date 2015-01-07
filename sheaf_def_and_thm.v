@@ -839,8 +839,10 @@ Set Printing Universes.
   
 Set Printing Universes.
 
+Definition foo (T: Trunk@{Si' i' a} n.+1) : T.1 -> SnType_j_Type@{h''' Si' i' a e i' i x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11}
+  := (λ _, nType_j_Type_sheaf@{h'' Si' i' a e i b c d f b' c'}).
 
-Definition T_nType_j_Type_isSheaf (T: Trunk@{Si' i' a} n.+1) := @dep_prod_SnType_j_Type T (λ _, nType_j_Type_sheaf@{h'' Si' i' a e i b c d f b' c'}).
+Definition T_nType_j_Type_isSheaf (T: Trunk@{Si' i' a} n.+1) := @dep_prod_SnType_j_Type T (foo T).
 
 
 

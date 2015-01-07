@@ -98,7 +98,7 @@ Definition terminal A B (f : A -> B) : A -> {A' : Type & A'} :=
 
 Definition subobject_diagram A B (f : A -> B) : 
   @pr1 _ (idmap) o terminal f = sub_to_char (A;f) o f.
-  apply path_forall; intro a. unfold compose, sub_to_char; simpl. reflexivity.
+  apply path_forall; intro a. unfold sub_to_char; simpl. reflexivity.
 Defined.
 
 Definition nsub_to_char n B : {A : Type & {f : A -> B & forall b, IsTrunc n (hfiber f b)}} -> B -> Trunk n :=
@@ -198,7 +198,7 @@ Definition nterminal n A B (f : {f : A -> B & forall b, IsTrunc n (hfiber f b)})
 
 Definition nsubobject_diagram n A B (f : {f : A -> B & forall b, IsTrunc n (hfiber f b)}) : 
   @pr1 _ _ o nterminal n f = nsub_to_char n (A;f) o (f.1).
-  apply path_forall; intro a. unfold compose, nsub_to_char; simpl. reflexivity.
+  apply path_forall; intro a. unfold nsub_to_char; simpl. reflexivity.
 Defined.
 
 Definition fibers_composition_f A B C (f : A -> B) (g : B -> C) (c : C) : hfiber (g o f) c -> {w : hfiber g c & hfiber f (w.1)} := λ a, ( (f (a.1) ; a.2) ; (a.1 ; idpath )).
@@ -209,20 +209,20 @@ Definition fibers_composition_g A B C (f : A -> B) (g : B -> C) (c : C) : {w : h
 Defined.
 
 Definition fibers_composition_retr A B C (f : A -> B) (g : B -> C) (c : C) : 
-  Sect (fibers_composition_g (f:=f) (g:=g) (c:=c)) (fibers_composition_f (f:=f) (g:=g) (c:=c)). 
+  Sect (fibers_composition_g (f:=f) (g:=g) (c:=c)) (fibers_composition_f (f) (g) (c:=c)). 
   intro x; destruct x as [[x px] [y py]].
   unfold fibers_composition_f; simpl in *.
   destruct px; destruct py. reflexivity.
 Defined.
 
 Definition fibers_composition_sect A B C (f : A -> B) (g : B -> C) (c : C) : 
-  Sect (fibers_composition_f (f:=f) (g:=g) (c:=c)) (fibers_composition_g (f:=f) (g:=g) (c:=c)). 
+  Sect (fibers_composition_f (f) (g) (c:=c)) (fibers_composition_g (f:=f) (g:=g) (c:=c)). 
   intro x. destruct x as [x p]. 
   reflexivity.
 Defined.
 
 Instance fibers_composition_eq A B C (f : A -> B) (g : B -> C) (c : C) : IsEquiv (@fibers_composition_f A B C f g c).
-apply (BuildIsEquiv _ _ _ (fibers_composition_g (f:=f) (g:=g) (c:=c)) (fibers_composition_retr (f:=f) (g:=g) (c:=c)) (fibers_composition_sect (f:=f) (g:=g) (c:=c))).
+apply (BuildIsEquiv _ _ _ (fibers_composition_g (f:=f) (g:=g) (c:=c)) (fibers_composition_retr (f:=f) (g:=g) (c:=c)) (fibers_composition_sect (f) (g) (c:=c))).
   destruct x as [x p]; simpl.
   destruct p.
   reflexivity.
@@ -249,7 +249,7 @@ Definition hfiber_eq_R A B C (f : A -> B) (g : B -> C) (H :IsMono g) b : hfiber 
   destruct 1 as [x p]. exists x. exact (@equiv_inv _ _ _ (H (f x) b) p).  Defined.
 
 Instance hfiber_mono_equiv A B C (f : A -> B) (g : B -> C) (H :IsMono g) b : IsEquiv (hfiber_eq_L (f:=f) g (b:=b)). 
-apply (isequiv_adjointify _ (hfiber_eq_R H b)).
+apply (isequiv_adjointify _ (hfiber_eq_R _ H b)).
 - intro e. destruct e. simpl. apply @path_sigma' with (p:=idpath).
   apply eisretr.
 - intro e. destruct e. simpl. apply @path_sigma' with (p :=idpath).

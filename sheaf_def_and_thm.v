@@ -105,7 +105,7 @@ Section Definitions.
 
   Definition separated T :=  ∀ E (χ : EnJ E), IsMono (E_to_χ_map T (E:=E) χ).
   
-  Definition Snsheaf_struct T := (separated T) /\ (∀ E (χ : E -> J), IsEquiv (E_to_χmono_map T (E:=E) (χ:=χ))). 
+  Definition Snsheaf_struct T := (separated T) /\ (∀ E (χ : E -> J), IsEquiv (E_to_χmono_map T (E:=E) (χ))). 
 
   Definition SnType_j_Type := {T : Trunk (trunc_S n) & Snsheaf_struct T}.
 
@@ -116,6 +116,120 @@ Section Definitions.
   Definition Snsheaf_struct_is_HProp T : IsHProp (Snsheaf_struct T).
     apply trunc_prod.
   Defined.
+
+  (* If T is a n-Type, then if T is a n-sheaf, then T is also a (S n)-sheaf *)
+
+  Lemma nsheaf_to_Snsheaf (T:Trunk (trunc_S n)) (Trn : IsTrunc n T.1) (nsheaf : (subuniverse_HProp nj (T.1;Trn)).1)
+  : Snsheaf_struct T.
+    split.
+    { intros E χ u v.
+      refine (isequiv_adjointify _ _ _ _).
+      - unfold E_to_χ_map; simpl; intro p.
+        apply path_forall; intro x.
+        (* apply (@equiv_inj _ _ _ (O_modal_equiv ((T.1;Trn);nsheaf))). simpl. *)
+        destruct χ as [χ χeq χdiag]. simpl in *.
+        pose proof (transport idmap (χeq x) (x;1)). simpl in X.
+        revert X.
+        transparent assert (modal_family : (subuniverse_Type nj)).
+        { repeat refine (exist _ _ _).
+          exact (u x = v x).
+          apply istrunc_paths.
+          exact T.2.
+          pose subuniverse_paths.
+          specialize (p0 n nj ((T.1;Trn);nsheaf) (u x) (v x)). simpl in p0.
+          assert (istrunc_paths (trunc_succ Trn) (u x) (v x) = istrunc_paths T.2 (u x) (v x)) by apply path_ishprop.
+          rewrite X in p0.
+          exact p0. }
+        apply (O_rec (χ x) modal_family); unfold modal_family; clear modal_family.
+        intro xx; simpl.
+        exact (ap10 p (x;xx)).
+      - intro p. simpl. unfold E_to_χ_map in *; simpl in *.
+        apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+        apply path_forall; intro x.
+        rewrite ap10_ap_precompose.
+        unfold ap10 at 1, path_forall at 1; rewrite eisretr. simpl.
+        destruct χ as [χ χeq χdiag]. simpl in *.
+        specialize (χdiag x (x;1)).
+        unfold incl_Aeq_Eeq in χdiag.
+        apply ap10 in χdiag.
+        specialize (χdiag (x;1)). simpl in χdiag.
+        rewrite χdiag.
+        match goal with
+          |[|- O_rec _ ?X _ _ = _] => set (sheaf := X) end.
+        exact (ap10 (O_rec_retr (χ x.1) sheaf (λ xx : (χ x.1).1, ap10 p (x.1; xx))) x.2). 
+      - intro p. destruct p. simpl.
+        match goal with
+          |[|- path_forall u u ?X = _] => assert (X=(λ _, 1)) end.
+        { apply path_forall; intro x. rewrite O_rec_const. reflexivity. }
+        rewrite X. apply path_forall_1. }
+    { intros E χ.
+      refine (isequiv_adjointify _ _ _ _).
+      - intros f x.
+        unfold J in χ; simpl in *.
+        assert (p := transport idmap (j_is_nj (χ x).1) (χ x).2).
+        revert p. simpl. apply (O_rec _ ((T.1;Trn);nsheaf)).
+        intros xx. simpl in *.
+        exact (f (x;xx)).
+      - intro f. apply path_forall; intro x; simpl in *.
+        unfold E_to_χmono_map; simpl.
+        assert ((χ x.1).2 = (Oj_unit (χ x.1).1 x.2)) by apply path_ishprop.
+        rewrite X.
+        path_via (O_rec (((χ x.1).1).1; IsHProp_IsTrunc ((χ x.1).1).2 n0)
+                        ((T.1; Trn); nsheaf) (λ xx : ((χ x.1).1).1, f (x.1; xx)) (O_unit nj
+                                                                                         (((χ x.1).1).1; IsHProp_IsTrunc ((χ x.1).1).2 n0)
+                                                                                         x.2)).
+        apply ap. exact (j_is_nj_unit (χ x.1).1 x.2).
+        exact (ap10 (O_rec_retr (((χ x.1).1).1; IsHProp_IsTrunc ((χ x.1).1).2 n0)
+                                ((T.1; Trn); nsheaf)
+                                (λ xx : ((χ x.1).1).1, f (x.1; xx)))
+                    x.2).
+      - intro f.
+        apply path_forall; intro x.
+        assert (p := transport idmap (j_is_nj (χ x).1) (χ x).2).
+        revert p. simpl.
+        transparent assert (sheaf : (subuniverse_Type nj)).
+        { repeat refine (exist _ _ _).
+          exact (O_rec (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0)
+       ((T.1; Trn); nsheaf) (λ xx : ((χ x).1).1, E_to_χmono_map T _ f (x; xx))
+       (transport idmap (j_is_nj (χ x).1) (χ x).2) = 
+                 f x).
+          apply istrunc_paths.
+          exact T.2.
+          pose (subuniverse_paths ((T.1;Trn);nsheaf)
+                                  (O_rec (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0)
+                                         ((T.1; Trn); nsheaf)
+                                         (λ xx : ((χ x).1).1, E_to_χmono_map T _ f (x; xx))
+                                         (transport idmap (j_is_nj (χ x).1) (χ x).2))
+                                  (f x)).
+          assert (istrunc_paths (trunc_succ (((T.1; Trn); nsheaf).1).2)
+           (O_rec
+              (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0)
+              ((T.1; Trn); nsheaf)
+              (λ xx : ((χ x).1).1, E_to_χmono_map T _ f (x; xx))
+              (transport idmap (j_is_nj (χ x).1) (χ x).2)) 
+           (f x) = istrunc_paths T.2
+        (O_rec
+           (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0)
+           ((T.1; Trn); nsheaf)
+           (λ xx : ((χ x).1).1, E_to_χmono_map T _ f (x; xx))
+           (transport idmap (j_is_nj (χ x).1) (χ x).2)) 
+        (f x)) by apply path_ishprop.
+          apply (transport (λ U, (subuniverse_HProp nj (_;U)).1) X); clear X.
+          apply p. }
+          
+        apply (O_rec _ sheaf).
+        unfold sheaf; clear sheaf. simpl. intro xx.
+        pose (j_is_nj_unit (χ x).1 xx).
+        assert ((χ x).2 = (Oj_unit (χ x).1 xx)) by apply path_ishprop.
+        rewrite X.
+        path_via (O_rec (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0)
+     ((T.1; Trn); nsheaf) (λ xx0 : ((χ x).1).1, E_to_χmono_map T _ f (x; xx0))
+     (O_unit nj
+             (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0) xx)).
+        apply ap; exact p.
+        exact (ap10 (O_rec_retr (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0) ((T.1; Trn); nsheaf) (λ xx0 : ((χ x).1).1, E_to_χmono_map T _ f (x; xx0))) xx). }
+  Defined.
+
 
   Definition nj_inter_f (A : Trunk n) (φ : A.1 -> Trunk n) : 
     (nj.(O) ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2))).1.1 ->
@@ -261,7 +375,7 @@ Section Definitions.
                                 (X .1; O_unit nj (φ X .1) X .2)))
                       x
          ).
-    unfold compose in foo; simpl in foo.
+
     etransitivity; try exact foo. clear foo.
     apply (ap10 (O_rec_O_rec_dep_retr nj
                                       (∃ a : A .1, (φ a) .1; trunc_sigma A .2 (λ a : A .1, (φ a) .2))
@@ -303,9 +417,9 @@ Section Definitions.
            nj.(O) (nsub_to_char n ({b : _ &  pr1 (pr1 (α b))}; ((pr1 m) o (pr1 f); function_trunc_compo n (pr1 f) (pr1 m) (pr2 f) (fun e => IsHProp_IsTrunc (pr2 m e) n0))) e).
 
   Instance nTjTiSnTjT_eq E (χ : E -> J) : IsEquiv (λ (f : E -> subuniverse_Type nj) (t : {b : E & pr1 (pr1 (χ b))}), f (pr1 t)). 
-  apply (isequiv_adjointify _ (type_j_inv (E:=E) (χ := χ))).
+  apply (isequiv_adjointify _ (type_j_inv (E:=E) (χ))).
   - intro φ.
-    unfold type_j_inv, compose. simpl. unfold nchar_to_sub, hfiber, compose in φ; simpl in φ.
+    unfold type_j_inv. simpl. unfold nchar_to_sub, hfiber in φ; simpl in φ.
     apply path_forall; intro x.
     rewrite (O_modal (φ x)).
     repeat apply ap.
@@ -316,7 +430,7 @@ Section Definitions.
     intros X Y. apply subset_is_subobject. intro.
     exact (pr2 (pr1 (χ a))).
   - intro φ.
-    unfold type_j_inv, compose. simpl.
+    unfold type_j_inv. simpl.
     apply path_forall; intro x.
     rewrite (O_modal (φ x)).
     unfold nsub_to_char. simpl.
@@ -337,7 +451,7 @@ Section Definitions.
     pose (X := (nj_fibers_compose x (λ e : {b : E | ((φ b) .1) .1},
                                            IsHProp_IsTrunc
                                              (nchar_to_sub_compat (λ t : {b : E | ((φ b) .1) .1}, (χ t .1) .1) e)
-                                             n0) (nchar_to_sub_compat (λ t : E, (φ t) .1)))). unfold compose in X.
+                                             n0) (nchar_to_sub_compat (λ t : E, (φ t) .1)))).
     apply (transport (fun x => x = _) (inverse X)). clear X.
     
     apply ap. apply truncn_unique. simpl.
@@ -368,7 +482,7 @@ Section Definitions.
     apply p0.
     intro v. simpl.
 
-    assert (eq := (ap10 p (x;v))). unfold compose in eq; simpl in eq.
+    assert (eq := (ap10 p (x;v))). 
     exact (transport (λ U, U) (eq..1..1)).
   Defined.
   
@@ -393,7 +507,7 @@ Section Definitions.
                                                 
                                                 (ap10 p ^ (x; v))..1..1))
                             (EnJ_is_nJ χ x)) y
-         ). unfold compose in foo; simpl in foo.
+         ). 
     apply (transport (λ u, u = y) foo^). clear foo.
 
     pose (fooo := @transport_arrow_space_dep_path n nj fs (φ1 x) (φ2 x) (χ x) (λ v, (ap10 p (x;v))..1..1)).
@@ -454,7 +568,7 @@ Section Definitions.
     - exact (transport (λ u, ∀ y : ((φ1 x) .1) .1, nTjTiseparated_eq_fun_univ (inverse p) x (nTjTiseparated_eq_fun_univ u x y) = y) (inv_V p) (nTjTiseparated_eq_fun_univ_invol (inverse p) x)).
   Defined.
 
-  Lemma nTjTiseparated_eq : separated (existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj ua)).
+  Lemma nTjTiseparated_eq : separated (existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj)).
     intros E χ φ1 φ2.
     apply isequiv_adjointify with (g := @nTjTiseparated_eq_inv E χ φ1 φ2).
     - intro p. 
@@ -494,16 +608,16 @@ Section Definitions.
                                        subuniverse_arrow ((φ1 x) .1) .1 (φ1 x)) idmap) (EnJ_is_nJ χ x)). 
   Defined.
 
-  Lemma nType_j_Type_is_SnType_j_Type : Snsheaf_struct (existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj ua)).
+  Lemma nType_j_Type_is_SnType_j_Type : Snsheaf_struct (existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj)).
   Proof.
     split.
     apply nTjTiseparated_eq.
-    intros E χ. unfold E_to_χ_map, compose; simpl.
+    intros E χ. unfold E_to_χ_map; simpl.
     exact (nTjTiSnTjT_eq _).
   Defined.
 
   Definition nType_j_Type_sheaf : SnType_j_Type :=
-    ((existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj ua));nType_j_Type_is_SnType_j_Type).
+    ((existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj));nType_j_Type_is_SnType_j_Type).
 
   Instance dep_prod_SnType_j_Type_eq
            (A : Type)
@@ -517,8 +631,8 @@ Section Definitions.
     apply path_forall; intro a.
     destruct (H a); simpl in *.
     clear eisadj; clear eissect.
-    unfold nchar_to_sub, compose in equiv_inv; simpl.
-    unfold Sect, nchar_to_sub, compose, E_to_χmono_map, compose in eisretr.
+    unfold nchar_to_sub in equiv_inv; simpl.
+    unfold Sect, nchar_to_sub, E_to_χmono_map in eisretr.
     specialize (eisretr (λ x, φ x a)).
     exact (ap10 eisretr x).
   - intro φ.
@@ -526,8 +640,8 @@ Section Definitions.
     apply path_forall; intro a.
     destruct (H a); simpl in *.
     clear eisadj; clear eisretr.
-    unfold nchar_to_sub, compose in equiv_inv; simpl.
-    unfold Sect, nchar_to_sub, compose, E_to_χ_map, compose in eissect.
+    unfold nchar_to_sub in equiv_inv; simpl.
+    unfold Sect, nchar_to_sub, E_to_χ_map in eissect.
     specialize (eissect (λ x, φ x a)).
     exact (ap10 eissect x).
   Defined.
@@ -572,7 +686,7 @@ Section Definitions.
     - unfold Sect.
       intro p.
       unfold dep_prod_SnType_j_Type_sep_inv. 
-      unfold E_to_χ_map, compose. simpl.
+      unfold E_to_χ_map. simpl.
       unfold equiv_inv.
       pose (foo := @ap_path_forall (∃ b : E, (χ b) .1)
                                    E
@@ -636,7 +750,8 @@ Section Definitions.
       unfold ap10 at 1;
         rewrite eisretr.
       apply path_forall; intro t.
-      rewrite ap10_ap_precompose.
+      match goal with
+        |[|- _ = ap10 (ap _ ?X) _] => pose (ap10_ap_precompose (pr1 : ({e:E & (χ e).1} -> E)) X) end. rewrite p.
       unfold ap10; rewrite eisretr. reflexivity.
       exact (apD10 X x).
   Defined.
@@ -715,8 +830,8 @@ Section Definitions.
                    e.2). simpl in foo.
     apply foo. clear foo.
     - simpl.
-      pose (bar := O_rec_sect (φ e .1) (O nj (O nj (φ e .1)) .1) (O_unit nj _)). unfold compose in bar. simpl in bar.
-      unfold O_rec, compose; simpl.
+      pose (bar := O_rec_sect (φ e .1) (O nj (O nj (φ e .1)) .1) (O_unit nj _)).  simpl in bar.
+      unfold O_rec; simpl.
       exact (bar @ (OO_unit_idmap _ _)).
     - apply OO_unit_idmap.
   Defined.
@@ -749,7 +864,7 @@ Section Definitions.
   Lemma dense_into_cloture_dense_eq (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
   : is_dense_eq (λ e:clA, ({π : (φ e.1).1 & O_unit nj _ π = e.2} ; trunc_sigma (φ e .1) .2
               (λ a : (φ e .1) .1,
-               istrunc_paths (trunc_succ (H:=(O nj (φ e.1)).1.2)) (O_unit nj (φ e .1) a) e .2))).
+               istrunc_paths (trunc_succ ((O nj (φ e.1)).1.2)) (O_unit nj (φ e .1) a) e .2))).
     intro e.
     assert (rew := ((islex_nj (φ e .1) (O nj (φ e .1)).1 (O_unit nj _) e.2) @ (dicde_l φ e)^)).
     apply path_universe_uncurried.
@@ -777,7 +892,7 @@ Section Definitions.
   Lemma dense_into_cloture_dense_diag (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
   : is_dense_diag (dense_into_cloture_dense_eq φ).
     intros x p.
-    unfold compose. unfold dense_into_cloture_dense_eq.
+    unfold dense_into_cloture_dense_eq.
     apply path_forall; intro y.
     unfold path_universe_uncurried. rewrite eisretr.
     simpl.
@@ -788,12 +903,12 @@ Section Definitions.
     rewrite <- transport_pp.
     rewrite transport_equiv. simpl.
     rewrite ap_idmap.
-    rewrite ap_const.
-    unfold compose.
+    (* rewrite ap_const. *)
+    (* unfold compose. *)
     simpl.
     rewrite transport_pp.
 
-    pose (foo := lex_compat (φ a .1) (O nj (φ a .1)).1 (O_unit nj (φ a .1))). unfold compose, equiv_path in foo; simpl in foo.
+    pose (foo := lex_compat (φ a .1) (O nj (φ a .1)).1 (O_unit nj (φ a .1))). unfold equiv_path in foo; simpl in foo.
     specialize (foo a.2 π'). simpl in foo.
     unfold hfiber in foo. simpl in foo.
     (* assert (bar := foo..1); simpl in bar. *)
@@ -807,7 +922,7 @@ Section Definitions.
   
   Definition dense_into_cloture (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
   : EnJ clA.
-    refine (Build_EnJ (dense_into_cloture_dense_eq φ) _).
+    refine (Build_EnJ _ (dense_into_cloture_dense_eq φ) _).
     apply dense_into_cloture_dense_diag.
   Defined.
 
@@ -816,7 +931,7 @@ Section Definitions.
     pose (e := dense_into_cloture φ); simpl in e.
     destruct e as [χ χeq χdiag].
     intros X p.
-    refine (Build_EnJ _ _).
+    refine (Build_EnJ _ _ _).
     - intro x. apply χ.
       apply (equiv_path _ _ p).
       exact x.
@@ -854,8 +969,8 @@ Section Definitions.
     transport (λ u:{e:E & (φ e)}, α (u.1 ; transport idmap (eq u.1)^ u.2))
               xy^.
   simpl.
-  destruct (eisretr apD10 eq). simpl. unfold compose; simpl.
-  exact (@path_sigma_transport_transport E φ χ α (path_forall χ φ eq0) x y xy).
+  destruct (eisretr apD10 eq). simpl.  simpl.
+  exact (@path_sigma_transport_transport E φ χ α (path_forall χ φ eq) x y xy).
   Defined.
   Opaque path_sigma_transport'.
 
@@ -869,13 +984,13 @@ Section Definitions.
     }
     pose (e := dense_into_cloture φ); simpl in e.
     destruct e as [χ χeq χdiag].
-    refine (Build_EnJ _ _).
+    refine (Build_EnJ _ _ _).
     - intro x. apply χ.
       exists x.1.
       apply (equiv_path _ _ (p x.1)).
       exact x.2.
     - intro e. simpl in *.
-      unfold compose in p; simpl in p.
+
       pose (eq := χeq (e.1; transport idmap (p e.1)^ e.2)).
       etransitivity; try exact eq. clear eq.
       apply path_universe_uncurried.
@@ -888,13 +1003,13 @@ Section Definitions.
     - simpl.
       intros x y.
       unfold equiv_functor_sigma', equiv_functor_sigma_id, equiv_functor_sigma. simpl.
-      unfold compose; simpl.
+
       apply path_forall; intro z.
       rewrite transport_pp.
       rewrite transport_path_universe_uncurried. simpl.
       unfold functor_sigma. simpl.
       specialize (χdiag (((x.1).1; transport idmap (p (x.1).1)^ (x.1).2); x.2)). simpl in χdiag.
-      unfold compose, incl_Aeq_Eeq in χdiag; simpl in χdiag.
+      unfold incl_Aeq_Eeq in χdiag; simpl in χdiag.
       specialize (χdiag (((x.1.1 ; (equiv_path _ _ (p x.1.1)^ x.1.2)) ; x.2);1)).
       apply ap10 in χdiag.
       specialize (χdiag (((((z.1).1).1; transport idmap (p ((z.1).1).1)^ ((z.1).1).2) ; z.1.2);(path_sigma_transport' p x.1 (z.1).1) z.2)).

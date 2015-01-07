@@ -89,7 +89,7 @@ assert (Trunk n = TruncType n).
 apply path_universe_uncurried. apply issig_trunctype.
 symmetry in X. destruct X.
 apply istrunc_trunctype.
-Qed.
+Admitted.
 
 Definition truncn_unique n (A B : Trunk n) : A.1 = B.1 -> A = B.
   intro e. apply eq_dep_subset. intro. apply hprop_trunc. exact e.

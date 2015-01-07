@@ -42,6 +42,7 @@ Section Type_to_separated_Type.
   Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
 
 
+        
   Definition separated_Type (T:Trunk (trunc_S n)) : Type :=
     Im (λ t : pr1 T, λ t', nj.(O) (t = t'; istrunc_paths T.2 t t')).
 
@@ -52,7 +53,7 @@ Section Type_to_separated_Type.
     destruct T as [T TrT]; simpl in *.
     apply (@trunc_sigma _ (fun P => _)). 
     apply (@trunc_forall _ _ (fun P => _)). intro. 
-    exact (@subuniverse_Type_is_TrunkSn _ nj ua).
+    exact (@subuniverse_Type_is_TrunkSn _ nj).
     intro φ. exact (IsHProp_IsTrunc (istrunc_truncation _ _) n). 
   Defined.
 
@@ -92,7 +93,7 @@ Section Type_to_separated_Type.
   Definition separated_mono_is_separated (T U:Trunk (trunc_S n)) (H:separated U) (f: pr1 T -> pr1 U)
              (fMono : IsMonof f) : separated T
  :=
-    fun E χ x y => separated_mono_is_separated_ _ (H E χ (f o x) (f o y)) fMono.
+    fun E χ x y => separated_mono_is_separated_ _ _ _ (H E χ (f o x) (f o y)) fMono.
 
   Definition T_nType_j_Type_trunc (T:Trunk (trunc_S n)) : IsTrunc (trunc_S n) (pr1 T -> subuniverse_Type nj).
     apply (@trunc_forall _ _ (fun P => _)). intro. 
@@ -103,7 +104,7 @@ Section Type_to_separated_Type.
   Definition T_nType_j_Type_isSheaf : forall T, Snsheaf_struct (pr1 T -> subuniverse_Type nj;
                                                     T_nType_j_Type_trunc T).
     intro.
-    apply (dep_prod_SnType_j_Type (fun x:pr1 T => ((existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj ua));nType_j_Type_is_SnType_j_Type))).
+    apply (dep_prod_SnType_j_Type (fun x:pr1 T => ((existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj));nType_j_Type_is_SnType_j_Type))).
   Defined.
 
   Definition T_nType_j_Type_sheaf T : SnType_j_Type :=  ((pr1 T -> subuniverse_Type nj; T_nType_j_Type_trunc T); T_nType_j_Type_isSheaf _).
@@ -184,7 +185,7 @@ Section Type_to_separated_Type.
     /\ (Sect (kpsic_func_univ_func a b p X t) (kpsic_func_univ_inv a b p X t)).
     split.
     - intro x.
-      unfold kpsic_func_univ_inv, kpsic_func_univ_func, δ; simpl. unfold clδ, compose, δ in p; simpl in p.
+      unfold kpsic_func_univ_inv, kpsic_func_univ_func, δ; simpl. unfold clδ, δ in p; simpl in p.
       pose (foo := O_rec_O_rec nj
                      (a = t; istrunc_paths T.2 a t)
                      (b = t; istrunc_paths T.2 b t)
@@ -411,7 +412,7 @@ Section Type_to_separated_Type.
                                                                                                                   O_rec (a = b; istrunc_paths T .2 a b)
                                                                                                                         (O nj (b = a; istrunc_paths T .2 b a))
                                                                                                                         (λ v : a = b, O_unit nj (b = a; istrunc_paths T .2 b a) (v ^ @ u)) x)) 1).
-      unfold compose in foo; simpl in foo.
+
       apply (transport (λ u, u = _) foo^); clear foo.
 
       apply ap10.
@@ -421,7 +422,7 @@ Section Type_to_separated_Type.
       apply path_forall; intro v. simpl in v.
       transitivity (O_unit nj (b = a; istrunc_paths T .2 b a) (v ^)).
       apply ap. apply concat_p1.
-      unfold compose; simpl.
+
 
       pose (foo := kpsic_aux).
       specialize (foo (a = b; istrunc_paths T .2 a b) (b = a; istrunc_paths T .2 b a) v (equal_inverse a b)).
@@ -480,7 +481,7 @@ Section Type_to_separated_Type.
       apply path_forall; intro u. simpl in *.
 
       unfold δ; simpl.
-      unfold compose; simpl. destruct u.
+      destruct u.
       unfold ap10, pr1_path.
 
       transitivity (function_lift nj (a = b; istrunc_paths T.2 a b) (b = a; istrunc_paths T.2 b a) (transport idmap (equal_inverse a b)) (transport idmap (equiv_nj_inverse nj T a b) ^
@@ -530,7 +531,7 @@ Section Type_to_separated_Type.
         assert (bar := ap (equiv_inv (IsEquiv := isequiv_path_universe)) foo).
         unfold path_universe in bar.
         rewrite eissect in bar.
-        simpl in bar. unfold compose in bar; simpl in bar.
+        simpl in bar. 
 
         assert (baar := equal_equiv_inv bar). simpl in baar.
 
@@ -613,7 +614,7 @@ Section Type_to_separated_Type.
       apply hPullback_separated_unit_is_cl_diag.
     - exists path_type. simpl.
       intros i j [p q] [P X]. simpl.
-      unfold compose; simpl in *.
+      
       unfold path_type. simpl.
       unfold ap10, path_forall; rewrite eisretr.
       pose (rew := transport_path_universe_V_uncurried (hPullback_separated_unit_is_cl_diag T j) ).
@@ -675,7 +676,7 @@ Section Type_to_separated_Type.
                (@diagonal_pp T).
     intro X.
     pose (i := separated_Type_is_colimit_Cech_nerve T X); destruct i as [inv retr sect _];
-    unfold Sect, compose in *; simpl in *.
+    unfold Sect in *; simpl in *.
     
     unfold Cech_nerve_commute in *.
     refine (isequiv_adjointify _ _ _ _).
@@ -725,7 +726,7 @@ Section Type_to_separated_Type.
     - intros f.
       Opaque sep_eq_inv_lemma.
       apply path_forall; intro x. 
-      unfold compose; simpl.
+
       unfold sep_eq_inv.
       unfold equiv_inv.
       destruct (separated_Type_is_colimit_cl_diagonal_diagram P (Q.1).1) as [inv retr _ _].
@@ -736,7 +737,7 @@ Section Type_to_separated_Type.
       (x0 : ∃ y : P.1 ∧ hProduct P.1 i, (cl_char_hPullback' idmap i y).1),
                         f (fst x0.1); sep_eq_inv_lemma Q f)).
       exact (ap10 (apD10 (retr..1) 0) ((x,tt);tt)).
-    - intros f. unfold sep_eq_inv, compose; simpl.
+    - intros f. unfold sep_eq_inv; simpl.
       apply moveL_equiv_V.
       apply path_sigma' with 1. simpl.
       apply path_forall; intro i.
@@ -800,8 +801,6 @@ Section Type_to_separated_Type.
         unfold E_to_χ_map.
         destruct π as [π μ]. destruct π. simpl in *.
 
-        unfold compose.
-
         pose (@apD10_ap_precompose
                 (∃
               b0 : ∃ P0 : P.1 ∧ P.1 ∧ hProduct P.1 j,
@@ -846,18 +845,17 @@ Section Type_to_separated_Type.
         rewrite eissect. simpl.
         apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_universe)) _).
         rewrite eissect.
-        simpl; unfold compose; simpl.
+
         unfold equiv_path; simpl.
         apply equal_equiv.
         unfold kpsic_func_univ_func. simpl. 
         apply (@equiv_inj  _ _ _ (O_equiv nj _ _)).
         rewrite O_rec_retr.
         apply path_forall; intro y.
-        unfold compose; simpl.
         unfold δ; simpl.
           
         pose (p0 := ap10 (O_rec_retr (b1 = b1; istrunc_paths P.2 b1 b1) (O nj (b1 = x; istrunc_paths P.2 b1 x)) (λ v : b1 = b1, O_unit nj (b1 = x; istrunc_paths P.2 b1 x) (v^ @ y))) 1).
-        unfold compose in p0; simpl in p0.
+        simpl in p0.
         rewrite concat_1p in p0.
         etransitivity; try exact p0^. clear p0.
         apply ap.
@@ -892,7 +890,7 @@ Section Type_to_separated_Type.
     - intros e' e''. simpl in *.
       unfold equiv_adjointify.
 
-      unfold compose; simpl.
+
       apply path_forall; intro u. simpl.
       rewrite transport_pp.
 
@@ -903,7 +901,7 @@ Section Type_to_separated_Type.
       destruct u2. simpl.
 
       pose (dense_diag χ).
-      unfold incl_Aeq_Eeq, compose in p. simpl in p.
+      unfold incl_Aeq_Eeq in p. simpl in p.
       specialize (p (e'.1.1;e'.2)). simpl in p.
       assert (∃ e'0 : ∃ e0 : E, (χ e0).1, (e'.1).1 = e'0.1).
       refine (exist _ _ _).
@@ -916,18 +914,6 @@ Section Type_to_separated_Type.
       simpl in p. exact p.
   Defined.
 
-  (* Definition ap_exist (A B: Type) (P : A -> Type) (x:A) (f g:(∃ x, P x) -> B) (p: f=g) *)
-  (* : (ap (x:=f) (y:=g) (λ h : (∃ x, P x) -> B, h o exist P x) p) = (ap (x:=f) (y:=g) (λ h : (∃ x, P x) -> B, h o exist P x) p). *)
-
-  (*   pose ((ap (x:=f) (y:=g) (λ h : (∃ x0 : A, P x0) → B, h o pr1))). *)
-  (*   pose (ap10 (ap (x:=f) (y:=g) (λ h : (∃ x0 : A, P x0) → B, h o exist P x) p)). simpl in p0. *)
-  (*   unfold compose in *. *)
-  (*   transparent assert (X : (f o exist P x = g o exist P x)). *)
-  (*   unfold compose; simpl. *)
-  (*   apply path_forall; intro y. exact (ap10 p (x;y)). *)
-    
-  (* Qed. *)
-
   Definition separated_modality : Modality (trunc_S n).
     refine (Build_Modality _ separation_reflective_subuniverse _).
     intros A B. simpl in *.
@@ -935,7 +921,7 @@ Section Type_to_separated_Type.
     unfold separated.
     intros E χ f g. simpl in *.
     refine (isequiv_adjointify _ _ _ _).
-    - unfold E_to_χ_map; simpl. intros H. unfold compose in H; simpl in H.
+    - unfold E_to_χ_map; simpl. intros H. simpl in H.
       apply path_forall; intro x.
       refine (path_sigma _ _ _ _ _).
       apply (ap10 (f := (pr1 o f)) (g := (pr1 o g))).
@@ -961,7 +947,7 @@ Section Type_to_separated_Type.
       specialize (p (λ z, transport (λ u, (B (g u).1).1.1) z.2 (g z.1).2)).
 
       pose (X := λ X, (ap10 (equiv_inv (IsEquiv := p) X) (x;1))); simpl in X; apply X. clear X.
-      unfold E_to_χ_map, compose; simpl.
+      unfold E_to_χ_map; simpl.
       apply path_forall; intros [[a b] c]; simpl in *.
       apply ap. clear b.
 
@@ -980,9 +966,11 @@ Section Type_to_separated_Type.
       pose (eisretr _ (IsEquiv := sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1)) (path_forall (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1)
            (λ x0 : ∃ b : E, (χ b).1, (g x0.1).1)
            (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 H y)))).
-      unfold Sect, equiv_inv, E_to_χ_map, compose in p0.
-      apply (transport (λ u, ap10 u _ = _) p0^).
-      exact (apD10 (eisretr (apD10 (f:=(λ x0 : ∃ b : E, (χ b).1, (f x0.1).1)) (g:=(λ x0 : ∃ b : E, (χ b).1, (g x0.1).1))) (IsEquiv := isequiv_apD10 _ _ (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1) (λ x0 : ∃ b : E, (χ b).1, (g x0.1).1)) (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 H y))) (a;c)).
+      unfold Sect, equiv_inv, E_to_χ_map in p0.
+      pose (p1 := ap (λ u, ap10 u (a;c)) p0). simpl in p1.
+      etransitivity; [exact p1 |
+      (* apply (transport (λ u, ap10 u _ = _) p0^). *)
+      exact (apD10 (eisretr (apD10 (f:=(λ x0 : ∃ b : E, (χ b).1, (f x0.1).1)) (g:=(λ x0 : ∃ b : E, (χ b).1, (g x0.1).1))) (IsEquiv := isequiv_apD10 _ _ (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1) (λ x0 : ∃ b : E, (χ b).1, (g x0.1).1)) (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 H y))) (a;c))].
       
     - intro p. unfold E_to_χ_map in *; simpl in *.
       apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
@@ -995,7 +983,6 @@ Section Type_to_separated_Type.
       apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_sigma))).
       apply isequiv_inverse.
       rewrite eissect. simpl.
-      unfold compose in *.
       unfold pr1_path, pr2_path.
       pose (help := (@exist
         _
@@ -1105,7 +1092,7 @@ Section Type_to_separated_Type.
         pose (p0 := eisretr _ (IsEquiv := sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1)) (path_forall (λ x : ∃ b : E, (χ b).1, (f x.1).1)
            (λ x : ∃ b : E, (χ b).1, (g x.1).1)
            (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 p y)))).
-        unfold Sect, equiv_inv, E_to_χ_map, compose in p0. unfold compose; simpl.
+        unfold Sect, equiv_inv, E_to_χ_map in p0. 
         apply (transport (λ u, ap10 u e = _) p0^).
         exact (apD10 (eisretr (apD10 (f:=(λ x0 : ∃ b : E, (χ b).1, (f x0.1).1)) (g:=(λ x0 : ∃ b : E, (χ b).1, (g x0.1).1))) (IsEquiv := isequiv_apD10 _ _ (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1) (λ x0 : ∃ b : E, (χ b).1, (g x0.1).1)) (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 p y))) e). }
       { destruct e as [a c]. simpl in *.
@@ -1157,7 +1144,7 @@ Section Type_to_separated_Type.
         repeat rewrite transport_paths_FlFr.
         repeat rewrite ap_const.
         repeat rewrite ap_idmap. simpl.
-        unfold E_to_χ_map, compose. simpl.
+        unfold E_to_χ_map. simpl.
         repeat rewrite concat_p1.
         rewrite concat_p_pp.
 
@@ -1169,8 +1156,10 @@ Section Type_to_separated_Type.
         rewrite concat_p1.
         apply ap.
         rewrite concat_p_pp.
-        apply whiskerR.
-        rewrite ap_V.
+        apply whiskerR. simpl.
+        (* apply whiskerL. simpl. *)
+        rewrite inv_V.
+        (* rewrite ap_V. *)
         reflexivity.
       }
     - intro p.
@@ -1183,24 +1172,7 @@ Section Type_to_separated_Type.
 
       refine (path_sigma' _ _ _).
       { destruct p. simpl.
-        
-        
         refine (apD10 _ _). intro y; reflexivity.
-        (* path_via (ap10 (idpath (pr1 o f))). *)
-        (* apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_ap10 _ _)) _). *)
-        (* pose (equiv := sepA E χ (pr1 o f) (pr1 o f)). *)
-        (* path_via (((ap (E_to_χ_map A χ))^-1 *)
-        (*    (path_forall (E_to_χ_map A χ (pr1 o f))  *)
-        (*                 (E_to_χ_map A χ (pr1 o f)) (λ y : ∃ b : E, (χ b).1, 1)))). *)
-        (* apply eissect. *)
-
-        
-        (* path_via (idpath (pr1 o f)). *)
-        (* apply moveR_equiv_V. simpl. apply path_forall_1. *)
-        (* symmetry. apply eissect. *)
-
-        
-
         
         unfold equiv_inv.
         path_via (ap10 ((let (equiv_inv, eisretr, eissect, _) :=
@@ -1265,20 +1237,18 @@ Section Type_to_separated_Type.
           unfold ap10 at 2. unfold path_forall at 3. rewrite eisretr.
           apply path_forall; intros [[b p] c]. simpl in *. destruct p. simpl.
           
-                                                                            
-          (* repeat rewrite transport_paths_FlFr. *)
-          (* hott_simpl. *)
           unfold E_to_χ_map.
-          rewrite ap10_ap_precompose. simpl.
+          simpl.
+          match goal with
+            |[|- _ = ap10 (ap _ ?X) ?Y] => 
+          apply (transport (λ U, _ = U) (ap10_ap_precompose (C := ((B (f b).1).1).1) (pr1 : {e:(∃ e' : E, e' = b) & (χ e.1).1} -> (∃ e' : E, e' = b)) X Y)^) end.
           rewrite (eisretr ap10). simpl.
           hott_simpl.
-          (* rewrite ap_V. rewrite inv_V. *)
+
           apply ap.
-          unfold compose; simpl.
           repeat rewrite transport_paths_FlFr.
           hott_simpl.
-          rewrite ap_V. rewrite inv_V.
-          unfold compose; simpl.
+          
           rewrite concat_pp_p.
           apply moveR_Vp.
           apply moveL_pM.
@@ -1292,17 +1262,9 @@ Section Type_to_separated_Type.
           pose (apD10_ap_precompose (pr1 : {e:E & (χ e).1} -> E) foo (b;c))^.
           simpl in p.
           rewrite p. clear p. unfold foo; clear foo.
-          
-          apply (transport (λ U, _ = _ @ U) (apD10_V (ap (λ h : ∀ x : E, (f x).1 = (f x).1, h oD pr1)
-         ((ap ap10
-             (ap
-                (let (equiv_inv, eisretr, eissect, _) :=
-                     sepA E χ (λ x : E, (f x).1) (λ x : E, (f x).1) in
-                 equiv_inv) (eissect apD10 1)) @
-           ap apD10
-             (eissect
-                (ap (λ (f0 : E → A.1) (x : ∃ b0 : E, (χ b0).1), f0 x.1)) 1 @
-                (eissect apD10 1)^)) @ eisretr apD10 (λ v : E, 1))) (b;c))).
+          match goal with
+              |[|- _ = _ @ (apD10 ?X ?Y)^] => 
+          apply (transport (λ U, _ = _ @ U) (apD10_V X Y)) end.
           rewrite concat_pp_p.
           apply (transport (λ U, _ = _ @ U) (apD10_pp (eisretr apD10 (λ y : ∃ b0 : E, (χ b0).1, 1)) (ap (λ h : ∀ x : E, (f x).1 = (f x).1, h oD pr1)
          ((ap ap10
@@ -1362,7 +1324,7 @@ Section Type_to_separated_Type.
           repeat rewrite ap_pp.
           (* repeat rewrite <- ap_compose. *)
           repeat rewrite apD10_pp.
-          unfold compose; simpl. unfold E_to_χ_map, compose; simpl.
+          simpl. unfold E_to_χ_map; simpl.
           repeat rewrite concat_p_pp.
           symmetry.
           match goal with
@@ -1399,103 +1361,17 @@ Section Type_to_separated_Type.
       }
   Defined.
 
-  
-  Lemma separated_lex : IsLex (separated_modality).
-    intros X x y C.
-    (* intros X x y [[c Tc] p]. *)
-    (* simpl in *. *)
-    Arguments trunc_succ {n} A H {x y}.
+  Lemma IsTrunc_n_paths_IsTrunc_Sn (X:Type) (m:trunc_index)
+  : (forall x y:X, IsTrunc m (x=y)) -> IsTrunc m.+1 X.
+    revert X.
+    induction m.
+    intros X H.
+    apply hprop_allpath.
+    intros x y. exact (center _ (H x y)).
+    intros X H.
+    intros x y. simpl. unfold IsTrunc in *.
+  Abort.
 
-    pose (X0 := λ u v:X.1, path_contr (Contr0 := C) (separated_unit X u) (separated_unit X v) ).
-    unfold path_contr in X0.
-    unfold separated_unit, toIm, separated_Type, Im, Overture.hfiber in *; simpl in *.
-    
-    destruct C as [[c Tc] p]. simpl in *.
-
-    assert (Contr X.1).
-    generalize dependent Tc.
-    refine (@Trunc_ind (-1) _ _ _ _).
-    intros [a q] p.
-    destruct q.
-    refine (BuildContr _ _ _).
-    exact a.
-    intro u.
-    pose (X0 := @path_contr (separated_Type X) (BuildContr _ (λ t' : X.1, O nj (a = t'; istrunc_paths X.2 a t'); tr (a; 1)) p) (separated_unit X a) (separated_unit X u)).
-    unfold separated_unit, toIm, separated_Type, Im, Overture.hfiber in *; simpl in *.
-    pose (X01 := X0..1); pose (X02 := X0..2). unfold path_contr in *; simpl in *.
-    unfold X0 in X01, X02. simpl in *.
-
-    assert (tr (a) = tr (n:=-1) (u) -> a = u).
-    intro H. destruct H.
-
-    unfold pr1_path in X02.
-    rewrite ap_pp in X02.
-    rewrite transport_pp in X02.
-    simpl in *.
-    
-    pose proof (moveL_transport_V _ _ _ _ X02).
-    pose ((ap pr1
-              (p (λ t' : X.1, O nj (a = t'; istrunc_paths X.2 a t'); tr (a; 1)))^)). simpl in p0.
-    pose ((p (λ t' : X.1, O nj (u = t'; istrunc_paths X.2 u t'); tr (u; 1)))). simpl.
-    
-
-    pose (transport_pp (λ
-           b : X.1
-               → ∃ T : Trunk sheaf_def_and_thm.n, (subuniverse_HProp nj T).1,
-           Trunc (-1)
-             (∃ x0 : X.1,
-                (λ t' : X.1, O nj (x0 = t'; istrunc_paths X.2 x0 t')) = b))
-                       ((p (λ t' : X.1, O nj (a = t'; istrunc_paths X.2 a t'); tr (a; 1)))^)
-                       (p (λ t' : X.1, O nj (u = t'; istrunc_paths X.2 u t'); tr (u; 1)))
-
-
-    
-    pose (X1 := ap10 X0).
-
-    assert (separated_unit X a = separated_unit X u).
-    
-
-    generalize dependent Tc.
-    refine (@Trunc_ind (-1)
-                     (Overture.hfiber (λ t t' : X.1, O nj (t = t'; istrunc_paths X.2 t t')) c)
-                     (λ Tc, (∀ y0 : separated_Type X, (c; Tc) = y0)
-                            → Contr
-                                (separated_Type (x = y; @trunc_succ n (x = y) (istrunc_paths X.2 x y)))) _ _).
-    intros [a q]. intro p.
-    destruct q. simpl in *.
-    unfold separated_Type, Im, Overture.hfiber in *; simpl in *.
-      
-    assert ((O nj (x = y ;(istrunc_paths X.2 x y)) ).1.1).
-    {
-
-
-
-      
-      specialize (p (λ u : X.1, O nj (x = u; istrunc_paths X.2 x u); tr (x; 1))).
-      pose (pp := (ap10 p..1 y)..1..1). simpl in pp.
-      apply (transport idmap pp).
-      apply O_unit.
-      reflexivity.
-
-      intro u. simpl in *.
-      unfold pr1_path.
-      transport_idmap_ap
-      pose (p (λ u : X.1, O nj (y = u; istrunc_paths X.2 y u); tr (y; 1))).
-      pose (pp := (ap10 p0..1 a)..1..1). simpl in pp.
-
-
-    }
-      
-      
-          
-          
-
-
-        
-
-      refine (@path_sigma' _ _ _ _ _ _ _ _ ).
-      
-    
   (**** From separated to sheaf ****)
 
   Definition closure_naturality_fun
@@ -1544,11 +1420,12 @@ Section Type_to_separated_Type.
 
     pose (rew2 := ap10 (eissect _ (IsEquiv := nj.(O_equiv) (hfiber m b0; Trm b0) (nj.(O) (nsub_to_char n (A; (m; Trm)) b0))) (λ x, x)) Hb0).
 
-    unfold nsub_to_char, hfiber, compose in *; simpl in *.
+    unfold nsub_to_char, hfiber in *; simpl in *.
 
     unfold O_rec; simpl.
 
     apply path_sigma' with (p := path_sigma' (λ x:E, (cloture (λ b : E, (∃ x : A, m x = b; Trm b)) x) .1) (@idpath _ b0) (rew1 @ rew2)).
+    simpl in *.
     destruct (rew1 @ rew2); simpl. reflexivity.
   Defined.
 
@@ -1647,7 +1524,7 @@ Section Type_to_separated_Type.
                                (P:=λ b : HProp,
                                          pr1 ((pr1 (P:=λ P : HProp, pr1 (is_classical P)) o Oj) b))
                                o χ)) -> pr1 (pr1 B)) -> E -> pr1 (pr1 B))
-             (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ:=χ)))
+             (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ)))
              (Y := inv_B (m o X) : E -> pr1 (pr1 B))
     := (λ b, (pr1 b ; (X b ; (inverse (ap10 (retr_B (m o X)) b)))))  : {b : E & pr1 (pr1 (χ b))} -> {b : E & hfiber m (Y b)}.
 
@@ -1667,7 +1544,7 @@ Section Type_to_separated_Type.
                                (P:=λ b : HProp,
                                          pr1 ((pr1 (P:=λ P : HProp, pr1 (is_classical P)) o Oj) b))
                                o χ)) -> pr1 (pr1 B)) -> E -> pr1 (pr1 B))
-             (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ:=χ)))
+             (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ)))
              (Y := inv_B (m o X) : E -> pr1 (pr1 B))
 
     := cloture_fun χ (λ x, (hfiber m (Y x); X1 (Y x))) (λ e p, pr2 (E_to_Y'A _ _ closed0 _ X0 retr_B (e;p)))
@@ -1690,14 +1567,14 @@ Section Type_to_separated_Type.
                           (P:=λ b : HProp,
                                     pr1 ((pr1 (P:=λ P : HProp, pr1 (is_classical P)) o Oj) b))
                           o χ)) -> pr1 (pr1 B)) -> E -> pr1 (pr1 B))
-        (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ:=χ)))
+        (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ)))
         (Y := inv_B (m o X) : E -> pr1 (pr1 B))
   : forall (b : {e : E & pr1 (pr1 (χ e))}), 
       pr2 (clE_to_clY'A _ _ closed0 _ X0 retr_B (pr1 b ; nj.(O_unit) (pr1 (pr1 (χ (pr1 b))); IsHProp_IsTrunc (pr2 (pr1 (χ (pr1 b)))) n0) (pr2 b))) = O_unit nj ({x : pr1 A & m x = Y (pr1 b)}; X1 (Y (pr1 b))) (pr2 (E_to_Y'A _ _ closed0 _ X0 retr_B b)).
   Proof.
     unfold clE_to_clY'A. intro b.
     pose (foo := cloture_fun_restriction χ (λ x, (hfiber m (Y x); X1 (Y x))) (λ e p, pr2 (E_to_Y'A _ _ closed0 _ X0 retr_B (e;p))) b).
-    unfold Y, hfiber, compose in *.
+    unfold Y, hfiber in *.
     rewrite <- (eta_sigma (A:=E) (P:=λ x, ((χ x) .1) .1) b).
     apply foo.
   Defined.
@@ -1732,13 +1609,12 @@ Section Type_to_separated_Type.
              (χ : E -> J)
              (eq := snd (pr2 B) E χ)
 
-  : Sect (@closed_to_sheaf_inv A B m closed E χ) (E_to_χmono_map A (χ:=χ)).
+  : Sect (@closed_to_sheaf_inv A B m closed E χ) (E_to_χmono_map A (χ)).
     intro X.
     destruct m as [m Trm].
     apply path_forall; intro b.
-    unfold closed_to_sheaf_inv, E_to_χmono_map, nsub_to_char, compose, hfiber in *; simpl in *.
+    unfold closed_to_sheaf_inv, E_to_χmono_map, nsub_to_char, hfiber in *; simpl in *.
     destruct (snd B.2 E χ) as [inv_B retr_B sect_B adj_B].
-
 
     destruct (closed (inv_B (λ t : {b0 : E & pr1 (pr1 (P:= (λ b1:HProp, ~ ~ (pr1 b1))) (χ b0))}, m (X t)) (pr1 b))) as [inv_closed retr_closed sect_closed adj_closed].
 
@@ -1752,15 +1628,15 @@ Section Type_to_separated_Type.
                    (nsub_to_char n (pr1 A; (m; Trm))
                                  (inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X t))
                                         (pr1 b))))) (λ x, x))).
-    unfold Sect, E_to_χ_map, nsub_to_char, hfiber, O_rec, compose in *; simpl in *.
+    unfold Sect, E_to_χ_map, nsub_to_char, hfiber, O_rec in *; simpl in *.
     rewrite rew1; clear rew1.
 
     pose (foo := (@equalpr2_restriction_χ A B m Trm closed E χ X (pr1 b) inv_B retr_B b)).
-    unfold clE_to_clY'A, E_to_Y'A, O_rec, hfiber, compose in foo; simpl in foo.
-    unfold Sect, E_to_χ_map, nsub_to_char, hfiber, O_rec, compose in *; simpl in *.
+    unfold clE_to_clY'A, E_to_Y'A, O_rec, hfiber in foo; simpl in foo.
+    unfold Sect, E_to_χ_map, nsub_to_char, hfiber, O_rec in *; simpl in *.
 
     pose (bar := j_is_nj_unit ((χ b .1) .1) (b.2)).
-    unfold Oj_unit, transport, Sect, E_to_χ_map, nsub_to_char, hfiber, O_rec, compose in *; simpl in *.
+    unfold Oj_unit, transport, Sect, E_to_χ_map, nsub_to_char, hfiber, O_rec in *; simpl in *.
     
     assert ((λ k : ~ ((χ b .1) .1) .1, k b .2) = (χ b .1) .2).
       apply path_forall; intro x.
@@ -1780,7 +1656,8 @@ Section Type_to_separated_Type.
                          (y:=_).
    
     exact (inverse foo).
-    rewrite sect_closed.
+    rewrite (eissect _ (IsEquiv := closed (inv_B (m o X) (let (proj1_sig, _) := b in proj1_sig)))).
+    (* rewrite sect_closed. *)
     reflexivity.
   Defined.
 
@@ -1793,11 +1670,11 @@ Section Type_to_separated_Type.
              (χ : E -> J)
              (eq := snd (pr2 B) E χ)
 
-  : Sect (E_to_χmono_map A (χ:=χ)) (@closed_to_sheaf_inv A B m closed E χ).
+  : Sect (E_to_χmono_map A (χ)) (@closed_to_sheaf_inv A B m closed E χ).
     destruct m as [m Trm].
     intro X; unfold closed_to_sheaf_inv; simpl in *.
     apply path_forall; intro b.
-    unfold E_to_χmono_map, nsub_to_char, compose, hfiber, O_rec in *; simpl in *.
+    unfold E_to_χmono_map, nsub_to_char, hfiber, O_rec in *; simpl in *.
     destruct (snd B.2 E χ) as [inv_B retr_B sect_B adj_B].
     destruct (closed (inv_B (λ t : {b0 : E & pr1 (pr1 (P:= (λ b1:HProp, ~ ~ (pr1 b1))) (χ b0))}, m (X (pr1 t))) b)) as [inv_closed retr_closed sect_closed adj_closed].
 
@@ -1818,7 +1695,7 @@ Section Type_to_separated_Type.
     apply transport with
       (x := O_unit nj ({x : A .1 | m x = Y b}; Trm (Y b)) (X b; inverse (foo b))) (y:=_).
   
-    unfold E_to_χ_map, nsub_to_char, hfiber, O_rec, Y, compose in *; simpl in *.
+    unfold E_to_χ_map, nsub_to_char, hfiber, O_rec, Y in *; simpl in *.
    
     pose (h := (λ e, (X e; inverse (foo e))) : ∀ e : E, {x : A .1 | m x = inv_B (λ t : {b : E | ((χ b) .1) .1}, m (X t .1)) e}).
     assert ((∀ (e : E) (X0 : ((χ e) .1) .1),
@@ -1829,7 +1706,7 @@ Section Type_to_separated_Type.
                       (e; X0))) = h e)).
       intros; unfold h, foo. apply path_sigma' with (p := idpath); simpl.
       apply ap.
-      clear eq. specialize (adj_B (m o X)). unfold compose in adj_B.
+      clear eq. specialize (adj_B (m o X)). 
       apply (transport (λ x:((λ (f : E -> (B .1) .1) (t : {b0 : E | ((χ b0) .1) .1}), f t .1)
          (inv_B (λ t : {b0 : E | ((χ b0) .1) .1}, m (X t .1))) =
        (λ t : {b0 : E | ((χ b0) .1) .1}, m (X t .1))), ((ap10  x (e; X0)) = (ap10  (sect_B (λ t : E, m (X t))) e))) (inverse adj_B)).
@@ -1837,8 +1714,12 @@ Section Type_to_separated_Type.
       exact (@ap_equalf {b0 : E | ((χ b0) .1) .1} ((B .1) .1) E (inv_B (λ t : {b : E | ((χ b) .1) .1}, (λ t0 : E, m (X t0)) t .1)) (λ t : E, m (X t)) (e;X0) (sect_B (λ t : E, m (X t))) pr1).
 
     exact (inverse (@cloture_fun_ E χ (λ x, (hfiber m (Y x); Trm (Y x))) (λ e p, pr2 (E_to_Y'A _ _ closed _ b retr_B (e;p))) (λ b, match j_is_nj (χ b) .1 in (_ = y) return y with | 1%path => (χ b) .2 end) h X0 b)).
-    
-    rewrite sect_closed.
+
+    rewrite (eissect _ (IsEquiv := closed
+       (inv_B
+          (λ x : ∃ b0 : E, (let (proj1_sig, _) := χ b0 in proj1_sig).1,
+           m (X (let (proj1_sig, _) := x in proj1_sig))) b))).
+    (* rewrite sect_closed. *)
     reflexivity.
   Defined.
 
@@ -1854,7 +1735,6 @@ Section Type_to_separated_Type.
 
     assert (((ap (λ u0 : A → C, f o u0))^-1 o (ap (λ x : B → D, x o φ) o (ap (λ u0 : B → C, f o u0) (x:=u) (y:=v)))) = (ap (λ x : B → C, x o φ))).
     apply path_forall; intro p.
-    unfold compose; simpl.
     apply (@equiv_inj _ _ _ (Monof_f A (u o φ) (v o φ))). rewrite eisretr.
     destruct p; reflexivity.
 
@@ -1947,10 +1827,11 @@ Section Type_to_separated_Type.
     - intro p. apply path_sigma' with p. 
       refine (path_ishprop _ _). apply IsMono_IsHProp_cloture. exact Monom.
     - intro p. simpl. destruct p. simpl.
-      destruct (path_ishprop px py). reflexivity.
+      unfold path_ishprop.
+      destruct (center (px = py)). reflexivity.
     - intro p.
       unfold path_sigma'. simpl.
-      pose (IsMono_IsHProp_cloture Monom y).
+      pose (IsMono_IsHProp_cloture _ Monom y).
       apply eta'_path_sigma. apply path_ishprop.
   Qed.
 
@@ -1958,7 +1839,6 @@ Section Type_to_separated_Type.
   : IsMono (cloture' (m;mono_is_hfiber Monom)).2.1.
     unfold cloture', cloture, nsub_to_char, nchar_to_sub; simpl.
     pose (@IsMono_cloture T (λ b0 : T, (hfiber m b0; mono_is_hfiber Monom (b:=b0)))).
-    unfold compose in *; simpl in *.
     refine (i _).
     apply IsEmbedding_IsMono.
     intro x. unfold Overture.hfiber. simpl.
@@ -1995,9 +1875,11 @@ Section Type_to_separated_Type.
   Defined.
 
   Definition sheafification_trunc (T:Trunk (trunc_S n)) : Trunk (trunc_S n) :=
-    (sheafification_Type T ; sheafification_istrunc  (T:=T)). 
+    (sheafification_Type T ; sheafification_istrunc  (T:=T)).
 
   Definition sheafification_ (T:Trunk (trunc_S n)) : Snsheaf_struct (sheafification_trunc T)
+    
+    
     := separated_to_sheaf (((existT (IsTrunc (trunc_S n)) (separated_Type T) (separated_Type_is_Trunk_Sn (T:=T)))); @separated_Type_is_separated T) (T_nType_j_Type_sheaf T) (IsMono_fromIm (f:=_)).
 
   Definition sheafification (T:Trunk (trunc_S n)) : SnType_j_Type :=

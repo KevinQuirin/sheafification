@@ -62,7 +62,7 @@ Section Lemmas.
 
     Lemma gt_0_succ (n:nat) : (0 < n) -> {m : nat & S m = n}.
       induction n.
-      - intro H. destruct H. exists n; reflexivity.
+      - intro H. destruct H. exists 0; reflexivity.
         exists m; reflexivity.
       - intro H.
         exists n; reflexivity.

@@ -80,6 +80,53 @@ Section Reflective_Subuniverse_base_case.
 
 End Reflective_Subuniverse_base_case.
 
+Section HProp_sheaves.
+
+  Context `{fs : Funext}.
+
+  (* If T is a modal type, then [IsTrunc p T] is a HProp-sheaf *)
+  Lemma is_classical_IsTrunc
+        (m p: trunc_index)
+        (mod : Modality (m.+1))
+        (subU := underlying_subu _ mod)
+        (j_is_subU : forall P, (j P).1 = (subU.(O) (P.1; IsHProp_IsTrunc P.2 m)).1.1)
+        (j_is_subU_unit : forall P x ,
+                            transport idmap (j_is_subU P) (Oj_unit P x) = subU.(O_unit) (P.1; IsHProp_IsTrunc P.2 m) x)
+  : forall (T : subuniverse_Type subU), (subuniverse_HProp subuniverse_Prop (existT (IsTrunc -1) (IsTrunc p.+1 T.1.1) (hprop_trunc _ _))).1.
+    
+    induction p.
+    - intros T X. apply hprop_allpath. intros x y.
+      revert X.
+      transparent assert (sheaf : (subuniverse_Type subU)).
+      { repeat refine (exist _ _ _).
+        exact (x = y).
+        apply istrunc_paths. apply trunc_succ. exact T.1.2.
+        apply subuniverse_paths. }
+      pose (rew := j_is_subU (IsHProp T.1.1; hprop_trunc _ _)). simpl in rew.
+      simpl.
+      rewrite rew; clear rew.
+      
+      apply (O_rec _ sheaf). unfold sheaf; clear sheaf.
+      intros X; simpl in *. apply path_ishprop.
+    - simpl in *. intros T X.
+      unfold IsTrunc in *.
+      intros x y.
+      transparent assert (sheaf : (subuniverse_Type subU)).
+      { repeat refine (exist _ _ _).
+        exact (x = y).
+        apply istrunc_paths. apply trunc_succ. exact T.1.2.
+        apply subuniverse_paths. }
+      specialize (IHp sheaf).
+      unfold sheaf in *; clear sheaf. apply IHp.
+      simpl in *.
+      intros f.
+      apply X. intro H.
+      apply f.
+      exact (H x y).
+  Defined.
+  
+End HProp_sheaves.
+
 Section J.
   
   Context `{ua: Univalence}.

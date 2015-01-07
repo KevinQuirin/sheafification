@@ -58,7 +58,7 @@ Section Embeddings.
     intro H. intros x y.
     unfold IsMonof in H.
     specialize (H A). specialize (H (fun _ => x) (fun _ => y)).
-    destruct H as [inv retr sect _]. unfold compose in inv.
+    destruct H as [inv retr sect _]. 
     refine (isequiv_adjointify _ _ _ _).
     - intro H.
       refine (apD10 (f := λ _, x) (g := λ _, y) (inv _) _).

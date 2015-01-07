@@ -52,14 +52,14 @@ Defined.
 Theorem cl_char_hPullback_is_' {X Y:Trunk (trunc_S n)} (f:Y.1 -> X.1) (k:nat) (P:hProduct Y.1 k.+1) : cl_char_hPullback f k P = cl_char_hPullback' f k P.
   apply truncn_unique. exact fs.
   induction k.
-  - simpl. unfold cl_char_hPullback, cloture, compose. simpl.
+  - simpl. unfold cl_char_hPullback, cloture. simpl.
     symmetry.
     pose (p := (O_modal ((Unit;trunc_unit n); subuniverse_unit nj))..1..1).
     etransitivity; try exact p.
     repeat apply (ap pr1). apply ap.
     apply path_sigma' with 1.
     apply path_ishprop.
-  - simpl. unfold cl_char_hPullback, cloture, compose in *. simpl in *.
+  - simpl. unfold cl_char_hPullback, cloture in *. simpl in *.
     specialize (IHk (snd P)).
     pose subuniverse_product'.
     rewrite <- IHk.
@@ -69,9 +69,9 @@ Defined.
 
 Theorem cl_char_hPullback_is_'_1 {X Y:Trunk (trunc_S n)} (f:Y.1 -> X.1) (k:nat) (P:hProduct Y.1 k.+1) : (cl_char_hPullback f k P).1 = (cl_char_hPullback' f k P).1.
   induction k.
-  - simpl. unfold cl_char_hPullback, cloture, compose. simpl.
+  - simpl. unfold cl_char_hPullback, cloture. simpl.
     apply OUnit_is_Unit. exact ua. exact fs.
-  - simpl. unfold cl_char_hPullback, cloture, compose in *. simpl in *.
+  - simpl. unfold cl_char_hPullback, cloture in *. simpl in *.
     specialize (IHk (snd P)).
     pose subuniverse_product'.
     apply (transport (λ U, _ = _ * U) IHk).
@@ -98,14 +98,14 @@ Lemma cl_char_hPullback'_is_dense (X Y:Trunk (trunc_S n)) (f : Y.1 -> X.1) (k:na
   (* exact ((hProduct Y.1 k.+1)). *)
   exact ((char_hPullback _ f k X.2 Y.2)).
   (* apply path_universe_uncurried. *)
-  unfold compose; intro x; simpl.
+  intro x; simpl.
   apply (cl_char_hPullback_is_'_1 f k).
 Defined.
   
 Lemma density_lemma_hPullback (X Y:Trunk (trunc_S n)) (f : Y.1 -> X.1) (k:nat) (x : ∃ P : Y.1 ∧ hProduct Y.1 (S k), (cl_char_hPullback' f (S k) P).1) (u : (char (cl_char_hPullback'_is_dense X Y f (S k)) x).1)
       : (fst x.2) = O_unit nj (f (fst x.1) = f (fst (snd x.1)); istrunc_paths X.2 (f (fst x.1)) (f (fst (snd x.1)))) (fst u.1).
   destruct x as [x [q q']]; destruct u as [[π π'] u]; simpl in *.
-  assert (v := moveR_transport_p _ _ _ _ u).
+  assert (v := moveR_transport_p idmap _ _ _ u).
   clear u.
   etransitivity; try exact (ap fst v)^.
   clear v.

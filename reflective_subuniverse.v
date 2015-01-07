@@ -6,7 +6,11 @@ Set Universe Polymorphism.
 Global Set Primitive Projections.
 Set Implicit Arguments.
 
-Definition subu_family := Unit : Type3le@{u a i}.
+Definition subu_family := Unit@{a} : Type@{a}.
+Set Printing Universes.
+
+Definition Trunk (n:trunc_index) := @sig@{i' i} (Type2le@{i a}) (IsTrunc@{i} n) : Type@{i'}.
+Definition HProp := Trunk -1.
 
 Module Type subuniverse_struct.
   (* Definition 7.7.1 *)
@@ -15,19 +19,19 @@ Module Type subuniverse_struct.
   Definition n := trunc_S n0.
   
   (* Parameter subu_family : Type2le@{u a}. *)
+  Set Printing Universes.
   
+  Parameter subuniverse_HProp : forall (sf : subu_family@{a}) (T:Trunk@{i' i a} n), HProp@{i' i a}.
   
-  Parameter subuniverse_HProp : forall (sf : subu_family@{u a i}) (T:Trunk@{a i} n), HProp@{u i}.
-  
-  Parameter O : forall (sf : subu_family@{u a i}), Trunk@{a i} n -> Trunk@{a i} n.
+  Parameter O : forall (sf : subu_family@{a}), Trunk@{i' i a} n -> Trunk@{i' i a} n.
 
-  Parameter subuniverse_O : forall (sf : subu_family@{u a i}) (T:Trunk@{a i} n),
-                                   (subuniverse_HProp@{u a i} sf (O@{u a i} sf T)).1.
+  Parameter subuniverse_O : forall (sf : subu_family@{a}) (T:Trunk@{i' i a} n),
+                                   (subuniverse_HProp@{a i' i} sf (O@{a i' i} sf T)).1.
   
-  Parameter O_unit : forall (sf : subu_family@{u a i}), forall T:Trunk@{a i} n, T.1 -> (O@{u a i} sf T).1.
+  Parameter O_unit : forall (sf : subu_family@{a}), forall T:Trunk@{i' i a} n, T.1 -> (O@{a i' i} sf T).1.
   
-  Parameter O_equiv : forall (sf : subu_family@{u a i}), forall (P : Trunk@{a i} n) (Q : Trunk@{a j} n) (modQ : (subuniverse_HProp@{u a j} sf Q).1),
-                        IsEquiv@{i j} (fun f : (O@{u a i} sf P).1 -> Q.1 => f o (O_unit@{u a i} sf P)).
+  Parameter O_equiv : forall (sf : subu_family@{a}), forall (P : Trunk@{i' i a} n) (Q : Trunk@{j' j a} n) (modQ : (subuniverse_HProp@{a j' j} sf Q).1),
+                        IsEquiv@{i j} (fun f : (O@{a i' i} sf P).1 -> Q.1 => f o (O_unit@{a i' i} sf P)).
   
 End subuniverse_struct.
 
@@ -38,7 +42,7 @@ Module Reflective_Subuniverse (subU : subuniverse_struct).
   (* Generalizable Variables n. *)
 
   (* Variable subU : subuniverse_struct n. *)
-  (* Variable (sf : subu_family@{u a}). *)
+  (* Variable (sf : subu_family@{a}). *)
   (* Generalizable Variable sf. *)
   Definition sf := tt : subu_family. 
   
@@ -54,7 +58,7 @@ Module Reflective_Subuniverse (subU : subuniverse_struct).
     intro T. apply IsHProp_IsTrunc. apply (pr2 ((subuniverse_HProp) sf T)).
   Defined.
 
-  Definition O_rec (P : Trunk@{a i} n) (Q : Trunk@{a j} n) (modQ : (subuniverse_HProp@{u a j} sf Q).1) :
+  Definition O_rec (P : Trunk@{i' i a} n) (Q : Trunk@{j' j a} n) (modQ : (subuniverse_HProp@{a j' j} sf Q).1) :
     (P.1 -> Q.1) -> ((O) sf P).1 -> Q.1 := 
     (@equiv_inv _ _ _ ((O_equiv sf) _ _ modQ)).
 
@@ -181,7 +185,7 @@ Module Reflective_Subuniverse (subU : subuniverse_struct).
   Lemma reflect_factoriality_post  
         (X Y:Trunk n)
         (Z : Trunk n)
-        (modZ : (subuniverse_HProp@{u a j} sf Z).1)
+        (modZ : (subuniverse_HProp sf Z).1)
         (* (Z:subuniverse_Type) *)
         (g:Y.1 -> Z.1)
         (f:X.1 -> Y.1)
@@ -338,8 +342,8 @@ Module Reflective_Subuniverse (subU : subuniverse_struct).
 (* Things *)
 
   Lemma O_rec_O_rec_dep_retr
-        (A: Trunk@{i a} n)
-        (B: A.1 -> Trunk@{i a} n)
+        (A: Trunk n)
+        (B: A.1 -> Trunk n)
         f g
         (H : forall a, f a (g a) = a)
   : O_rec A (O sf A) (subuniverse_O sf A) (λ x:A.1, O_rec (B x) (O sf A) (subuniverse_O sf A) (λ y, O_unit sf A (f x y)) (O_unit sf (B x) (g x))) = idmap.

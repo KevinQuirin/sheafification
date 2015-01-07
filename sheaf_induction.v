@@ -43,7 +43,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
 
 
         
-  Definition separated_Type (T:Trunk@{i a} (trunc_S n)) : Type@{a} :=
+  Definition separated_Type (T:Trunk (trunc_S n)) :=
     Im (λ t : pr1 T, λ t', ((O sf (t = t'; istrunc_paths T.2 t t'); subuniverse_O sf _) : subuniverse_Type)).
 
   Definition sheaf_is_separated (T : SnType_j_Type) : separated T.1 := fst (T.2).
@@ -100,25 +100,19 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     apply (@trunc_sigma _ (fun P => _)). apply Tn_is_TSn.
     intro. apply IsHProp_IsTrunc. exact (pr2 (subuniverse_HProp sf a0)).
   Defined.
-
-  Definition T_nType_j_Type_isSheaf : forall T, Snsheaf_struct (pr1 T -> subuniverse_Type;
+Set Printing Universes.
+  Definition T_nType_j_Type_isSheaf : forall (T: Trunk n.+1), Snsheaf_struct (pr1 T -> subuniverse_Type;
                                                     T_nType_j_Type_trunc T).
     intro.
     unfold T_nType_j_Type_trunc.
     transparent assert (sheaf : SnType_j_Type).
-    repeat refine (exist _ _ _).
-    exact subuniverse_Type.
-    apply subuniverse_Type_is_TrunkSn.
-    pose (s := nType_j_Type_is_SnType_j_Type).
-    (* assert (X : (Type_to_separated_Type.Sheaf_Prop.Mod_Prop.subU_RSProp.subuniverse_Type; *)
-             (* Type_to_separated_Type.Sheaf_Prop.Mod_Prop.subU_RSProp.subuniverse_Type_is_TrunkSn) = (subuniverse_Type; subuniverse_Type_is_TrunkSn)). *)
-    (* refine (path_sigma' _ _ _). *)
-    (* reflexivity. *)
-    (* simpl. *)
-    (* apply path_ishprop. *)
-    (* rewrite <- X. exact s. *)
-    exact s.
-    
+    { refine (exist _ _ _).
+      refine (exist _ subuniverse_Type _).
+      apply subuniverse_Type_is_TrunkSn.
+      exact (nType_j_Type_is_SnType_j_Type). }
+
+    pose (s := fun sheaf => @dep_prod_SnType_j_Type T.1 (λ _, sheaf)). simpl in s.
+    specialize (s nType_j_Type_sheaf).
     pose (s := @dep_prod_SnType_j_Type T.1 (λ _, sheaf)). simpl in s.
     assert (X : (T.1 → subuniverse_Type;
         trunc_forall (λ _ : T.1, subuniverse_Type_is_TrunkSn)) = (T.1 → subuniverse_Type;
@@ -128,8 +122,31 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
                     (λ a0 : Trunk n, IsHProp_IsTrunc (subuniverse_HProp sf a0).2 n)))).
     apply path_sigma' with 1. apply path_ishprop.
     rewrite <- X.
+    pose (@dep_prod_SnType_j_Type T.1). simpl in s.
+    refine (s _).
+    refine (@dep_prod_SnType_j_Type T.1 _).
     exact s.
   Defined.
+
+  Toplevel input, characters 46-51:
+Error:
+In environment
+T : ∃ x, IsTrunc@{Top.16273} n.+1 x
+sheaf := ((subuniverse_Type@{Top.16304 Top.16305 Top.16306};
+          subuniverse_Type_is_TrunkSn@{Top.24028 Top.24028 Top.16304
+          Top.16305 Top.16306});
+         let s := nType_j_Type_is_SnType_j_Type@{Top.16306 Top.16286
+           Top.16287 Top.16288 Top.16304 Top.16305 Top.16293 Top.16294
+           Top.16299 Top.24028 Top.24042 Top.24043 Top.24044 Top.16295} in
+         s) : SnType_j_Type@{Top.16282 Top.24028 Top.16304 Top.16306
+     Top.16286 Top.16287 Top.16288 Top.16304 Top.16305 Top.16294 Top.16294
+     Top.16293 Top.16294 Top.16295 Top.16304 Top.16304 Top.16299 Top.16299}
+H : T.1
+The term "sheaf" has type
+ "SnType_j_Type@{Top.16282 Top.24028 Top.16304 Top.16306 Top.16286 Top.16287 Top.16288 Top.16304 Top.16305 Top.16294 Top.16294 Top.16293 Top.16294 Top.16295 Top.16304 Top.16304 Top.16299 Top.16299}"
+while it is expected to have type
+ "SnType_j_Type@{Top.24062 Top.24061 Top.24048 Top.24047 Top.24059 Top.24060 Top.24052 Top.24053 Top.24048 Top.24064 Top.24064 Top.24058 Top.24064 Top.24054 Top.24053 Top.24053 Top.24064 Top.24064}".
+
 
   Definition T_nType_j_Type_sheaf T : SnType_j_Type :=  ((pr1 T -> subuniverse_Type; T_nType_j_Type_trunc T); T_nType_j_Type_isSheaf _).
 
@@ -989,18 +1006,34 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
 
   Definition n := trunc_S n0.
   
-  Definition subuniverse_HProp : forall (sf : subu_family@{u a}) (T:Trunk@{t a} n), HProp@{t u}.
+  Definition subuniverse_HProp : forall (sf : subu_family@{u a i}) (T:Trunk@{a i} n), HProp@{u i}.
     intros sf T.
     refine (exist _ _ _).
     exact (separated T).
     apply separated_is_HProp.
   Defined.
   
-  Definition O : forall (sf : subu_family@{u a}), Trunk@{i a} n -> Trunk@{i a} n.
-    intros sf T.
-    refine (exist _ _ _).
+  Definition O : forall (sf : subu_family@{u a i}), Trunk@{a i} n -> Trunk@{a i} n.
     Set Printing Universes.
+    intros sf [T tT].
+    refine (exist _ _ _).
+    pose (separated_Type (T;tT)). simpl in *.
+    Show Universes.
+    Show Universes.
     exact (separated_Type T).
+
+    {Top.9023 Top.9022
+Top.9021} |= Set < Top.9021
+              Set < Top.9022
+              Set < Top.9023
+              Top.9023 < Top.9022
+              Top.9022 <= Top.9021
+              
+Normalized constraints: Top.9023 < Top.9022
+Top.9022 <= Top.9021
+Set < Top.9023
+    < Top.9022
+    < Top.9021
 
   Definition subuniverse_O : forall (sf : subu_family@{u a}) (T:Trunk@{i a} n),
                                    (subuniverse_HProp@{u a i} sf (O@{u a i} sf T)).1.

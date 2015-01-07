@@ -15,11 +15,14 @@ Arguments trunc_succ {n} {A} H _ _: simpl never.
 
 Module Type Modality (subU : subuniverse_struct).
   Export subU.
-    
-  Parameter subu_sigma : forall sf:subu_family@{u a i}, (forall (A:Trunk@{a i} n) (modA : (subuniverse_HProp@{u a i} sf A).1) (B:A.1 -> Trunk@{a j} n) (modB : forall a, (subuniverse_HProp@{u a j} sf (B a)).1), (subuniverse_HProp@{u a k} sf ({x:A.1 & (B x).1} ; trunc_sigma (A.2) (λ x, (B x).2))).1).
+  
+  Parameter subu_sigma : forall sf:subu_family@{a}, (forall (A:Trunk@{i' i a} n) (modA : (subuniverse_HProp@{a i' i} sf A).1) (B:A.1 -> Trunk@{j' i a} n) (modB : forall a, (subuniverse_HProp@{a j' i} sf (B a)).1), (subuniverse_HProp@{a k' i} sf (({x:A.1 & (B x).1} ; trunc_sigma@{i i w i} (A.2) (λ x, (B x).2)) : Trunk@{k' i a} n)).1).
+  Check subu_sigma@{a i' i j' k' w}.
 
-  Parameter islex : forall sf:subu_family@{u a i}, forall (A:Trunk@{a i} n), forall (x y:A.1),
-                        Contr ((O@{u a i} sf A).1) -> Contr ((O@{u a i} sf (existT (IsTrunc n) (x = y) ((@istrunc_paths A.1 n (trunc_succ A.2) x y)))).1).
+  
+  Parameter islex : forall sf:subu_family@{a}, forall (A:Trunk@{i' i a} n), forall (x y:A.1),
+                      Contr ((O@{a i' i} sf A).1) -> Contr ((O@{a i' i} sf (existT (IsTrunc n) (x = y) ((@istrunc_paths A.1 n (trunc_succ A.2) x y)))).1).
+  Check islex@{a i' i}.
 End Modality.
 
 Module Modality_theory (subU : subuniverse_struct) (mod : Modality subU).
@@ -59,13 +62,13 @@ Module Modality_theory (subU : subuniverse_struct) (mod : Modality subU).
         trunc_sigma X.2
           (λ x0 : X.1, istrunc_paths (trunc_succ (Y.1).2) (f x0) x))).1) -> subuniverse_Type)).
       intro c.
-      repeat refine (exist _ _ _).
-      exact (O_rec X Y.1 Y.2 f
+      refine (exist _ _ _).
+      refine (exist _ (O_rec X Y.1 Y.2 f
                    (O_rec
                       (hfiber f x;
         trunc_sigma X.2
           (λ x0 : X.1, istrunc_paths (trunc_succ (Y.1).2) (f x0) x)) 
-                      (O sf X) (subuniverse_O sf _) (λ X0 : hfiber f x, O_unit sf X X0.1) c) = x).
+                      (O sf X) (subuniverse_O sf _) (λ X0 : hfiber f x, O_unit sf X X0.1) c) = x) _).
       apply istrunc_paths.
       apply trunc_succ. exact Y.1.2.
       apply subuniverse_paths.
@@ -103,8 +106,9 @@ Module Modality_theory (subU : subuniverse_struct) (mod : Modality subU).
       revert x.
 
       transparent assert (sheaf_family : ((O sf X).1 -> subuniverse_Type)).
-      intro x. repeat refine (exist _ _ _).
-      exact (O_rec
+      intro x.
+      refine (exist _ _ _).
+      refine (exist _ (O_rec
                (hfiber f (O_rec X Y.1 Y.2 f x);
      trunc_sigma X.2
        (λ x0 : X.1, istrunc_paths (trunc_succ (Y.1).2) (f x0) (O_rec X Y.1 Y.2 f x)))
@@ -123,7 +127,7 @@ Module Modality_theory (subU : subuniverse_struct) (mod : Modality subU).
               (λ x1 : X.1,
                istrunc_paths (trunc_succ (Y.1).2) (f x1)
                  (O_rec X Y.1 Y.2 f (O_unit sf X x0))))
-            (x0; (ap10 (O_rec_retr X Y.1 Y.2 f) x0)^))).1 x) = x).
+            (x0; (ap10 (O_rec_retr X Y.1 Y.2 f) x0)^))).1 x) = x) _).
       apply istrunc_paths.
       apply trunc_succ. exact (O sf X).2.
       simpl.
@@ -172,12 +176,12 @@ Module Modality_theory (subU : subuniverse_struct) (mod : Modality subU).
     - generalize dependent a.
       transparent assert (modal_family : ((O sf A).1 -> subuniverse_Type )).
       { intro a.
-        repeat refine (exist _ _ _).
-        exact ((∀ y0 : ((O sf A)).1, a = y0)
+        refine (exist _ _ _).
+        refine (exist _ ((∀ y0 : ((O sf A)).1, a = y0)
                → ((O sf
                      (hfiber f y;
                       trunc_sigma A.2
-                                  (λ a0 : A.1, istrunc_paths (trunc_succ B.2) (f a0) y)))).1).
+                                  (λ a0 : A.1, istrunc_paths (trunc_succ B.2) (f a0) y)))).1) _).
         apply trunc_arrow.
         exact _.2.
         exact (subuniverse_arrow (∀ y0 : ((O sf A)).1, a = y0) ((O sf

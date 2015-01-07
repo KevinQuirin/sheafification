@@ -23,21 +23,21 @@ Module Reflective_Subuniverse_base_case <: subuniverse_struct.
   Context `{ua: Univalence}.
   Context `{fs: Funext}.
 
-  (* Definition subu_family : Type2le@{u a} := Notnot_Modality. *)
+  (* Definition subu_family : Type2le@{a} := Notnot_Modality. *)
 
-  Definition notnot (P:HProp@{t i}) : Type@{j} := not@{i i i} (not@{i i i} (pr1 P)).
+  Definition notnot (P:HProp@{i' i a}) : Type@{j} := not@{i i i} (not@{i i i} (pr1 P)).
 
-  Instance _j (P:HProp@{t i}) : IsHProp (notnot@{t i j} P).
+  Instance _j (P:HProp@{i' i a}) : IsHProp (notnot@{i' i a j} P).
   repeat (refine trunc_forall; intro). Defined.
 
 
-  Definition j (P:HProp@{t i}) : HProp@{t j} := existT (fun P => IsTrunc -1 P)
+  Definition j (P:HProp@{i' i a}) : HProp@{j' j a} := existT (fun P => IsTrunc -1 P)
                                                        (notnot P) (@_j P).
 
-  Instance _is_classical (P:HProp@{t i}) : IsHProp (pr1 (j@{t i j} P) -> pr1 P).
+  Instance _is_classical (P:HProp@{i' i a}) : IsHProp (pr1 (j@{i' i a j' j} P) -> pr1 P).
   apply (@trunc_forall _ _ (fun _ => P.1)). intro. exact (pr2 P). Defined.
 
-  Definition is_classical (P:HProp@{i t}) : HProp@{j t}
+  Definition is_classical (P:HProp@{i' i a}) : HProp@{j' j a}
     := existT (fun P => IsTrunc -1 P)
               (pr1 (j P) -> pr1 P ) (_is_classical (P:=P)).
 
@@ -45,14 +45,16 @@ Module Reflective_Subuniverse_base_case <: subuniverse_struct.
 
   Definition n : trunc_index := -1.
 
-  Definition subuniverse_HProp : forall (sf : subu_family@{u a i}) (T:Trunk@{a i} n), HProp@{u i}
-    := fun _ => is_classical@{a t u}.
+  Definition subuniverse_HProp : forall (sf : subu_family@{a}) (T:Trunk@{i' i a} n), HProp@{i' i a}.
+    intros sf T.
+    refine (exist _ ((j T).1 -> T.1) _).
+  Defined.
   
-  Definition O : forall (sf : subu_family@{u a i}), Trunk@{a i} n -> Trunk@{a i} n
+  Definition O : forall (sf : subu_family@{a}), Trunk@{i' i a} n -> Trunk@{i' i a} n
     := λ sf T, (j T).
 
-  Definition subuniverse_O : forall (sf : subu_family@{u a i}) (T:Trunk@{a i} n),
-                                    (subuniverse_HProp@{u a i} sf (O@{u a i} sf T)).1.
+  Definition subuniverse_O : forall (sf : subu_family@{a}) (T:Trunk@{i' i a} n),
+                                   (subuniverse_HProp@{a i' i} sf (O@{a i' i} sf T)).1.
     intros sf T.
     intros X X0.
     apply X.
@@ -61,19 +63,19 @@ Module Reflective_Subuniverse_base_case <: subuniverse_struct.
     apply X1. exact X0.
   Defined.
   
-  Definition O_unit : forall (sf : subu_family@{u a i}), forall T:Trunk@{a i} n, T.1 -> (O@{u a i} sf T).1.
+  Definition O_unit : forall (sf : subu_family@{a}), forall T:Trunk@{i' i a} n, T.1 -> (O@{a i' i} sf T).1.
     intros sf T x. simpl.
     unfold notnot. intro X. apply X. exact x.
   Defined.
   
-  Definition O_equiv : forall (sf : subu_family@{u a i}), forall (P : Trunk@{a i} n) (Q : Trunk@{a j} n) (modQ : (subuniverse_HProp@{u a j} sf Q).1),
-                        IsEquiv@{i j} (fun f : (O@{u a i} sf P).1 -> Q.1 => f o (O_unit@{u a i} sf P)).
+  Definition O_equiv : forall (sf : subu_family@{a}), forall (P : Trunk@{i' i a} n) (Q : Trunk@{j' j a} n) (modQ : (subuniverse_HProp@{a j' j} sf Q).1),
+                        IsEquiv@{i j} (fun f : (O@{a i' i} sf P).1 -> Q.1 => f o (O_unit@{a i' i} sf P)).
     intros sf P Q modQ.
     apply log_equiv_is_equiv.
     unfold O, j, notnot. simpl.
     refine (trunc_arrow _). exact (Q.2).
     refine (trunc_arrow _). exact Q.2.
-    intros f jp. unfold subuniverse_HProp in modQ. apply modQ. intros notQ.
+    intros f jp. unfold subuniverse_HProp in modQ. simpl in modQ. apply modQ. intros notQ.
     unfold O, j, notnot in jp. simpl in jp. apply jp.
     intro p.
     exact (notQ (f p)).
@@ -85,16 +87,17 @@ Module Modality_base_case <: Modality Reflective_Subuniverse_base_case.
   
   Import Reflective_Subuniverse_base_case.
   
+  Set Printing Universes.
 
-  Definition subu_sigma : forall sf:subu_family@{u a i}, (forall (A:Trunk@{a i} n) (modA : (subuniverse_HProp@{u a i} sf A).1) (B:A.1 -> Trunk@{a j} n) (modB : forall a, (subuniverse_HProp@{u a j} sf (B a)).1), (subuniverse_HProp@{u a k} sf ({x:A.1 & (B x).1} ; trunc_sigma (A.2) (λ x, (B x).2))).1).
+  Definition subu_sigma : forall sf:subu_family@{a}, (forall (A:Trunk@{i' i a} n) (modA : (subuniverse_HProp@{a i' i} sf A).1) (B:A.1 -> Trunk@{j' j a} n) (modB : forall a, (subuniverse_HProp@{a j' j} sf (B a)).1), (subuniverse_HProp@{a k' k} sf (({x:A.1 & (B x).1} ; trunc_sigma@{i j w k} (A.2) (λ x, (B x).2)) : Trunk@{k' k a} n)).1).
     intros sf A modA B modB z.
     simpl in *.
     refine (exist _ _ _).
-    {apply modA. unfold notnot in *.
-     intro k.
-     apply z. intro l.
-     apply k.
-     exact l.1. }
+    { apply modA. unfold notnot in *.
+      intro k.
+      apply z. intro l.
+      apply k.
+      exact l.1. }
 
     { apply modB.
       unfold notnot in *.
@@ -105,8 +108,9 @@ Module Modality_base_case <: Modality Reflective_Subuniverse_base_case.
       exact l.2. }
   Defined.
 
-  Definition islex : forall sf:subu_family@{u a i}, forall (A:Trunk@{a i} n), forall (x y:A.1),
-                       Contr ((O@{u a i} sf A).1) -> Contr ((O@{u a i} sf (existT (IsTrunc n) (x = y) ((@istrunc_paths A.1 n (trunc_succ A.2) x y)))).1).
+
+  Definition islex : forall sf:subu_family@{a}, forall (A:Trunk@{i' i a} n), forall (x y:A.1),
+                        Contr ((O@{a i' i} sf A).1) -> Contr ((O@{a i' i} sf (existT (IsTrunc n) (x = y) ((@istrunc_paths A.1 n (trunc_succ A.2) x y)))).1).
     intros sf A x y [c cc]. simpl in *.
     apply (contr_inhabited_hprop).
     apply hprop_allpath.
@@ -116,6 +120,7 @@ Module Modality_base_case <: Modality Reflective_Subuniverse_base_case.
     
     intro p. apply p. refine (path_ishprop x y). exact A.2.
   Defined.
+  
 End Modality_base_case.
 
 Module HProp_sheaves (subU : subuniverse_struct) (mod : Modality subU).
@@ -148,8 +153,8 @@ Module HProp_sheaves (subU : subuniverse_struct) (mod : Modality subU).
     - intros T X. apply hprop_allpath. intros x y.
       revert X.
       transparent assert (sheaf : (subuniverse_Type)).
-      { repeat refine (exist _ _ _).
-        exact (x = y).
+      { refine (exist _ _ _).
+        refine (exist _ (x=y) _).
         apply istrunc_paths. apply trunc_succ. exact T.1.2.
         apply subuniverse_paths. }
       pose (rew := j_is_subU (IsHProp T.1.1; hprop_trunc _ _)). simpl in rew.
@@ -162,8 +167,8 @@ Module HProp_sheaves (subU : subuniverse_struct) (mod : Modality subU).
       unfold IsTrunc in *.
       intros x y.
       transparent assert (sheaf : (subuniverse_Type)).
-      { repeat refine (exist _ _ _).
-        exact (x = y).
+      { refine (exist _ _ _).
+        refine (exist _ (x=y) _).
         apply istrunc_paths. apply trunc_succ. exact T.1.2.
         apply subuniverse_paths. }
       specialize (IHp sheaf).

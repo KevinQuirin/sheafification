@@ -78,10 +78,10 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
   Definition is_dense_diag (E:Type) (char : E -> Trunk n) (dense_eq : is_dense_eq char)
     := forall x:{e:E & (char e).1}, forall u:{e':{e:E & (char e).1} & x.1 = e'.1}, (equiv_path _ _ (dense_eq x.1)) o (incl_Aeq_Eeq char x) = (O_unit sf _) o ((eq_dense_1 char x)).
 
-  Record EnJ (E:Type) :=
+  Record EnJ (E:Type@{e}) :=
     {
-      char :> E -> Trunk n ;
-      dense_eq : forall e:E, ({e':E & e=e'}) = (O sf (char e)).1 ;
+      char :> E -> Trunk@{i' i a} n ;
+      dense_eq : forall e:E, ({e':E & e=e'}) = (O@{a  i' i} sf (char e)).1 ;
       dense_diag : forall x:{e:E & (char e).1}, forall u:{e':{e:E & (char e).1} & x.1 = e'.1}, (equiv_path _ _ (dense_eq x.1)) o (incl_Aeq_Eeq char x) = (O_unit sf _) o ((eq_dense_1 char x))
                                                                                                                                                                        (* For A a subobject of E, and x:A, this diagram commute : *)
                                                                                                                                                                        (*                                                         *)   
@@ -95,13 +95,14 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     }.
 
 
+ 
   Definition witness_is_eta (E:Type) (χ:EnJ E) (x:{e:E & (χ e).1})
   : transport idmap (dense_eq χ x .1) (x .1; 1) = O_unit sf (χ x .1) x.2
     := ap10 (dense_diag χ x (x;1)) (x;1).
 
   Definition EnJ_is_nJ (E:Type) (χ : EnJ E)
   : forall e:E, (O sf (χ e)).1
-    := λ e, transport (λ T, T) (dense_eq χ e) (e;idpath).
+      := λ e, transport (λ T, T) (dense_eq χ e) (e;idpath).
 
   Definition dense_eta_equal (E:Type) (χ : EnJ E) (x:E) : forall (v w:(χ x).1), O_unit sf (χ x) v = O_unit sf (χ x) w.
     intros v w.
@@ -113,17 +114,18 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     rewrite (dense_eq χ) in X; apply X.
   Defined.
 
-  Definition E_to_χmono_map (T:Trunk (trunc_S n)) E (χ : E -> (J )) (f : E -> (pr1 T)) : 
+  Definition E_to_χmono_map (T:Trunk@{Si' Si a} (trunc_S n)) (E:Type@{e}) (χ : E -> J@{b c d i i' a}) (f : E -> (pr1 T)) : 
     (nchar_to_sub (pr1 o χ)).1 -> T.1 := f o pr1.
 
-  Definition E_to_χ_map (T:Trunk (trunc_S n)) E (χ : EnJ E) (f : E -> (pr1 T)) : 
+  Definition E_to_χ_map (T:Trunk@{Si' Si a} (trunc_S n)) (E:Type@{e}) (χ : EnJ@{e i' i a b c d f} E) (f : E -> (pr1 T)) : 
     (nchar_to_sub χ).1 -> T.1 := f o pr1.
-
-  Definition separated T :=  ∀ E (χ : EnJ E), IsMono (E_to_χ_map T (E:=E) χ).
   
-  Definition Snsheaf_struct T := (separated T) /\ (∀ E (χ : E -> J), IsEquiv (E_to_χmono_map T (E:=E) (χ))). 
+Set Printing Universes.
+  Definition separated (T: Trunk@{Si' Si a} (n.+1)) :=  ∀ (E:Type@{e}) (χ : EnJ@{e i' i a b c d f} E), IsMono@{i' Si'} (E_to_χ_map@{Si' Si a e i' i b c d f} T (E:=E) χ).
+  
+  Definition Snsheaf_struct (T: Trunk@{Si' Si a} (n.+1)) := (separated@{Si' Si a e i' i b c d f} T) /\ (∀ (E:Type@{e}) (χ : E -> J@{b' c' d' i i' a}), IsEquiv (E_to_χmono_map T (E:=E) (χ))).
 
-  Definition SnType_j_Type := {T : Trunk (trunc_S n) & Snsheaf_struct T}.
+  Definition SnType_j_Type := {T : Trunk@{Si' Si a} (trunc_S n) & Snsheaf_struct@{Si' Si a e i' i b c d f b' c' d' g g' h h'} T}.
 
   Definition separated_is_HProp T : IsHProp (separated T).
     repeat (apply trunc_forall).
@@ -147,17 +149,14 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
         pose proof (transport idmap (χeq x) (x;1)). simpl in X.
         revert X.
         transparent assert (modal_family : (subuniverse_Type)).
-        { repeat refine (exist _ _ _).
-          exact (u x = v x).
-          apply istrunc_paths.
-          exact T.2.
+        { refine (exist _ _ _).
+          refine (exist _ (u x = v x) (istrunc_paths (trunc_succ Trn) (u x) (v x))).
           pose subuniverse_paths.
           transparent assert (sheaf : subuniverse_Type).
-          repeat refine (exist _ _ _).
-          exact T.1. exact Trn. exact nsheaf.
+          refine (exist _ (T.1;Trn) nsheaf).
           specialize (p0 ((T.1;Trn);nsheaf) (u x) (v x)). simpl in p0.
-          assert (istrunc_paths (trunc_succ Trn) (u x) (v x) = istrunc_paths T.2 (u x) (v x)) by apply path_ishprop.
-          rewrite X in p0.
+          (* assert (istrunc_paths (trunc_succ Trn) (u x) (v x) = istrunc_paths T.2 (u x) (v x)) by apply path_ishprop. *)
+          (* rewrite X in p0. *)
           exact p0. }
         apply (O_rec (χ x) modal_family.1 modal_family.2); unfold modal_family; clear modal_family.
         intro xx; simpl.
@@ -207,13 +206,14 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
         assert (p := transport idmap (j_is_nj sf (χ x).1) (χ x).2).
         revert p. simpl.
         transparent assert (sheaf : (subuniverse_Type)).
-        { repeat refine (exist _ _ _).
-          exact (O_rec (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0)
-       (T.1; Trn) nsheaf (λ xx : ((χ x).1).1, E_to_χmono_map T _ f (x; xx))
-       (transport idmap (j_is_nj sf (χ x).1) (χ x).2) = 
-                 f x).
-          apply istrunc_paths.
-          exact T.2.
+        { refine (exist _ _ _).
+          refine (exist _
+                        (O_rec (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0)
+                               (T.1; Trn) nsheaf (λ xx : ((χ x).1).1, E_to_χmono_map T _ f (x; xx))
+                               (transport idmap (j_is_nj sf (χ x).1) (χ x).2) = 
+                         f x) _).
+          (* apply istrunc_paths. *)
+          (* exact T.2. *)
           pose (subuniverse_paths ((T.1;Trn);nsheaf)
                                   (O_rec (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0)
                                          (T.1; Trn) nsheaf
@@ -221,18 +221,18 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
                                          (transport idmap (j_is_nj sf (χ x).1) (χ x).2))
                                   (f x)).
           simpl in p.
-          assert (istrunc_paths (trunc_succ ((((T.1; Trn); nsheaf) : subuniverse_Type).1).2)
-                                (O_rec (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0) 
-                                       (T.1; Trn) nsheaf
-                                       (E_to_χmono_map T χ f o exist (pr1 o (pr1 o χ)) x)
-                                       (transport idmap (j_is_nj sf (χ x).1) (χ x).2)) 
-                                (f x) = istrunc_paths T.2
-                                                      (O_rec (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0) 
-                                                             (T.1; Trn) nsheaf
-                                                             (E_to_χmono_map T χ f o exist (λ b : E, ((χ b).1).1) x)
-                                                             (transport idmap (j_is_nj sf (χ x).1) (χ x).2)) 
-                                                      (f x)) by apply path_ishprop.
-          apply (transport (λ U, (subuniverse_HProp sf (_;U)).1) X); clear X.
+          (* assert (istrunc_paths (trunc_succ ((((T.1; Trn); nsheaf) : subuniverse_Type).1).2) *)
+          (*                       (O_rec (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0)  *)
+          (*                              (T.1; Trn) nsheaf *)
+          (*                              (E_to_χmono_map T χ f o exist (pr1 o (pr1 o χ)) x) *)
+          (*                              (transport idmap (j_is_nj sf (χ x).1) (χ x).2))  *)
+          (*                       (f x) = istrunc_paths T.2 *)
+          (*                                             (O_rec (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0)  *)
+          (*                                                    (T.1; Trn) nsheaf *)
+          (*                                                    (E_to_χmono_map T χ f o exist (λ b : E, ((χ b).1).1) x) *)
+          (*                                                    (transport idmap (j_is_nj sf (χ x).1) (χ x).2))  *)
+          (*                                             (f x)) by apply path_ishprop. *)
+          (* apply (transport (λ U, (subuniverse_HProp sf (_;U)).1) X); clear X. *)
           apply p. }
           
         apply (O_rec _ sheaf.1 sheaf.2).
@@ -497,14 +497,15 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     etransitivity. apply nhfiber_pi1. reflexivity.
   Defined.
 
-  Definition nTjTiseparated_eq_fun_univ (E:Type) (χ:EnJ E) φ1 φ2
-             (p: E_to_χ_map (subuniverse_Type ; subuniverse_Type_is_TrunkSn ) χ φ1 =
-                 E_to_χ_map (subuniverse_Type ; subuniverse_Type_is_TrunkSn ) χ φ2)
+  Definition nTjTiseparated_eq_fun_univ (E:Type@{e}) (χ : EnJ E) (φ1 φ2 : E → (subuniverse_Type; subuniverse_Type_is_TrunkSn).1)
+             (p: E_to_χ_map (existT (IsTrunc@{i'} n.+1) (subuniverse_Type) (subuniverse_Type_is_TrunkSn )) χ φ1 =
+                 E_to_χ_map (subuniverse_Type@{i' i a} ; subuniverse_Type_is_TrunkSn ) χ φ2)
              (x:E)
   :  ((φ1 x).1.1 -> (φ2 x).1.1).
+
     unfold E_to_χ_map in p.
     generalize dependent (EnJ_is_nJ χ x).
-    pose (p0 := O_rec (χ x) (((φ1 x) .1) .1 → ((φ2 x) .1) .1 ; trunc_arrow ((φ2 x) .1).2) (subuniverse_arrow (((φ1 x) .1) .1) (φ2 x))); simpl in p0.
+    pose (p0 := O_rec (χ x) (existT (IsTrunc n) (((φ1 x) .1) .1 → ((φ2 x) .1) .1)  (trunc_arrow ((φ2 x) .1).2)) (subuniverse_arrow (((φ1 x) .1) .1) (φ2 x))); simpl in p0.
     apply p0.
     intro v. simpl.
 
@@ -575,7 +576,7 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     etransitivity; [exact foo | reflexivity].
   Defined.
 
-  Definition nTjTiseparated_eq_inv (E:Type) (χ:EnJ E) φ1 φ2 :
+  Definition nTjTiseparated_eq_inv (E:Type) (χ:EnJ E) (φ1 φ2 : E → (subuniverse_Type; subuniverse_Type_is_TrunkSn).1) :
     E_to_χ_map
       (subuniverse_Type ; subuniverse_Type_is_TrunkSn ) χ φ1 =
     E_to_χ_map 
@@ -594,8 +595,44 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     - exact (transport (λ u, ∀ y : ((φ1 x) .1) .1, nTjTiseparated_eq_fun_univ (inverse p) x (nTjTiseparated_eq_fun_univ u x y) = y) (inv_V p) (nTjTiseparated_eq_fun_univ_invol (inverse p) x)).
   Defined.
 
+   Set Printing Universes.
   Lemma nTjTiseparated_eq : separated (existT (IsTrunc (n.+1)) (subuniverse_Type) (@subuniverse_Type_is_TrunkSn)).
     intros E χ φ1 φ2.
+
+
+    
+    (* refine (isequiv_adjointify _ _ _ _). *)
+    (* - intro p. *)
+    (*   simpl in *. *)
+    (*   unfold E_to_χ_map in p; simpl in p. *)
+    (*   apply path_forall; intro x. *)
+    (*   apply unique_subuniverse; apply truncn_unique. *)
+    (*   exact fs. *)
+    (*   apply path_universe_uncurried. *)
+    (*   refine (equiv_adjointify _ _ _ _). *)
+    (*   + unfold E_to_χ_map in p. *)
+    (*     generalize dependent (EnJ_is_nJ χ x). *)
+    (*     (* pose (O_rec (χ x) (existT (IsTrunc n) (((φ1 x) .1) .1 → ((φ2 x) .1) .1)  (trunc_arrow ((φ2 x) .1).2))). *) *)
+    (*     pose (p0 := O_rec (χ x) (existT (IsTrunc n) (((φ1 x) .1) .1 → ((φ2 x) .1) .1)  (trunc_arrow ((φ2 x) .1).2)) (subuniverse_arrow (((φ1 x) .1) .1) (φ2 x))); simpl in p0. *)
+    (*     apply p0. *)
+    (*     intro v. simpl. *)
+
+    (* assert (eq := (ap10 p (x;v))).  *)
+    (* exact (transport (λ U, U) (eq..1..1)). *)
+    (*   pose (nTjTiseparated_eq_fun_univ). unfold E_to_χ_map in p0. *)
+    (*   specialize (p0 _ _ _ _ p x). *)
+
+
+      
+    (*   exists (nTjTiseparated_eq_fun_univ p x). *)
+    (*   apply isequiv_adjointify with (g := nTjTiseparated_eq_fun_univ (inverse p) x). *)
+    (*   + exact (nTjTiseparated_eq_fun_univ_invol p x). *)
+    (*   + exact (transport (λ u, ∀ y : ((φ1 x) .1) .1, nTjTiseparated_eq_fun_univ (inverse p) x (nTjTiseparated_eq_fun_univ u x y) = y) (inv_V p) (nTjTiseparated_eq_fun_univ_invol (inverse p) x)). *)
+
+
+
+
+      
     apply isequiv_adjointify with (g := @nTjTiseparated_eq_inv E χ φ1 φ2).
     - intro p. 
       unfold E_to_χ_map in *; simpl in *.
@@ -634,7 +671,10 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
                                        (subuniverse_arrow ((φ1 x) .1) .1 (φ1 x)) idmap) (EnJ_is_nJ χ x)). 
   Defined.
 
-  Lemma nType_j_Type_is_SnType_j_Type : Snsheaf_struct (existT (IsTrunc (n.+1)) (subuniverse_Type) (@subuniverse_Type_is_TrunkSn )).
+  Definition nType_j_Type : Trunk@{Si' i' a} (n.+1) :=
+    (existT (IsTrunc (n.+1)) (subuniverse_Type@{i' i a}) (@subuniverse_Type_is_TrunkSn )).
+
+  Lemma nType_j_Type_is_SnType_j_Type : Snsheaf_struct@{Si' i' a e i' i b c d f b' c' d' g g' h h'} nType_j_Type@{Si' i' a i}.
   Proof.
     split.
     apply nTjTiseparated_eq.
@@ -642,8 +682,9 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     exact (nTjTiSnTjT_eq _).
   Defined.
 
-  Definition nType_j_Type_sheaf : SnType_j_Type :=
-    ((existT (IsTrunc (n.+1)) (subuniverse_Type) (@subuniverse_Type_is_TrunkSn ));nType_j_Type_is_SnType_j_Type).
+
+  Definition nType_j_Type_sheaf : SnType_j_Type@{h'' Si' i' a e i' i b c d f b' c' d' g g' h h'} :=
+    (nType_j_Type@{Si' i' a i};nType_j_Type_is_SnType_j_Type).
 
   Instance dep_prod_SnType_j_Type_eq
            (A : Type)
@@ -782,12 +823,47 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
       exact (apD10 X x).
   Defined.
   
-  Definition dep_prod_SnType_j_Type : forall A (B : A -> SnType_j_Type) ,
+  Definition dep_prod_SnType_j_Type : forall (A: Trunk n.+1) (B : A.1 -> SnType_j_Type) ,
                                         Snsheaf_struct (forall a, pr1 (pr1 (B a)); 
-                                                        @trunc_forall _ A (fun a => pr1 (pr1 (B a))) (trunc_S n) (fun a => pr2 (pr1 (B a)))).
+                                                        @trunc_forall _ A.1 (fun a => pr1 (pr1 (B a))) (trunc_S n) (fun a => pr2 (pr1 (B a)))).
     intros. split. 
     exact (dep_prod_SnType_j_Type_sep _).
     exact (dep_prod_SnType_j_Type_eq _).
+  Defined.
+
+  Definition T_nType_j_Type_trunc (T:Trunk (trunc_S n)) : IsTrunc (trunc_S n) (pr1 T -> subuniverse_Type).
+    apply (@trunc_forall _ _ (fun P => _)). intro. 
+    apply (@trunc_sigma _ (fun P => _)). apply Tn_is_TSn.
+    intro. apply IsHProp_IsTrunc. exact (pr2 (subuniverse_HProp sf a0)).
+  Defined.
+  
+Set Printing Universes.
+
+
+Definition T_nType_j_Type_isSheaf (T: Trunk@{Si' i' a} n.+1) := @dep_prod_SnType_j_Type T (λ _, nType_j_Type_sheaf@{h'' Si' i' a e i b c d f b' c'}).
+
+
+
+Definition T_nType_j_Type_isSheaf : forall (T: Trunk n.+1), Snsheaf_struct (pr1 T -> subuniverse_Type;
+                                                    T_nType_j_Type_trunc T).
+    intro.
+    unfold T_nType_j_Type_trunc.
+
+    pose (s := fun sheaf => @dep_prod_SnType_j_Type T (λ _, sheaf)). simpl in s.
+    specialize (s nType_j_Type_sheaf).
+    pose (s := @dep_prod_SnType_j_Type T.1 (λ _, sheaf)). simpl in s.
+    assert (X : (T.1 → subuniverse_Type;
+        trunc_forall (λ _ : T.1, subuniverse_Type_is_TrunkSn)) = (T.1 → subuniverse_Type;
+     trunc_forall
+       (λ _ : T.1,
+        trunc_sigma (Tn_is_TSn (n:=n))
+                    (λ a0 : Trunk n, IsHProp_IsTrunc (subuniverse_HProp sf a0).2 n)))).
+    apply path_sigma' with 1. apply path_ishprop.
+    rewrite <- X.
+    pose (@dep_prod_SnType_j_Type T.1). simpl in s.
+    refine (s _).
+    refine (@dep_prod_SnType_j_Type T.1 _).
+    exact s.
   Defined.
 
   Definition closed E (χ : E -> Trunk n) := forall e, IsEquiv (O_unit sf (χ e)).

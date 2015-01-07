@@ -85,11 +85,11 @@ Definition equiv_is_mono (A B:Type) (f: A -> B) : IsEquiv f -> IsMono f :=
   
 Instance Tn_is_TSn : forall n, IsTrunc (trunc_S n) (Trunk n). (* Cf HoTT *)
 intro n.
-assert (Trunk n = TruncType n).
-apply path_universe_uncurried. apply issig_trunctype.
-symmetry in X. destruct X.
+assert (TruncType n = Trunk n).
+apply path_universe_uncurried. apply equiv_inverse. apply issig_trunctype.
+apply (transport (λ U, IsTrunc n.+1 U) X).
 apply istrunc_trunctype.
-Admitted.
+Defined.
 
 Definition truncn_unique n (A B : Trunk n) : A.1 = B.1 -> A = B.
   intro e. apply eq_dep_subset. intro. apply hprop_trunc. exact e.

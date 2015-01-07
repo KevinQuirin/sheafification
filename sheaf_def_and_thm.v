@@ -17,33 +17,49 @@ Arguments trunc_sigma {A} {P} {n} H H0: simpl never.
 Arguments istrunc_paths {A} {n} H x y: simpl never.
 Arguments truncn_unique _ {n} A B H: simpl never.
 
-Section Definitions.
 
+Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
 
-  Context `{ua: Univalence}.
-  Context `{fs: Funext}.
+  Export nj. Export mod.
+  (* Module Import RS_Prop := Reflective_Subuniverse nj. *)
+  Module Export Mod_Prop := Modality_theory nj mod.
+  
+  Definition ua := Mod_Prop.ua.
+  Definition fs := Mod_Prop.fs.
 
-  Parameter n0 : trunc_index.
+  (* Import Reflective_subuniverse_base_case. *)
 
-  Definition n := trunc_S n0.
+  Definition j := Reflective_Subuniverse_base_case.j.
+  Definition Oj := Reflective_Subuniverse_base_case.O.
+  Definition Oj_unit := Reflective_Subuniverse_base_case.O_unit.
+  Definition Oj_equiv := Reflective_Subuniverse_base_case.O_equiv.
 
-  Parameter mod_nj : Modality n.
+  (* Parameter n0 : trunc_index. *)
 
-  Definition nj := underlying_subu n mod_nj.
+  (* Definition n := trunc_S n0. *)
 
-  Parameter j_is_nj : forall P, (j P).1 = (nj.(O) (P.1; IsHProp_IsTrunc P.2 n0)).1.1.
+  (* Parameter mod_nj : Modality n. *)
 
-  Parameter j_is_nj_unit : forall P x ,
-                          transport idmap (j_is_nj P) (Oj_unit P x) = nj.(O_unit) (P.1; IsHProp_IsTrunc P.2 n0) x.
+  (* Definition nj := underlying_subu n mod_nj. *)
+
+  Parameter j_is_nj : forall sf, forall P, (j P).1 = (O sf (P.1; IsHProp_IsTrunc P.2 n0)).1.
+
+  Parameter j_is_nj_unit : forall sf, forall sfj, forall P x ,
+                          transport idmap (j_is_nj sf P) (Oj_unit sfj P x) = (O_unit) sf (P.1; IsHProp_IsTrunc P.2 n0) x.
 
   
-  Parameter islex_mod_nj : IsLex mod_nj.
+  (* Parameter islex_mod_nj : IsLex mod_nj. *)
 
-  Definition islex_nj := islex_to_hfibers_preservation mod_nj islex_mod_nj.
-  Definition lex_compat := islex_to_hfibers_preservation_compat mod_nj islex_mod_nj.
+  Definition islex_nj := islex_to_hfibers_preservation.
+  Definition lex_compat := islex_to_hfibers_preservation_compat.
   
+  (* Variable sf : subu_family. *)
+  (* Definition sf := Mod_Prop.subU_RSProp.sf. *)
+  (* Variable sfj : Reflective_Subuniverse_base_case.subu_family. *)
   
-  Definition nJ := {T : Trunk n & (nj.(O) T).1.1}.
+  (* Generalizable Variables sfj. *)
+  
+  Definition nJ  := {T : Trunk n & (O sf T).1}.
 
   Definition incl_Aeq_Eeq (E:Type) (χ:E -> Trunk n) (x:{e:E & (χ e).1})
   : {e':{e:E & (χ e).1} & x.1 = e'.1} -> {e':E & x.1 = e'}
@@ -57,16 +73,16 @@ Section Definitions.
     - intro u. destruct u as [[e' e] p]. simpl in *. destruct p. simpl. reflexivity.
   Defined.
 
-  Definition is_dense_eq (E:Type) (char : E -> Trunk n) := forall e:E, ({e':E & e=e'}) = (O nj (char e)).1.1.
+  Definition is_dense_eq (E:Type) (char : E -> Trunk n) := forall e:E, ({e':E & e=e'}) = (O sf  (char e)).1.
 
   Definition is_dense_diag (E:Type) (char : E -> Trunk n) (dense_eq : is_dense_eq char)
-    := forall x:{e:E & (char e).1}, forall u:{e':{e:E & (char e).1} & x.1 = e'.1}, (equiv_path _ _ (dense_eq x.1)) o (incl_Aeq_Eeq char x) = (O_unit nj _) o ((eq_dense_1 char x)).
+    := forall x:{e:E & (char e).1}, forall u:{e':{e:E & (char e).1} & x.1 = e'.1}, (equiv_path _ _ (dense_eq x.1)) o (incl_Aeq_Eeq char x) = (O_unit sf _) o ((eq_dense_1 char x)).
 
   Record EnJ (E:Type) :=
     {
       char :> E -> Trunk n ;
-      dense_eq : forall e:E, ({e':E & e=e'}) = (O nj (char e)).1.1 ;
-      dense_diag : forall x:{e:E & (char e).1}, forall u:{e':{e:E & (char e).1} & x.1 = e'.1}, (equiv_path _ _ (dense_eq x.1)) o (incl_Aeq_Eeq char x) = (O_unit nj _) o ((eq_dense_1 char x))
+      dense_eq : forall e:E, ({e':E & e=e'}) = (O sf (char e)).1 ;
+      dense_diag : forall x:{e:E & (char e).1}, forall u:{e':{e:E & (char e).1} & x.1 = e'.1}, (equiv_path _ _ (dense_eq x.1)) o (incl_Aeq_Eeq char x) = (O_unit sf _) o ((eq_dense_1 char x))
                                                                                                                                                                        (* For A a subobject of E, and x:A, this diagram commute : *)
                                                                                                                                                                        (*                                                         *)   
                                                                                                                                                                        (*   {e':A & x.1 = e'.1} === (χ x.1).1                     *)
@@ -74,20 +90,20 @@ Section Definitions.
                                                                                                                                                                        (*        ι |                    | η                       *)
                                                                                                                                                                        (*          |                    |                         *)
                                                                                                                                                                        (*          v                    v                         *)
-                                                                                                                                                                       (*    {e':E & x.1 = e'}  === (O nj (χ x.1)).1.1            *)
+                                                                                                                                                                       (*    {e':E & x.1 = e'}  === (O sf (χ x.1)).1.1            *)
                                                                                                                                                                        
     }.
 
 
   Definition witness_is_eta (E:Type) (χ:EnJ E) (x:{e:E & (χ e).1})
-  : transport idmap (dense_eq χ x .1) (x .1; 1) = O_unit nj (χ x .1) x.2
+  : transport idmap (dense_eq χ x .1) (x .1; 1) = O_unit sf (χ x .1) x.2
     := ap10 (dense_diag χ x (x;1)) (x;1).
 
   Definition EnJ_is_nJ (E:Type) (χ : EnJ E)
-  : forall e:E, (O nj (χ e)).1.1
+  : forall e:E, (O sf (χ e)).1
     := λ e, transport (λ T, T) (dense_eq χ e) (e;idpath).
 
-  Definition dense_eta_equal (E:Type) (χ : EnJ E) (x:E) : forall (v w:(χ x).1), O_unit nj (χ x) v = O_unit nj (χ x) w.
+  Definition dense_eta_equal (E:Type) (χ : EnJ E) (x:E) : forall (v w:(χ x).1), O_unit sf (χ x) v = O_unit sf (χ x) w.
     intros v w.
     assert (forall (a b:(∃ e' : E, x = e')), a=b).
     intros a b.
@@ -97,7 +113,7 @@ Section Definitions.
     rewrite (dense_eq χ) in X; apply X.
   Defined.
 
-  Definition E_to_χmono_map (T:Trunk (trunc_S n)) E (χ : E -> J) (f : E -> (pr1 T)) : 
+  Definition E_to_χmono_map (T:Trunk (trunc_S n)) E (χ : E -> (J )) (f : E -> (pr1 T)) : 
     (nchar_to_sub (pr1 o χ)).1 -> T.1 := f o pr1.
 
   Definition E_to_χ_map (T:Trunk (trunc_S n)) E (χ : EnJ E) (f : E -> (pr1 T)) : 
@@ -119,7 +135,7 @@ Section Definitions.
 
   (* If T is a n-Type, then if T is a n-sheaf, then T is also a (S n)-sheaf *)
 
-  Lemma nsheaf_to_Snsheaf (T:Trunk (trunc_S n)) (Trn : IsTrunc n T.1) (nsheaf : (subuniverse_HProp nj (T.1;Trn)).1)
+  Lemma nsheaf_to_Snsheaf (T:Trunk (trunc_S n)) (Trn : IsTrunc n T.1) (nsheaf : (subuniverse_HProp sf (T.1;Trn)).1)
   : Snsheaf_struct T.
     split.
     { intros E χ u v.
@@ -130,17 +146,20 @@ Section Definitions.
         destruct χ as [χ χeq χdiag]. simpl in *.
         pose proof (transport idmap (χeq x) (x;1)). simpl in X.
         revert X.
-        transparent assert (modal_family : (subuniverse_Type nj)).
+        transparent assert (modal_family : (subuniverse_Type)).
         { repeat refine (exist _ _ _).
           exact (u x = v x).
           apply istrunc_paths.
           exact T.2.
           pose subuniverse_paths.
-          specialize (p0 n nj ((T.1;Trn);nsheaf) (u x) (v x)). simpl in p0.
+          transparent assert (sheaf : subuniverse_Type).
+          repeat refine (exist _ _ _).
+          exact T.1. exact Trn. exact nsheaf.
+          specialize (p0 ((T.1;Trn);nsheaf) (u x) (v x)). simpl in p0.
           assert (istrunc_paths (trunc_succ Trn) (u x) (v x) = istrunc_paths T.2 (u x) (v x)) by apply path_ishprop.
           rewrite X in p0.
           exact p0. }
-        apply (O_rec (χ x) modal_family); unfold modal_family; clear modal_family.
+        apply (O_rec (χ x) modal_family.1 modal_family.2); unfold modal_family; clear modal_family.
         intro xx; simpl.
         exact (ap10 p (x;xx)).
       - intro p. simpl. unfold E_to_χ_map in *; simpl in *.
@@ -155,8 +174,8 @@ Section Definitions.
         specialize (χdiag (x;1)). simpl in χdiag.
         rewrite χdiag.
         match goal with
-          |[|- O_rec _ ?X _ _ = _] => set (sheaf := X) end.
-        exact (ap10 (O_rec_retr (χ x.1) sheaf (λ xx : (χ x.1).1, ap10 p (x.1; xx))) x.2). 
+          |[|- O_rec _ ?X ?Y _ _ = _] => set (sheaf_type := X); set (sheaf_sheaf := Y) end.
+        exact (ap10 (O_rec_retr (χ x.1) sheaf_type sheaf_sheaf (λ xx : (χ x.1).1, ap10 p (x.1; xx))) x.2). 
       - intro p. destruct p. simpl.
         match goal with
           |[|- path_forall u u ?X = _] => assert (X=(λ _, 1)) end.
@@ -166,134 +185,134 @@ Section Definitions.
       refine (isequiv_adjointify _ _ _ _).
       - intros f x.
         unfold J in χ; simpl in *.
-        assert (p := transport idmap (j_is_nj (χ x).1) (χ x).2).
-        revert p. simpl. apply (O_rec _ ((T.1;Trn);nsheaf)).
+        assert (p := transport idmap (j_is_nj sf (χ x).1) (χ x).2).
+        revert p. simpl. apply (O_rec _ (T.1;Trn) nsheaf).
         intros xx. simpl in *.
         exact (f (x;xx)).
       - intro f. apply path_forall; intro x; simpl in *.
         unfold E_to_χmono_map; simpl.
-        assert ((χ x.1).2 = (Oj_unit (χ x.1).1 x.2)) by apply path_ishprop.
+        assert ((χ x.1).2 = (Oj_unit sf (χ x.1).1 x.2)) by apply path_ishprop.
         rewrite X.
         path_via (O_rec (((χ x.1).1).1; IsHProp_IsTrunc ((χ x.1).1).2 n0)
-                        ((T.1; Trn); nsheaf) (λ xx : ((χ x.1).1).1, f (x.1; xx)) (O_unit nj
+                        (T.1; Trn) nsheaf (λ xx : ((χ x.1).1).1, f (x.1; xx)) (O_unit sf
                                                                                          (((χ x.1).1).1; IsHProp_IsTrunc ((χ x.1).1).2 n0)
                                                                                          x.2)).
-        apply ap. exact (j_is_nj_unit (χ x.1).1 x.2).
+        apply ap. exact (j_is_nj_unit sf sf (χ x.1).1 x.2).
         exact (ap10 (O_rec_retr (((χ x.1).1).1; IsHProp_IsTrunc ((χ x.1).1).2 n0)
-                                ((T.1; Trn); nsheaf)
+                                (T.1; Trn) nsheaf
                                 (λ xx : ((χ x.1).1).1, f (x.1; xx)))
                     x.2).
       - intro f.
         apply path_forall; intro x.
-        assert (p := transport idmap (j_is_nj (χ x).1) (χ x).2).
+        assert (p := transport idmap (j_is_nj sf (χ x).1) (χ x).2).
         revert p. simpl.
-        transparent assert (sheaf : (subuniverse_Type nj)).
+        transparent assert (sheaf : (subuniverse_Type)).
         { repeat refine (exist _ _ _).
           exact (O_rec (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0)
-       ((T.1; Trn); nsheaf) (λ xx : ((χ x).1).1, E_to_χmono_map T _ f (x; xx))
-       (transport idmap (j_is_nj (χ x).1) (χ x).2) = 
+       (T.1; Trn) nsheaf (λ xx : ((χ x).1).1, E_to_χmono_map T _ f (x; xx))
+       (transport idmap (j_is_nj sf (χ x).1) (χ x).2) = 
                  f x).
           apply istrunc_paths.
           exact T.2.
           pose (subuniverse_paths ((T.1;Trn);nsheaf)
                                   (O_rec (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0)
-                                         ((T.1; Trn); nsheaf)
+                                         (T.1; Trn) nsheaf
                                          (λ xx : ((χ x).1).1, E_to_χmono_map T _ f (x; xx))
-                                         (transport idmap (j_is_nj (χ x).1) (χ x).2))
+                                         (transport idmap (j_is_nj sf (χ x).1) (χ x).2))
                                   (f x)).
-          assert (istrunc_paths (trunc_succ (((T.1; Trn); nsheaf).1).2)
-           (O_rec
-              (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0)
-              ((T.1; Trn); nsheaf)
-              (λ xx : ((χ x).1).1, E_to_χmono_map T _ f (x; xx))
-              (transport idmap (j_is_nj (χ x).1) (χ x).2)) 
-           (f x) = istrunc_paths T.2
-        (O_rec
-           (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0)
-           ((T.1; Trn); nsheaf)
-           (λ xx : ((χ x).1).1, E_to_χmono_map T _ f (x; xx))
-           (transport idmap (j_is_nj (χ x).1) (χ x).2)) 
-        (f x)) by apply path_ishprop.
-          apply (transport (λ U, (subuniverse_HProp nj (_;U)).1) X); clear X.
+          simpl in p.
+          assert (istrunc_paths (trunc_succ ((((T.1; Trn); nsheaf) : subuniverse_Type).1).2)
+                                (O_rec (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0) 
+                                       (T.1; Trn) nsheaf
+                                       (E_to_χmono_map T χ f o exist (pr1 o (pr1 o χ)) x)
+                                       (transport idmap (j_is_nj sf (χ x).1) (χ x).2)) 
+                                (f x) = istrunc_paths T.2
+                                                      (O_rec (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0) 
+                                                             (T.1; Trn) nsheaf
+                                                             (E_to_χmono_map T χ f o exist (λ b : E, ((χ b).1).1) x)
+                                                             (transport idmap (j_is_nj sf (χ x).1) (χ x).2)) 
+                                                      (f x)) by apply path_ishprop.
+          apply (transport (λ U, (subuniverse_HProp sf (_;U)).1) X); clear X.
           apply p. }
           
-        apply (O_rec _ sheaf).
+        apply (O_rec _ sheaf.1 sheaf.2).
         unfold sheaf; clear sheaf. simpl. intro xx.
-        pose (j_is_nj_unit (χ x).1 xx).
-        assert ((χ x).2 = (Oj_unit (χ x).1 xx)) by apply path_ishprop.
+        pose (j_is_nj_unit sf sf (χ x).1 xx).
+        assert ((χ x).2 = (Oj_unit sf (χ x).1 xx)) by apply path_ishprop.
         rewrite X.
         path_via (O_rec (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0)
-     ((T.1; Trn); nsheaf) (λ xx0 : ((χ x).1).1, E_to_χmono_map T _ f (x; xx0))
-     (O_unit nj
+     (T.1; Trn) nsheaf (λ xx0 : ((χ x).1).1, E_to_χmono_map T _ f (x; xx0))
+     (O_unit sf
              (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0) xx)).
         apply ap; exact p.
-        exact (ap10 (O_rec_retr (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0) ((T.1; Trn); nsheaf) (λ xx0 : ((χ x).1).1, E_to_χmono_map T _ f (x; xx0))) xx). }
+        exact (ap10 (O_rec_retr (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0) (T.1; Trn) nsheaf (λ xx0 : ((χ x).1).1, E_to_χmono_map T _ f (x; xx0))) xx). }
   Defined.
 
 
   Definition nj_inter_f (A : Trunk n) (φ : A.1 -> Trunk n) : 
-    (nj.(O) ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2))).1.1 ->
-    (nj.(O) ({a:A.1 & (nj.(O) (φ a)).1.1}; trunc_sigma (A.2) (fun a => (nj.(O) (φ a)).1.2))).1.1
+    (O sf ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2))).1 ->
+    (O sf ({a:A.1 & (O sf (φ a)).1}; trunc_sigma (A.2) (fun a => (O sf (φ a)).2))).1
     := function_lift
-         nj
+         
          ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2))
-         ({a:A.1 & (nj.(O) (φ a)).1.1}; trunc_sigma (A.2) (fun a => (nj.(O) (φ a)).1.2))
-         (λ X, (X.1;nj.(O_unit) _ X.2)).
+         ({a:A.1 & (O sf (φ a)).1}; trunc_sigma (A.2) (fun a => (O sf (φ a)).2))
+         (λ X, (X.1;sf.(O_unit) _ X.2)).
 
   Definition nj_inter_g (A : Trunk n) (φ : A.1 -> Trunk n) : 
-    (nj.(O) ({a:A.1 & (nj.(O) (φ a)).1.1}; trunc_sigma (A.2) (fun a => (nj.(O) (φ a)).1.2))).1.1 ->
-    (nj.(O) ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2))).1.1.
-    apply O_rec. intro X.
-    generalize X.2. apply O_rec; intro φa.
-    apply nj.(O_unit). exact (X.1;φa).
+    (O sf ({a:A.1 & (O sf (φ a)).1}; trunc_sigma (A.2) (fun a => (O sf (φ a)).2))).1 ->
+    (O sf ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2))).1.
+    apply O_rec; [apply subuniverse_O | intro X].
+    generalize X.2. apply O_rec; [apply subuniverse_O | intro φa].
+    apply sf.(O_unit). exact (X.1;φa).
   Defined.
 
   Instance nj_inter_equiv (A : Trunk n) (φ : A.1 -> Trunk n) : IsEquiv (nj_inter_f A φ).
   apply (isequiv_adjointify _ (nj_inter_g A φ)).
   - intro x. unfold nj_inter_f, nj_inter_g. simpl in *.
-    transitivity (function_lift nj
-                      (∃ a0 : A .1, (φ a0) .1;
+    transitivity (function_lift                       (∃ a0 : A .1, (φ a0) .1;
                        trunc_sigma A .2 (λ a0 : A .1, (φ a0) .2))
-                      (∃ a0 : A .1, ((O nj (φ a0)) .1) .1;
+                      (∃ a0 : A .1, ((O sf (φ a0)) .1);
                        trunc_sigma  
-                         A .2 (λ a0 : A .1, ((O nj (φ a0)) .1) .2))
-                      (λ X : ∃ a0 : A .1, (φ a0) .1, (X .1; O_unit nj (φ X .1) X .2))
+                         A .2 (λ a0 : A .1, ((O sf (φ a0))) .2))
+                      (λ X : ∃ a0 : A .1, (φ a0) .1, (X .1; O_unit sf (φ X .1) X .2))
                       (O_rec
-                         (∃ a0 : A .1, ((O nj (φ a0)) .1) .1;
+                         (∃ a0 : A .1, ((O sf (φ a0)) .1);
                           trunc_sigma  
-                            A .2 (λ a0 : A .1, ((O nj (φ a0)) .1) .2))
-                         (O nj
+                            A .2 (λ a0 : A .1, ((O sf (φ a0))) .2))
+                         (O sf
                             (∃ a0 : A .1, (φ a0) .1;
                              trunc_sigma  A .2
                                           (λ a0 : A .1, (φ a0) .2)))
-                         (λ X : ∃ a0 : A .1, ((O nj (φ a0)) .1) .1,
-                            (function_lift nj (φ X.1) (∃ a0 : A .1, (φ a0) .1;
+                         (subuniverse_O sf _)
+                         (λ X : ∃ a0 : A .1, ((O sf (φ a0)) .1) ,
+                            (function_lift (φ X.1) (∃ a0 : A .1, (φ a0) .1;
                                                        trunc_sigma  
                                                          A .2 (λ a0 : A .1, (φ a0) .2)) (λ b, (X.1;b)))
                               X .2) x)
       ); auto with path_hints.
 
     pose (foo := ap10 (reflect_factoriality_pre
-                         (∃ a0 : A .1, ((O nj (φ a0)) .1) .1;
+                         (∃ a0 : A .1, ((O sf (φ a0)) .1);
                           trunc_sigma  
-                            A .2 (λ a0 : A .1, ((O nj (φ a0)) .1) .2))
-                         (((O nj
+                            A .2 (λ a0 : A .1, ((O sf (φ a0))) .2))
+                         (((O sf
                               (∃ a0 : A .1, (φ a0) .1;
                                trunc_sigma A .2
                                            (λ a0 : A .1, (φ a0) .2)))))
-                         (((O nj
-                              (∃ a0 : A .1, ((O nj (φ a0)) .1) .1;
+                         (((O sf
+                              (∃ a0 : A .1, ((O sf (φ a0)) .1);
                                trunc_sigma 
-                                 A .2 (λ a0 : A .1, ((O nj (φ a0)) .1) .2)))))
-                         (function_lift nj
-                                        (∃ a0 : A .1, (φ a0) .1;
+                                 A .2 (λ a0 : A .1, ((O sf (φ a0))) .2)))))
+                         (subuniverse_O sf _)
+                         (subuniverse_O sf _)
+                         (function_lift  (∃ a0 : A .1, (φ a0) .1;
                                          trunc_sigma  A .2 (λ a0 : A .1, (φ a0) .2))
-                                        (∃ a0 : A .1, ((O nj (φ a0)) .1) .1;
+                                        (∃ a0 : A .1, ((O sf (φ a0)) .1);
                                          trunc_sigma 
-                                           A .2 (λ a0 : A .1, ((O nj (φ a0)) .1) .2))
-                                        (λ X : ∃ a0 : A .1, (φ a0) .1, (X .1; O_unit nj (φ X .1) X .2)))
-                         ((λ X : ∃ a0 : A .1, ((O nj (φ a0)) .1) .1,
-                             function_lift nj (φ X .1)
+                                           A .2 (λ a0 : A .1, ((O sf (φ a0))) .2))
+                                        (λ X : ∃ a0 : A .1, (φ a0) .1, (X .1; O_unit sf (φ X .1) X .2)))
+                         ((λ X : ∃ a0 : A .1, ((O sf (φ a0)) .1),
+                             function_lift (φ X .1)
                                            (∃ a0 : A .1, (φ a0) .1;
                                             trunc_sigma  A .2
                                                          (λ a0 : A .1, (φ a0) .2)) (λ b : (φ X .1) .1, (X .1; b)) 
@@ -303,46 +322,49 @@ Section Definitions.
 
     transitivity (
         O_rec
-          (∃ a0 : A .1, ((O nj (φ a0)) .1) .1;
+          (∃ a0 : A .1, ((O sf (φ a0)) .1);
            trunc_sigma 
-             A .2 (λ a0 : A .1, ((O nj (φ a0)) .1) .2))
-          (O nj
-             (∃ a0 : A .1, ((O nj (φ a0)) .1) .1;
+             A .2 (λ a0 : A .1, ((O sf (φ a0))) .2))
+          (O sf
+             (∃ a0 : A .1, ((O sf (φ a0)) .1) ;
               trunc_sigma 
-                A .2 (λ a0 : A .1, ((O nj (φ a0)) .1) .2)))
-          (λ x0 : ∃ a0 : A .1, ((O nj (φ a0)) .1) .1,
-             function_lift nj (φ x0 .1)
-                           (∃ a0 : A .1, ((O nj (φ a0)) .1) .1;
+                A .2 (λ a0 : A .1, ((O sf (φ a0))) .2)))
+          (subuniverse_O sf _)
+          (λ x0 : ∃ a0 : A .1, ((O sf (φ a0)) .1),
+             function_lift (φ x0 .1)
+                           (∃ a0 : A .1, ((O sf (φ a0)) .1);
                             trunc_sigma
-                              A .2 (λ a0 : A .1, ((O nj (φ a0)) .1) .2))
-                           (λ x : (φ x0 .1) .1, (x0 .1; O_unit nj (φ x0 .1) x)) 
+                              A .2 (λ a0 : A .1, ((O sf (φ a0))) .2))
+                           (λ x : (φ x0 .1) .1, (x0 .1; O_unit sf (φ x0 .1) x)) 
                            x0 .2) x
       ).
     apply (ap (λ u, O_rec
-                      (∃ a0 : A .1, ((O nj (φ a0)) .1) .1;
+                      (∃ a0 : A .1, ((O sf (φ a0)) .1);
                        trunc_sigma 
-                         A .2 (λ a0 : A .1, ((O nj (φ a0)) .1) .2))
-                      (O nj
-                         (∃ a0 : A .1, ((O nj (φ a0)) .1) .1;
+                         A .2 (λ a0 : A .1, ((O sf (φ a0)) ) .2))
+                      (O sf
+                         (∃ a0 : A .1, ((O sf (φ a0)) .1);
                           trunc_sigma 
-                            A .2 (λ a0 : A .1, ((O nj (φ a0)) .1) .2))) u x)).
+                            A .2 (λ a0 : A .1, ((O sf (φ a0))) .2)))
+                      (subuniverse_O sf _)
+                      u x)).
     apply path_forall; intro x0.
     exact (ap10 (reflect_functoriality
-                   nj
+                   
                    (φ x0 .1)
                    (∃ a0 : A .1, (φ a0) .1;
                     trunc_sigma A .2
                                 (λ a0 : A .1, (φ a0) .2))
-                   (∃ a0 : A .1, ((O nj (φ a0)) .1) .1;
+                   (∃ a0 : A .1, ((O sf (φ a0)) .1);
                     trunc_sigma
-                      A .2 (λ a0 : A .1, ((O nj (φ a0)) .1) .2))
-                   (λ X : ∃ a0 : A .1, (φ a0) .1, (X .1; O_unit nj (φ X .1) X .2))
+                      A .2 (λ a0 : A .1, ((O sf (φ a0))) .2))
+                   (λ X : ∃ a0 : A .1, (φ a0) .1, (X .1; O_unit sf (φ X .1) X .2))
                    (λ b : (φ x0 .1) .1, (x0 .1; b))) x0.2
           ).
-    exact (ap10 (O_rec_O_rec_dep_sect nj
-                                      (∃ a0 : A .1, ((O nj (φ a0)) .1) .1;
+    exact (ap10 (O_rec_O_rec_dep_sect 
+                                      (∃ a0 : A .1, ((O sf (φ a0)) .1);
                                        trunc_sigma
-                                         A .2 (λ a0 : A .1, ((O nj (φ a0)) .1) .2))
+                                         A .2 (λ a0 : A .1, ((O sf (φ a0))) .2))
                                       (λ a, (φ a.1))
                                       (λ u, λ v, (u.1;v))
                                       (λ u, u.2)
@@ -351,33 +373,35 @@ Section Definitions.
     pose (foo := ap10 (reflect_factoriality_post
                          (∃ a : A .1, (φ a) .1;
                           trunc_sigma  A .2 (λ a : A .1, (φ a) .2))
-                         (∃ a : A .1, ((O nj (φ a)) .1) .1;
+                         (∃ a : A .1, ((O sf (φ a)) .1);
                           trunc_sigma 
-                            A .2 (λ a : A .1, ((O nj (φ a)) .1) .2))
-                         (O nj
+                            A .2 (λ a : A .1, ((O sf (φ a))) .2))
+                         (O sf
                             (∃ a : A .1, (φ a) .1;
                              trunc_sigma A .2 (λ a : A .1, (φ a) .2)))
-                         (λ X : (∃ a : A .1, ((O nj (φ a)) .1) .1;
+                         (subuniverse_O sf _)
+                         (λ X : (∃ a : A .1, ((O sf (φ a)) .1);
                                  trunc_sigma 
-                                   A .2 (λ a : A .1, ((O nj (φ a)) .1) .2)) .1,
+                                   A .2 (λ a : A .1, ((O sf (φ a))) .2)) .1,
                                 O_rec (φ X .1)
-                                      (O nj
+                                      (O sf
                                          (∃ a : A .1, (φ a) .1;
                                           trunc_sigma  A .2 (λ a : A .1, (φ a) .2)))
+                                      (subuniverse_O sf _)
                                       (λ φa : (φ X .1) .1,
-                                              O_unit nj
+                                              O_unit sf
                                                      (∃ a : A .1, (φ a) .1;
                                                       trunc_sigma  A .2 (λ a : A .1, (φ a) .2))
                                                      (X .1; φa)) X .2)
                          (λ X : (∃ a : A .1, (φ a) .1;
                                  trunc_sigma 
                                    A .2 (λ a : A .1, (φ a) .2)) .1,
-                                (X .1; O_unit nj (φ X .1) X .2)))
+                                (X .1; O_unit sf (φ X .1) X .2)))
                       x
          ).
 
     etransitivity; try exact foo. clear foo.
-    apply (ap10 (O_rec_O_rec_dep_retr nj
+    apply (ap10 (O_rec_O_rec_dep_retr 
                                       (∃ a : A .1, (φ a) .1; trunc_sigma A .2 (λ a : A .1, (φ a) .2))
                                       (λ a, (φ a .1))
                                       (λ a b, (a.1;b))
@@ -387,9 +411,9 @@ Section Definitions.
   Defined.
 
   Definition nj_inter (A : Trunk n) (φ : A.1 -> Trunk n) : 
-    nj.(O) ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2)) =
-    nj.(O) ({a:A.1 & (nj.(O) (φ a)).1.1}; trunc_sigma (A.2) (fun a => (nj.(O) (φ a)).1.2)).
-    apply unique_subuniverse. apply truncn_unique.
+    O sf ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2)) =
+    O sf ({a:A.1 & (O sf (φ a)).1}; trunc_sigma (A.2) (fun a => (O sf (φ a)).2)).
+    apply truncn_unique.
     exact fs.
     apply path_universe_uncurried. exact (BuildEquiv _ _ _ (nj_inter_equiv _ _)).
   Defined.
@@ -397,32 +421,33 @@ Section Definitions.
   Definition nj_fibers_compose A B C (f : A -> B) (g : B -> C) (c : C)
              (HB : ∀ b : B, IsTrunc n (hfiber f b)) (HC : ∀ c : C, IsTrunc n (hfiber g c))
   :
-    nj.(O) (hfiber (g o f) c; function_trunc_compo n f g HB HC c) =
-    nj.(O) ({ w :  hfiber g c &  (nj.(O) (hfiber f (pr1 w);(HB (pr1 w)))).1.1};
-            trunc_sigma (HC c) (fun a => (O nj (hfiber f a .1; HB a .1)).1 .2)).
+    O sf (hfiber (g o f) c; function_trunc_compo n f g HB HC c) =
+    O sf ({ w :  hfiber g c &  (O sf (hfiber f (pr1 w);(HB (pr1 w)))).1};
+            trunc_sigma (HC c) (fun a => (O sf (hfiber f a .1; HB a .1)) .2)).
     assert ((hfiber (g o f) c; function_trunc_compo n f g HB HC c) =
             ({ w : (hfiber g c) & hfiber f (pr1 w) }; trunc_sigma (HC c) (fun w => HB w.1))).
     apply truncn_unique. exact fs. apply fibers_composition.
-    apply (transport (fun X => O nj X = _) (inverse X)). clear X.
+    apply (transport (fun X => O sf X = _) (inverse X)). clear X.
     apply (nj_inter (hfiber g c; HC c) (fun w => (hfiber f w .1; HB w.1))).
   Defined.
   
-  Definition type_j_f E (χ: E -> J) :
-    (E -> subuniverse_Type nj) -> pr1 (nchar_to_sub (pr1  o χ))
-    -> subuniverse_Type nj := λ α e, α (pr1 e).
+  Definition type_j_f E (χ: E -> (J )) :
+    (E -> subuniverse_Type) -> pr1 (nchar_to_sub (pr1  o χ))
+    -> subuniverse_Type := λ α e, α (pr1 e).
 
-  Definition type_j_inv E (χ: E -> J) : (pr1 (nchar_to_sub (pr1  o χ)) -> subuniverse_Type nj) -> E -> subuniverse_Type nj :=
+  Definition type_j_inv E (χ: E -> J ) : (pr1 (nchar_to_sub (pr1  o χ)) -> subuniverse_Type ) -> E -> subuniverse_Type  :=
     λ α e, let f := (pr2 (nchar_to_sub (pr1  o α))) in
            let m := (pr2 (nchar_to_sub (pr1  o χ))) in
-           nj.(O) (nsub_to_char n ({b : _ &  pr1 (pr1 (α b))}; ((pr1 m) o (pr1 f); function_trunc_compo n (pr1 f) (pr1 m) (pr2 f) (fun e => IsHProp_IsTrunc (pr2 m e) n0))) e).
+           (O sf (nsub_to_char n ({b : _ &  pr1 (pr1 (α b))}; ((pr1 m) o (pr1 f); function_trunc_compo n (pr1 f) (pr1 m) (pr2 f) (fun e => IsHProp_IsTrunc (pr2 m e) n0))) e); subuniverse_O sf _).
 
-  Instance nTjTiSnTjT_eq E (χ : E -> J) : IsEquiv (λ (f : E -> subuniverse_Type nj) (t : {b : E & pr1 (pr1 (χ b))}), f (pr1 t)). 
+  Instance nTjTiSnTjT_eq E (χ : E -> J ) : IsEquiv (λ (f : E -> subuniverse_Type ) (t : {b : E & pr1 (pr1 (χ b))}), f (pr1 t)). 
   apply (isequiv_adjointify _ (type_j_inv (E:=E) (χ))).
   - intro φ.
     unfold type_j_inv. simpl. unfold nchar_to_sub, hfiber in φ; simpl in φ.
     apply path_forall; intro x.
+    apply unique_subuniverse.
     rewrite (O_modal (φ x)).
-    repeat apply ap.
+    apply (ap (O sf)).
     apply truncn_unique.
     exact fs.
     eapply concat; try exact (hfiber_pi1 ( (λ t : _, pr1 (pr1 (φ t)))) x).
@@ -432,6 +457,7 @@ Section Definitions.
   - intro φ.
     unfold type_j_inv. simpl.
     apply path_forall; intro x.
+    apply unique_subuniverse.
     rewrite (O_modal (φ x)).
     unfold nsub_to_char. simpl.
     assert ((hfiber
@@ -447,7 +473,7 @@ Section Definitions.
                                          IsHProp_IsTrunc (nchar_to_sub_compat (λ t : _, (χ (t.1)) .1) e) n0) 
                                   (nchar_to_sub_compat (λ t : E, (φ t) .1)) x)).
     apply truncn_unique. exact fs. apply (inter_symm (fun b => ((χ b) .1) .1) (fun b => ((φ b) .1) .1)).
-    apply (transport (fun x => O nj x = _ ) (inverse X)). clear X.
+    apply (transport (fun x => O sf x = _ ) (inverse X)). clear X.
     pose (X := (nj_fibers_compose x (λ e : {b : E | ((φ b) .1) .1},
                                            IsHProp_IsTrunc
                                              (nchar_to_sub_compat (λ t : {b : E | ((φ b) .1) .1}, (χ t .1) .1) e)
@@ -460,7 +486,7 @@ Section Definitions.
     apply path_universe_uncurried.
     eapply transitive_equiv.
     apply equiv_sigma_contr.
-    intro. pose (f := j_is_nj (hfiber pr1 a .1; 
+    intro. pose (f := j_is_nj sf (hfiber pr1 a .1; 
                                (nchar_to_sub_compat (λ t : {b : E | ((φ b) .1) .1}, (χ t .1) .1)
                                                     a .1))).
     apply (transport (fun X => Contr X) f).
@@ -472,13 +498,13 @@ Section Definitions.
   Defined.
 
   Definition nTjTiseparated_eq_fun_univ (E:Type) (χ:EnJ E) φ1 φ2
-             (p: E_to_χ_map (subuniverse_Type nj; subuniverse_Type_is_TrunkSn (subU:=nj)) χ φ1 =
-                 E_to_χ_map (subuniverse_Type nj; subuniverse_Type_is_TrunkSn (subU:=nj)) χ φ2)
+             (p: E_to_χ_map (subuniverse_Type ; subuniverse_Type_is_TrunkSn ) χ φ1 =
+                 E_to_χ_map (subuniverse_Type ; subuniverse_Type_is_TrunkSn ) χ φ2)
              (x:E)
   :  ((φ1 x).1.1 -> (φ2 x).1.1).
     unfold E_to_χ_map in p.
     generalize dependent (EnJ_is_nJ χ x).
-    pose (p0 := O_rec (((χ x))) (existT (fun T => (subuniverse_HProp nj T).1) (((φ1 x) .1) .1 → ((φ2 x) .1) .1 ; trunc_arrow ((φ2 x) .1).2) (subuniverse_arrow (((φ1 x) .1) .1) (φ2 x)))); simpl in p0.
+    pose (p0 := O_rec (χ x) (((φ1 x) .1) .1 → ((φ2 x) .1) .1 ; trunc_arrow ((φ2 x) .1).2) (subuniverse_arrow (((φ1 x) .1) .1) (φ2 x))); simpl in p0.
     apply p0.
     intro v. simpl.
 
@@ -487,9 +513,9 @@ Section Definitions.
   Defined.
   
   Lemma nTjTiseparated_eq_fun_univ_invol (E:Type) (χ:EnJ E) φ1 φ2 (p: E_to_χ_map
-                                                                        (subuniverse_Type nj; subuniverse_Type_is_TrunkSn (subU:=nj)) χ φ1 =
+                                                                        (subuniverse_Type ; subuniverse_Type_is_TrunkSn ) χ φ1 =
                                                                       E_to_χ_map
-                                                                        (subuniverse_Type nj; subuniverse_Type_is_TrunkSn (subU:=nj)) χ φ2) (x:E)
+                                                                        (subuniverse_Type ; subuniverse_Type_is_TrunkSn ) χ φ2) (x:E)
   : forall (y:(φ2 x).1.1), nTjTiseparated_eq_fun_univ p x (nTjTiseparated_eq_fun_univ p^ x y) = y.
   Proof.
     intro y. unfold nTjTiseparated_eq_fun_univ; simpl.
@@ -510,12 +536,12 @@ Section Definitions.
          ). 
     apply (transport (λ u, u = y) foo^). clear foo.
 
-    pose (fooo := @transport_arrow_space_dep_path n nj fs (φ1 x) (φ2 x) (χ x) (λ v, (ap10 p (x;v))..1..1)).
+    pose (fooo := @transport_arrow_space_dep_path (φ1 x) (φ2 x) (χ x) (λ v, (ap10 p (x;v))..1..1)).
     simpl in fooo.
 
     transitivity (O_rec (χ x)
-                    ((((φ2 x) .1) .1 → ((φ2 x) .1) .1; trunc_arrow ((φ2 x).1.2));
-                     subuniverse_arrow ((φ2 x) .1) .1 (φ2 x))
+                    (((φ2 x) .1) .1 → ((φ2 x) .1) .1; trunc_arrow ((φ2 x).1.2))
+                     (subuniverse_arrow ((φ2 x) .1) .1 (φ2 x))
                     (λ (v : (χ x) .1) (x0 : ((φ2 x) .1) .1),
                      transport idmap
                                
@@ -525,8 +551,8 @@ Section Definitions.
                                           (ap10 p (x; v))..1..1^ x0)) (EnJ_is_nJ χ x) y); auto with path_hints.
 
     apply (ap (λ u, O_rec (χ x)
-                          ((((φ2 x) .1) .1 → ((φ2 x) .1) .1; trunc_arrow ((φ2 x).1.2));
-                           subuniverse_arrow ((φ2 x) .1) .1 (φ2 x))
+                          (((φ2 x) .1) .1 → ((φ2 x) .1) .1; trunc_arrow ((φ2 x).1.2))
+                           (subuniverse_arrow ((φ2 x) .1) .1 (φ2 x))
                           u (EnJ_is_nJ χ x) y)).
     apply path_forall; intro v. apply path_forall; intro x0.
     apply ap. 
@@ -539,21 +565,21 @@ Section Definitions.
     rewrite ap_V. rewrite ap_V. reflexivity.
     
     apply (transport (λ U, O_rec (χ x)
-                                 ((((φ2 x) .1) .1 → ((φ2 x) .1) .1; trunc_arrow ((φ2 x).1.2));
-                                  subuniverse_arrow ((φ2 x) .1) .1 (φ2 x))
+                                 (((φ2 x) .1) .1 → ((φ2 x) .1) .1; trunc_arrow ((φ2 x).1.2))
+                                  (subuniverse_arrow ((φ2 x) .1) .1 (φ2 x))
                                  U
                                  (EnJ_is_nJ χ x) y = y) fooo^).
     clear fooo; simpl.
-    pose (foo := ap10 (ap10 (O_rec_const (χ x) ((((φ2 x) .1) .1 → ((φ2 x) .1) .1; trunc_arrow ((φ2 x).1.2));
-                                                subuniverse_arrow ((φ2 x) .1) .1 (φ2 x)) idmap) (EnJ_is_nJ χ x)) y). simpl in foo.
+    pose (foo := ap10 (ap10 (O_rec_const (χ x) (((φ2 x) .1) .1 → ((φ2 x) .1) .1; trunc_arrow ((φ2 x).1.2))
+                                                (subuniverse_arrow ((φ2 x) .1) .1 (φ2 x)) idmap) (EnJ_is_nJ χ x)) y). simpl in foo.
     etransitivity; [exact foo | reflexivity].
   Defined.
 
   Definition nTjTiseparated_eq_inv (E:Type) (χ:EnJ E) φ1 φ2 :
     E_to_χ_map
-      (subuniverse_Type nj; subuniverse_Type_is_TrunkSn (subU:=nj)) χ φ1 =
+      (subuniverse_Type ; subuniverse_Type_is_TrunkSn ) χ φ1 =
     E_to_χ_map 
-      (subuniverse_Type nj; subuniverse_Type_is_TrunkSn (subU:=nj)) χ φ2
+      (subuniverse_Type ; subuniverse_Type_is_TrunkSn ) χ φ2
     -> φ1 = φ2.
     intro p.
     simpl in *.
@@ -568,7 +594,7 @@ Section Definitions.
     - exact (transport (λ u, ∀ y : ((φ1 x) .1) .1, nTjTiseparated_eq_fun_univ (inverse p) x (nTjTiseparated_eq_fun_univ u x y) = y) (inv_V p) (nTjTiseparated_eq_fun_univ_invol (inverse p) x)).
   Defined.
 
-  Lemma nTjTiseparated_eq : separated (existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj)).
+  Lemma nTjTiseparated_eq : separated (existT (IsTrunc (n.+1)) (subuniverse_Type) (@subuniverse_Type_is_TrunkSn)).
     intros E χ φ1 φ2.
     apply isequiv_adjointify with (g := @nTjTiseparated_eq_inv E χ φ1 φ2).
     - intro p. 
@@ -586,11 +612,11 @@ Section Definitions.
       unfold path_universe_uncurried. rewrite eisretr.
       apply equal_equiv.
       unfold nTjTiseparated_eq_fun_univ, EnJ_is_nJ. 
-      apply (transport (λ U, O_rec _ ((((φ1 (pr1 x)).1).1 → ((φ2 (pr1 x)).1).1;
-      trunc_arrow ((φ2 (pr1 x)).1).2);
-     subuniverse_arrow ((φ1 (pr1 x)).1).1 (φ2 (pr1 x))) _ U = _) ((witness_is_eta χ x)^)).
+      apply (transport (λ U, O_rec _ (((φ1 (pr1 x)).1).1 → ((φ2 (pr1 x)).1).1;
+      trunc_arrow ((φ2 (pr1 x)).1).2)
+                                   (subuniverse_arrow ((φ1 (pr1 x)).1).1 (φ2 (pr1 x))) _ U = _) ((witness_is_eta χ x)^)).
       etransitivity;
-        try exact (ap10 (O_rec_retr (χ x.1) ((((φ1 x .1) .1) .1 → ((φ2 x .1) .1) .1; trunc_arrow ((φ2 x.1).1.2)); subuniverse_arrow ((φ1 x .1) .1) .1 (φ2 x .1)) (λ v : (χ x .1) .1, transport idmap ((ap10 p (x .1; v)) ..1) ..1)) x.2).
+        try exact (ap10 (O_rec_retr (χ x.1) (((φ1 x .1) .1) .1 → ((φ2 x .1) .1) .1; trunc_arrow ((φ2 x.1).1.2)) (subuniverse_arrow ((φ1 x .1) .1) .1 (φ2 x .1)) (λ v : (χ x .1) .1, transport idmap ((ap10 p (x .1; v)) ..1) ..1)) x.2).
       repeat apply ap. destruct x as [x1 x2]. reflexivity.
       
     - intro p; destruct p.
@@ -604,11 +630,11 @@ Section Definitions.
       unfold equiv_path. simpl.
       apply equal_equiv.
       unfold transport, nTjTiseparated_eq_fun_univ; simpl.
-      exact (ap10 (O_rec_const  (χ x) ((((φ1 x) .1) .1 → ((φ1 x) .1) .1; trunc_arrow ((φ1 x).1.2));
-                                       subuniverse_arrow ((φ1 x) .1) .1 (φ1 x)) idmap) (EnJ_is_nJ χ x)). 
+      exact (ap10 (O_rec_const  (χ x) (((φ1 x) .1) .1 → ((φ1 x) .1) .1; trunc_arrow ((φ1 x).1.2))
+                                       (subuniverse_arrow ((φ1 x) .1) .1 (φ1 x)) idmap) (EnJ_is_nJ χ x)). 
   Defined.
 
-  Lemma nType_j_Type_is_SnType_j_Type : Snsheaf_struct (existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj)).
+  Lemma nType_j_Type_is_SnType_j_Type : Snsheaf_struct (existT (IsTrunc (n.+1)) (subuniverse_Type) (@subuniverse_Type_is_TrunkSn )).
   Proof.
     split.
     apply nTjTiseparated_eq.
@@ -617,7 +643,7 @@ Section Definitions.
   Defined.
 
   Definition nType_j_Type_sheaf : SnType_j_Type :=
-    ((existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj));nType_j_Type_is_SnType_j_Type).
+    ((existT (IsTrunc (n.+1)) (subuniverse_Type) (@subuniverse_Type_is_TrunkSn ));nType_j_Type_is_SnType_j_Type).
 
   Instance dep_prod_SnType_j_Type_eq
            (A : Type)
@@ -764,17 +790,17 @@ Section Definitions.
     exact (dep_prod_SnType_j_Type_eq _).
   Defined.
 
-  Definition closed E (χ : E -> Trunk n) := forall e, IsEquiv (nj.(O_unit) (χ e)).
+  Definition closed E (χ : E -> Trunk n) := forall e, IsEquiv (O_unit sf (χ e)).
   
   Definition closed' E A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) := closed (nsub_to_char n (A;m)).
 
-  Definition cloture E (χ : E -> Trunk n) : E -> Trunk n := pr1 o nj.(O) o χ.
+  Definition cloture E (χ : E -> Trunk n) : E -> Trunk n := O sf o χ.
   
   Definition cloture' E A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) :=
     nchar_to_sub (cloture (nsub_to_char n (A;m))).
 
   Definition cloture_is_closed (E :Type) (χ : E -> Trunk n) : closed (cloture χ).
-    intro. apply O_modal_equiv. exact fs.
+    intro. apply (O_modal_equiv ((cloture χ e); (subuniverse_O sf _))).
   Defined.
 
   Lemma cloture_is_closed' (A:Type) (E:Type) (m : {f : A -> E & forall e:E, IsTrunc n (hfiber f e)}) : closed' (pr2 (cloture' m)).
@@ -792,7 +818,7 @@ Section Definitions.
 
   Definition Δ (T:Trunk (trunc_S n)) := nchar_to_sub (δ T).
   
-  Definition clδ T := pr1  o nj.(O) o (δ T).
+  Definition clδ T := O sf o (δ T).
 
   Definition clΔ T := (nchar_to_sub (clδ T)).
 
@@ -810,29 +836,31 @@ Section Definitions.
     - intro x. simpl. hott_simpl. 
   Defined.
         
-  Lemma dicde_l (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1}) (e:clA)
-  : (∃ rx : ((O nj (φ e .1)) .1) .1,
+  Lemma dicde_l (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1}) (e:clA)
+  : (∃ rx : ((O sf (φ e .1)) .1),
        rx =
-      e.2) =(∃ rx : ((O nj (φ e .1)) .1) .1,
-       O_rec (φ e .1) (O nj (O nj (φ e .1)) .1)
+      e.2) =(∃ rx : ((O sf (φ e .1)) .1),
+       O_rec (φ e .1) (O sf (O sf (φ e .1))) (subuniverse_O sf _)
              (λ x : (φ e .1) .1,
-                    O_unit nj (O nj (φ e .1)) .1 (O_unit nj (φ e .1) x)) rx =
-       O_unit nj (O nj (φ e .1)) .1 e .2)
+                    O_unit sf (O sf (φ e .1)) (O_unit sf (φ e .1) x)) rx =
+       O_unit sf (O sf (φ e .1)) e .2)
     .
     apply path_universe_uncurried.
     assert (foo := @equal_hfibers
-                   ((O nj (φ e .1)).1.1)
-                   ((O nj (O nj (φ e .1)) .1).1.1)
-                   ((O_invol_ nj (φ e .1))..1..1)
-                   (O_rec (φ e .1) (O nj (O nj (φ e .1)) .1)
-                          (λ x : (φ e .1) .1, O_unit nj (O nj (φ e .1)) .1 (O_unit nj (φ e .1) x)))
-                   (O_unit nj (O nj (φ e .1)) .1)
+                   ((O sf (φ e .1)).1)
+                   ((O sf (O sf (φ e .1))).1)
+                   ((O_invol_ (φ e .1))..1)
+                   (O_rec (φ e .1) (O sf (O sf (φ e .1)) ) (subuniverse_O sf _)
+                          (λ x : (φ e .1) .1, O_unit sf (O sf (φ e .1)) (O_unit sf (φ e .1) x)))
+                   (O_unit sf (O sf (φ e .1)))
                    e.2). simpl in foo.
     apply foo. clear foo.
     - simpl.
-      pose (bar := O_rec_sect (φ e .1) (O nj (O nj (φ e .1)) .1) (O_unit nj _)).  simpl in bar.
-      unfold O_rec; simpl.
-      exact (bar @ (OO_unit_idmap _ _)).
+      pose (bar := O_rec_sect (φ e .1) (O sf (O sf (φ e .1))) (subuniverse_O sf _) (O_unit sf _)).  simpl in bar.
+      unfold O_rec; simpl in *.
+      apply path_forall; intro x.
+      etransitivity; try exact (ap10 bar x).
+      refine (ap10 (OO_unit_idmap _) x).
     - apply OO_unit_idmap.
   Defined.
     
@@ -840,20 +868,22 @@ Section Definitions.
         (E : Type)
         (φ : E → Trunk n)
         (A := ∃ e : E, (φ e) .1 : Type)
-        (clA := ∃ e : E, ((O nj (φ e)) .1) .1 : Type)
-        (a : ∃ e : E, ((O nj (φ e)) .1) .1)
-        (x : ∃ π : (φ a .1) .1, O_unit nj (φ a .1) π = a .2)
-        (π : ∃ π : (φ a .1) .1, O_unit nj (φ a .1) π = a .2)
-        (π' : ∃ π : (φ a .1) .1, O_unit nj (φ a .1) π = a .2)
+        (clA := ∃ e : E, ((O sf (φ e)) .1): Type)
+        (a : ∃ e : E, ((O sf (φ e)) .1))
+        (x : ∃ π : (φ a .1) .1, O_unit sf (φ a .1) π = a .2)
+        (π : ∃ π : (φ a .1) .1, O_unit sf (φ a .1) π = a .2)
+        (π' : ∃ π : (φ a .1) .1, O_unit sf (φ a .1) π = a .2)
   : equiv_path _ _ (dicde_l φ a) (a .2; 1) =
-    (O_unit nj (φ a .1) π' .1;
-     islex_compat_func mod_nj (φ a .1) (O nj (φ a .1)) .1 (O_unit nj (φ a .1)) _ π').
+    (O_unit sf (φ a .1) π' .1;
+     islex_compat_func (φ a .1) (O sf (φ a .1)) (O_unit sf (φ a .1)) _ π').
     unfold dicde_l.   
     unfold path_universe_uncurried.
     rewrite eisretr. simpl. hott_simpl.
     apply @path_sigma' with (p := π'.2^). simpl. destruct π' as [b p]. simpl. destruct p. simpl.
+    unfold ap10, path_forall. rewrite apD10_pp. rewrite (eisretr apD10).
+    rewrite apD10_V. hott_simpl.
     unfold islex_compat_func. simpl.
-    apply ap10_O_retr_sect.
+    exact (ap10_O_retr_sect (φ a.1) ((O sf (O sf (φ a.1))); (subuniverse_O sf (O sf (φ a.1)))) (O_unit sf (O sf (φ a.1))) b). 
   Defined.
     
   Lemma path_sigma_eta (A : Type) (P : A → Type) (u : ∃ x, P x)
@@ -861,18 +891,18 @@ Section Definitions.
   destruct u. simpl. reflexivity.
   Defined.
 
-  Lemma dense_into_cloture_dense_eq (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
-  : is_dense_eq (λ e:clA, ({π : (φ e.1).1 & O_unit nj _ π = e.2} ; trunc_sigma (φ e .1) .2
+  Lemma dense_into_cloture_dense_eq (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
+  : is_dense_eq (λ e:clA, ({π : (φ e.1).1 & O_unit sf _ π = e.2} ; trunc_sigma (φ e .1) .2
               (λ a : (φ e .1) .1,
-               istrunc_paths (trunc_succ ((O nj (φ e.1)).1.2)) (O_unit nj (φ e .1) a) e .2))).
+               istrunc_paths (trunc_succ ((O sf (φ e.1)).2)) (O_unit sf (φ e .1) a) e .2))).
     intro e.
-    assert (rew := ((islex_nj (φ e .1) (O nj (φ e .1)).1 (O_unit nj _) e.2) @ (dicde_l φ e)^)).
+    assert (rew := ((islex_nj (φ e .1) (O sf (φ e .1)) (O_unit sf _) e.2) @ (dicde_l φ e)^)).
     apply path_universe_uncurried.
-    apply (transport (λ U, (∃ e' : clA, e = e') <~> U) (islex_nj (φ e .1) (O nj (φ e .1)).1 (O_unit nj _) e.2)^).
+    apply (transport (λ U, (∃ e' : clA, e = e') <~> U) (islex_nj (φ e .1) (O sf (φ e .1)) (O_unit sf _) e.2)^).
     apply (transport (λ U, (∃ e' : clA, e = e') <~> U) (dicde_l φ e)).
     
     exists ((λ x:(∃ e' : clA, e = e'), existT (λ u, u = e.2) e.2 1)).
-    apply @isequiv_adjointify with (g:= (λ x:(∃ rx : ((O nj (φ e .1)) .1) .1, rx = e .2), ((e.1;x.1); path_sigma _ e (e.1;x.1) 1 x.2^))).
+    apply @isequiv_adjointify with (g:= (λ x:(∃ rx : ((O sf (φ e .1)) .1), rx = e .2), ((e.1;x.1); path_sigma _ e (e.1;x.1) 1 x.2^))).
 
     - intros [x p]. destruct p. reflexivity.
     - intros [x p]. destruct p. simpl.
@@ -889,7 +919,7 @@ Section Definitions.
     destruct q. apply equal_equiv. simpl. done.
   Defined.
 
-  Lemma dense_into_cloture_dense_diag (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
+  Lemma dense_into_cloture_dense_diag (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
   : is_dense_diag (dense_into_cloture_dense_eq φ).
     intros x p.
     unfold dense_into_cloture_dense_eq.
@@ -908,25 +938,25 @@ Section Definitions.
     simpl.
     rewrite transport_pp.
 
-    pose (foo := lex_compat (φ a .1) (O nj (φ a .1)).1 (O_unit nj (φ a .1))). unfold equiv_path in foo; simpl in foo.
+    pose (foo := lex_compat (φ a .1) (O sf (φ a .1)) (O_unit sf (φ a .1))). unfold equiv_path in foo; simpl in foo.
     specialize (foo a.2 π'). simpl in foo.
     unfold hfiber in foo. simpl in foo.
     (* assert (bar := foo..1); simpl in bar. *)
 
-    apply (moveR_transport_V idmap (islex_nj (φ a .1) (O nj (φ a .1)) .1 (O_unit nj (φ a .1)) a .2) (transport idmap (dicde_l φ a)  (a .2; 1))).
+    apply (moveR_transport_V idmap (islex_nj (φ a .1) (O sf (φ a .1))  (O_unit sf (φ a .1)) a .2) (transport idmap (dicde_l φ a)  (a .2; 1))).
 
     apply (transport (λ U, transport idmap (dicde_l φ a) (a .2; 1) = U) foo^).
     clear foo.
     apply dicde_ll. exact π. exact π'.
   Qed.
   
-  Definition dense_into_cloture (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
+  Definition dense_into_cloture (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
   : EnJ clA.
     refine (Build_EnJ _ (dense_into_cloture_dense_eq φ) _).
     apply dense_into_cloture_dense_diag.
   Defined.
 
-  Definition transport_density (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
+  Definition transport_density (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
   : forall X, clA = X -> EnJ X.
     pose (e := dense_into_cloture φ); simpl in e.
     destruct e as [χ χeq χdiag].
@@ -974,8 +1004,8 @@ Section Definitions.
   Defined.
   Opaque path_sigma_transport'.
 
-  Definition transport_density_sigma (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
-  : forall α:E -> Trunk n, (pr1 o pr1 o (O nj) o φ == pr1 o α) -> EnJ {e:E & (α e).1}.
+  Definition transport_density_sigma (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
+  : forall α:E -> Trunk n, ( pr1 o (O sf) o φ == pr1 o α) -> EnJ {e:E & (α e).1}.
     intros α p.
     transparent assert (X : (clA = (∃ e : E, (α e).1))).
     { apply path_universe_uncurried.
@@ -1016,7 +1046,7 @@ Section Definitions.
       simpl in χdiag.
       etransitivity; try exact χdiag.
       apply ap.
-      exact (ap10 (@path_sigma_transport'_transport E (pr1 o α) (pr1 o pr1 o O nj o φ) (pr1 o χ) p x.1 z.1.1 z.2) z.1.2). 
+      exact (ap10 (@path_sigma_transport'_transport E (pr1 o α) (pr1 o O sf o φ) (pr1 o χ) p x.1 z.1.1 z.2) z.1.2). 
   Defined.
       
-End Definitions.
+End Definitions. 

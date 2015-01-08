@@ -478,7 +478,7 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
                                            IsHProp_IsTrunc
                                              (nchar_to_sub_compat (λ t : {b : E | ((φ b) .1) .1}, (χ t .1) .1) e)
                                              n0) (nchar_to_sub_compat (λ t : E, (φ t) .1)))).
-    (* apply (transport (fun x => x = _) (inverse X)). clear X.
+   (* apply (transport (fun x => x = _) (inverse X)). clear X.
     
     apply ap. apply truncn_unique. simpl.
     (* etransitivity. *)
@@ -657,20 +657,17 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
                                                       (nType_j_Type@{Si' u a i' i} sf).
   Proof.
     split.
-    apply nTjTiseparated_eq.
+    apply nTjTiseparated_eq@{Si' u a i i' i'}.
     intros E χ. unfold E_to_χ_map; simpl.
     exact (nTjTiSnTjT_eq _ _).
   Defined.
 
-
   Definition nType_j_Type_sheaf (sf : subu_family) : SnType_j_Type@{Si' u a i i'} sf :=
-    (nType_j_Type@{Si' u a i' i} sf; nType_j_Type_is_SnType_j_Type sf).
-
-
+    (nType_j_Type@{Si' u a i' i} sf; nType_j_Type_is_SnType_j_Type@{Si' u a i i'} sf).
   
-  Instance dep_prod_SnType_j_Type_eq
-           (A : Type)
-           (B : A -> SnType_j_Type)
+  Instance dep_prod_SnType_j_Type_eq (sf : subu_family)
+           (A : Type@{u})
+           (B : A -> SnType_j_Type@{Si' u a i' i} sf)
   : forall (E:Type) (χ : E -> J) (H := λ a, (snd (pr2 (B a))) E χ),
       IsEquiv (λ (f : E -> ∀ a : A, pr1 (pr1 (B a))) (t : {b : E & pr1 (pr1 (χ b))}), f (pr1 t)).
   intros E χ H.   
@@ -695,11 +692,11 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     exact (ap10 eissect x).
   Defined.
 
-  Definition dep_prod_SnType_j_Type_sep_inv
-             (A : Type)
-             (B : A -> SnType_j_Type)
+  Definition dep_prod_SnType_j_Type_sep_inv (sf : subu_family)
+             (A : Type@{u})
+             (B : A -> SnType_j_Type@{Si' u a i i'} sf)
              (E : Type)
-             (χ : EnJ E)
+             (χ : EnJ sf E)
              (x y : E -> ∀ a : A, ((B a) .1) .1)
   : (λ (f : E -> ∀ a : A, ((B a) .1) .1) (t : {b : E | ((χ b)) .1}),
      f t .1) x =
@@ -723,15 +720,15 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     unfold ap10, path_forall; rewrite eisretr. reflexivity.
   Qed.
 
-  Lemma dep_prod_SnType_j_Type_sep
-        (A : Type)
-        (B : A -> SnType_j_Type)
-  : forall (E:Type) (χ : EnJ E), IsMono
+  Lemma dep_prod_SnType_j_Type_sep (sf : subu_family)
+        (A : Type@{u})
+        (B : A -> SnType_j_Type@{Si' u a i i'} sf)
+  : forall (E:Type) (χ : EnJ sf E), IsMono
                                    (λ (f : E -> ∀ a : A, (B a).1.1) (t : {b : E & (χ b).1}), f (t.1)).
     intros E χ.
     unfold IsMono.
     intros f g.
-    apply @isequiv_adjointify with (g := @dep_prod_SnType_j_Type_sep_inv A B E χ f g).
+    apply @isequiv_adjointify with (g := @dep_prod_SnType_j_Type_sep_inv sf A B E χ f g).
     - unfold Sect.
       intro p.
       unfold dep_prod_SnType_j_Type_sep_inv. 
@@ -805,69 +802,36 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
       exact (apD10 X x).
   Defined.
   
-  Definition dep_prod_SnType_j_Type : forall (A: Trunk n.+1) (B : A.1 -> SnType_j_Type) ,
-                                        Snsheaf_struct (forall a, pr1 (pr1 (B a)); 
+  Definition dep_prod_SnType_j_Type (sf : subu_family) :
+    forall (A: Trunk@{Si' u a} n.+1) (B : A.1 -> SnType_j_Type@{Si' u a i i'} sf) ,
+      Snsheaf_struct sf (forall a, pr1 (pr1 (B a)); 
                                                         @trunc_forall _ A.1 (fun a => pr1 (pr1 (B a))) (trunc_S n) (fun a => pr2 (pr1 (B a)))).
     intros. split. 
     exact (dep_prod_SnType_j_Type_sep _).
     exact (dep_prod_SnType_j_Type_eq _).
   Defined.
 
-  Definition T_nType_j_Type_trunc (T:Trunk (trunc_S n)) : IsTrunc (trunc_S n) (pr1 T -> subuniverse_Type).
-    apply (@trunc_forall _ _ (fun P => _)). intro. 
-    apply (@trunc_sigma _ (fun P => _)). apply Tn_is_TSn.
-    intro. apply IsHProp_IsTrunc. exact (pr2 (subuniverse_HProp sf a0)).
-  Defined.
+  Definition test (sf : subu_family@{u a}) (T: Trunk@{Si' u a} n.+1) :=
+    @dep_prod_SnType_j_Type@{Si' u a i i'} sf T (λ _, nType_j_Type_sheaf@{Si' u a i i'} sf).
   
-Set Printing Universes.
+  Definition closed (sf : subu_family@{u a}) E (χ : E -> Trunk n) := forall e, IsEquiv (O_unit sf (χ e)).
+  
+  Definition closed' (sf : subu_family@{u a}) E A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) := closed sf (nsub_to_char n (A;m)).
 
-Definition foo (T: Trunk@{Si' i' a} n.+1) : T.1 -> SnType_j_Type@{h''' Si' i' a e i' i x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11}
-  := (λ _, nType_j_Type_sheaf@{h'' Si' i' a e i b c d f b' c'}).
+  Definition cloture (sf : subu_family@{u a}) E (χ : E -> Trunk n) : E -> Trunk n := O sf o χ.
+  
+  Definition cloture' (sf : subu_family@{u a}) E A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) :=
+    nchar_to_sub (cloture sf (nsub_to_char n (A;m))).
 
-Definition T_nType_j_Type_isSheaf (T: Trunk@{Si' i' a} n.+1) := @dep_prod_SnType_j_Type T (foo T).
-
-
-
-Definition T_nType_j_Type_isSheaf : forall (T: Trunk n.+1), Snsheaf_struct (pr1 T -> subuniverse_Type;
-                                                    T_nType_j_Type_trunc T).
-    intro.
-    unfold T_nType_j_Type_trunc.
-
-    pose (s := fun sheaf => @dep_prod_SnType_j_Type T (λ _, sheaf)). simpl in s.
-    specialize (s nType_j_Type_sheaf).
-    pose (s := @dep_prod_SnType_j_Type T.1 (λ _, sheaf)). simpl in s.
-    assert (X : (T.1 → subuniverse_Type;
-        trunc_forall (λ _ : T.1, subuniverse_Type_is_TrunkSn)) = (T.1 → subuniverse_Type;
-     trunc_forall
-       (λ _ : T.1,
-        trunc_sigma (Tn_is_TSn (n:=n))
-                    (λ a0 : Trunk n, IsHProp_IsTrunc (subuniverse_HProp sf a0).2 n)))).
-    apply path_sigma' with 1. apply path_ishprop.
-    rewrite <- X.
-    pose (@dep_prod_SnType_j_Type T.1). simpl in s.
-    refine (s _).
-    refine (@dep_prod_SnType_j_Type T.1 _).
-    exact s.
+  Definition cloture_is_closed (sf : subu_family@{u a}) (E :Type) (χ : E -> Trunk n) : closed sf (cloture sf χ).
+    intro. apply (O_modal_equiv ((cloture sf χ e); (subuniverse_O sf _))).
   Defined.
 
-  Definition closed E (χ : E -> Trunk n) := forall e, IsEquiv (O_unit sf (χ e)).
-  
-  Definition closed' E A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) := closed (nsub_to_char n (A;m)).
-
-  Definition cloture E (χ : E -> Trunk n) : E -> Trunk n := O sf o χ.
-  
-  Definition cloture' E A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) :=
-    nchar_to_sub (cloture (nsub_to_char n (A;m))).
-
-  Definition cloture_is_closed (E :Type) (χ : E -> Trunk n) : closed (cloture χ).
-    intro. apply (O_modal_equiv ((cloture χ e); (subuniverse_O sf _))).
-  Defined.
-
-  Lemma cloture_is_closed' (A:Type) (E:Type) (m : {f : A -> E & forall e:E, IsTrunc n (hfiber f e)}) : closed' (pr2 (cloture' m)).
+  Lemma cloture_is_closed' (sf : subu_family@{u a}) (A:Type) (E:Type) (m : {f : A -> E & forall e:E, IsTrunc n (hfiber f e)}) : closed' sf (pr2 (cloture' sf m)).
     unfold closed', cloture'. 
-    rewrite (eta_sigma (nchar_to_sub (cloture (nsub_to_char n (A; m))))).
-    pose (f := cloture_is_closed (nsub_to_char n (A; m))). 
-    rewrite <- (@nsub_eq_char_retr ua fs n _ (cloture (nsub_to_char n (A; m)))) in f.
+    rewrite (eta_sigma (nchar_to_sub (cloture sf (nsub_to_char n (A; m))))).
+    pose (f := cloture_is_closed sf (nsub_to_char n (A; m))). 
+    rewrite <- (@nsub_eq_char_retr ua fs n _ (cloture sf (nsub_to_char n (A; m)))) in f.
     exact f.
   Defined.
   
@@ -878,9 +842,9 @@ Definition T_nType_j_Type_isSheaf : forall (T: Trunk n.+1), Snsheaf_struct (pr1 
 
   Definition Δ (T:Trunk (trunc_S n)) := nchar_to_sub (δ T).
   
-  Definition clδ T := O sf o (δ T).
+  Definition clδ (sf : subu_family@{u a}) T := O sf o (δ T).
 
-  Definition clΔ T := (nchar_to_sub (clδ T)).
+  Definition clΔ (sf : subu_family@{u a}) T := (nchar_to_sub (clδ sf T)).
 
   Lemma equal_hfibers (A B:Type) (r:A=B) (f g:A -> B) e (p : f = equiv_path _ _ r) (q : g = equiv_path _ _ r)
   : {a:A & a = e} <~> {a:A & f a = g e}.
@@ -896,11 +860,11 @@ Definition T_nType_j_Type_isSheaf : forall (T: Trunk n.+1), Snsheaf_struct (pr1 
     - intro x. simpl. hott_simpl. 
   Defined.
         
-  Lemma dicde_l (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1}) (e:clA)
+  Lemma dicde_l (sf : subu_family@{u a}) (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1}) (e:clA)
   : (∃ rx : ((O sf (φ e .1)) .1),
        rx =
       e.2) =(∃ rx : ((O sf (φ e .1)) .1),
-       O_rec (φ e .1) (O sf (O sf (φ e .1))) (subuniverse_O sf _)
+       O_rec sf (φ e .1) (O sf (O sf (φ e .1))) (subuniverse_O sf _)
              (λ x : (φ e .1) .1,
                     O_unit sf (O sf (φ e .1)) (O_unit sf (φ e .1) x)) rx =
        O_unit sf (O sf (φ e .1)) e .2)
@@ -909,22 +873,22 @@ Definition T_nType_j_Type_isSheaf : forall (T: Trunk n.+1), Snsheaf_struct (pr1 
     assert (foo := @equal_hfibers
                    ((O sf (φ e .1)).1)
                    ((O sf (O sf (φ e .1))).1)
-                   ((O_invol_ (φ e .1))..1)
-                   (O_rec (φ e .1) (O sf (O sf (φ e .1)) ) (subuniverse_O sf _)
+                   ((O_invol_ sf (φ e .1))..1)
+                   (O_rec sf (φ e .1) (O sf (O sf (φ e .1)) ) (subuniverse_O sf _)
                           (λ x : (φ e .1) .1, O_unit sf (O sf (φ e .1)) (O_unit sf (φ e .1) x)))
                    (O_unit sf (O sf (φ e .1)))
                    e.2). simpl in foo.
     apply foo. clear foo.
     - simpl.
-      pose (bar := O_rec_sect (φ e .1) (O sf (O sf (φ e .1))) (subuniverse_O sf _) (O_unit sf _)).  simpl in bar.
+      pose (bar := O_rec_sect sf (φ e .1) (O sf (O sf (φ e .1))) (subuniverse_O sf _) (O_unit sf _)).  simpl in bar.
       unfold O_rec; simpl in *.
       apply path_forall; intro x.
       etransitivity; try exact (ap10 bar x).
-      refine (ap10 (OO_unit_idmap _) x).
+      refine (ap10 (OO_unit_idmap sf _) x).
     - apply OO_unit_idmap.
   Defined.
     
-  Lemma dicde_ll
+  Lemma dicde_ll (sf : subu_family)
         (E : Type)
         (φ : E → Trunk n)
         (A := ∃ e : E, (φ e) .1 : Type)
@@ -933,9 +897,9 @@ Definition T_nType_j_Type_isSheaf : forall (T: Trunk n.+1), Snsheaf_struct (pr1 
         (x : ∃ π : (φ a .1) .1, O_unit sf (φ a .1) π = a .2)
         (π : ∃ π : (φ a .1) .1, O_unit sf (φ a .1) π = a .2)
         (π' : ∃ π : (φ a .1) .1, O_unit sf (φ a .1) π = a .2)
-  : equiv_path _ _ (dicde_l φ a) (a .2; 1) =
+  : equiv_path _ _ (dicde_l sf φ a) (a .2; 1) =
     (O_unit sf (φ a .1) π' .1;
-     islex_compat_func (φ a .1) (O sf (φ a .1)) (O_unit sf (φ a .1)) _ π').
+     islex_compat_func sf (φ a .1) (O sf (φ a .1)) (O_unit sf (φ a .1)) _ π').
     unfold dicde_l.   
     unfold path_universe_uncurried.
     rewrite eisretr. simpl. hott_simpl.
@@ -951,15 +915,15 @@ Definition T_nType_j_Type_isSheaf : forall (T: Trunk n.+1), Snsheaf_struct (pr1 
   destruct u. simpl. reflexivity.
   Defined.
 
-  Lemma dense_into_cloture_dense_eq (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
-  : is_dense_eq (λ e:clA, ({π : (φ e.1).1 & O_unit sf _ π = e.2} ; trunc_sigma (φ e .1) .2
+  Lemma dense_into_cloture_dense_eq (sf : subu_family) (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
+  : is_dense_eq sf (λ e:clA, ({π : (φ e.1).1 & O_unit sf _ π = e.2} ; trunc_sigma (φ e .1) .2
               (λ a : (φ e .1) .1,
                istrunc_paths (trunc_succ ((O sf (φ e.1)).2)) (O_unit sf (φ e .1) a) e .2))).
     intro e.
-    assert (rew := ((islex_nj (φ e .1) (O sf (φ e .1)) (O_unit sf _) e.2) @ (dicde_l φ e)^)).
+    assert (rew := ((islex_nj sf (φ e .1) (O sf (φ e .1)) (O_unit sf _) e.2) @ (dicde_l sf φ e)^)).
     apply path_universe_uncurried.
-    apply (transport (λ U, (∃ e' : clA, e = e') <~> U) (islex_nj (φ e .1) (O sf (φ e .1)) (O_unit sf _) e.2)^).
-    apply (transport (λ U, (∃ e' : clA, e = e') <~> U) (dicde_l φ e)).
+    apply (transport (λ U, (∃ e' : clA, e = e') <~> U) (islex_nj sf (φ e .1) (O sf (φ e .1)) (O_unit sf _) e.2)^).
+    apply (transport (λ U, (∃ e' : clA, e = e') <~> U) (dicde_l sf φ e)).
     
     exists ((λ x:(∃ e' : clA, e = e'), existT (λ u, u = e.2) e.2 1)).
     apply @isequiv_adjointify with (g:= (λ x:(∃ rx : ((O sf (φ e .1)) .1), rx = e .2), ((e.1;x.1); path_sigma _ e (e.1;x.1) 1 x.2^))).
@@ -979,8 +943,8 @@ Definition T_nType_j_Type_isSheaf : forall (T: Trunk n.+1), Snsheaf_struct (pr1 
     destruct q. apply equal_equiv. simpl. done.
   Defined.
 
-  Lemma dense_into_cloture_dense_diag (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
-  : is_dense_diag (dense_into_cloture_dense_eq φ).
+  Lemma dense_into_cloture_dense_diag (sf : subu_family) (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
+  : is_dense_diag (dense_into_cloture_dense_eq sf φ).
     intros x p.
     unfold dense_into_cloture_dense_eq.
     apply path_forall; intro y.
@@ -998,27 +962,27 @@ Definition T_nType_j_Type_isSheaf : forall (T: Trunk n.+1), Snsheaf_struct (pr1 
     simpl.
     rewrite transport_pp.
 
-    pose (foo := lex_compat (φ a .1) (O sf (φ a .1)) (O_unit sf (φ a .1))). unfold equiv_path in foo; simpl in foo.
+    pose (foo := lex_compat sf (φ a .1) (O sf (φ a .1)) (O_unit sf (φ a .1))). unfold equiv_path in foo; simpl in foo.
     specialize (foo a.2 π'). simpl in foo.
     unfold hfiber in foo. simpl in foo.
     (* assert (bar := foo..1); simpl in bar. *)
 
-    apply (moveR_transport_V idmap (islex_nj (φ a .1) (O sf (φ a .1))  (O_unit sf (φ a .1)) a .2) (transport idmap (dicde_l φ a)  (a .2; 1))).
+    apply (moveR_transport_V idmap (islex_nj sf (φ a .1) (O sf (φ a .1))  (O_unit sf (φ a .1)) a .2) (transport idmap (dicde_l sf φ a)  (a .2; 1))).
 
-    apply (transport (λ U, transport idmap (dicde_l φ a) (a .2; 1) = U) foo^).
+    apply (transport (λ U, transport idmap (dicde_l sf φ a) (a .2; 1) = U) foo^).
     clear foo.
     apply dicde_ll. exact π. exact π'.
   Qed.
   
-  Definition dense_into_cloture (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
-  : EnJ clA.
-    refine (Build_EnJ _ (dense_into_cloture_dense_eq φ) _).
+  Definition dense_into_cloture (sf : subu_family) (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
+  : EnJ sf clA.
+    refine (Build_EnJ _ (dense_into_cloture_dense_eq sf φ) _).
     apply dense_into_cloture_dense_diag.
   Defined.
 
-  Definition transport_density (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
-  : forall X, clA = X -> EnJ X.
-    pose (e := dense_into_cloture φ); simpl in e.
+  Definition transport_density (sf : subu_family) (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
+  : forall X, clA = X -> EnJ sf X.
+    pose (e := dense_into_cloture sf φ); simpl in e.
     destruct e as [χ χeq χdiag].
     intros X p.
     refine (Build_EnJ _ _ _).
@@ -1064,15 +1028,15 @@ Definition T_nType_j_Type_isSheaf : forall (T: Trunk n.+1), Snsheaf_struct (pr1 
   Defined.
   Opaque path_sigma_transport'.
 
-  Definition transport_density_sigma (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
-  : forall α:E -> Trunk n, ( pr1 o (O sf) o φ == pr1 o α) -> EnJ {e:E & (α e).1}.
+  Definition transport_density_sigma (sf : subu_family) (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
+  : forall α:E -> Trunk n, ( pr1 o (O sf) o φ == pr1 o α) -> EnJ sf {e:E & (α e).1}.
     intros α p.
     transparent assert (X : (clA = (∃ e : E, (α e).1))).
     { apply path_universe_uncurried.
       apply (equiv_functor_sigma_id).
       intro a. apply equiv_path. apply p.
     }
-    pose (e := dense_into_cloture φ); simpl in e.
+    pose (e := dense_into_cloture sf φ); simpl in e.
     destruct e as [χ χeq χdiag].
     refine (Build_EnJ _ _ _).
     - intro x. apply χ.

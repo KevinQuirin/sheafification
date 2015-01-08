@@ -249,24 +249,24 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
         exact (ap10 (O_rec_retr sf (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0) (T.1; Trn) nsheaf (λ xx0 : ((χ x).1).1, E_to_χmono_map (Lift_Trunk T) _ f (x; xx0))) xx). }
   Defined.
 
-  Definition nj_inter_f (sf : subu_family) (A : Trunk n) (φ : A.1 -> Trunk n) : 
-    (O sf ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2))).1 ->
-    (O sf ({a:A.1 & (O sf (φ a)).1}; trunc_sigma (A.2) (fun a => (O sf (φ a)).2))).1
+  Definition nj_inter_f (sf : subu_family@{u a}) (A : Trunk@{i' i a} n) (φ : A.1 -> Trunk@{i' i a} n) : 
+    (O@{u a i' i} sf ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2))).1 ->
+    (O@{u a i' i} sf ({a:A.1 & (O sf (φ a)).1}; trunc_sigma (A.2) (fun a => (O sf (φ a)).2))).1
     := function_lift sf
          
          ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2))
          ({a:A.1 & (O sf (φ a)).1}; trunc_sigma (A.2) (fun a => (O sf (φ a)).2))
          (λ X, (X.1;sf.(O_unit) _ X.2)).
 
-  Definition nj_inter_g (sf : subu_family) (A : Trunk n) (φ : A.1 -> Trunk n) : 
-    (O sf ({a:A.1 & (O sf (φ a)).1}; trunc_sigma (A.2) (fun a => (O sf (φ a)).2))).1 ->
-    (O sf ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2))).1.
+  Definition nj_inter_g (sf : subu_family@{u a}) (A : Trunk@{i' i a} n) (φ : A.1 -> Trunk@{i' i a} n) : 
+    (O@{u a i' i} sf ({a:A.1 & (O sf (φ a)).1}; trunc_sigma (A.2) (fun a => (O sf (φ a)).2))).1 ->
+    (O@{u a i' i} sf ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2))).1.
     apply O_rec; [apply subuniverse_O | intro X].
     generalize X.2. apply O_rec; [apply subuniverse_O | intro φa].
     apply sf.(O_unit). exact (X.1;φa).
   Defined.
 
-  Instance nj_inter_equiv (sf : subu_family) (A : Trunk n) (φ : A.1 -> Trunk n) : IsEquiv (nj_inter_f sf A φ).
+  Instance nj_inter_equiv (sf : subu_family) (A : Trunk@{i' i a} n) (φ : A.1 -> Trunk@{i' i a} n) : IsEquiv (nj_inter_f@{u a i' i} sf A φ).
   apply (isequiv_adjointify _ (nj_inter_g sf A φ)).
   - intro x. unfold nj_inter_f, nj_inter_g. simpl in *.
     transitivity (function_lift sf                       (∃ a0 : A .1, (φ a0) .1;
@@ -410,19 +410,19 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
                 x).
   Defined.
 
-  Definition nj_inter (sf : subu_family) (A : Trunk n) (φ : A.1 -> Trunk n) : 
-    O sf ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2)) =
-    O sf ({a:A.1 & (O sf (φ a)).1}; trunc_sigma (A.2) (fun a => (O sf (φ a)).2)).
+  Definition nj_inter (sf : subu_family) (A : Trunk@{i' i a} n) (φ : A.1 -> Trunk@{i' i a} n): 
+    O@{u a i' i} sf ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2)) =
+    O@{u a i' i} sf ({a:A.1 & (O sf (φ a)).1}; trunc_sigma (A.2) (fun a => (O sf (φ a)).2)).
     apply truncn_unique.
     exact fs.
     apply path_universe_uncurried. exact (BuildEquiv _ _ _ (nj_inter_equiv sf _ _)).
   Defined.
 
-  Definition nj_fibers_compose (sf : subu_family) A B C (f : A -> B) (g : B -> C) (c : C)
+  Definition nj_fibers_compose (sf : subu_family) (A B C : Type@{i}) (f : A -> B) (g : B -> C) (c : C)
              (HB : ∀ b : B, IsTrunc n (hfiber f b)) (HC : ∀ c : C, IsTrunc n (hfiber g c))
   :
-    O sf (hfiber (g o f) c; function_trunc_compo n f g HB HC c) =
-    O sf ({ w :  hfiber g c &  (O sf (hfiber f (pr1 w);(HB (pr1 w)))).1};
+    O@{u a i' i} sf (hfiber (g o f) c; function_trunc_compo n f g HB HC c) =
+    O@{u a i' i} sf ({ w :  hfiber g c &  (O sf (hfiber f (pr1 w);(HB (pr1 w)))).1};
             trunc_sigma (HC c) (fun a => (O sf (hfiber f a .1; HB a .1)) .2)).
     assert ((hfiber (g o f) c; function_trunc_compo n f g HB HC c) =
             ({ w : (hfiber g c) & hfiber f (pr1 w) }; trunc_sigma (HC c) (fun w => HB w.1))).
@@ -474,11 +474,11 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
                                   (nchar_to_sub_compat (λ t : E, (φ t) .1)) x)).
     apply truncn_unique. exact fs. apply (inter_symm (fun b => ((χ b) .1) .1) (fun b => ((φ b) .1) .1)).
     apply (transport (fun x => O sf x = _ ) (inverse X)). clear X.
-    pose (X := (nj_fibers_compose sf x (λ e : {b : E | ((φ b) .1) .1},
+    pose (X := (nj_fibers_compose@{i u a i'} sf x (λ e : {b : E | ((φ b) .1) .1},
                                            IsHProp_IsTrunc
                                              (nchar_to_sub_compat (λ t : {b : E | ((φ b) .1) .1}, (χ t .1) .1) e)
                                              n0) (nchar_to_sub_compat (λ t : E, (φ t) .1)))).
-   (* apply (transport (fun x => x = _) (inverse X)). clear X.
+    apply (transport (fun x => x = _) (inverse X)). clear X.
     
     apply ap. apply truncn_unique. simpl.
     (* etransitivity. *)
@@ -495,8 +495,7 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     apply Oj_J_Contr.
     apply equiv_path.
     etransitivity. apply nhfiber_pi1. reflexivity.
-  Defined.*)
-  Admitted.
+  Defined.
 
   Definition nTjTiseparated_eq_fun_univ (sf : subu_family) (E:Type@{i}) (χ : EnJ@{i i' a u} sf E) (φ1 φ2 : E → (exist (IsTrunc (n.+1)) (subuniverse_Type sf) (@subuniverse_Type_is_TrunkSn sf)).1)
              (p: E_to_χ_map (exist (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf)

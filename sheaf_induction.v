@@ -24,6 +24,8 @@ Arguments istrunc_paths {A} {n} H x y: simpl never.
 Arguments truncn_unique _ {n} A B H: simpl never.
 Arguments isequiv_functor_sigma {A P B Q} f {H} g {H0}: simpl never.
 
+Set Printing Universes.
+
 Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   Export nj. Export mod.
   (* Module Import RS_Prop := Reflective_Subuniverse nj. *)
@@ -41,23 +43,22 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   (* Local Definition islex_nj := sheaf_def_and_thm.islex_nj. *)
   (* Local Definition lex_compat := sheaf_def_and_thm.lex_compat. *)
 
+  Definition separated_Type (sf : subu_family) (T:Trunk@{Si' i a} (n.+1)) :=
+    Im@{u i' u}  (λ t : T.1, λ t', ((O@{u a i' i} sf (t = t'; istrunc_paths T.2 t t'); subuniverse_O sf _) : subuniverse_Type@{u a i' i} sf)).
 
-        
-  Definition separated_Type (T:Trunk (trunc_S n)) :=
-    Im (λ t : pr1 T, λ t', ((O sf (t = t'; istrunc_paths T.2 t t'); subuniverse_O sf _) : subuniverse_Type)).
-
-  Definition sheaf_is_separated (T : SnType_j_Type) : separated T.1 := fst (T.2).
+  Definition sheaf_is_separated (sf : subu_family) (T : SnType_j_Type@{Si' u a i i'} sf) : separated sf T.1 := fst (T.2).
  
-  Definition separated_Type_is_Trunk_Sn (T:Trunk (trunc_S n)) : IsTrunc (trunc_S n) (separated_Type T).
+  Definition separated_Type_is_Trunk_Sn (sf : subu_family) (T:Trunk@{Si' i a} (n.+1)) : IsTrunc (n.+1) (separated_Type@{Si' i a u i'} sf T).
     unfold separated_Type; simpl.
-    destruct T as [T TrT]; simpl in *.
-    apply (@trunc_sigma _ (fun P => _)). 
+    destruct T as [T TrT]; simpl in *. 
+    apply (@trunc_sigma@{i' u Si' u} _ (fun P => _)). 
     apply (@trunc_forall _ _ (fun P => _)). intro.
-    apply subuniverse_Type_is_TrunkSn.
+    apply Lift_IsTrunc. apply subuniverse_Type_is_TrunkSn. 
     intro φ. exact (IsHProp_IsTrunc (istrunc_truncation _ _) n). 
   Defined.
 
-  Definition E_to_χ_map_ap (T U:Trunk (trunc_S n)) E (χ : EnJ E) (f : E -> (pr1 T))
+  Definition E_to_χ_map_ap (sf : subu_family) (T U:Trunk@{Si' u a} (n.+1)) E
+             (χ : EnJ@{i i' a u}  sf E) (f : E -> (pr1 T))
              (g : pr1 T -> pr1 U) x y (e : x = y) : 
     ap (fun u => g o u) (ap (E_to_χ_map T χ) e) = ap (E_to_χ_map U χ) (ap (fun u => g o u) e).
     destruct e; reflexivity.
@@ -70,9 +71,11 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     rewrite <- (@eissect _ _ _ (fMono _ _ _) e'). exact (ap _ X0). 
   Defined.
 
-  Instance separated_mono_is_separated_ (T U:Trunk (trunc_S n)) E χ g h (f: pr1 T -> pr1 U)
-        (H:IsEquiv (ap (E_to_χ_map U (E:=E) χ) (x:=f o g) (y:=f o h))) (fMono : IsMonof f) : 
-           IsEquiv (ap (E_to_χ_map T (E:=E) χ) (x:=g) (y:=h)).
+  Instance separated_mono_is_separated_ (sf : subu_family) (T U:Trunk@{Si' u a} (n.+1))
+           E (χ:EnJ@{i i' a u} sf E) g h (f: T.1 -> U.1)
+           (H:IsEquiv (ap (@E_to_χ_map@{Si' u a i i'} sf U E χ) (x:=f o g) (y:=f o h)))
+           (fMono : IsMonof f) :   
+           IsEquiv (ap (@E_to_χ_map@{Si' u a i i'} sf T E χ) (x:=g) (y:=h)).
   apply (isequiv_adjointify _ (fun X => @equiv_inv _ _ _ (fMono E g h) (@equiv_inv _ _ _ H (ap (fun u => f o u) X)))).
   - intro e. 
     apply (@apf_Mono _ _ _ fMono). 
@@ -90,71 +93,52 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     apply eissect.
   Defined.
 
-  Definition separated_mono_is_separated (T U:Trunk (trunc_S n)) (H:separated U) (f: pr1 T -> pr1 U)
-             (fMono : IsMonof f) : separated T
+  Definition separated_mono_is_separated (sf : subu_family) (T U:Trunk@{Si' u a} (n.+1))
+             (H:separated@{Si' u a i i'} sf U) (f: pr1 T -> pr1 U)
+             (fMono : IsMonof f) : separated@{Si' u a i i'} sf T
  :=
     fun E χ x y => separated_mono_is_separated_ _ _ _ (H E χ (f o x) (f o y)) fMono.
 
-  Definition T_nType_j_Type_trunc (T:Trunk (trunc_S n)) : IsTrunc (trunc_S n) (pr1 T -> subuniverse_Type).
+  Definition T_nType_j_Type_trunc (sf : subu_family) (T:Trunk@{Si' u a} (n.+1)) : IsTrunc (trunc_S n) (pr1 T -> subuniverse_Type@{u a i' i} sf).
     apply (@trunc_forall _ _ (fun P => _)). intro. 
     apply (@trunc_sigma _ (fun P => _)). apply Tn_is_TSn.
     intro. apply IsHProp_IsTrunc. exact (pr2 (subuniverse_HProp sf a0)).
   Defined.
-Set Printing Universes.
-  Definition T_nType_j_Type_isSheaf : forall (T: Trunk n.+1), Snsheaf_struct (pr1 T -> subuniverse_Type;
-                                                    T_nType_j_Type_trunc T).
-    intro.
+  
+  Definition T_nType_j_Type_isSheaf : forall (sf : subu_family) (T:Trunk@{Si' u a} (n.+1)),
+                                        Snsheaf_struct sf (T.1 -> subuniverse_Type@{u a i' i} sf;
+                                                        T_nType_j_Type_trunc T).
+    intros sf T.
     unfold T_nType_j_Type_trunc.
-    transparent assert (sheaf : SnType_j_Type).
+    transparent assert (sheaf : (SnType_j_Type sf)).
     { refine (exist _ _ _).
-      refine (exist _ subuniverse_Type _).
+      exists (subuniverse_Type sf).
       apply subuniverse_Type_is_TrunkSn.
-      exact (nType_j_Type_is_SnType_j_Type). }
+      exact (nType_j_Type_is_SnType_j_Type sf). }
 
-    pose (s := fun sheaf => @dep_prod_SnType_j_Type T.1 (λ _, sheaf)). simpl in s.
-    specialize (s nType_j_Type_sheaf).
-    pose (s := @dep_prod_SnType_j_Type T.1 (λ _, sheaf)). simpl in s.
-    assert (X : (T.1 → subuniverse_Type;
-        trunc_forall (λ _ : T.1, subuniverse_Type_is_TrunkSn)) = (T.1 → subuniverse_Type;
+    assert (X : (T.1 → subuniverse_Type sf;
+        trunc_forall (λ _ : T.1, @subuniverse_Type_is_TrunkSn sf)) = (T.1 → subuniverse_Type sf;
      trunc_forall
        (λ _ : T.1,
         trunc_sigma (Tn_is_TSn (n:=n))
                     (λ a0 : Trunk n, IsHProp_IsTrunc (subuniverse_HProp sf a0).2 n)))).
     apply path_sigma' with 1. apply path_ishprop.
     rewrite <- X.
-    pose (@dep_prod_SnType_j_Type T.1). simpl in s.
-    refine (s _).
-    refine (@dep_prod_SnType_j_Type T.1 _).
-    exact s.
+    exact (@dep_prod_SnType_j_Type sf T (λ _, sheaf)). 
   Defined.
 
-  Toplevel input, characters 46-51:
-Error:
-In environment
-T : ∃ x, IsTrunc@{Top.16273} n.+1 x
-sheaf := ((subuniverse_Type@{Top.16304 Top.16305 Top.16306};
-          subuniverse_Type_is_TrunkSn@{Top.24028 Top.24028 Top.16304
-          Top.16305 Top.16306});
-         let s := nType_j_Type_is_SnType_j_Type@{Top.16306 Top.16286
-           Top.16287 Top.16288 Top.16304 Top.16305 Top.16293 Top.16294
-           Top.16299 Top.24028 Top.24042 Top.24043 Top.24044 Top.16295} in
-         s) : SnType_j_Type@{Top.16282 Top.24028 Top.16304 Top.16306
-     Top.16286 Top.16287 Top.16288 Top.16304 Top.16305 Top.16294 Top.16294
-     Top.16293 Top.16294 Top.16295 Top.16304 Top.16304 Top.16299 Top.16299}
-H : T.1
-The term "sheaf" has type
- "SnType_j_Type@{Top.16282 Top.24028 Top.16304 Top.16306 Top.16286 Top.16287 Top.16288 Top.16304 Top.16305 Top.16294 Top.16294 Top.16293 Top.16294 Top.16295 Top.16304 Top.16304 Top.16299 Top.16299}"
-while it is expected to have type
- "SnType_j_Type@{Top.24062 Top.24061 Top.24048 Top.24047 Top.24059 Top.24060 Top.24052 Top.24053 Top.24048 Top.24064 Top.24064 Top.24058 Top.24064 Top.24054 Top.24053 Top.24053 Top.24064 Top.24064}".
+  Definition T_nType_j_Type_sheaf (sf : subu_family) (T:Trunk@{Si' u a} (n.+1)) :
+    SnType_j_Type@{Si' u a i i'} sf :=
+    ((T.1 -> subuniverse_Type sf; T_nType_j_Type_trunc T); T_nType_j_Type_isSheaf sf _).
 
-
-  Definition T_nType_j_Type_sheaf T : SnType_j_Type :=  ((pr1 T -> subuniverse_Type; T_nType_j_Type_trunc T); T_nType_j_Type_isSheaf _).
-
-  Definition separated_Type_is_separated (T:Trunk (trunc_S n)) : separated (separated_Type T; separated_Type_is_Trunk_Sn (T:=T)).
-    refine (@separated_mono_is_separated
-              (separated_Type T;separated_Type_is_Trunk_Sn (T:=T))
-              (pr1 T -> subuniverse_Type; T_nType_j_Type_trunc T)
-              (sheaf_is_separated (T_nType_j_Type_sheaf T))
+  Definition separated_Type_is_separated (sf : subu_family) (T:Trunk@{Si' i a} (n.+1)) :
+    separated@{Si' u a i i'} sf (separated_Type@{Si' i a u i'} sf T;
+                                 separated_Type_is_Trunk_Sn (T:=T)).
+    pose (T' := Lift_Trunk T).
+    refine (@separated_mono_is_separated sf
+              (separated_Type sf T;separated_Type_is_Trunk_Sn (T:=T))
+              (T'.1 -> subuniverse_Type sf; T_nType_j_Type_trunc T')
+              (sheaf_is_separated (T_nType_j_Type_sheaf sf T'))
               pr1 _).
     intros X f g.
     refine (isequiv_adjointify _ (λ H, (path_forall _ _ (λ x, path_sigma _ _ _ (ap10 H x) (path_ishprop _ _)))) _ _).
@@ -173,19 +157,23 @@ while it is expected to have type
       apply path_sigma_1.
   Defined.
 
-  Definition separation (T:Trunk (trunc_S n)) : {T : Trunk (trunc_S n) & separated T} :=
-    ((separated_Type T ; separated_Type_is_Trunk_Sn (T:=T));separated_Type_is_separated (T:=T)).
+  Definition separation (sf : subu_family) (T:Trunk@{Si' i a} (n.+1)) :
+    {T : Trunk (trunc_S n) & separated sf T} :=
+    ((separated_Type@{Si' i a u i'} sf T;
+      separated_Type_is_Trunk_Sn (T:=T));separated_Type_is_separated (T:=T)).
 
-  Definition separated_unit T :  pr1 T -> separated_Type T := toIm _.
+  Definition separated_unit (sf : subu_family) (T:Trunk@{Si' i a} (n.+1)) :
+    T.1 -> separated_Type@{Si' i a u i'} sf T := toIm _.
 
-  Definition kpsic_func_univ_func
-             (T : Trunk (trunc_S n))
+  Definition kpsic_func_univ_func (sf : subu_family)
+             (T:Trunk@{Si' i a} (n.+1))
              (a : T .1)
              (b : T .1)
-             (p : ((clδ T) (a, b)) .1)
-             (Ωj := (T .1 → subuniverse_Type; T_nType_j_Type_trunc T)
+             (p : ((clδ sf T) (a, b)) .1)
+             (Ωj := (T .1 → subuniverse_Type sf; T_nType_j_Type_trunc T)
                     : ∃ x, IsTrunc (trunc_S n) x)
-             (inj := (pr1:separated_Type T → Ωj .1) : separated_Type T → Ωj .1)
+             (inj := (pr1:separated_Type@{Si' i a u i'} sf T → Ωj .1) :
+                       separated_Type sf T → Ωj .1)
              (X : IsMono inj)
              (t : T .1)
   : ((O sf (a = t; istrunc_paths T.2 a t)) .1) ->

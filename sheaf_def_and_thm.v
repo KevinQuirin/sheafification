@@ -478,7 +478,7 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
                                            IsHProp_IsTrunc
                                              (nchar_to_sub_compat (λ t : {b : E | ((φ b) .1) .1}, (χ t .1) .1) e)
                                              n0) (nchar_to_sub_compat (λ t : E, (φ t) .1)))).
-   (* apply (transport (fun x => x = _) (inverse X)). clear X.
+    (* apply (transport (fun x => x = _) (inverse X)). clear X.
     
     apply ap. apply truncn_unique. simpl.
     (* etransitivity. *)

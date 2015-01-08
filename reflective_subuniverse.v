@@ -659,7 +659,33 @@ Module Reflective_Subuniverse (subU : subuniverse_struct).
 
   Definition subuniverse_paths (sf : subu_family) (A : subuniverse_Type@{u a i' i} sf)
   : forall x y:A.1.1, (subuniverse_HProp sf (x = y ; istrunc_paths _ n (H:= (trunc_succ (H := A.1.2))) _ _)).1.
-  Admitted.
+    intros x y.
+    rewrite <- subuniverse_iff_O.
+    refine (O_unit_retract_equiv _).
+    - intros u.
+      assert (p : (fun _:(O sf (x = y; istrunc_paths (A.1).1 n (H:= (trunc_succ (H := A.1.2))) x y)).1 => x) = (fun _=> y)).
+      { apply (equiv_inv (IsEquiv := isequiv_ap
+                                         (H:= O_equiv sf (x = y; istrunc_paths (A.1).1 n (H:= (trunc_succ (H := A.1.2))) x y) A.1 A.2)
+                                         (fun _ : (O sf (x = y; istrunc_paths (A.1).1 n (H:= (trunc_succ (H := A.1.2))) x y)).1  => x)
+                                         (fun _ : (O sf (x = y; istrunc_paths (A.1).1 n (H:= (trunc_succ (H := A.1.2))) x y)).1  => y))).
+        apply path_forall; intro v. exact v. }
+      exact (ap10 p u).
+    - intro u.
+      etransitivity;
+      [exact ((@ap10_ap_precompose _ _ _
+                (O_unit sf (x = y; istrunc_paths (A.1).1 n (H:= (trunc_succ (H := A.1.2))) x y))
+                (fun _ : (O sf (x = y; istrunc_paths (A.1).1 n (H:= (trunc_succ (H := A.1.2))) x y)).1  => x)
+                (fun _ : (O sf (x = y; istrunc_paths (A.1).1 n (H:= (trunc_succ (H := A.1.2))) x y)).1  => y)
+                
+                (equiv_inv (IsEquiv := isequiv_ap (H:= O_equiv sf (x = y; istrunc_paths (A.1).1 n (H:= (trunc_succ (H := A.1.2))) x y) A.1 A.2)
+                                                  (fun _ : (O sf (x = y; istrunc_paths (A.1).1 n (H:= (trunc_succ (H := A.1.2))) x y)).1  => x)
+                                                  (fun _ : (O sf (x = y; istrunc_paths (A.1).1 n (H:= (trunc_succ (H := A.1.2))) x y)).1  => y))
+                           (path_forall
+                              ((fun _ : (O sf (x = y; istrunc_paths (A.1).1 n (H:= (trunc_succ (H := A.1.2))) x y)).1  => x) o (O_unit sf (x = y; istrunc_paths (A.1).1 n (H:= (trunc_succ (H := A.1.2))) x y)))
+                              ((fun _ : (O sf (x = y; istrunc_paths (A.1).1 n (H:= (trunc_succ (H := A.1.2))) x y)).1  => y) o (O_unit sf (x = y; istrunc_paths (A.1).1 n (H:= (trunc_succ (H := A.1.2))) x y)))
+                              idmap))
+                u)^) | unfold path_forall, ap10; repeat rewrite eisretr; reflexivity].
+  Qed.
 
   (** Things' *)
   

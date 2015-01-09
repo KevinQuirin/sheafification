@@ -133,16 +133,17 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
 
   Definition separated_Type_is_separated (sf : subu_family) (T:Trunk@{Si' i a} (n.+1)) :
     separated@{Si' u a i i'} sf (separated_Type@{Si' i a u i'} sf T;
-                                 separated_Type_is_Trunk_Sn (T:=T)).
+                                 separated_Type_is_Trunk_Sn@{Si' i a u i'} (T:=T)).
     pose (T' := Lift_Trunk T).
     refine (@separated_mono_is_separated sf
               (separated_Type sf T;separated_Type_is_Trunk_Sn (T:=T))
               (T'.1 -> subuniverse_Type sf; T_nType_j_Type_trunc T')
-              (sheaf_is_separated (T_nType_j_Type_sheaf sf T'))
+              (sheaf_is_separated (T_nType_j_Type_sheaf@{Si' u a i i' u} sf T'))
               pr1 _).
     intros X f g.
     refine (isequiv_adjointify _ (λ H, (path_forall _ _ (λ x, path_sigma _ _ _ (ap10 H x) (path_ishprop _ _)))) _ _).
     - intro p.
+
       apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
       apply path_forall; intro x.
       apply (transport (λ U, U = ap10 p x) (ap10_ap_postcompose pr1 _ x)^).
@@ -150,7 +151,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
       apply pr1_path_sigma.
     - intro x. destruct x. simpl.
       etransitivity; [idtac | apply path_forall_1].
-      apply ap.
+      apply ap@{u u}.
       apply path_forall; intro x.
       unfold path_ishprop.
       rewrite (@contr ((f x) .2 = (f x) .2) _ 1).
@@ -158,10 +159,11 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   Defined.
 
   Definition separation (sf : subu_family) (T:Trunk@{Si' i a} (n.+1)) :
-    {T : Trunk (trunc_S n) & separated sf T} :=
-    ((separated_Type@{Si' i a u i'} sf T;
-      separated_Type_is_Trunk_Sn (T:=T));separated_Type_is_separated (T:=T)).
-
+    {T : Trunk@{Si' u a} (n.+1) & separated sf T} :=
+    exist@{Si' Si'} (separated sf)
+         (separated_Type@{Si' i a u i'} sf T; separated_Type_is_Trunk_Sn (T:=T))
+         (separated_Type_is_separated@{Si' i a u i'} (T:=T)).
+      
   Definition separated_unit (sf : subu_family) (T:Trunk@{Si' i a} (n.+1)) :
     T.1 -> separated_Type@{Si' i a u i'} sf T := toIm _.
 

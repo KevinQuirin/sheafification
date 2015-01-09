@@ -502,7 +502,7 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
   Defined.
 
   Definition nTjTiseparated_eq_fun_univ (sf : subu_family) (E:Type@{i}) (χ : EnJ@{i i' a u} sf E) (φ1 φ2 : E → (exist (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf) (@subuniverse_Type_is_TrunkSn sf)).1)
-             (p: paths@{u}
+             (p: paths@{i'}
                       (E_to_χ_map (exist (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf)
                                     (@subuniverse_Type_is_TrunkSn sf)) χ φ1)
                  
@@ -514,7 +514,7 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     generalize dependent (EnJ_is_nJ χ x).
     refine (O_rec sf (χ x) (existT (IsTrunc n) (((φ1 x) .1) .1 → ((φ2 x) .1) .1)  (trunc_arrow ((φ2 x) .1).2)) (subuniverse_arrow (((φ1 x) .1)) (φ2 x)) _).
     intro v.
-    Unset Printing Notations. unfold nchar_to_sub in p. simpl in p.
+    unfold nchar_to_sub in p. simpl in p.
     exact (transport (λ U, U) (ap pr1 (ap@{i' i'} pr1 (ap10 p (x;v))))).
   Defined.
   
@@ -588,7 +588,7 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
   Definition nTjTiseparated_eq_inv (sf : subu_family) (E:Type@{i}) (χ : EnJ@{i i' a u} sf E)
              (φ1 φ2 : E → (exist (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf)
                                  (@subuniverse_Type_is_TrunkSn@{i' u a i} sf)).1) :
-    E_to_χ_map
+    E_to_χ_map@{Si' i' a i u}
       (exist (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf) (@subuniverse_Type_is_TrunkSn sf)) χ φ1 =
     E_to_χ_map 
       (exist (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf) (@subuniverse_Type_is_TrunkSn sf)) χ φ2
@@ -614,7 +614,7 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     apply (@isequiv_adjointify _ _ _ (@nTjTiseparated_eq_inv sf E χ φ1 φ2)).
     - intro p. 
       unfold E_to_χ_map in *; simpl in *.
-      apply (@equiv_inj _ _ _ (isequiv_ap10@{i i' u} (φ1 o (@pr1 _ (fun e => (χ e).1))) (φ2 o pr1))).
+      apply (@equiv_inj _ _ _ (isequiv_ap10 (φ1 o (@pr1 _ (fun e => (χ e).1))) (φ2 o pr1))).
       apply path_forall; intro x.
 
       unfold nTjTiseparated_eq_inv.
@@ -658,12 +658,11 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     (existT (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf)
             (@subuniverse_Type_is_TrunkSn@{i' u a i} sf)).
 
-  
   Lemma nType_j_Type_is_SnType_j_Type (sf : subu_family) :
     Snsheaf_struct@{Si' i' a i u} sf (nType_j_Type@{Si' i' a u i} sf).
   Proof.
     split.
-    apply nTjTiseparated_eq.
+    apply nTjTiseparated_eq@{Si' i' a i u}.
     intros E χ. unfold E_to_χ_map; simpl.
     exact (nTjTiSnTjT_eq _ _).
   Defined.

@@ -57,7 +57,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     intro φ. exact (IsHProp_IsTrunc (istrunc_truncation _ _) n). 
   Defined.
 
-  Definition E_to_χ_map_ap (sf : subu_family) (T U:Trunk@{Si' u a} (n.+1)) E
+  Definition E_to_χ_map_ap (sf : subu_family) (T U:Trunk@{Si' i a} (n.+1)) E
              (χ : EnJ@{i i' a u}  sf E) (f : E -> (pr1 T))
              (g : pr1 T -> pr1 U) x y (e : x = y) : 
     ap (fun u => g o u) (ap (E_to_χ_map T χ) e) = ap (E_to_χ_map U χ) (ap (fun u => g o u) e).
@@ -71,7 +71,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     rewrite <- (@eissect _ _ _ (fMono _ _ _) e'). exact (ap _ X0). 
   Defined.
 
-  Instance separated_mono_is_separated_ (sf : subu_family) (T U:Trunk@{Si' u a} (n.+1))
+  Instance separated_mono_is_separated_ (sf : subu_family) (T U:Trunk@{Si' i a} (n.+1))
            E (χ:EnJ@{i i' a u} sf E) g h (f: T.1 -> U.1)
            (H:IsEquiv (ap (@E_to_χ_map@{Si' u a i i'} sf U E χ) (x:=f o g) (y:=f o h)))
            (fMono : IsMonof f) :   
@@ -167,16 +167,31 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   Definition separated_unit (sf : subu_family) (T:Trunk@{Si' i a} (n.+1)) :
     T.1 -> separated_Type@{Si' i a u i'} sf T := toIm _.
 
+  (** Diagonal **)
+  
+  Definition δ (T:Trunk@{i' i a} (n.+1)) : T.1 * T.1 -> Trunk@{i' i a} n.
+    intros x. exists (fst x = snd x). apply istrunc_paths.
+    exact T.2.
+  Defined.
+
+  Definition Δ (T:Trunk@{i' i a} (n.+1)) := nchar_to_sub (δ@{i' i a} T).
+  
+  Definition clδ (sf : subu_family) (T:Trunk@{i' i a} (n.+1)) := O@{u a i' i} sf o (δ T).
+
+  Definition clΔ (sf : subu_family) (T:Trunk@{i' i a} (n.+1)) :=
+    nchar_to_sub (clδ@{i' i a u} sf T).
+
+  
   Definition kpsic_func_univ_func (sf : subu_family)
-             (T:Trunk@{Si' i a} (n.+1))
+             (T:Trunk@{i' i a} (n.+1))
              (a : T .1)
              (b : T .1)
-             (p : ((clδ sf T) (a, b)) .1)
-             (Ωj := (T .1 → subuniverse_Type sf; T_nType_j_Type_trunc T)
-                    : ∃ x, IsTrunc (trunc_S n) x)
-             (inj := (pr1:separated_Type@{Si' i a u i'} sf T → Ωj .1) :
-                       separated_Type sf T → Ωj .1)
-             (X : IsMono inj)
+             (p : ((clδ@{i' i a u} sf T) (a, b)) .1)
+             (* (Ωj := (T .1 → subuniverse_Type sf; T_nType_j_Type_trunc T) *)
+             (*        : ∃ x, IsTrunc (trunc_S n) x) *)
+             (* (inj := (pr1:separated_Type@{Si' i a u i'} sf T → Ωj .1) : *)
+             (*           separated_Type sf T → Ωj .1) *)
+             (* (X : IsMono inj) *)
              (t : T .1)
   : ((O sf (a = t; istrunc_paths T.2 a t)) .1) ->
     ((O sf (b = t; istrunc_paths T.2 b t)) .1).
@@ -185,15 +200,15 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     exact (v^@u).
   Defined.
 
-  Definition kpsic_func_univ_inv
-             (T : Trunk (trunc_S n))
+  Definition kpsic_func_univ_inv (sf : subu_family)
+             (T:Trunk@{i' i a} (n.+1))
              (a : T .1)
              (b : T .1)
-             (p : ((clδ T) (a, b)) .1)
-             (Ωj := (T .1 → subuniverse_Type; T_nType_j_Type_trunc T)
-                    : ∃ x, IsTrunc (trunc_S n) x)
-             (inj := (pr1:separated_Type T → Ωj .1) : separated_Type T → Ωj .1)
-             (X : IsMono inj)
+             (p : ((clδ@{i' i a u} sf T) (a, b)) .1)
+             (* (Ωj := (T .1 → subuniverse_Type; T_nType_j_Type_trunc T) *)
+             (*        : ∃ x, IsTrunc (trunc_S n) x) *)
+             (* (inj := (pr1:separated_Type T → Ωj .1) : separated_Type T → Ωj .1) *)
+             (* (X : IsMono inj) *)
              (t : T .1)
   : ((O sf (b = t; istrunc_paths T.2 b t)) .1) ->
     ((O sf (a = t; istrunc_paths T.2 a t)) .1).
@@ -202,22 +217,22 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     exact (v@u).
   Defined.
 
-  Lemma kpsic_func_univ_eq
-        (T : Trunk (trunc_S n))
-        (a : T .1)
-        (b : T .1)
-        (p : (clδ T (a, b)) .1)
-        (Ωj := (T .1 → subuniverse_Type; T_nType_j_Type_trunc T)
-               : ∃ x, IsTrunc (trunc_S n) x)
-        (inj := (pr1:separated_Type T → Ωj .1) : separated_Type T → Ωj .1)
-        (X : IsMono inj)
+  Lemma kpsic_func_univ_eq (sf : subu_family)
+             (T:Trunk@{i' i a} (n.+1))
+             (a : T .1)
+             (b : T .1)
+             (p : ((clδ@{i' i a u} sf T) (a, b)) .1)
+        (* (Ωj := (T .1 → subuniverse_Type; T_nType_j_Type_trunc T) *)
+        (*        : ∃ x, IsTrunc (trunc_S n) x) *)
+        (* (inj := (pr1:separated_Type T → Ωj .1) : separated_Type T → Ωj .1) *)
+        (* (X : IsMono inj) *)
         (t : T .1)
-  : (Sect (kpsic_func_univ_inv a b p X t) (kpsic_func_univ_func a b p X t))
-    /\ (Sect (kpsic_func_univ_func a b p X t) (kpsic_func_univ_inv a b p X t)).
+  : (Sect (kpsic_func_univ_inv sf T a b p t) (kpsic_func_univ_func sf T a b p t))
+    /\ (Sect (kpsic_func_univ_func sf T a b p t) (kpsic_func_univ_inv sf T a b p t)).
     split.
     - intro x.
       unfold kpsic_func_univ_inv, kpsic_func_univ_func, δ; simpl. unfold clδ, δ in p; simpl in p.
-      pose (foo := O_rec_O_rec 
+      pose (foo := O_rec_O_rec sf
                      (a = t; istrunc_paths T.2 a t)
                      (b = t; istrunc_paths T.2 b t)
                      (a = b; istrunc_paths T.2 a b)
@@ -226,20 +241,20 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
                      p
            ); simpl in foo.
       
-      refine (ap10 (f:= (O_rec (a = t; istrunc_paths T.2 a t)
+      refine (ap10 (f:= (O_rec sf (a = t; istrunc_paths T.2 a t)
                                (O sf (b = t; istrunc_paths T.2 b t))
                                (subuniverse_O sf _)
                                (λ u : a = t,
-                                      O_rec (a = b; istrunc_paths T.2 a b)
+                                      O_rec sf (a = b; istrunc_paths T.2 a b)
                                             (O sf (b = t; istrunc_paths T.2 b t))
                                             (subuniverse_O sf _)
                                             (λ v : a = b, O_unit sf (b = t; istrunc_paths T.2 b t) (v ^ @ u))
                                             p)) 
-                          o (O_rec (b = t; istrunc_paths T.2 b t)
+                          o (O_rec sf (b = t; istrunc_paths T.2 b t)
                                    (O sf (a = t; istrunc_paths T.2 a t))
                                    (subuniverse_O sf _)
                                    (λ u : b = t,
-                                          O_rec (a = b; istrunc_paths T.2 a b)
+                                          O_rec sf (a = b; istrunc_paths T.2 a b)
                                                 (O sf (a = t; istrunc_paths T.2 a t))
                                                 (subuniverse_O sf _)
                                                 (λ v : a = b, O_unit sf (a = t; istrunc_paths T.2 a t) (v @ u))
@@ -250,7 +265,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
       rewrite concat_p1.
       apply concat_Vp.
     - intro x. unfold kpsic_func_univ_inv, kpsic_func_univ_func, δ. simpl.
-      pose (foo := O_rec_O_rec 
+      pose (foo := O_rec_O_rec sf
                      (b = t; istrunc_paths T.2 b t)
                      (a = t; istrunc_paths T.2 a t)
                      (a = b; istrunc_paths T.2 a b)
@@ -259,20 +274,20 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
                      p
                  ); simpl in foo.
 
-      refine (ap10 (f:= (O_rec (b = t; istrunc_paths T.2 b t)
+      refine (ap10 (f:= (O_rec sf (b = t; istrunc_paths T.2 b t)
                                (O sf (a = t; istrunc_paths T.2 a t))
                                (subuniverse_O sf _)
                                (λ u : b = t,
-                                      O_rec (a = b; istrunc_paths T.2 a b)
+                                      O_rec sf (a = b; istrunc_paths T.2 a b)
                                             (O sf (a = t; istrunc_paths T.2 a t))
                                             (subuniverse_O sf _)
                                             (λ v : a = b, O_unit sf (a = t; istrunc_paths T.2 a t) (v @ u))
                                             p)) 
-                          o (O_rec (a = t; istrunc_paths T.2 a t)
+                          o (O_rec sf (a = t; istrunc_paths T.2 a t)
                                    (O sf (b = t; istrunc_paths T.2 b t))
                                    (subuniverse_O sf _)
                                    (λ u : a = t,
-                                          O_rec (a = b; istrunc_paths T.2 a b)
+                                          O_rec sf (a = b; istrunc_paths T.2 a b)
                                                 (O sf (b = t; istrunc_paths T.2 b t))
                                                 (subuniverse_O sf _)
                                                 (λ v : a = b, O_unit sf (b = t; istrunc_paths T.2 b t) (v ^ @ u))
@@ -285,30 +300,34 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
 
   Arguments kpsic_func_univ_eq : default implicits, simpl never.
 
-  Lemma kpsic_aux (A B:Trunk n) (v:A.1) (eq : A.1 = B.1)
-  : O_unit sf B (transport idmap eq v)
+  Lemma kpsic_aux (sf : subu_family) (A B:Trunk@{i' i a} n) (v:A.1) (eq : A.1 = B.1)
+  : O_unit@{u a i' i} sf B (transport idmap eq v)
     = transport idmap
                 (
                     (ap pr1
                         (ap (O sf)
                             (truncn_unique fs A B eq)))) (O_unit sf A v).
-    destruct A as [A TrA], B as [B Trb]; simpl in *.
+    destruct A as [A TrA], B as [B TrB]; simpl in *.
     destruct eq.
     simpl.
     unfold truncn_unique, eq_dep_subset. simpl.
-    assert (p := (center (TrA = Trb))). destruct p.
-    assert (1 = (center (TrA = TrA))).
-    apply path_ishprop. unfold path_ishprop.
+    assert (p := (path_ishprop TrA TrB)). destruct p.
+    (*assert (1 = (path_ishprop TrA TrA)). unfold path_ishprop. 
+     apply path_ishprop. unfold path_ishprop.
     assert ((@istrunc_paths (IsTrunc n A) minus_two
               (@hprop_trunc
                  Cloture_hPullback_Prop.Sheaf_Prop.Mod_Prop.subU_RSProp.fs n
                  A) TrA TrA) = (@hprop_trunc fs n A TrA TrA)).
     apply path_ishprop. rewrite <- X0.
     rewrite <- X.
-    simpl. reflexivity.
+    simpl. reflexivity.*)
+    admit.
     Defined.
     
-  Definition separated_unit_paths_are_nj_paths_fun T (a b:T.1) : (separated_unit T a = separated_unit T b) -> (O sf (a=b; istrunc_paths T.2 a b)).1.
+  Definition separated_unit_paths_are_nj_paths_fun (sf : subu_family)
+             (T:Trunk@{i' i a} (n.+1)) (a b:T.1) :
+    (separated_unit@{i' i a u i'} sf T a = separated_unit sf T b) ->
+    (O sf (a=b; istrunc_paths T.2 a b)).1.
     intro p.
     unfold separated_unit, toIm in p. simpl in p.
     pose (p' := (ap10 p..1 a)..1..1). simpl in p'.
@@ -321,9 +340,13 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     apply (transport idmap p'). apply O_unit. reflexivity.
   Defined.
 
-  Definition separated_unit_paths_are_nj_paths_inv T (a b:T.1) : (O sf (a=b; istrunc_paths T.2 a b)).1 -> (separated_unit T a = separated_unit T b).
+  Definition separated_unit_paths_are_nj_paths_inv (sf : subu_family)
+             (T:Trunk@{Si' i a} (n.+1)) (a b:T.1) :
+    (O sf (a=b; istrunc_paths T.2 a b)).1 ->
+    (separated_unit@{Si' i a u i'} sf T a = separated_unit sf T b).
     intro p.
-    pose (Ωj := (T.1 -> subuniverse_Type; T_nType_j_Type_trunc T)).
+    pose (Ωj := exist (IsTrunc (n.+1)) (T.1 -> subuniverse_Type@{u a i' i} sf)
+                (T_nType_j_Type_trunc T)).
     pose (inj := pr1 : (separated_Type T) -> Ωj.1).
     transparent assert (X : (IsMono inj)).
     intros x y. apply subset_is_subobject. intro.

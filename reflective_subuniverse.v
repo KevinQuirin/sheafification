@@ -9,6 +9,8 @@ Set Implicit Arguments.
 Definition Trunk (n:trunc_index) := @sig@{i' i} (Type2le@{i a}) (IsTrunc@{i} n) : Type@{i'}.
 Definition HProp := Trunk -1.
 
+Set Printing Universes.
+
 Module Type subuniverse_struct.
   (* Definition 7.7.1 *)
   Parameter n0:trunc_index.
@@ -16,7 +18,6 @@ Module Type subuniverse_struct.
   Definition n := trunc_S n0.
   
   (* Parameter subu_family : Type2le@{u a}. *)
-  Set Printing Universes.
 
   Parameter subu_family : Type2le@{u a}.
   (* Parameter sf : subu_family. *)
@@ -52,11 +53,13 @@ Module Reflective_Subuniverse (subU : subuniverse_struct).
   Definition subuniverse_Type (sf : subu_family) :=
     let S := subuniverse_HProp@{u a i' i} in {T : Trunk@{i' i a} n & pr1 (S sf T)}.
 
-  Definition subuniverse_Type_is_TrunkSn (sf : subu_family) : IsTrunc@{u} (trunc_S n) (subuniverse_Type@{u a i' i} sf)
-    :=
-    @trunc_sigma@{i' i u u} _ (fun T => (subuniverse_HProp sf T) .1) _ (Tn_is_TSn@{i' i u} (n:=n))
-           (fun T => IsHProp_IsTrunc (pr2 ((subuniverse_HProp) sf T)) n).
+  Axiom HProp_resizing : HProp@{i' i a} -> HProp@{j' j a}.
 
+  Definition subuniverse_Type_is_TrunkSn (sf : subu_family) : IsTrunc@{i'} (trunc_S n) (subuniverse_Type@{u a i' i} sf)
+    :=
+    @trunc_sigma@{i' i u i'} _ (fun T => (subuniverse_HProp sf T) .1) _ (Tn_is_TSn@{i' i u} (n:=n))
+           (fun T => IsHProp_IsTrunc (pr2 ((subuniverse_HProp) sf T)) n).
+  
   Definition O_rec (sf : subu_family) (P Q : Trunk n) (modQ : (subuniverse_HProp@{u a i' i} sf Q).1) :
     (P.1 -> Q.1) -> ((O) sf P).1 -> Q.1 := 
     (@equiv_inv _ _ _ ((O_equiv sf) _ _ modQ)).

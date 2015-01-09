@@ -123,20 +123,20 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     rewrite (dense_eq χ) in X; apply X.
   Defined.
 
-  Definition E_to_χmono_map (T:Trunk@{Si' u a} (trunc_S n)) (E:Type@{i}) (χ : E -> J@{i' u i a}) (f : E -> (pr1 T)) : 
-    (nchar_to_sub (pr1 o χ)).1 -> T.1 := f o pr1.
+  Definition E_to_χmono_map (T:Trunk@{Si' i' a} (trunc_S n)) (E:Type@{i}) (χ : E -> J@{i' u i a}) (f : E -> (pr1 T)) : 
+    (nchar_to_sub@{i i' i i i i'} (pr1 o χ)).1 -> T.1 := f o pr1.
 
-  Definition E_to_χ_map (sf : subu_family) (T:Trunk@{Si' u a} (trunc_S n)) (E:Type@{i}) (χ : EnJ@{i i' a u} sf E) (f : E -> (pr1 T)) : 
-    (nchar_to_sub χ).1 -> T.1 := f o pr1.
+  Definition E_to_χ_map (sf : subu_family) (T:Trunk@{Si' i' a} (trunc_S n)) (E:Type@{i}) (χ : EnJ@{i i' a u} sf E) (f : E -> (pr1 T)) : 
+    (nchar_to_sub@{i i' i i i i'} χ).1 -> T.1 := f o pr1.
     
-  Definition separated (sf : subu_family) (T: Trunk@{Si' u a} (n.+1)) :=  ∀ (E:Type@{i}) (χ : EnJ@{i i' a u} sf E), IsMono@{u u} (E_to_χ_map@{Si' u a i i'} T (E:=E) χ) : Type@{Si'}.
+  Definition separated (sf : subu_family) (T: Trunk@{Si' i' a} (n.+1)) :=  ∀ (E:Type@{i}) (χ : EnJ@{i i' a u} sf E), IsMono@{i' i'} (E_to_χ_map@{Si' i' a i u} T (E:=E) χ) : Type@{Si'}.
   
-  Definition Snsheaf_struct (sf : subu_family) (T: Trunk@{Si' u a} (n.+1)) :=
-    prod@{Si' Si'} (separated@{Si' u a i i'} sf T)
+  Definition Snsheaf_struct (sf : subu_family) (T: Trunk@{Si' i' a} (n.+1)) :=
+    prod@{Si' Si'} (separated@{Si' i' a i u} sf T)
     (∀ (E:Type@{i}) (χ : E -> J@{i' u i a}),
-       IsEquiv@{u u} (E_to_χmono_map@{Si' u a i i'} T χ)) : Type@{Si'}.
+       IsEquiv@{i' i'} (E_to_χmono_map@{Si' i' a i u} T χ)) : Type@{Si'}.
          
-  Definition SnType_j_Type (sf : subu_family) := {T : Trunk@{Si' u a} (trunc_S n) & Snsheaf_struct@{Si' u a i i' } sf T}.
+  Definition SnType_j_Type (sf : subu_family) := {T : Trunk@{Si' i' a} (n.+1) & Snsheaf_struct@{Si' i' a i u} sf T}.
 
   Definition separated_is_HProp (sf : subu_family) T : IsHProp (separated sf T).
     repeat (apply trunc_forall).
@@ -148,15 +148,19 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
 
   (* If T is a n-Type, then if T is a n-sheaf, then T is also a (S n)-sheaf *)
 
-  Definition lift_dep A (a:A) (P : A -> Type) : Lift A -> Type := P. 
+  Definition lift_dep A (a:A) (P : A -> Type) : Lift A -> Type := P.
 
   Axiom Lift_IsTrunc : forall n (T:Type@{x}), IsTrunc@{i} n T -> IsTrunc@{j} n T.
   
-  Definition Lift_Trunk : forall n, Trunk@{i' i a} n -> Trunk@{i' j a} n :=
+  Definition Lift_Trunk : forall n, Trunk@{i' i a} n -> Trunk@{j' j a} n :=
     fun n T => existT (IsTrunc n) T.1 (Lift_IsTrunc n _ T.2).
+
+  (* Definition subuniverse_Type_small (sf : subu_family) := *)
+  (*   let S := subuniverse_HProp@{u a i' i} in *)
+  (*   let enforce_lt := Type@{j'} : Type@{i'} in {T : Trunk@{j' i a} n & pr1 (S sf (Lift_Trunk T))}. *)
   
   Lemma nsheaf_to_Snsheaf (sf : subu_family) (T: Trunk@{Si' i a} (n.+1)) (Trn : IsTrunc n T.1)
-        (nsheaf : (subuniverse_HProp@{u a i' i} sf (T.1;Trn)).1) : Snsheaf_struct@{Si' u a i i'} sf (Lift_Trunk T).
+        (nsheaf : (subuniverse_HProp@{u a i' i} sf (T.1;Trn)).1) : Snsheaf_struct@{Si' i' a i u} sf (Lift_Trunk T).
     split.
     { intros E χ u v.
       refine (isequiv_adjointify _ _ _ _).
@@ -579,7 +583,8 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
   Defined.
 
   Definition nTjTiseparated_eq_inv (sf : subu_family) (E:Type@{i}) (χ : EnJ@{i i' a u} sf E)
-             (φ1 φ2 : E → (exist (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf) (@subuniverse_Type_is_TrunkSn sf)).1) :
+             (φ1 φ2 : E → (exist (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf)
+                                 (@subuniverse_Type_is_TrunkSn@{i' u a i} sf)).1) :
     E_to_χ_map
       (exist (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf) (@subuniverse_Type_is_TrunkSn sf)) χ φ1 =
     E_to_χ_map 
@@ -599,12 +604,11 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
   Defined.
 
   Lemma nTjTiseparated_eq (sf : subu_family) :
-         separated@{Si' u a i i'} sf (existT (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf)
-                                             (@subuniverse_Type_is_TrunkSn@{u a i' i} sf)).
+         separated@{Si' i' a i u} sf (existT (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf)
+                                             (@subuniverse_Type_is_TrunkSn@{i' u a i} sf)).
 
     intros E χ φ1 φ2.
-
-    apply isequiv_adjointify with (g := @nTjTiseparated_eq_inv sf E χ φ1 φ2).
+    apply (@isequiv_adjointify _ _ _ (@nTjTiseparated_eq_inv sf E χ φ1 φ2)).
     - intro p. 
       unfold E_to_χ_map in *; simpl in *.
       apply (@equiv_inj _ _ _ (isequiv_ap10 (φ1 o (@pr1 _ (fun e => (χ e).1))) (φ2 o pr1))).
@@ -647,26 +651,29 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
                                        (subuniverse_arrow ((φ1 x) .1)  (φ1 x)) idmap) (EnJ_is_nJ χ x)). 
   Defined.
 
-  Definition nType_j_Type (sf : subu_family) : Trunk@{Si' u a} (n.+1) :=
-    (existT (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf) (@subuniverse_Type_is_TrunkSn sf)).
-
+  Definition nType_j_Type (sf : subu_family) :  Trunk@{Si' i' a} (n.+1) :=
+    let _ := Unit : Type2le@{u Si'} in
+    (existT (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf)
+            (@subuniverse_Type_is_TrunkSn@{i' u a i} sf)).
 
   
-  Lemma nType_j_Type_is_SnType_j_Type (sf : subu_family) : Snsheaf_struct@{Si' u a i i'} sf
-                                                      (nType_j_Type@{Si' u a i' i} sf).
+  Lemma nType_j_Type_is_SnType_j_Type (sf : subu_family) :
+    Snsheaf_struct@{Si' i' a i u} sf (nType_j_Type@{Si' i' a u i} sf).
   Proof.
     split.
-    apply nTjTiseparated_eq@{Si' u a i i' i'}.
+    apply nTjTiseparated_eq.
     intros E χ. unfold E_to_χ_map; simpl.
     exact (nTjTiSnTjT_eq _ _).
   Defined.
 
-  Definition nType_j_Type_sheaf (sf : subu_family) : SnType_j_Type@{Si' u a i i'} sf :=
-    (nType_j_Type@{Si' u a i' i} sf; nType_j_Type_is_SnType_j_Type@{Si' u a i i'} sf).
+  Check nType_j_Type_is_SnType_j_Type.
+  
+  Definition nType_j_Type_sheaf (sf : subu_family) : SnType_j_Type@{Si' i' a i u} sf :=
+    (nType_j_Type@{Si' i' a u i} sf; nType_j_Type_is_SnType_j_Type@{Si' i' a i u} sf).  
   
   Instance dep_prod_SnType_j_Type_eq (sf : subu_family)
-           (A : Type@{u})
-           (B : A -> SnType_j_Type@{Si' u a i' i} sf)
+           (A : Type@{i'})
+           (B : A -> SnType_j_Type@{Si' i' a i u} sf)
   : forall (E:Type) (χ : E -> J) (H := λ a, (snd (pr2 (B a))) E χ),
       IsEquiv (λ (f : E -> ∀ a : A, pr1 (pr1 (B a))) (t : {b : E & pr1 (pr1 (χ b))}), f (pr1 t)).
   intros E χ H.   
@@ -692,8 +699,8 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
   Defined.
 
   Definition dep_prod_SnType_j_Type_sep_inv (sf : subu_family)
-             (A : Type@{u})
-             (B : A -> SnType_j_Type@{Si' u a i i'} sf)
+             (A : Type@{i'})
+             (B : A -> SnType_j_Type@{Si' i' a i u} sf)
              (E : Type)
              (χ : EnJ sf E)
              (x y : E -> ∀ a : A, ((B a) .1) .1)
@@ -720,8 +727,8 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
   Qed.
 
   Lemma dep_prod_SnType_j_Type_sep (sf : subu_family)
-        (A : Type@{u})
-        (B : A -> SnType_j_Type@{Si' u a i i'} sf)
+        (A : Type@{i'})
+        (B : A -> SnType_j_Type@{Si' i' a i u} sf)
   : forall (E:Type) (χ : EnJ sf E), IsMono
                                    (λ (f : E -> ∀ a : A, (B a).1.1) (t : {b : E & (χ b).1}), f (t.1)).
     intros E χ.
@@ -802,7 +809,7 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
   Defined.
   
   Definition dep_prod_SnType_j_Type (sf : subu_family) :
-    forall (A: Trunk@{Si' u a} n.+1) (B : A.1 -> SnType_j_Type@{Si' u a i i'} sf) ,
+    forall (A: Trunk@{Si' i' a} n.+1) (B : A.1 -> SnType_j_Type@{Si' i' a i u} sf) ,
       Snsheaf_struct sf (forall a, pr1 (pr1 (B a)); 
                                                         @trunc_forall _ A.1 (fun a => pr1 (pr1 (B a))) (trunc_S n) (fun a => pr2 (pr1 (B a)))).
     intros. split. 
@@ -810,40 +817,34 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     exact (dep_prod_SnType_j_Type_eq _).
   Defined.
 
-  Definition test (sf : subu_family@{u a}) (T: Trunk@{Si' u a} n.+1) :=
-    @dep_prod_SnType_j_Type@{Si' u a i i'} sf T (λ _, nType_j_Type_sheaf@{Si' u a i i'} sf).
-  
-  Definition closed (sf : subu_family@{u a}) E (χ : E -> Trunk n) := forall e, IsEquiv (O_unit sf (χ e)).
-  
-  Definition closed' (sf : subu_family@{u a}) E A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) := closed sf (nsub_to_char n (A;m)).
+  Definition test (sf : subu_family@{u a}) (T: Trunk@{Si' i' a} n.+1) :=
+    @dep_prod_SnType_j_Type@{Si' i' a i u} sf T (λ _, nType_j_Type_sheaf@{Si' i' a i u} sf).
 
-  Definition cloture (sf : subu_family@{u a}) E (χ : E -> Trunk n) : E -> Trunk n := O sf o χ.
+  Definition closed (sf : subu_family) (E:Type@{i}) (χ : E -> Trunk n) :=
+    forall e, IsEquiv (O_unit@{u a i' i} sf (χ e)).
   
-  Definition cloture' (sf : subu_family@{u a}) E A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) :=
-    nchar_to_sub (cloture sf (nsub_to_char n (A;m))).
+  Definition closed' (sf : subu_family) (E A:Type@{i}) (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) := closed@{i u a i'} sf (nsub_to_char n (A;m)).
 
-  Definition cloture_is_closed (sf : subu_family@{u a}) (E :Type) (χ : E -> Trunk n) : closed sf (cloture sf χ).
+  Definition cloture (sf : subu_family) (E:Type@{i}) (χ : E -> Trunk n) :
+    E -> Trunk n := O@{u a i' i} sf o χ.
+  
+  Definition cloture' (sf : subu_family) (E A:Type@{i})
+             (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) :=
+    nchar_to_sub (cloture@{i u a i'} sf (nsub_to_char n (A;m))).
+
+  Definition cloture_is_closed (sf : subu_family) (E:Type@{i}) (χ : E -> Trunk n) : closed@{i u a i'} sf (cloture sf χ).
     intro. apply (O_modal_equiv ((cloture sf χ e); (subuniverse_O sf _))).
   Defined.
 
-  Lemma cloture_is_closed' (sf : subu_family@{u a}) (A:Type) (E:Type) (m : {f : A -> E & forall e:E, IsTrunc n (hfiber f e)}) : closed' sf (pr2 (cloture' sf m)).
+  Lemma cloture_is_closed' (sf : subu_family) (A E:Type@{i})
+        (m : {f : A -> E & forall e:E, IsTrunc n (hfiber f e)}) :
+    closed'@{i u a i'} sf (pr2 (cloture' sf m)).
     unfold closed', cloture'. 
-    rewrite (eta_sigma (nchar_to_sub (cloture sf (nsub_to_char n (A; m))))).
+    rewrite (eta_sigma@{i' i i'} (nchar_to_sub (cloture sf (nsub_to_char n (A; m))))).
     pose (f := cloture_is_closed sf (nsub_to_char n (A; m))). 
-    rewrite <- (@nsub_eq_char_retr ua fs n _ (cloture sf (nsub_to_char n (A; m)))) in f.
+    rewrite <- (@nsub_eq_char_retr@{i' i i'} ua fs n _ (cloture sf (nsub_to_char n (A; m)))) in f.
     exact f.
   Defined.
-  
-  Definition δ (T:Trunk (trunc_S n)) : T.1 * T.1-> Trunk n.
-    intros x. exists (fst x = snd x). apply istrunc_paths.
-    exact T.2.
-  Defined.
-
-  Definition Δ (T:Trunk (trunc_S n)) := nchar_to_sub (δ T).
-  
-  Definition clδ (sf : subu_family@{u a}) T := O sf o (δ T).
-
-  Definition clΔ (sf : subu_family@{u a}) T := (nchar_to_sub (clδ sf T)).
 
   Lemma equal_hfibers (A B:Type) (r:A=B) (f g:A -> B) e (p : f = equiv_path _ _ r) (q : g = equiv_path _ _ r)
   : {a:A & a = e} <~> {a:A & f a = g e}.

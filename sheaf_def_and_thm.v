@@ -129,7 +129,10 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
   Definition E_to_χ_map (sf : subu_family) (T:Trunk@{Si' i' a} (trunc_S n)) (E:Type@{i}) (χ : EnJ@{i i' a u} sf E) (f : E -> (pr1 T)) : 
     (nchar_to_sub@{i i' i i i i'} χ).1 -> T.1 := f o pr1.
     
-  Definition separated (sf : subu_family) (T: Trunk@{Si' i' a} (n.+1)) :=  ∀ (E:Type@{i}) (χ : EnJ@{i i' a u} sf E), IsMono@{i' i'} (E_to_χ_map@{Si' i' a i u} T (E:=E) χ) : Type@{Si'}.
+  Definition separated (sf : subu_family) (T: Trunk@{Si' i' a} (n.+1)) :=
+    ∀ (E:Type@{i}) (χ : EnJ@{i i' a u} sf E),
+      let _ := Type@{Si'} : Type@{u} in
+      IsMono@{i' i'} (E_to_χ_map@{Si' i' a i u} T (E:=E) χ) : Type@{Si'}.
   
   Definition Snsheaf_struct (sf : subu_family) (T: Trunk@{Si' i' a} (n.+1)) :=
     prod@{Si' Si'} (separated@{Si' i' a i u} sf T)
@@ -162,7 +165,7 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
   Lemma nsheaf_to_Snsheaf (sf : subu_family) (T: Trunk@{Si' i a} (n.+1)) (Trn : IsTrunc n T.1)
         (nsheaf : (subuniverse_HProp@{u a i' i} sf (T.1;Trn)).1) : Snsheaf_struct@{Si' i' a i u} sf (Lift_Trunk T).
     split.
-    { intros E χ u v.
+    { intros E χ _ u v.
       refine (isequiv_adjointify _ _ _ _).
       - unfold E_to_χ_map; simpl; intro p.
         apply path_forall; intro x.
@@ -609,8 +612,7 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
   Lemma nTjTiseparated_eq (sf : subu_family) :
          separated@{Si' i' a i u} sf (existT (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf)
                                              (@subuniverse_Type_is_TrunkSn@{i' u a i} sf)).
-
-    intros E χ φ1 φ2.
+    intros E χ _ φ1 φ2.
     apply (@isequiv_adjointify _ _ _ (@nTjTiseparated_eq_inv sf E χ φ1 φ2)).
     - intro p. 
       unfold E_to_χ_map in *; simpl in *.
@@ -667,8 +669,6 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     exact (nTjTiSnTjT_eq _ _).
   Defined.
 
-  Check nType_j_Type_is_SnType_j_Type.
-  
   Definition nType_j_Type_sheaf (sf : subu_family) : SnType_j_Type@{Si' i' a i u} sf :=
     (nType_j_Type@{Si' i' a u i} sf; nType_j_Type_is_SnType_j_Type@{Si' i' a i u} sf).  
   

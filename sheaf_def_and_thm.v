@@ -497,28 +497,27 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     etransitivity. apply nhfiber_pi1. reflexivity.
   Defined.
 
-  Definition nTjTiseparated_eq_fun_univ (sf : subu_family) (E:Type@{i}) (χ : EnJ@{i i' a u} sf E) (φ1 φ2 : E → (exist (IsTrunc (n.+1)) (subuniverse_Type sf) (@subuniverse_Type_is_TrunkSn sf)).1)
-             (p: E_to_χ_map (exist (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf)
-                                   (@subuniverse_Type_is_TrunkSn sf)) χ φ1 =
-                 E_to_χ_map (exist (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf)
-                                   (@subuniverse_Type_is_TrunkSn sf)) χ φ2)
+  Definition nTjTiseparated_eq_fun_univ (sf : subu_family) (E:Type@{i}) (χ : EnJ@{i i' a u} sf E) (φ1 φ2 : E → (exist (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf) (@subuniverse_Type_is_TrunkSn sf)).1)
+             (p: paths@{u}
+                      (E_to_χ_map (exist (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf)
+                                    (@subuniverse_Type_is_TrunkSn sf)) χ φ1)
+                 
+                 (E_to_χ_map (exist (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf)
+                                    (@subuniverse_Type_is_TrunkSn sf)) χ φ2))
              (x:E)
   :  ((φ1 x).1.1 -> (φ2 x).1.1).
-
     unfold E_to_χ_map in p.
     generalize dependent (EnJ_is_nJ χ x).
-    pose (p0 := O_rec sf (χ x) (existT (IsTrunc n) (((φ1 x) .1) .1 → ((φ2 x) .1) .1)  (trunc_arrow ((φ2 x) .1).2)) (subuniverse_arrow (((φ1 x) .1)) (φ2 x))); simpl in p0.
-    apply p0.
-    intro v. simpl.
-
-    assert (eq := (ap10 p (x;v))). 
-    exact (transport (λ U, U) (eq..1..1)).
+    refine (O_rec sf (χ x) (existT (IsTrunc n) (((φ1 x) .1) .1 → ((φ2 x) .1) .1)  (trunc_arrow ((φ2 x) .1).2)) (subuniverse_arrow (((φ1 x) .1)) (φ2 x)) _).
+    intro v.
+    Unset Printing Notations. unfold nchar_to_sub in p. simpl in p.
+    exact (transport (λ U, U) (ap pr1 (ap@{i' i'} pr1 (ap10 p (x;v))))).
   Defined.
   
   Lemma nTjTiseparated_eq_fun_univ_invol (sf : subu_family) (E:Type@{i}) (χ : EnJ@{i i' a u} sf E) φ1 φ2 (p: E_to_χ_map
-                                                                        (exist (IsTrunc (n.+1)) (subuniverse_Type sf) (@subuniverse_Type_is_TrunkSn sf)) χ φ1 =
+                                                                        (exist (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf) (@subuniverse_Type_is_TrunkSn sf)) χ φ1 =
                                                                       E_to_χ_map
-                                                                        (exist (IsTrunc (n.+1)) (subuniverse_Type sf) (@subuniverse_Type_is_TrunkSn sf)) χ φ2) (x:E)
+                                                                        (exist (IsTrunc (n.+1)) (subuniverse_Type@{u a i' i} sf) (@subuniverse_Type_is_TrunkSn sf)) χ φ2) (x:E)
   : forall (y:(φ2 x).1.1), nTjTiseparated_eq_fun_univ p x (nTjTiseparated_eq_fun_univ p^ x y) = y.
   Proof.
     intro y. unfold nTjTiseparated_eq_fun_univ; simpl.
@@ -536,8 +535,12 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
                                                 
                                                 (ap10 p ^ (x; v))..1..1))
                             (EnJ_is_nJ χ x)) y
-         ). 
-    apply (transport (λ u, u = y) foo^). clear foo.
+         ).
+    pose (transport (λ u, u = y) foo^).
+    unfold pr1_path in *; simpl in *.
+    apply p0.
+    clear p0.
+    clear foo.
 
     pose (fooo := @transport_arrow_space_dep_path sf (φ1 x) (φ2 x) (χ x) (λ v, (ap10 p (x;v))..1..1)).
     simpl in fooo.
@@ -607,7 +610,7 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     apply isequiv_adjointify with (g := @nTjTiseparated_eq_inv sf E χ φ1 φ2).
     - intro p. 
       unfold E_to_χ_map in *; simpl in *.
-      apply (@equiv_inj _ _ _ (isequiv_ap10 (φ1 o (@pr1 _ (fun e => (χ e).1))) (φ2 o pr1))).
+      apply (@equiv_inj _ _ _ (isequiv_ap10@{i i' u} (φ1 o (@pr1 _ (fun e => (χ e).1))) (φ2 o pr1))).
       apply path_forall; intro x.
 
       unfold nTjTiseparated_eq_inv.
@@ -623,15 +626,14 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
       apply (transport (λ U, O_rec sf _ (((φ1 (pr1 x)).1).1 → ((φ2 (pr1 x)).1).1;
       trunc_arrow ((φ2 (pr1 x)).1).2)
                                    (subuniverse_arrow ((φ1 (pr1 x)).1) (φ2 (pr1 x))) _ U = _) ((witness_is_eta χ x)^)). simpl.
-      etransitivity;
-        try exact (ap10 (O_rec_retr sf (χ x.1) (((φ1 x .1) .1) .1 → ((φ2 x .1) .1) .1; trunc_arrow ((φ2 x.1).1.2)) (subuniverse_arrow ((φ1 x .1) .1) (φ2 x .1)) (λ v : (χ x .1) .1, transport idmap ((ap10 p (x .1; v)) ..1) ..1)) x.2).
-      repeat apply ap.  destruct x as [x1 x2]. simpl. 
-
-      (* reflexivity does not apply anymore ?*)
-      admit.
-      
-    (* reflexivity. *)
-      
+      match goal with
+        |[|- O_rec sf ?T1 ?T2 ?modT2 ?func _ = _] => pose (ap10 (O_rec_retr sf T1 T2 modT2 func) x.2) end.
+      simpl in p0.
+      etransitivity; [exact p0 | clear p0].
+      apply (ap (transport@{i' i} idmap)).
+      apply (ap (ap@{i' i'} pr1)).
+      destruct x as [x1 x2]. simpl. unfold pr1_path.
+      reflexivity.
     - intro p; destruct p.
       unfold E_to_χ_map, nTjTiseparated_eq_inv in *; simpl in *.
       eapply concat; [idtac | apply (path_forall_1 φ1)]; apply ap.

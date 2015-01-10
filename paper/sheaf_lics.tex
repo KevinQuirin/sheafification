@@ -326,12 +326,14 @@
 \hyphenation{op-tical net-works semi-conduc-tor}
 
 
-
+\usepackage{enumerate}
 \usepackage{wasysym}
 \usepackage[all]{xy}
 \def\dar[#1]{\ar@<2pt>[#1]\ar@<-2pt>[#1]}
 \DeclareMathOperator{\Type}{Type}
 \DeclareMathOperator{\HProp}{HProp}
+\DeclareMathOperator{\nat}{nat}
+\DeclareMathOperator{\Unit}{Unit}
 \newcommand{\modal}{\ensuremath{\ocircle}}
 
 \begin{document}
@@ -371,13 +373,25 @@ Abstract
 \section{Introduction}
 \label{sec:intro}
 
+Plan of the paper~:
+\begin{itemize}
+\item In section~\ref{sec:hott}, we define the foundations on which
+  our worked is based.
+\item In section~\ref{sec:sheaves}, we explain the construction of the
+  sheafification functor.
+\item Finally, we discuss related works and present future works.
+\end{itemize}
 \section{Homotopy Type Theory}
-\label{sec:homotopy-type-theoryhott}
+\label{sec:hott}
 
 \subsection{Homotopy Type Theory}
 \label{ssec:hott}
 
 We refer to~\cite{hottbook}.
+Truncation levels ?
+
+If $x$ is an object of a product or a sigma type, we denote the $i$-th
+projection of $x$ by either $\pi_i x$ or $x_i$.
 
 \begin{itemize}
 \item 
@@ -406,15 +420,16 @@ We use the following definition of truncated left exact modalities~:
 \begin{defi}
   Let $p$ be a truncation index. Then a left exact modality is the
   data of
-  \begin{itemize}
-  \item A predicate $P~:~\Type_p \to \HProp$
+  \begin{enumerate}[(i)]
+  \item A predicate $P:\Type_p \to \HProp$
   \item For every $p$-truncated type $A$, a $p$-truncated type
     $\modal A$ such that $P(\modal A)$
-  \item For every $p$-truncated type $A$, a map $\eta_A~:~A \to
+  \item For every $p$-truncated type $A$, a map $\eta_A:A \to
     \modal A$
-  \end{itemize}
+  \end{enumerate}
   such that
-  \begin{itemize}
+  \begin{enumerate}[(i)]
+    \setcounter{enumi}{3}
   \item For every $p$-truncated types $A$ and $B$, if $P(B)$ then
     $$\left\{
       \begin{array}{rcl}
@@ -422,50 +437,78 @@ We use the following definition of truncated left exact modalities~:
         f & \mapsto & f \circ \eta_A
       \end{array} \right.$$
     is an equivalence.
-  \item For all $A~:~\Type_p$ and $B~:~A \to \Type_p$ such that $P(A)$
-    and $\Pi_{x:A} P(B x)$, then $P\left( \Sigma_{x:A} B(x)\right)$
-  \item For all $A~:~\Type_p$ and $x,y~:~A$, if $\modal A$ is
+  \item For all $A:\Type_p$ and $B:A \to \Type_p$ such that $P(A)$
+    and $\Pi_{x:A} P(B x)$, then $P\left( \sum_{x:A} B(x)\right)$
+  \item For all $A:\Type_p$ and $x,y:A$, if $\modal A$ is
     contractible, then $\modal (x=y)$ is contractible.
-  \end{itemize}
+  \end{enumerate}
+  Conditions (i) to (iv) define a {\em reflective subuniverse}, (i) to
+  (v) a {\em modality}.
 \end{defi}
 
-All theorem in~\cite{hottbook}, chapter 7.7 remains true + fibers
-preservation :
+Since basic operations (dependent products, products, sigma types) are
+stable for truncation levels, all theorem in~\cite{hottbook}, chapter
+7.7 remains true.
 
-for all $n$-truncated types,
-  and all map $f~:~X \to Y$, the modalisation of fiber of $f$ above any element $y:Y$
-  is the fiber of $\modal f$ above $\eta y$~:
-  $$\modal \{x:X ~\&~ f~ x = y\} = \{x:\modal X ~\&~ \modal f ~x = \eta_Y
-  y\}.$$
+Moreover, left exactness implies in particular fibers preservations~:
+\begin{prop}
+For any $n$-truncated types $X$ and $Y$,
+and any map $f:X \to Y$, the modalisation of fiber of $f$ above any element $y:Y$
+is the fiber of $\modal f$ above $\eta_Y y$~:
+$$\modal \left(\sum_{x:X}  (f x = y)\right) = \sum_{x:\modal X} (\modal f x = \eta_Y y).$$
 
-  We want moreover that the following diagram commute
-  $$\xymatrix{
-    \{x:X ~\&~ f~ x = y\} \ar[r]^\eta \ar[d]_\gamma & \modal \{x:X ~\&~ f~ x = y\} \ar@{=}[dl]\\
-    \{x:\modal X ~\&~ \modal f ~x = \eta_Y y\} &
-  }$$
-  where $\Pi_1 \circ \gamma = \eta_X$, and $\Pi_2 \circ \gamma$ is the
-  usual modalisation of paths.
-
+Moreover the following diagram commute
+$$\xymatrix{
+  \sum_{x:X} (f x = y) \ar[r]^\eta \ar[d]_\gamma & \modal \left(\sum_{x:X}  (f x = y)\right) \ar@{=}[dl]\\
+  \sum_{x:\modal X} (\modal f x = \eta_Y y) &
+}$$
+where $\pi_1 \circ \gamma = \eta_X$, and $\pi_2 \circ \gamma$ is the
+usual modalisation of paths.
+\end{prop}
 \subsection{Generalized pullbacks}
 \label{sec:gener-pb}
 
-\begin{itemize}
-\item definition
-\item giraud axiom
-\end{itemize}
+\begin{defi}
+  Let $f:X \to Y$ be a map, and $p:\nat$. The $p$-pullback of $f$,
+  noted $X\times_Y \cdots\times_Y X$ is
+  the limit of the diagram
+  $$\xymatrix{
+    X \ar[rd]^f & \cdots & X \ar[ld]_f \\
+      &    Y   &
+  }$$
+  with $p$ copies of $X$. The $0$-pullback of $f$ is $\Unit$.
+\end{defi}
 
+In homotopy type theory, we have 
+$$X\times_Y \cdots\times_Y X = \sum_{x:X^n} (f x_1 = f x_2) \land
+\cdots \land (f x_{n-1} = f x_n).$$
+\begin{defi}
+  If $f:X \to Y$ is a map, then the {\em \v{C}ech nerve} of $f$ is the
+  diagram
+  $$C(f) := \cdots
+    X \times_Y X \times_Y X
+   \underset{\longrightarrow}{\stackrel{\longrightarrow}{\longrightarrow}}
+   X \times_Y X 
+\stackrel{\longrightarrow}{\longrightarrow} X$$
+with canonical projections.
+\end{defi}
+
+The Giraud axiom asserts that, if $f:X\to Y$ is a surjection, then the
+colimit of $C(f)$ is $Y$. See~\cite{lurie}.
 
 \section{Sheaves}
+\label{sec:sheaves}
 
-We try to define sheaves inductively~: we define sheaves in $\HProp$
-as the classical types ({\em ie} implied by their double negation), and
+We define sheaves by induction on the homotopical truncation level of types
+~: we define sheaves in $\HProp$ as the classical types ({\em ie}
+implied by their double negation), and
 we define sheaves on $\Type_{n+1}$ {\em via} usual definition of sheaves,
-as seen in~maclanemoerdijk and sheaves on $\Type_n$. Of course,
+as seen in~\cite{maclanemoerdijk} and sheaves on $\Type_n$. Of course,
 the definition must be cumulative.
 
 We will call $\mathcal S_i$ the universe of sheaves on $\Type_i$.
 
-\subsection{Definitions and forst properties}
+\subsection{Definitions and first properties}
 \label{sec:def}
 
 \begin{itemize}
@@ -475,6 +518,31 @@ We will call $\mathcal S_i$ the universe of sheaves on $\Type_i$.
 \item $\Omega_n^\modal$ is a sheaf.
 \item Sheaves are stable by dependent products.
 \end{itemize}
+
+\begin{defi}
+  Let $E$ be a type. The {\em closure} of a subobject of $E$ classified by $\chi$
+  is the subobject of $E$ classified by $\modal \circ \chi$.
+
+  The subobject of $E$ classified by $\chi$ is said {\em closed in
+    $E$} if its closure is itself : $\chi = \modal \circ \chi$.
+\end{defi}
+
+\begin{defi}
+  Let $E$ be a type, and $\chi:E \to \Type_n$. The subobject $A$ of $E$
+  classified by $\chi$ is {\em dense} in $E$ if its $\modal$-closure
+  is $E$ seen as a subobject of $E$, {\em ie}
+  $$\forall e:E,~ \left(\sum_{e':E} e=e'\right) \simeq (\modal (\chi~e)).$$ 
+  Moreover, for all $x:A$ we need the following coherence diagram to
+  commute
+  $$\xymatrix{
+    \sum_{e':A} x = e' \ar@{=}[r] \ar[d]_\iota & (\chi~x) \ar[d]^{\eta_{(\chi~x)}}\\
+    \sum_{e':E} x = e' \ar@{=}[r] & \modal (\chi~x)
+  }$$
+  where $\iota: x \mapsto ({x_1}_1 ; x_2)$.
+\end{defi}
+
+It follows from fibers preservation that any $n$-subobject of a type seen as a $n$-subobject
+of its closure is closed.
 
 \subsection{Construction of sheafification}
 \label{sec:sheafification}
@@ -504,7 +572,7 @@ Two steps~: separation, sheafification.
     \end{thm}
     
 
-\item If $a,b~:~T~: \Type_{n+1}$ such that $\mu_T a = \mu_T b$, then
+\item If $a,b:T:\Type_{n+1}$ such that $\mu_T a = \mu_T b$, then
   $\modal (a=b)$.
 
 \item Cech nerve of $\mu$ is the diagram of closure of diagonals,
@@ -521,16 +589,19 @@ Two steps~: separation, sheafification.
 \begin{itemize}
 \item 
 \begin{thm}
-  Any type $A~:~\Type_{n+1}$ closed in a sheaf is itself a sheaf.
+  Any type $A:\Type_{n+1}$ closed in a sheaf is itself a sheaf.
 \end{thm}
 
-\item Definition of sheafification reflextive subuniverse $(\star,~\nu)$
+\item Definition of sheafification reflextive subuniverse
+  $(\star,~\nu)$
+\item left exactness
+\item cumulativity
 \end{itemize}
 
 \section{Future Works}
 \label{sec:future-works}
 
-
+Prove that the Giraud axiom holds in homotopy type theory.
 
 
 
@@ -669,7 +740,7 @@ The authors would like to thank...
 % <OR> manually copy in the resultant .bbl file
 % set second argument of \begin to the number of references
 % (used to reserve space for the reference number labels box)
-\begin{thebibliography}{3}
+\begin{thebibliography}{4}
 
 \bibitem[RS13]{sets_in_hott}
 Egbert Rijke and Bas Spitters.
@@ -685,6 +756,14 @@ Egbert Rijke and Bas Spitters.
 Saunders MacLane and Ieke Moerdijk.
 \newblock {\em Sheaves in Geometry and Logic}.
 \newblock Springer-Verlag, 1992.
+
+\bibitem[HTT]{lurie}
+Jacob Lurie
+\newblock{\em Higher Topos Theory}
+
+\bibitem[lumsdaine]{lumsdaine}
+Lumsdaine
+\newblock{Diagrams and limits}
 
 \end{thebibliography}
 

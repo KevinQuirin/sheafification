@@ -1,166 +1,4 @@
-
-%% bare_conf.tex
-%% V1.4a
-%% 2014/09/17
-%% by Michael Shell
-%% See:
-%% http://www.michaelshell.org/
-%% for current contact information.
-%%
-%% This is a skeleton file demonstrating the use of IEEEtran.cls
-%% (requires IEEEtran.cls version 1.8a or later) with an IEEE
-%% conference paper.
-%%
-%% Support sites:
-%% http://www.michaelshell.org/tex/ieeetran/
-%% http://www.ctan.org/tex-archive/macros/latex/contrib/IEEEtran/
-%% and
-%% http://www.ieee.org/
-
-%%*************************************************************************
-%% Legal Notice:
-%% This code is offered as-is without any warranty either expressed or
-%% implied; without even the implied warranty of MERCHANTABILITY or
-%% FITNESS FOR A PARTICULAR PURPOSE! 
-%% User assumes all risk.
-%% In no event shall IEEE or any contributor to this code be liable for
-%% any damages or losses, including, but not limited to, incidental,
-%% consequential, or any other damages, resulting from the use or misuse
-%% of any information contained here.
-%%
-%% All comments are the opinions of their respective authors and are not
-%% necessarily endorsed by the IEEE.
-%%
-%% This work is distributed under the LaTeX Project Public License (LPPL)
-%% ( http://www.latex-project.org/ ) version 1.3, and may be freely used,
-%% distributed and modified. A copy of the LPPL, version 1.3, is included
-%% in the base LaTeX documentation of all distributions of LaTeX released
-%% 2003/12/01 or later.
-%% Retain all contribution notices and credits.
-%% ** Modified files should be clearly indicated as such, including  **
-%% ** renaming them and changing author support contact information. **
-%%
-%% File list of work: IEEEtran.cls, IEEEtran_HOWTO.pdf, bare_adv.tex,
-%%                    bare_conf.tex, bare_jrnl.tex, bare_conf_compsoc.tex,
-%%                    bare_jrnl_compsoc.tex, bare_jrnl_transmag.tex
-%%*************************************************************************
-
-
-% *** Authors should verify (and, if needed, correct) their LaTeX system  ***
-% *** with the testflow diagnostic prior to trusting their LaTeX platform ***
-% *** with production work. IEEE's font choices and paper sizes can       ***
-% *** trigger bugs that do not appear when using other class files.       ***                          ***
-% The testflow support page is at:
-% http://www.michaelshell.org/tex/testflow/
-
-
-
 \documentclass[conference]{IEEEtran}
-% Some Computer Society conferences also require the compsoc mode option,
-% but others use the standard conference format.
-%
-% If IEEEtran.cls has not been installed into the LaTeX system files,
-% manually specify the path to it like:
-% \documentclass[conference]{../sty/IEEEtran}
-
-
-
-
-
-% Some very useful LaTeX packages include:
-% (uncomment the ones you want to load)
-
-
-% *** MISC UTILITY PACKAGES ***
-%
-%\usepackage{ifpdf}
-% Heiko Oberdiek's ifpdf.sty is very useful if you need conditional
-% compilation based on whether the output is pdf or dvi.
-% usage:
-% \ifpdf
-%   % pdf code
-% \else
-%   % dvi code
-% \fi
-% The latest version of ifpdf.sty can be obtained from:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/oberdiek/
-% Also, note that IEEEtran.cls V1.7 and later provides a builtin
-% \ifCLASSINFOpdf conditional that works the same way.
-% When switching from latex to pdflatex and vice-versa, the compiler may
-% have to be run twice to clear warning/error messages.
-
-
-
-
-
-
-% *** CITATION PACKAGES ***
-%
-%\usepackage{cite}
-% cite.sty was written by Donald Arseneau
-% V1.6 and later of IEEEtran pre-defines the format of the cite.sty package
-% \cite{} output to follow that of IEEE. Loading the cite package will
-% result in citation numbers being automatically sorted and properly
-% "compressed/ranged". e.g., [1], [9], [2], [7], [5], [6] without using
-% cite.sty will become [1], [2], [5]--[7], [9] using cite.sty. cite.sty's
-% \cite will automatically add leading space, if needed. Use cite.sty's
-% noadjust option (cite.sty V3.8 and later) if you want to turn this off
-% such as if a citation ever needs to be enclosed in parenthesis.
-% cite.sty is already installed on most LaTeX systems. Be sure and use
-% version 5.0 (2009-03-20) and later if using hyperref.sty.
-% The latest version can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/cite/
-% The documentation is contained in the cite.sty file itself.
-
-
-
-
-
-
-% *** GRAPHICS RELATED PACKAGES ***
-%
-\ifCLASSINFOpdf
-  % \usepackage[pdftex]{graphicx}
-  % declare the path(s) where your graphic files are
-  % \graphicspath{{../pdf/}{../jpeg/}}
-  % and their extensions so you won't have to specify these with
-  % every instance of \includegraphics
-  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
-\else
-  % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
-  % will default to the driver specified in the system graphics.cfg if no
-  % driver is specified.
-  % \usepackage[dvips]{graphicx}
-  % declare the path(s) where your graphic files are
-  % \graphicspath{{../eps/}}
-  % and their extensions so you won't have to specify these with
-  % every instance of \includegraphics
-  % \DeclareGraphicsExtensions{.eps}
-\fi
-% graphicx was written by David Carlisle and Sebastian Rahtz. It is
-% required if you want graphics, photos, etc. graphicx.sty is already
-% installed on most LaTeX systems. The latest version and documentation
-% can be obtained at: 
-% http://www.ctan.org/tex-archive/macros/latex/required/graphics/
-% Another good source of documentation is "Using Imported Graphics in
-% LaTeX2e" by Keith Reckdahl which can be found at:
-% http://www.ctan.org/tex-archive/info/epslatex/
-%
-% latex, and pdflatex in dvi mode, support graphics in encapsulated
-% postscript (.eps) format. pdflatex in pdf mode supports graphics
-% in .pdf, .jpeg, .png and .mps (metapost) formats. Users should ensure
-% that all non-photo figures use a vector format (.eps, .pdf, .mps) and
-% not a bitmapped formats (.jpeg, .png). IEEE frowns on bitmapped formats
-% which can result in "jaggedy"/blurry rendering of lines and letters as
-% well as large increases in file sizes.
-%
-% You can find documentation about the pdfTeX application at:
-% http://www.tug.org/applications/pdftex
-
-
-
-
-
 % *** MATH PACKAGES ***
 %
 \usepackage[cmex10]{amsmath}
@@ -171,148 +9,6 @@
 \newtheorem{prop}[thm]{Proposition}
 \newtheorem{defi}[thm]{Definition}
 \newtheorem{lem}[thm]{Lemma}
-
-% A popular package from the American Mathematical Society that provides
-% many useful and powerful commands for dealing with mathematics. If using
-% it, be sure to load this package with the cmex10 option to ensure that
-% only type 1 fonts will utilized at all point sizes. Without this option,
-% it is possible that some math symbols, particularly those within
-% footnotes, will be rendered in bitmap form which will result in a
-% document that can not be IEEE Xplore compliant!
-%
-% Also, note that the amsmath package sets \interdisplaylinepenalty to 10000
-% thus preventing page breaks from occurring within multiline equations. Use:
-%\interdisplaylinepenalty=2500
-% after loading amsmath to restore such page breaks as IEEEtran.cls normally
-% does. amsmath.sty is already installed on most LaTeX systems. The latest
-% version and documentation can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/required/amslatex/math/
-
-
-
-
-
-% *** SPECIALIZED LIST PACKAGES ***
-%
-%\usepackage{algorithmic}
-% algorithmic.sty was written by Peter Williams and Rogerio Brito.
-% This package provides an algorithmic environment fo describing algorithms.
-% You can use the algorithmic environment in-text or within a figure
-% environment to provide for a floating algorithm. Do NOT use the algorithm
-% floating environment provided by algorithm.sty (by the same authors) or
-% algorithm2e.sty (by Christophe Fiorio) as IEEE does not use dedicated
-% algorithm float types and packages that provide these will not provide
-% correct IEEE style captions. The latest version and documentation of
-% algorithmic.sty can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/algorithms/
-% There is also a support site at:
-% http://algorithms.berlios.de/index.html
-% Also of interest may be the (relatively newer and more customizable)
-% algorithmicx.sty package by Szasz Janos:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/algorithmicx/
-
-
-
-
-% *** ALIGNMENT PACKAGES ***
-%
-%\usepackage{array}
-% Frank Mittelbach's and David Carlisle's array.sty patches and improves
-% the standard LaTeX2e array and tabular environments to provide better
-% appearance and additional user controls. As the default LaTeX2e table
-% generation code is lacking to the point of almost being broken with
-% respect to the quality of the end results, all users are strongly
-% advised to use an enhanced (at the very least that provided by array.sty)
-% set of table tools. array.sty is already installed on most systems. The
-% latest version and documentation can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/required/tools/
-
-
-% IEEEtran contains the IEEEeqnarray family of commands that can be used to
-% generate multiline equations as well as matrices, tables, etc., of high
-% quality.
-
-
-
-
-% *** SUBFIGURE PACKAGES ***
-%\ifCLASSOPTIONcompsoc
-%  \usepackage[caption=false,font=normalsize,labelfont=sf,textfont=sf]{subfig}
-%\else
-%  \usepackage[caption=false,font=footnotesize]{subfig}
-%\fi
-% subfig.sty, written by Steven Douglas Cochran, is the modern replacement
-% for subfigure.sty, the latter of which is no longer maintained and is
-% incompatible with some LaTeX packages including fixltx2e. However,
-% subfig.sty requires and automatically loads Axel Sommerfeldt's caption.sty
-% which will override IEEEtran.cls' handling of captions and this will result
-% in non-IEEE style figure/table captions. To prevent this problem, be sure
-% and invoke subfig.sty's "caption=false" package option (available since
-% subfig.sty version 1.3, 2005/06/28) as this is will preserve IEEEtran.cls
-% handling of captions.
-% Note that the Computer Society format requires a larger sans serif font
-% than the serif footnote size font used in traditional IEEE formatting
-% and thus the need to invoke different subfig.sty package options depending
-% on whether compsoc mode has been enabled.
-%
-% The latest version and documentation of subfig.sty can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/subfig/
-
-
-
-
-% *** FLOAT PACKAGES ***
-%
-%\usepackage{fixltx2e}
-% fixltx2e, the successor to the earlier fix2col.sty, was written by
-% Frank Mittelbach and David Carlisle. This package corrects a few problems
-% in the LaTeX2e kernel, the most notable of which is that in current
-% LaTeX2e releases, the ordering of single and double column floats is not
-% guaranteed to be preserved. Thus, an unpatched LaTeX2e can allow a
-% single column figure to be placed prior to an earlier double column
-% figure. The latest version and documentation can be found at:
-% http://www.ctan.org/tex-archive/macros/latex/base/
-
-
-%\usepackage{stfloats}
-% stfloats.sty was written by Sigitas Tolusis. This package gives LaTeX2e
-% the ability to do double column floats at the bottom of the page as well
-% as the top. (e.g., "\begin{figure*}[!b]" is not normally possible in
-% LaTeX2e). It also provides a command:
-%\fnbelowfloat
-% to enable the placement of footnotes below bottom floats (the standard
-% LaTeX2e kernel puts them above bottom floats). This is an invasive package
-% which rewrites many portions of the LaTeX2e float routines. It may not work
-% with other packages that modify the LaTeX2e float routines. The latest
-% version and documentation can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/sttools/
-% Do not use the stfloats baselinefloat ability as IEEE does not allow
-% \baselineskip to stretch. Authors submitting work to the IEEE should note
-% that IEEE rarely uses double column equations and that authors should try
-% to avoid such use. Do not be tempted to use the cuted.sty or midfloat.sty
-% packages (also by Sigitas Tolusis) as IEEE does not format its papers in
-% such ways.
-% Do not attempt to use stfloats with fixltx2e as they are incompatible.
-% Instead, use Morten Hogholm'a dblfloatfix which combines the features
-% of both fixltx2e and stfloats:
-%
-% \usepackage{dblfloatfix}
-% The latest version can be found at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/dblfloatfix/
-
-
-
-
-% *** PDF, URL AND HYPERLINK PACKAGES ***
-%
-%\usepackage{url}
-% url.sty was written by Donald Arseneau. It provides better support for
-% handling and breaking URLs. url.sty is already installed on most LaTeX
-% systems. The latest version and documentation can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/url/
-% Basically, \url{my_url_here}.
-
-
 
 
 % *** Do not adjust lengths that control margins, column widths, etc. ***
@@ -326,12 +22,16 @@
 \hyphenation{op-tical net-works semi-conduc-tor}
 
 
-
+\usepackage{enumerate}
 \usepackage{wasysym}
 \usepackage[all]{xy}
 \def\dar[#1]{\ar@<2pt>[#1]\ar@<-2pt>[#1]}
 \DeclareMathOperator{\Type}{Type}
 \DeclareMathOperator{\HProp}{HProp}
+\DeclareMathOperator{\nat}{nat}
+\DeclareMathOperator{\Unit}{Unit}
+\DeclareMathOperator{\im}{Im}
+\DeclareMathOperator{\id}{id}
 \newcommand{\modal}{\ensuremath{\ocircle}}
 
 \begin{document}
@@ -371,13 +71,25 @@ Abstract
 \section{Introduction}
 \label{sec:intro}
 
+Plan of the paper~:
+\begin{itemize}
+\item In section~\ref{sec:hott}, we define the foundations on which
+  our worked is based.
+\item In section~\ref{sec:sheaves}, we explain the construction of the
+  sheafification functor.
+\item Finally, we discuss related works and present future works.
+\end{itemize}
 \section{Homotopy Type Theory}
-\label{sec:homotopy-type-theoryhott}
+\label{sec:hott}
 
 \subsection{Homotopy Type Theory}
 \label{ssec:hott}
 
 We refer to~\cite{hottbook}.
+Truncation levels + Im ?
+
+If $x$ is an object of a product or a sigma type, we denote the $i$-th
+projection of $x$ by either $\pi_i x$ or $x_i$.
 
 \begin{itemize}
 \item 
@@ -406,15 +118,16 @@ We use the following definition of truncated left exact modalities~:
 \begin{defi}
   Let $p$ be a truncation index. Then a left exact modality is the
   data of
-  \begin{itemize}
-  \item A predicate $P~:~\Type_p \to \HProp$
+  \begin{enumerate}[(i)]
+  \item A predicate $P:\Type_p \to \HProp$
   \item For every $p$-truncated type $A$, a $p$-truncated type
     $\modal A$ such that $P(\modal A)$
-  \item For every $p$-truncated type $A$, a map $\eta_A~:~A \to
+  \item For every $p$-truncated type $A$, a map $\eta_A:A \to
     \modal A$
-  \end{itemize}
+  \end{enumerate}
   such that
-  \begin{itemize}
+  \begin{enumerate}[(i)]
+    \setcounter{enumi}{3}
   \item For every $p$-truncated types $A$ and $B$, if $P(B)$ then
     $$\left\{
       \begin{array}{rcl}
@@ -422,115 +135,286 @@ We use the following definition of truncated left exact modalities~:
         f & \mapsto & f \circ \eta_A
       \end{array} \right.$$
     is an equivalence.
-  \item For all $A~:~\Type_p$ and $B~:~A \to \Type_p$ such that $P(A)$
-    and $\Pi_{x:A} P(B x)$, then $P\left( \Sigma_{x:A} B(x)\right)$
-  \item For all $A~:~\Type_p$ and $x,y~:~A$, if $\modal A$ is
+  \item For all $A:\Type_p$ and $B:A \to \Type_p$ such that $P(A)$
+    and $\prod_{x:A} P(B x)$, then $P\left( \sum_{x:A} B(x)\right)$
+  \item For all $A:\Type_p$ and $x,y:A$, if $\modal A$ is
     contractible, then $\modal (x=y)$ is contractible.
-  \end{itemize}
+  \end{enumerate}
+  Conditions (i) to (iv) define a {\em reflective subuniverse}, (i) to
+  (v) a {\em modality}.
 \end{defi}
 
-All theorem in~\cite{hottbook}, chapter 7.7 remains true + fibers
-preservation :
+The type of all $p$-types such that $P$ will be noted $\Type^\modal_p$
 
-for all $n$-truncated types,
-  and all map $f~:~X \to Y$, the modalisation of fiber of $f$ above any element $y:Y$
-  is the fiber of $\modal f$ above $\eta y$~:
-  $$\modal \{x:X ~\&~ f~ x = y\} = \{x:\modal X ~\&~ \modal f ~x = \eta_Y
-  y\}.$$
+Since basic operations (dependent products, products, sigma types) are
+stable for truncation levels, all theorem in~\cite{hottbook}, chapter
+7.7 remains true.
 
-  We want moreover that the following diagram commute
-  $$\xymatrix{
-    \{x:X ~\&~ f~ x = y\} \ar[r]^\eta \ar[d]_\gamma & \modal \{x:X ~\&~ f~ x = y\} \ar@{=}[dl]\\
-    \{x:\modal X ~\&~ \modal f ~x = \eta_Y y\} &
-  }$$
-  where $\Pi_1 \circ \gamma = \eta_X$, and $\Pi_2 \circ \gamma$ is the
-  usual modalisation of paths.
+Moreover, left exactness implies in particular fibers preservations~:
+\begin{prop}
+For any $n$-truncated types $X$ and $Y$,
+and any map $f:X \to Y$, the modalisation of fiber of $f$ above any element $y:Y$
+is the fiber of $\modal f$ above $\eta_Y y$~:
+$$\modal \left(\sum_{x:X}  (f x = y)\right) = \sum_{x:\modal X} (\modal f x = \eta_Y y).$$
 
+Moreover the following diagram commute
+$$\xymatrix{
+  \sum_{x:X} (f x = y) \ar[r]^\eta \ar[d]_\gamma & \modal \left(\sum_{x:X}  (f x = y)\right) \ar@{=}[dl]\\
+  \sum_{x:\modal X} (\modal f x = \eta_Y y) &
+}$$
+where $\pi_1 \circ \gamma = \eta_X$, and $\pi_2 \circ \gamma$ is the
+usual modalisation of paths.
+\end{prop}
 \subsection{Generalized pullbacks}
 \label{sec:gener-pb}
 
-\begin{itemize}
-\item definition
-\item giraud axiom
-\end{itemize}
+\begin{defi}
+  Let $f:X \to Y$ be a map, and $p:\nat$. The $p$-pullback of $f$,
+  noted $X\times_Y \cdots\times_Y X$ is
+  the limit of the diagram
+  $$\xymatrix{
+    X \ar[rd]^f & \cdots & X \ar[ld]_f \\
+      &    Y   &
+  }$$
+  with $p$ copies of $X$. The $0$-pullback of $f$ is $\Unit$.
+\end{defi}
 
+In homotopy type theory, we have 
+$$X\times_Y \cdots\times_Y X = \sum_{x:X^n} (f x_1 = f x_2) \land
+\cdots \land (f x_{n-1} = f x_n).$$
+\begin{defi}
+  If $f:X \to Y$ is a map, then the {\em \v{C}ech nerve} of $f$ is the
+  diagram
+  $$C(f) := \cdots
+    X \times_Y X \times_Y X
+   \underset{\longrightarrow}{\stackrel{\longrightarrow}{\longrightarrow}}
+   X \times_Y X 
+\stackrel{\longrightarrow}{\longrightarrow} X$$
+with canonical projections.
+\end{defi}
+
+The Giraud axiom asserts that, if $f:X\to Y$ is a surjection, then the
+colimit of $C(f)$ is $Y$. See~\cite{lurie}.
 
 \section{Sheaves}
+\label{sec:sheaves}
 
-We try to define sheaves inductively~: we define sheaves in $\HProp$
-as the classical types ({\em ie} implied by their double negation), and
+We define sheaves by induction on the homotopical truncation level of types
+~: we define sheaves in $\HProp$ as the classical types ({\em ie}
+implied by their double negation), and
 we define sheaves on $\Type_{n+1}$ {\em via} usual definition of sheaves,
-as seen in~maclanemoerdijk and sheaves on $\Type_n$. Of course,
+as seen in~\cite{maclanemoerdijk} and sheaves on $\Type_n$. Of course,
 the definition must be cumulative.
 
 We will call $\mathcal S_i$ the universe of sheaves on $\Type_i$.
 
-\subsection{Definitions and forst properties}
-\label{sec:def}
+% \subsection{Definitions and first properties}
+% \label{sec:def}
 
-\begin{itemize}
-\item Density
-\item Separated Type / Sheaf / closure : a subobject is always dense
-  into its closure.
-\item $\Omega_n^\modal$ is a sheaf.
-\item Sheaves are stable by dependent products.
-\end{itemize}
+In this section, we suppose given a truncation index $n\geqslant -1$,
+and a left exact modality $\modal$ on $\Type_n$.
 
-\subsection{Construction of sheafification}
+\begin{defi}
+  Let $E$ be a type. The {\em closure} of a subobject of $E$ classified by $\chi$
+  is the subobject of $E$ classified by $\modal \circ \chi$.
+
+  The subobject of $E$ classified by $\chi$ is said {\em closed in
+    $E$} if its closure is itself : $\chi = \modal \circ \chi$.
+\end{defi}
+
+\begin{defi}
+  Let $E$ be a type, and $\chi:E \to \Type_n$. The subobject $A$ of $E$
+  classified by $\chi$ is {\em dense} in $E$ if its $\modal$-closure
+  is $E$ seen as a subobject of $E$, {\em ie}
+  $$\forall e:E,~ \left(\sum_{e':E} e=e'\right) \simeq (\modal (\chi~e)).$$ 
+  Moreover, for all $x:A$ we need the following coherence diagram to
+  commute
+  $$\xymatrix{
+    \sum_{e':A} x = e' \ar@{=}[r] \ar[d]_\iota & (\chi~x) \ar[d]^{\eta_{(\chi~x)}}\\
+    \sum_{e':E} x = e' \ar@{=}[r] & \modal (\chi~x)
+  }$$
+  where $\iota: x \mapsto ({x_1}_1 ; x_2)$.
+\end{defi}
+
+It follows from fibers preservation that any $n$-subobject of a type seen as a $n$-subobject
+of its closure is closed.
+
+\begin{defi}[Restriction]
+  For any $A, E:\Type$ and $F:\Type_{n+1}$, we define~:
+  \begin{itemize}
+  \item if $A \hookrightarrow E$, $M_E^\chi$ is the map sending an
+    arrow $f~:~E\to F$ to $\restriction f A$ the restriction of $f$ to $A$.
+  \item if $A \to E$ with $n$-truncated fibers, $\Phi_E^\chi$ is the
+    map sending $f~:~E \to f$ to $\restriction f A$.
+  \end{itemize}
+\end{defi}
+
+\begin{defi}[Separated Type]
+  A type $F$ in $\Type_{n+1}$ is {\em separated} if for all type $E$, and
+  all dense subobject of $E$ classified by $\chi~:~E \to \Type_n$,
+  $\Phi_E^\chi$ is a monomorphism. In other words, the dotted arrow,
+  if exists, is unique.
+
+  $$\xymatrix{
+    \sum_{e:E} (\chi~ e) \ar[r]^f \ar[d]_{\pi_1} & F \\
+    E \ar@{-->}[ru]&
+  }$$
+\end{defi}
+
+\begin{defi}[Sheaves]
+  A type $F$ of $\Type_{n+1}$ is a {\em $(n+1)$-sheaf} if it is
+  separated, and for all type $E$ and all dense subobject of $E$
+  classified by $\chi~:~E \to \Type_{-1}$, $M_E^\chi$ is an
+  equivalence. In other words, the dotted arrow exists and is unique.
+
+  $$\xymatrix{
+    \sum_{e:E} (\chi~ e) \ar[r]^f \ar[d]_{\pi_1} & F \\
+    E \ar@{-->}[ru]&
+  }$$
+\end{defi}
+
+From these definitions, one can show that
+\begin{prop}\label{prop:sheaf_prop}
+  \begin{itemize}
+  \item $\Type_n^\modal$ is a sheaf.
+  \item If $A:\Type_{n+1}$ and $B:A \to \Type_{n+1}$ such that for all
+    $a:A$, $(B~a)$ is a sheaf, then $\prod_{a:A}B~a$ is a sheaf.
+  \end{itemize}
+\end{prop}
+
+
+
+\section{Construction of sheafification}
 \label{sec:sheafification}
 
 We mimic the construction in~\cite{maclanemoerdijk}
-Two steps~: separation, sheafification.
 
-\subsubsection{For h-propositions}
-\label{sec:h-propositions}
+\subsection{For h-propositions}
+\label{ssec:h-propositions}
 
-\begin{itemize}
-\item Any left exact modality on $\HProp$.
-\item We use $\lnot\lnot$
-\end{itemize}
-\subsubsection{From Type to Separated Type}
-\label{sec:from-type-separated}
+For the case $n=-1$, one can take any left exact modality on
+$\HProp$. Here we took the $\lnot\lnot$ modality~:
+$$\forall P:\HProp,~\modal_j P = \lnot\lnot P.$$
+One can easily show that it defines a left exact modality.
 
-\begin{itemize}
-\item Definition of the separation reflective subuniverse
-  $(\square,~\mu)$.
+\subsection{From Type to Separated Type}
+\label{ssec:from-type-separated}
+In this section, we suppose given a truncation index $n\geqslant -1$,
+and a left exact modality $\modal$ on $\Type_n$, compatible with the
+modality on $\HProp$.
 
-  $\square$ + $\square T$ is separated for all $(n+1)$-truncated
-    type $T$ 
-    \begin{thm}
-      A $(n+1)$-truncated type $T$ with an embedding $f : T \to U$
-      into a separated $(n+1)$-truncated type $U$ is itself separated.
-    \end{thm}
-    
+Let $T$ be in $\Type_{n+1}$. We define $\square T$ as the image of
+$\modal^T \circ \{\cdot\}_T$, as in
+$$\xymatrix{
+  T \ar[r]^{\{\cdot\}_T} \ar[d]_{\mu_T} & \Type_n^T \ar[d]^{\modal^T} \\
+  \square T \ar[r]& \left( \Type_n^\modal \right)^T
+}, $$
+where $\{\cdot\}_T$ is the singleton map $\lambda (t:T),~\lambda
+(t':T),~t=t'$.
+In type theory words, 
+\begin{align*}
+\square T &= \im (\lambda~t:T,~\lambda~ t',~ \modal (t = t')) \\
+          &= \sum_{u:T \to \Type_n^\modal} \left\| \sum_{a:X} 
+            (\lambda t,~\modal (a=t)) = u\right\|
+\end{align*}
 
-\item If $a,b~:~T~: \Type_{n+1}$ such that $\mu_T a = \mu_T b$, then
-  $\modal (a=b)$.
+\begin{prop}
+  For all $T:\Type_{n+1}$, $\square T$ is separated.  
+\end{prop}
 
-\item Cech nerve of $\mu$ is the diagram of closure of diagonals,
-  hence their colimits are equal. Since colimits are universal, so is $\square$.
+\begin{proof}
+We will use the following lemma~:
+\begin{lem}
+  A $(n+1)$-truncated type $T$ with an embedding $f : T \to U$
+  into a separated $(n+1)$-truncated type $U$ is itself separated.
+\end{lem}
+As $\square T$ embeds in $\left( \Type_n^\modal \right)^T$, we only
+have to show that the latter is separated. But it is the case with
+both parts proposition~\ref{prop:sheaf_prop}.
+\end{proof}
 
-\item $(\square,~\mu)$ is a modality.
+We now need to show that $\square$ is universal. The following
+lemma is central in the proof~:
+\begin{lem}
+  Let $T:\Type_{n+1}$. Then $\square T$ is the colimit of the closed
+  diagonal diagram
+  $$\cdots \overline{\Delta_3} \underset{\longrightarrow}{\stackrel{\longrightarrow}{\longrightarrow}}
+   \overline{\Delta_2}
+\stackrel{\longrightarrow}{\longrightarrow} \overline{\Delta_1},$$
+where $\Delta_k$ is the $k$-pullback of $\id : T \to T$.
+\end{lem}
+\begin{proof}
+  As $\mu_T$ is an embedding, we know by Giraud axiom that $\square T$ is the colimit
+  of $C(\mu_T)$. If we can show that $C(\mu_T) = C(\id)$, the the
+  result will follow. 
 
-\end{itemize}
+  Let $k:\nat$, let's show that 
+\begin{align*}
+  &\sum_{t:T^k} (\mu_T t_1 = \mu_T t_2 \land \cdots
+    \land \mu_T t_{k-1} \\
+  = &\mu_T t_k) = \sum_{t:T^k} \modal (t_1 = t_2 \land \cdots
+  \land t_{k-1} = t_k)
+\end{align*}
+By induction on $k$, and the preservation of products by $\modal$, it
+suffices to show that for all $a,b:T$, $\modal (a=b) = (\mu_T a =
+\mu_T b)$, which is true by univalence.
+\end{proof}
 
+Now that $\square T$ is a colimit, we can easily define an inverse to
+$\lambda\,(f:\square T \to U),~x \circ \mu_T$ for any separated type
+$U$, using the universal property of the colimit.
 
-\subsubsection{From Separated Type to Sheaf}
-\label{sec:separated-to-sheaf}
+We now have to prove point {\it (v)} in the definition of
+modality. Let $A:\Type_{n+1}$ be a sheaf and $B:A \to \Type_{n+1}$ be
+a sheaf family. We want to show that $\sum_{x:A} (Bx)$ is
+separated. Let $E$ be a type, and $\sum_{e:E} (\chi\,e)$ a dense
+subobject of E.
 
-\begin{itemize}
-\item 
-\begin{thm}
-  Any type $A~:~\Type_{n+1}$ closed in a sheaf is itself a sheaf.
-\end{thm}
+Let $f,g$ be two maps from $\sum_{e:E} (\chi\,e)$ to $\sum_{x:A}
+(Bx)$, equal when precomposed with $\pi_1$.
 
-\item Definition of sheafification reflextive subuniverse $(\star,~\nu)$
-\end{itemize}
+As $A$ is separated, for any $x:E$, the first components of $f x$ and
+$g x$ are equal. For the second components, notice that for all $x:E$,
+$\sum_{y:E} x = y$ has a dense subobject, $\sum_{y:\sum_{e:E} (\chi\,
+  e)} x=y_1$. 
+Using the separation property with these type, one can show the second
+components of $f x$ and $g x$ are equals too, with respect to the
+first path.
 
+\subsection{From Separated Type to Sheaf}
+\label{ssec:separated-to-sheaf}
+
+If $T$ is already a separated type, the following lemma alllows us
+to build a sheaf~:
+\begin{lem}
+  Let $T:\Type_{n+1}$ be separated, and $U$ be a sheaf. If $T$ embeds
+  in $U$, and is closed in $U$, then $T$ is a sheaf.
+\end{lem}
+
+As any separated type $T$ embeds in $\left(\Type_n^\modal\right)^T$,
+it suffices to take the closure of $T$ to get a sheaf.
+
+\subsection{Summary}
+\label{ssec:summary}
+
+If $T:\Type_{n+1}$, the sheafification of $T$ is
+$$\star T = \sum_{u:T \to \Type_n^\modal} \lnot\lnot\left\| \sum_{a:X} 
+            (\lambda t,~\modal (a=t)) = u\right\|$$
+
+We already know that $\star$ defines a modality. It remains to show
+that this modality is left exact.
+
+The last thing to prove is the cumulativity of our sheafifications~:
+\begin{prop}
+  If $T:\Type_n$, then $\modal T = \star \widehat T$ (where $\widehat
+  T$ is $T$ seen as a $\Type_{n+1}$.
+\end{prop}
 \section{Future Works}
 \label{sec:future-works}
 
+Prove that the Giraud axiom holds in homotopy type theory.
 
+Extend the sheafification to all types, even if non truncated.
 
 
 
@@ -669,7 +553,7 @@ The authors would like to thank...
 % <OR> manually copy in the resultant .bbl file
 % set second argument of \begin to the number of references
 % (used to reserve space for the reference number labels box)
-\begin{thebibliography}{3}
+\begin{thebibliography}{4}
 
 \bibitem[RS13]{sets_in_hott}
 Egbert Rijke and Bas Spitters.
@@ -685,6 +569,14 @@ Egbert Rijke and Bas Spitters.
 Saunders MacLane and Ieke Moerdijk.
 \newblock {\em Sheaves in Geometry and Logic}.
 \newblock Springer-Verlag, 1992.
+
+\bibitem[HTT]{lurie}
+Jacob Lurie
+\newblock{\em Higher Topos Theory}
+
+\bibitem[lumsdaine]{lumsdaine}
+Lumsdaine
+\newblock{Diagrams and limits}
 
 \end{thebibliography}
 

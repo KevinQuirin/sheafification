@@ -150,22 +150,28 @@ Module HProp_sheaves (subU : subuniverse_struct) (mod : Modality subU).
         (j_is_subU : forall P, (j P).1 = (O sf (P.1; IsHProp_IsTrunc P.2 n0)).1)
         (j_is_subU_unit : forall P x ,
                             transport idmap (j_is_subU P) (Oj_unit tt P x) = O_unit sf (P.1; IsHProp_IsTrunc P.2 n0) x)
-  : forall (T : subuniverse_Type sf), (subuniverse_HProp_j tt (existT (IsTrunc -1) (IsTrunc p.+1 T.1.1) (hprop_trunc _ _))).1.
-    
+  : forall (T : subuniverse_Type sf), (subuniverse_HProp_j tt (existT (IsTrunc -1) (IsTrunc p T.1.1) (hprop_trunc _ _))).1.
     induction p.
-    - intros T X. apply hprop_allpath. intros x y.
-      revert X.
+    - intros T.
+      pose (rew := j_is_subU (Contr (T.1).1; hprop_trunc (-2) (T.1).1)). simpl in *.
+      rewrite rew; clear rew.
+      intro X.
+      refine (@contr_inhabited_hprop (T.1.1) _ _).
+      apply hprop_allpath. intros x y.
       transparent assert (sheaf : (subuniverse_Type sf)).
       { refine (exist _ _ _).
         refine (exist _ (x=y) _).
         apply istrunc_paths. apply trunc_succ. exact T.1.2.
         apply subuniverse_paths. }
-      pose (rew := j_is_subU (IsHProp T.1.1; hprop_trunc _ _)). simpl in rew.
+      revert X.
+      apply (O_rec sf _ sheaf.1 sheaf.2).
+      intros [c pc]. unfold sheaf. simpl.
+      apply hprop_allpath.
+      intros u v. exact ((pc u)^ @ (pc v)).
+
+      revert X. apply O_rec. exact T.2.
       simpl.
-      rewrite rew; clear rew.
-      
-      apply (O_rec sf _ sheaf.1 sheaf.2). unfold sheaf; clear sheaf.
-      intros X; simpl in *. apply path_ishprop.
+      intros. exact (center _ X).
     - simpl in *. intros T X.
       unfold IsTrunc in *.
       intros x y.

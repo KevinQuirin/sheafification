@@ -208,8 +208,8 @@ the definition must be cumulative.
 
 We will call $\mathcal S_i$ the universe of sheaves on $\Type_i$.
 
-\subsection{Definitions and first properties}
-\label{sec:def}
+% \subsection{Definitions and first properties}
+% \label{sec:def}
 
 In this section, we suppose given a truncation index $n\geqslant -1$,
 and a left exact modality $\modal$ on $\Type_n$.
@@ -284,21 +284,21 @@ From these definitions, one can show that
 
 
 
-\subsection{Construction of sheafification}
+\section{Construction of sheafification}
 \label{sec:sheafification}
 
 We mimic the construction in~\cite{maclanemoerdijk}
 
-\subsubsection{For h-propositions}
-\label{sec:h-propositions}
+\subsection{For h-propositions}
+\label{ssec:h-propositions}
 
 For the case $n=-1$, one can take any left exact modality on
 $\HProp$. Here we took the $\lnot\lnot$ modality~:
-$$\forall P:\HProp,~\modal P = \lnot\lnot P.$$
+$$\forall P:\HProp,~\modal_j P = \lnot\lnot P.$$
 One can easily show that it defines a left exact modality.
 
-\subsubsection{From Type to Separated Type}
-\label{sec:from-type-separated}
+\subsection{From Type to Separated Type}
+\label{ssec:from-type-separated}
 In this section, we suppose given a truncation index $n\geqslant -1$,
 and a left exact modality $\modal$ on $\Type_n$, compatible with the
 modality on $\HProp$.
@@ -312,7 +312,11 @@ $$\xymatrix{
 where $\{\cdot\}_T$ is the singleton map $\lambda (t:T),~\lambda
 (t':T),~t=t'$.
 In type theory words, 
-$$\square T = \im (\lambda~t:T,~\lambda~ t',~ \modal (t = t')).$$
+\begin{align*}
+\square T &= \im (\lambda~t:T,~\lambda~ t',~ \modal (t = t')) \\
+          &= \sum_{u:T \to \Type_n^\modal} \left\| \sum_{a:X} 
+            (\lambda t,~\modal (a=t)) = u\right\|
+\end{align*}
 
 \begin{prop}
   For all $T:\Type_{n+1}$, $\square T$ is separated.  
@@ -354,36 +358,63 @@ where $\Delta_k$ is the $k$-pullback of $\id : T \to T$.
 By induction on $k$, and the preservation of products by $\modal$, it
 suffices to show that for all $a,b:T$, $\modal (a=b) = (\mu_T a =
 \mu_T b)$, which is true by univalence.
-If $U$ is a separated type, we can now easily define an inverse to
-$\lambda\,(f:\square T \to f),~x \circ \mu_T$.
 \end{proof}
 
-\begin{itemize}
+Now that $\square T$ is a colimit, we can easily define an inverse to
+$\lambda\,(f:\square T \to U),~x \circ \mu_T$ for any separated type
+$U$, using the universal property of the colimit.
 
-\item $(\square,~\mu)$ is a modality.
+We now have to prove point {\it (v)} in the definition of
+modality. Let $A:\Type_{n+1}$ be a sheaf and $B:A \to \Type_{n+1}$ be
+a sheaf family. We want to show that $\sum_{x:A} (Bx)$ is
+separated. Let $E$ be a type, and $\sum_{e:E} (\chi\,e)$ a dense
+subobject of E.
 
-\end{itemize}
+Let $f,g$ be two maps from $\sum_{e:E} (\chi\,e)$ to $\sum_{x:A}
+(Bx)$, equal when precomposed with $\pi_1$.
 
+As $A$ is separated, for any $x:E$, the first components of $f x$ and
+$g x$ are equal. For the second components, notice that for all $x:E$,
+$\sum_{y:E} x = y$ has a dense subobject, $\sum_{y:\sum_{e:E} (\chi\,
+  e)} x=y_1$. 
+Using the separation property with these type, one can show the second
+components of $f x$ and $g x$ are equals too, with respect to the
+first path.
 
-\subsubsection{From Separated Type to Sheaf}
-\label{sec:separated-to-sheaf}
+\subsection{From Separated Type to Sheaf}
+\label{ssec:separated-to-sheaf}
 
-\begin{itemize}
-\item 
-\begin{thm}
-  Any type $A:\Type_{n+1}$ closed in a sheaf is itself a sheaf.
-\end{thm}
+If $T$ is already a separated type, the following lemma alllows us
+to build a sheaf~:
+\begin{lem}
+  Let $T:\Type_{n+1}$ be separated, and $U$ be a sheaf. If $T$ embeds
+  in $U$, and is closed in $U$, then $T$ is a sheaf.
+\end{lem}
 
-\item Definition of sheafification reflextive subuniverse
-  $(\star,~\nu)$
-\item left exactness
-\item cumulativity
-\end{itemize}
+As any separated type $T$ embeds in $\left(\Type_n^\modal\right)^T$,
+it suffices to take the closure of $T$ to get a sheaf.
 
+\subsection{Summary}
+\label{ssec:summary}
+
+If $T:\Type_{n+1}$, the sheafification of $T$ is
+$$\star T = \sum_{u:T \to \Type_n^\modal} \lnot\lnot\left\| \sum_{a:X} 
+            (\lambda t,~\modal (a=t)) = u\right\|$$
+
+We already know that $\star$ defines a modality. It remains to show
+that this modality is left exact.
+
+The last thing to prove is the cumulativity of our sheafifications~:
+\begin{prop}
+  If $T:\Type_n$, then $\modal T = \star \widehat T$ (where $\widehat
+  T$ is $T$ seen as a $\Type_{n+1}$.
+\end{prop}
 \section{Future Works}
 \label{sec:future-works}
 
 Prove that the Giraud axiom holds in homotopy type theory.
+
+Extend the sheafification to all types, even if non truncated.
 
 
 

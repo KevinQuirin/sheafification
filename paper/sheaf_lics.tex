@@ -26,12 +26,14 @@
 \usepackage{wasysym}
 \usepackage[all]{xy}
 \def\dar[#1]{\ar@<2pt>[#1]\ar@<-2pt>[#1]}
+\def\tar[#1]{\ar@<2pt>[#1]\ar@<0pt>[#1]\ar@<-2pt>[#1]}
 \DeclareMathOperator{\Type}{Type}
 \DeclareMathOperator{\HProp}{HProp}
 \DeclareMathOperator{\nat}{nat}
 \DeclareMathOperator{\Unit}{Unit}
 \DeclareMathOperator{\im}{Im}
 \DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\Contr}{Contr}
 \newcommand{\modal}{\ensuremath{\ocircle}}
 
 \begin{document}
@@ -185,11 +187,9 @@ $$X\times_Y \cdots\times_Y X = \sum_{x:X^n} (f x_1 = f x_2) \land
 \begin{defi}
   If $f:X \to Y$ is a map, then the {\em \v{C}ech nerve} of $f$ is the
   diagram
-  $$C(f) := \cdots
-    X \times_Y X \times_Y X
-   \underset{\longrightarrow}{\stackrel{\longrightarrow}{\longrightarrow}}
-   X \times_Y X 
-\stackrel{\longrightarrow}{\longrightarrow} X$$
+  $$\xymatrix{
+    C(f) := \cdots~ X \times_Y X \times_Y X \tar[r] & X \times_Y X \dar[r] & X
+  }$$
 with canonical projections.
 \end{defi}
 
@@ -338,9 +338,10 @@ lemma is central in the proof~:
 \begin{lem}
   Let $T:\Type_{n+1}$. Then $\square T$ is the colimit of the closed
   diagonal diagram
-  $$\cdots \overline{\Delta_3} \underset{\longrightarrow}{\stackrel{\longrightarrow}{\longrightarrow}}
-   \overline{\Delta_2}
-\stackrel{\longrightarrow}{\longrightarrow} \overline{\Delta_1},$$
+  $$\xymatrix{ 
+    \cdots \overline{\Delta_3} \tar[r] & \overline{\Delta_2} \dar[r] &
+    \overline{\Delta_1}
+  }$$
 where $\Delta_k$ is the $k$-pullback of $\id : T \to T$.
 \end{lem}
 \begin{proof}
@@ -381,6 +382,7 @@ Using the separation property with these type, one can show the second
 components of $f x$ and $g x$ are equals too, with respect to the
 first path.
 
+
 \subsection{From Separated Type to Sheaf}
 \label{ssec:separated-to-sheaf}
 
@@ -403,6 +405,18 @@ $$\star T = \sum_{u:T \to \Type_n^\modal} \lnot\lnot\left\| \sum_{a:X}
 
 We already know that $\star$ defines a modality. It remains to show
 that this modality is left exact.
+
+Let $T:\Type_{n+1}$ such that $\star X$ is contractible. Let
+$x,y:T$. We want to show that $\star (x=y)$ is contractible.
+
+As $\star T$ is contractible, we have a center $u_0 : T \to
+\Type_n^\modal$ with an hypothesis $H_0 :  \lnot\lnot\left\| \sum_{a:X} 
+            (\lambda t,~\modal (a=t)) = u_0\right\|$, and a
+          contractibility condition $c : \prod_{t:\star T} x = (u_0,H_0)$.
+As $\Contr (\star (x=y))$ is a $\HProp$-sheaf, we can change $H_0$
+into a $a:T$ and a proof $u_0 = (\lambda t,~\modal (a=t))$.
+Finally, $c$ type becomes $\prod_{v:\star T} v_1 =  (\lambda t,~\modal (a=t))$.
+
 
 The last thing to prove is the cumulativity of our sheafifications~:
 \begin{prop}
@@ -557,7 +571,7 @@ The authors would like to thank...
 
 \bibitem[RS13]{sets_in_hott}
 Egbert Rijke and Bas Spitters.
-\newblock Sets in homotopy type theory.
+\newblock {\em Sets in homotopy type theory}.
 \newblock 2013.
 
 \bibitem[{Uni}13]{hottbook}
@@ -575,8 +589,8 @@ Jacob Lurie
 \newblock{\em Higher Topos Theory}
 
 \bibitem[lumsdaine]{lumsdaine}
-Lumsdaine
-\newblock{Diagrams and limits}
+Peter LeFanu Lumsdaine, Jeremy Avigad and Chris Kapulkin
+\newblock{\em Homotopy limits in type theory}
 
 \end{thebibliography}
 

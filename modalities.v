@@ -49,6 +49,33 @@ Module Modality_theory (subU : subuniverse_struct) (mod : Modality subU).
     intro a; exact (B' a).2.
   Defined.
 
+  Definition hprop_stability sf (P:HProp) (t : IsTrunc n P.1)
+  : IsHProp (O sf (P.1;t)).1.
+    Unset Printing Universes.
+    apply hprop_allpath.
+    intros x.
+    transparent assert (modf : ((O sf (P.1;t)).1 -> subuniverse_Type sf)).
+    { intro y.
+      refine (exist _ _ _).
+      exists (x = y).
+      apply istrunc_paths.
+      apply trunc_succ. exact _.2.
+      refine (subuniverse_paths (((O sf (P.1; t)); subuniverse_O sf _) : subuniverse_Type sf) x y). }
+    refine (O_rec_dep sf _ modf _).1.
+    intro y. unfold modf; clear modf; simpl.
+    revert x.
+    transparent assert (modf : ((O sf (P.1;t)).1 -> subuniverse_Type sf)).
+    { intro x.
+      refine (exist _ _ _).
+      exists (x = O_unit sf _ y).
+      apply istrunc_paths.
+      apply trunc_succ. exact _.2.
+      refine (subuniverse_paths (((O sf (P.1; t)); subuniverse_O sf _) : subuniverse_Type sf) x (O_unit sf _ y)). }
+    refine (O_rec_dep sf _ modf _).1.
+    intros x. unfold modf; clear modf; simpl in *.
+    apply ap. refine (path_ishprop x y). exact P.2.
+  Defined.
+
   Definition modal_contr_is_equiv (sf : subu_family) (X:Trunk n) (Y : subuniverse_Type@{u a i' i} sf) (f : X.1 -> Y.1.1) (mod_contr_f : forall y, Contr (O@{u a i' i} sf (hfiber f y ; trunc_sigma@{i i i' i} (X.2) (λ x, (istrunc_paths (trunc_succ (Y.1.2)) (f x) y)))).1)
   : (O@{u a i' i} sf X).1 <~> Y.1.1.
     refine (equiv_adjointify _ _ _ _).

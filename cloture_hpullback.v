@@ -40,25 +40,25 @@ Module Cloture_hPullback (nj : subuniverse_struct) (mod : Modality nj).
   (* Local Definition islex_nj := sheaf_def_and_thm.islex_nj. *)
   (* Local Definition lex_compat := sheaf_def_and_thm.lex_compat. *)
 
+  Set Printing Universes.
+  
+  Definition cl_char_hPullback (sf : subu_family@{u a}) {X Y:Trunk@{i' i a} (n.+1)} (f:Y.1 -> X.1) (k:nat) : hProduct@{i i i} Y.1 (S k) → Trunk@{i' i a} n
+    := (cloture@{i u a i'} sf (char_hPullback n f k X.2 Y.2)).
 
-  Definition cl_char_hPullback (sf : subu_family) {X Y:Trunk (trunc_S n)} (f:Y.1 -> X.1) (k:nat) : hProduct Y.1 (S k) → Trunk n
-    := (cloture sf (char_hPullback n f k X.2 Y.2)).
-
-  Definition cl_char_hPullback' (sf : subu_family) {X Y:Trunk (trunc_S n)} (f:Y.1 -> X.1) (k:nat) (P : hProduct Y.1 (S k)) : Trunk n.
+  Definition cl_char_hPullback' (sf : subu_family@{u a}) {X Y:Trunk@{i' i a} (n.+1)} (f:Y.1 -> X.1) (k:nat) (P : hProduct@{i i i} Y.1 (S k)) : Trunk@{i' i a} n.
     induction k.
     - simpl.
-      (* Set Printing Universes. *)
       exists (hPullback n f 0 X.2 Y.2).
-      (* exists Unit. *)
+      (* exists Unit. *) 
       apply trunc_unit. 
     - simpl. exists ((O sf (f (fst P) = f (fst (snd P)) ; istrunc_paths X.2 (f (fst P)) (f (fst (snd P))))).1 /\ (IHk (snd P)).1).
       apply (@trunc_prod _ _ (((O sf
                                     (f (fst P) = f (fst (snd P));
                                      istrunc_paths X.2 (f (fst P)) (f (fst (snd P)))))).2)
-            _ ((IHk (snd P)).2)).
+                         _ ((IHk (snd P)).2)).
   Defined.
 
-  Theorem cl_char_hPullback_is_' (sf : subu_family) {X Y:Trunk (trunc_S n)} (f:Y.1 -> X.1) (k:nat) (P:hProduct Y.1 k.+1) : cl_char_hPullback sf f k P = cl_char_hPullback' sf f k P.
+  Theorem cl_char_hPullback_is_' (sf : subu_family@{u a}) {X Y:Trunk@{i' i a} (n.+1)} (f:Y.1 -> X.1) (k:nat) (P:hProduct@{i i i} Y.1 k.+1) : cl_char_hPullback@{u a i' i} sf f k P = cl_char_hPullback' sf f k P.
     apply truncn_unique. exact fs.
     induction k.
     - simpl. unfold cl_char_hPullback, cloture. simpl.
@@ -78,7 +78,10 @@ Module Cloture_hPullback (nj : subuniverse_struct) (mod : Modality nj).
                            istrunc_paths X.2 (f (fst P)) (f (fst (snd P)))) (char_hPullback n f k X.2 Y.2 (snd P)) _). 
   Defined.
 
-  Theorem cl_char_hPullback_is_'_1 (sf : subu_family) {X Y:Trunk (trunc_S n)} (f:Y.1 -> X.1) (k:nat) (P:hProduct Y.1 k.+1) : (cl_char_hPullback sf f k P).1 = (cl_char_hPullback' sf f k P).1.
+  Theorem cl_char_hPullback_is_'_1 (sf : subu_family@{u a}) {X Y:Trunk@{i' i a} (n.+1)}
+          (f:Y.1 -> X.1) (k:nat) (P:hProduct Y.1 k.+1) :
+    (cl_char_hPullback@{u a i' i} sf f k P).1
+    = (cl_char_hPullback'@{u a i' i} sf f k P).1.
     induction k.
     - simpl. unfold cl_char_hPullback, cloture. simpl.
       apply OUnit_is_Unit. 
@@ -90,20 +93,24 @@ Module Cloture_hPullback (nj : subuniverse_struct) (mod : Modality nj).
                            istrunc_paths X.2 (f (fst P)) (f (fst (snd P)))) (char_hPullback n f k X.2 Y.2 (snd P)) _). 
   Defined.
 
-  Theorem cl_char_hPullback_is_'_fun : @cl_char_hPullback = @cl_char_hPullback'.
+  Theorem cl_char_hPullback_is_'_fun : @cl_char_hPullback@{u a i' i} =
+                                       @cl_char_hPullback'@{u a i' i}.
     repeat (apply path_forall; intros ? ).
     apply cl_char_hPullback_is_'.
   Defined.
 
-  Theorem cl_hPullback_is_' (sf : subu_family) {X Y:Trunk (trunc_S n)} (f:Y.1 -> X.1) (k:nat)
-  : {P:hProduct Y.1 k.+1 & (cl_char_hPullback sf f k P).1 } <~> {P:hProduct Y.1 k.+1 & (cl_char_hPullback' sf f k P).1}.
+  Theorem cl_hPullback_is_' (sf : subu_family@{u a}) {X Y:Trunk@{i' i a} (n.+1)}
+          (f:Y.1 -> X.1) (k:nat)
+  : {P:hProduct Y.1 k.+1 & (cl_char_hPullback@{u a i' i} sf f k P).1 } <~>
+    {P:hProduct Y.1 k.+1 & (cl_char_hPullback' sf f k P).1}.
     refine (@equiv_functor_sigma_id _ _ _ _).
     intro P.
     apply equiv_path. 
     apply cl_char_hPullback_is_'_1.
   Defined.
 
-  Lemma cl_char_hPullback'_is_dense (sf : subu_family) (X Y:Trunk (trunc_S n)) (f : Y.1 -> X.1) (k:nat)
+  Lemma cl_char_hPullback'_is_dense (sf : subu_family@{u a}) {X Y:Trunk@{i' i a} (n.+1)}
+        (f : Y.1 -> X.1) (k:nat)
   : EnJ sf {P : hProduct Y.1 (S k) & (cl_char_hPullback' sf f k P).1}.
     refine (@transport_density_sigma sf _ _ _ _).
     exact ((char_hPullback _ f k X.2 Y.2)).
@@ -111,7 +118,10 @@ Module Cloture_hPullback (nj : subuniverse_struct) (mod : Modality nj).
     apply (cl_char_hPullback_is_'_1 sf f k).
   Defined.
   
-  Lemma density_lemma_hPullback (sf : subu_family) (X Y:Trunk (trunc_S n)) (f : Y.1 -> X.1) (k:nat) (x : ∃ P : Y.1 ∧ hProduct Y.1 (S k), (cl_char_hPullback' sf f (S k) P).1) (u : (char (cl_char_hPullback'_is_dense sf X Y f (S k)) x).1)
+  Lemma density_lemma_hPullback (sf : subu_family@{u a}) {X Y:Trunk@{i' i a} (n.+1)}
+        (f : Y.1 -> X.1) (k:nat)
+        (x : ∃ P : Y.1 ∧ hProduct Y.1 (S k), (cl_char_hPullback' sf f (S k) P).1)
+        (u : (char (cl_char_hPullback'_is_dense sf f (S k)) x).1)
   : (fst x.2) = O_unit sf (f (fst x.1) = f (fst (snd x.1)); istrunc_paths X.2 (f (fst x.1)) (f (fst (snd x.1)))) (fst u.1).
     destruct x as [x [q q']]; destruct u as [[π π'] u]; simpl in *.
     assert (v := moveR_transport_p idmap _ _ _ u).
@@ -151,7 +161,8 @@ Module Cloture_hPullback (nj : subuniverse_struct) (mod : Modality nj).
                                            (fst x0))) (π, π')).
   Defined.
 
-  Definition forget_cl_char_hPullback' (sf : subu_family) {X Y:Trunk (trunc_S n)} (f:Y.1 -> X.1) (k:nat)
+  Definition forget_cl_char_hPullback' (sf : subu_family@{u a}) {X Y:Trunk@{i' i a} (n.+1)}
+             (f:Y.1 -> X.1) (k:nat)
              (x : hProduct Y.1 (S (S k)))
              (P : (cl_char_hPullback' sf f (S k) x).1)
   : forall p:{p:nat & p <= k.+1}, (cl_char_hPullback' sf f k (forget_hProduct Y.1 (S k) x p)).1.

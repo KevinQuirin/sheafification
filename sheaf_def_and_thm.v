@@ -52,8 +52,8 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
   
   (* Parameter islex_mod_nj : IsLex mod_nj. *)
 
-  Definition islex_nj := islex_to_hfibers_preservation.
-  Definition lex_compat := islex_to_hfibers_preservation_compat.
+  Definition islex_nj := islex_to_hfibers_preservation@{u a i' i}.
+  Definition lex_compat := islex_to_hfibers_preservation_compat@{u a i' i}.
   
   (* Variable sf : subu_family. *)
   (* Definition sf := Mod_Prop.subU_RSProp.sf. *)
@@ -150,8 +150,6 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
   Defined.
 
   (* If T is a n-Type, then if T is a n-sheaf, then T is also a (S n)-sheaf *)
-
-  Definition lift_dep A (a:A) (P : A -> Type) : Lift A -> Type := P.
 
   Axiom Lift_IsTrunc : forall n (T:Type@{x}), IsTrunc@{i} n T -> IsTrunc@{j} n T.
   
@@ -861,7 +859,7 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     - intro x. simpl. hott_simpl. 
   Defined.
         
-  Lemma dicde_l (sf : subu_family@{u a}) (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1}) (e:clA)
+  Lemma dicde_l (sf : subu_family@{u a}) (E:Type@{i}) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O@{u a i' i} sf (φ e)).1}) (e:clA)
   : (∃ rx : ((O sf (φ e .1)) .1),
        rx =
       e.2) =(∃ rx : ((O sf (φ e .1)) .1),
@@ -889,11 +887,11 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     - apply OO_unit_idmap.
   Defined.
     
-  Lemma dicde_ll (sf : subu_family)
-        (E : Type)
+  Lemma dicde_ll (sf : subu_family@{u a})
+        (E : Type@{i})
         (φ : E → Trunk n)
         (A := ∃ e : E, (φ e) .1 : Type)
-        (clA := ∃ e : E, ((O sf (φ e)) .1): Type)
+        (clA := ∃ e : E, ((O@{u a i' i} sf (φ e)) .1): Type)
         (a : ∃ e : E, ((O sf (φ e)) .1))
         (x : ∃ π : (φ a .1) .1, O_unit sf (φ a .1) π = a .2)
         (π : ∃ π : (φ a .1) .1, O_unit sf (φ a .1) π = a .2)
@@ -916,12 +914,12 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
   destruct u. simpl. reflexivity.
   Defined.
 
-  Lemma dense_into_cloture_dense_eq (sf : subu_family) (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
+  Lemma dense_into_cloture_dense_eq (sf : subu_family@{u a}) (E:Type@{i}) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O@{u a i' i} sf (φ e)).1}) 
   : is_dense_eq sf (λ e:clA, ({π : (φ e.1).1 & O_unit sf _ π = e.2} ; trunc_sigma (φ e .1) .2
               (λ a : (φ e .1) .1,
                istrunc_paths (trunc_succ ((O sf (φ e.1)).2)) (O_unit sf (φ e .1) a) e .2))).
     intro e.
-    assert (rew := ((islex_nj sf (φ e .1) (O sf (φ e .1)) (O_unit sf _) e.2) @ (dicde_l sf φ e)^)).
+    assert (rew := ((islex_nj@{u a i' i} sf (φ e .1) (O sf (φ e .1)) (O_unit sf _) e.2) @ (dicde_l sf φ e)^)).
     apply path_universe_uncurried.
     apply (transport (λ U, (∃ e' : clA, e = e') <~> U) (islex_nj sf (φ e .1) (O sf (φ e .1)) (O_unit sf _) e.2)^).
     apply (transport (λ U, (∃ e' : clA, e = e') <~> U) (dicde_l sf φ e)).
@@ -944,7 +942,7 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     destruct q. apply equal_equiv. simpl. done.
   Defined.
 
-  Lemma dense_into_cloture_dense_diag (sf : subu_family) (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
+  Lemma dense_into_cloture_dense_diag (sf : subu_family@{u a}) (E:Type@{i}) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O@{u a i' i} sf (φ e)).1})
   : is_dense_diag (dense_into_cloture_dense_eq sf φ).
     intros x p.
     unfold dense_into_cloture_dense_eq.
@@ -975,13 +973,13 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
     apply dicde_ll. exact π. exact π'.
   Qed.
   
-  Definition dense_into_cloture (sf : subu_family) (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
+  Definition dense_into_cloture (sf : subu_family@{u a}) (E:Type@{i}) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O@{u a i' i} sf (φ e)).1})
   : EnJ sf clA.
     refine (Build_EnJ _ (dense_into_cloture_dense_eq sf φ) _).
     apply dense_into_cloture_dense_diag.
   Defined.
 
-  Definition transport_density (sf : subu_family) (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
+  Definition transport_density (sf : subu_family@{u a}) (E:Type@{i}) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O@{u a i' i} sf (φ e)).1})
   : forall X, clA = X -> EnJ sf X.
     pose (e := dense_into_cloture sf φ); simpl in e.
     destruct e as [χ χeq χdiag].
@@ -1029,7 +1027,7 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
   Defined.
   Opaque path_sigma_transport'.
 
-  Definition transport_density_sigma (sf : subu_family) (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O sf (φ e)).1})
+  Definition transport_density_sigma (sf : subu_family@{u a}) (E:Type@{i}) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O@{u a i' i} sf (φ e)).1})
   : forall α:E -> Trunk n, ( pr1 o (O sf) o φ == pr1 o α) -> EnJ sf {e:E & (α e).1}.
     intros α p.
     transparent assert (X : (clA = (∃ e : E, (α e).1))).

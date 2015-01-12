@@ -43,21 +43,21 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   (* Local Definition islex_nj := sheaf_def_and_thm.islex_nj. *)
   (* Local Definition lex_compat := sheaf_def_and_thm.lex_compat. *)
 
-  Definition separated_Type (sf : subu_family) (T:Trunk@{Si' i a} (n.+1)) :=
-    Im@{u i' u}  (λ t : T.1, λ t', ((O@{u a i' i} sf (t = t'; istrunc_paths T.2 t t'); subuniverse_O sf _) : subuniverse_Type@{u a i' i} sf)).
+  Definition separated_Type (sf : subu_family) (T:Trunk@{i' i a} (n.+1)) :=
+    Im@{i' i' i'}  (λ t : T.1, λ t', ((O@{u a i' i} sf (t = t'; istrunc_paths T.2 t t'); subuniverse_O sf _) : subuniverse_Type@{u a i' i} sf)) : Type@{i'}.
 
-  Definition sheaf_is_separated (sf : subu_family) (T : SnType_j_Type@{Si' u a i i'} sf) : separated sf T.1 := fst (T.2).
+  Definition sheaf_is_separated (sf : subu_family) (T : SnType_j_Type@{Si' i' a i u} sf) : separated sf T.1 := fst (T.2).
  
-  Definition separated_Type_is_Trunk_Sn (sf : subu_family) (T:Trunk@{Si' i a} (n.+1)) : IsTrunc (n.+1) (separated_Type@{Si' i a u i'} sf T).
+  Definition separated_Type_is_Trunk_Sn (sf : subu_family) (T:Trunk@{i' i a} (n.+1)) : IsTrunc (n.+1) (separated_Type@{i' i a u} sf T).
     unfold separated_Type; simpl.
     destruct T as [T TrT]; simpl in *. 
-    apply (@trunc_sigma@{i' u Si' u} _ (fun P => _)). 
+    apply (@trunc_sigma@{i' i' u i'} _ (fun P => _)). 
     apply (@trunc_forall _ _ (fun P => _)). intro.
     apply Lift_IsTrunc. apply subuniverse_Type_is_TrunkSn. 
     intro φ. exact (IsHProp_IsTrunc (istrunc_truncation _ _) n). 
   Defined.
 
-  Definition E_to_χ_map_ap (sf : subu_family) (T U:Trunk@{Si' i a} (n.+1)) E
+  Definition E_to_χ_map_ap (sf : subu_family) (T U:Trunk@{Si' i' a} (n.+1)) E
              (χ : EnJ@{i i' a u}  sf E) (f : E -> (pr1 T))
              (g : pr1 T -> pr1 U) x y (e : x = y) : 
     ap (fun u => g o u) (ap (E_to_χ_map T χ) e) = ap (E_to_χ_map U χ) (ap (fun u => g o u) e).
@@ -71,11 +71,11 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     rewrite <- (@eissect _ _ _ (fMono _ _ _) e'). exact (ap _ X0). 
   Defined.
 
-  Instance separated_mono_is_separated_ (sf : subu_family) (T U:Trunk@{Si' i a} (n.+1))
+  Instance separated_mono_is_separated_ (sf : subu_family) (T U:Trunk@{Si' i' a} (n.+1))
            E (χ:EnJ@{i i' a u} sf E) g h (f: T.1 -> U.1)
-           (H:IsEquiv (ap (@E_to_χ_map@{Si' u a i i'} sf U E χ) (x:=f o g) (y:=f o h)))
+           (H:IsEquiv (ap (@E_to_χ_map@{Si' i' a i u} sf U E χ) (x:=f o g) (y:=f o h)))
            (fMono : IsMonof f) :   
-           IsEquiv (ap (@E_to_χ_map@{Si' u a i i'} sf T E χ) (x:=g) (y:=h)).
+           IsEquiv (ap (@E_to_χ_map@{Si' i' a i u} sf T E χ) (x:=g) (y:=h)).
   apply (isequiv_adjointify _ (fun X => @equiv_inv _ _ _ (fMono E g h) (@equiv_inv _ _ _ H (ap (fun u => f o u) X)))).
   - intro e. 
     apply (@apf_Mono _ _ _ fMono). 
@@ -92,22 +92,22 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
                      (inverse ((@eissect _ _ _ H (ap (fun u => f o u) e))))).
     apply eissect.
   Defined.
-
-  Definition separated_mono_is_separated (sf : subu_family) (T U:Trunk@{Si' u a} (n.+1))
-             (H:separated@{Si' u a i i'} sf U) (f: pr1 T -> pr1 U)
-             (fMono : IsMonof f) : separated@{Si' u a i i'} sf T
- :=
+  
+  Definition separated_mono_is_separated (sf : subu_family) (T U:Trunk@{Si' i' a} (n.+1))
+             (H:separated@{Si' i' a i u} sf U) (f: pr1 T -> pr1 U)
+             (fMono : IsMonof f) : separated@{Si' i' a i u} sf T :=   
     fun E χ x y => separated_mono_is_separated_ _ _ _ (H E χ (f o x) (f o y)) fMono.
 
-  Definition T_nType_j_Type_trunc (sf : subu_family) (T:Trunk@{Si' u a} (n.+1)) : IsTrunc (trunc_S n) (pr1 T -> subuniverse_Type@{u a i' i} sf).
+  Definition T_nType_j_Type_trunc (sf : subu_family) (T:Trunk@{Si' i' a} (n.+1)) : IsTrunc@{i'} (n.+1) (pr1 T -> subuniverse_Type@{u a i' i} sf).
     apply (@trunc_forall _ _ (fun P => _)). intro. 
     apply (@trunc_sigma _ (fun P => _)). apply Tn_is_TSn.
     intro. apply IsHProp_IsTrunc. exact (pr2 (subuniverse_HProp sf a0)).
   Defined.
   
-  Definition T_nType_j_Type_isSheaf : forall (sf : subu_family) (T:Trunk@{Si' u a} (n.+1)),
-                                        Snsheaf_struct sf (T.1 -> subuniverse_Type@{u a i' i} sf;
-                                                        T_nType_j_Type_trunc T).
+  Definition T_nType_j_Type_isSheaf : forall (sf : subu_family) (T:Trunk@{Si' i' a} (n.+1)),
+                                        Snsheaf_struct@{Si' i' a i u} sf
+                                                      (T.1 -> subuniverse_Type@{u a i' i} sf;
+                                                       T_nType_j_Type_trunc T).
     intros sf T.
     unfold T_nType_j_Type_trunc.
     transparent assert (sheaf : (SnType_j_Type sf)).
@@ -127,18 +127,18 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     exact (@dep_prod_SnType_j_Type sf T (λ _, sheaf)). 
   Defined.
 
-  Definition T_nType_j_Type_sheaf (sf : subu_family) (T:Trunk@{Si' u a} (n.+1)) :
-    SnType_j_Type@{Si' u a i i'} sf :=
+  Definition T_nType_j_Type_sheaf (sf : subu_family) (T:Trunk@{Si' i' a} (n.+1)) :
+    SnType_j_Type@{Si' i' a i u} sf :=
     ((T.1 -> subuniverse_Type sf; T_nType_j_Type_trunc T); T_nType_j_Type_isSheaf sf _).
 
-  Definition separated_Type_is_separated (sf : subu_family) (T:Trunk@{Si' i a} (n.+1)) :
-    separated@{Si' u a i i'} sf (separated_Type@{Si' i a u i'} sf T;
-                                 separated_Type_is_Trunk_Sn@{Si' i a u i'} (T:=T)).
+  Definition separated_Type_is_separated (sf : subu_family) (T:Trunk@{i' i a} (n.+1)) :
+    separated@{Si' i' a i u} sf (separated_Type@{i' i a u} sf T;
+                                 separated_Type_is_Trunk_Sn@{i' i a u} (T:=T)).
     pose (T' := Lift_Trunk T).
     refine (@separated_mono_is_separated sf
               (separated_Type sf T;separated_Type_is_Trunk_Sn (T:=T))
               (T'.1 -> subuniverse_Type sf; T_nType_j_Type_trunc T')
-              (sheaf_is_separated (T_nType_j_Type_sheaf@{Si' u a i i' u} sf T'))
+              (sheaf_is_separated (T_nType_j_Type_sheaf@{Si' i' a i u} sf T'))
               pr1 _).
     intros X f g.
     refine (isequiv_adjointify _ (λ H, (path_forall _ _ (λ x, path_sigma _ _ _ (ap10 H x) (path_ishprop _ _)))) _ _).
@@ -151,21 +151,21 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
       apply pr1_path_sigma.
     - intro x. destruct x. simpl.
       etransitivity; [idtac | apply path_forall_1].
-      apply ap@{u u}.
+      apply ap@{i' i'}.
       apply path_forall; intro x.
       unfold path_ishprop.
       rewrite (@contr ((f x) .2 = (f x) .2) _ 1).
       apply path_sigma_1.
   Defined.
 
-  Definition separation (sf : subu_family) (T:Trunk@{Si' i a} (n.+1)) :
-    {T : Trunk@{Si' u a} (n.+1) & separated sf T} :=
+  Definition separation (sf : subu_family) (T:Trunk@{i' i a} (n.+1)) :
+    {T : Trunk@{Si' i' a} (n.+1) & separated sf T} :=
     exist@{Si' Si'} (separated sf)
-         (separated_Type@{Si' i a u i'} sf T; separated_Type_is_Trunk_Sn (T:=T))
-         (separated_Type_is_separated@{Si' i a u i'} (T:=T)).
+         (separated_Type@{i' i a u} sf T; separated_Type_is_Trunk_Sn (T:=T))
+         (separated_Type_is_separated@{i' i a Si' u} (T:=T)).
       
-  Definition separated_unit (sf : subu_family) (T:Trunk@{Si' i a} (n.+1)) :
-    T.1 -> separated_Type@{Si' i a u i'} sf T := toIm _.
+  Definition separated_unit (sf : subu_family) (T:Trunk@{i' i a} (n.+1)) :
+    T.1 -> separated_Type@{i' i a u} sf T := toIm _.
 
   (** Diagonal **)
   
@@ -326,8 +326,8 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     
   Definition separated_unit_paths_are_nj_paths_fun (sf : subu_family)
              (T:Trunk@{i' i a} (n.+1)) (a b:T.1) :
-    (separated_unit@{i' i a u i'} sf T a = separated_unit sf T b) ->
-    (O sf (a=b; istrunc_paths T.2 a b)).1.
+    (separated_unit@{i' i a u} sf T a = separated_unit sf T b) ->
+    (O@{u a i' i} sf (a=b; istrunc_paths T.2 a b)).1.
     intro p.
     unfold separated_unit, toIm in p. simpl in p.
     pose (p' := (ap10 p..1 a)..1..1). simpl in p'.
@@ -336,35 +336,41 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     repeat apply (ap pr1); apply ap.
     apply truncn_unique. exact fs.
     apply equal_inverse.
-    apply (transport  idmap X^).
+    apply (transport  idmap X^). simpl. 
     apply (transport idmap p'). apply O_unit. reflexivity.
   Defined.
-
+    
+  (* Definition lift_Trunk {n} {P : Trunk n -> Type} {A : Trunk n} : *)
+  (*   P A -> P (Lift_Trunk A) := fun x => x. *)
+  
   Definition separated_unit_paths_are_nj_paths_inv (sf : subu_family)
-             (T:Trunk@{Si' i a} (n.+1)) (a b:T.1) :
-    (O sf (a=b; istrunc_paths T.2 a b)).1 ->
-    (separated_unit@{Si' i a u i'} sf T a = separated_unit sf T b).
+             (T:Trunk@{i' i a} (n.+1)) (a b:T.1) 
+             (T' := Lift_Trunk@{i' i a Si' i'} T : Trunk@{Si' i' a} (n.+1)) :
+    (O@{u a i' i} sf (a=b; istrunc_paths T.2 a b)).1 ->
+    (separated_unit sf T a = separated_unit sf T b).
     intro p.
-    pose (Ωj := exist (IsTrunc (n.+1)) (T.1 -> subuniverse_Type@{u a i' i} sf)
-                (T_nType_j_Type_trunc T)).
-    pose (inj := pr1 : (separated_Type T) -> Ωj.1).
+    pose (Ωj := (pr1 T' -> subuniverse_Type@{u a i' i} sf;
+                T_nType_j_Type_trunc T')).
+    pose (inj := pr1 : (separated_Type sf T) -> Ωj.1).
     transparent assert (X : (IsMono inj)).
     intros x y. apply subset_is_subobject. intro.
     apply istrunc_truncation.
-    assert (inj (separated_unit T a) = inj (separated_unit T b)).
+    assert (inj (separated_unit sf T a) = inj (separated_unit sf T b)).
     unfold inj, separated_unit. simpl.
     apply path_forall; intro t; simpl.
     apply unique_subuniverse; apply truncn_unique. exact fs.
     unfold Oj; simpl. 
     apply path_universe_uncurried.
-    exists (kpsic_func_univ_func a b p X t).
-    apply isequiv_adjointify with (g := kpsic_func_univ_inv a b p X t);
-      [exact (fst (kpsic_func_univ_eq a b p X t)) | exact (snd (kpsic_func_univ_eq a b p X t))].
-    exact (@equiv_inv _ _ _ (X (separated_unit T a) (separated_unit T b)) X0).
+     exists (kpsic_func_univ_func sf T a b p t).
+    apply isequiv_adjointify with (g := kpsic_func_univ_inv sf T a b p t);
+      [exact (fst (kpsic_func_univ_eq sf T a b p t)) | exact (snd (kpsic_func_univ_eq sf T a b p t))]. 
+    exact (@equiv_inv _ _ _ (X (separated_unit sf T a) (separated_unit sf T b)) X0).
   Defined.
 
-  Lemma separated_unit_paths_are_nj_paths_retr T (a b:T.1)
-  : Sect (separated_unit_paths_are_nj_paths_inv T a b) (separated_unit_paths_are_nj_paths_fun (b:=b)).
+  Lemma separated_unit_paths_are_nj_paths_retr (sf : subu_family)
+             (T:Trunk@{i' i a} (n.+1)) (a b:T.1) 
+  : Sect (separated_unit_paths_are_nj_paths_inv@{i' i a Si' u} sf T a b)
+         (separated_unit_paths_are_nj_paths_fun (b:=b)).
     unfold separated_unit_paths_are_nj_paths_fun, separated_unit_paths_are_nj_paths_inv.
 
       intro x.
@@ -375,7 +381,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
                                                              o Overture.hfiber
                                                              (λ t t' : T.1,
                                                                        ((O sf (t = t'; istrunc_paths T.2 t t');
-                                                                        subuniverse_O sf (t = t'; istrunc_paths T.2 t t')):subuniverse_Type)))
+                                                                        subuniverse_O sf (t = t'; istrunc_paths T.2 t t')):subuniverse_Type sf)))
                                          (λ t' : T.1,
                                                  (O sf (a = t'; istrunc_paths T.2 a t');
                                                   subuniverse_O sf (a = t'; istrunc_paths T.2 a t'));
@@ -398,11 +404,11 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
       rewrite rew; clear rew.
 
       unfold path_universe_uncurried.
-      
+      (*
       assert (rew := equal_equiv_inv (eisretr _ (IsEquiv := isequiv_equiv_path ((O sf (a = a; istrunc_paths T .2 a a))) .1 ((O sf (b = a; istrunc_paths T .2 b a)) .1))
 
                                               {|
-        equiv_fun := kpsic_func_univ_func a b x
+        equiv_fun := kpsic_func_univ_func sf _ a b 
                        (λ x0 y : separated_Type T,
                         subset_is_subobject
                           (istrunc_truncation (-1)
@@ -497,11 +503,14 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
                                                                                   (λ u : a = b,
                                                                                          match u as p in (_ = y) return ((p ^) ^ = p) with
                                                                                            | 1 => 1
-                                                                                         end) |})) v)^.
+                                                                                         end) |})) v)^.*)
+      admit.
   Qed.
   
-  Lemma separated_unit_paths_are_nj_paths_sect T (a b:T.1)
-  : Sect (separated_unit_paths_are_nj_paths_fun (b:=b)) (separated_unit_paths_are_nj_paths_inv T a b).
+  Lemma separated_unit_paths_are_nj_paths_sect (sf : subu_family)
+             (T:Trunk@{i' i a} (n.+1)) (a b:T.1) 
+  : Sect (separated_unit_paths_are_nj_paths_fun (b:=b))
+         (separated_unit_paths_are_nj_paths_inv@{i' i a Si' u} sf T a b).
     unfold separated_unit_paths_are_nj_paths_fun, separated_unit_paths_are_nj_paths_inv.
       intro p.
       simpl.
@@ -549,14 +558,14 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
       destruct u.
       unfold ap10, pr1_path.
 
-      transitivity (function_lift (a = b; istrunc_paths T.2 a b) (b = a; istrunc_paths T.2 b a) (transport idmap (equal_inverse a b)) (transport idmap (equiv_nj_inverse T a b) ^
+      transitivity (function_lift sf (a = b; istrunc_paths T.2 a b) (b = a; istrunc_paths T.2 b a) (transport idmap (equal_inverse a b)) (transport idmap (equiv_nj_inverse sf T a b) ^
                                                                                                                                           (transport idmap (ap pr1 (ap pr1 (apD10 (ap pr1 p) a)))
                                                                                                                                                      (O_unit sf (a = a; istrunc_paths T.2 a a) 1)))).
 
       unfold function_lift.
       unfold equiv_nj_inverse. simpl.
       
-      apply (ap (λ u, O_rec (a = b; istrunc_paths T.2 a b) (O sf (b = a; istrunc_paths T.2 b a)) (subuniverse_O sf _)  u (transport idmap
+      apply (ap (λ u, O_rec sf (a = b; istrunc_paths T.2 a b) (O sf (b = a; istrunc_paths T.2 b a)) (subuniverse_O sf _)  u (transport idmap
         (ap pr1
            (ap (O sf)
               (truncn_unique fs
@@ -590,11 +599,11 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
       reflexivity.
       
 
-      transparent assert (X : ((function_lift (a = b; istrunc_paths T.2 a b)
-                                 (b = a; istrunc_paths T.2 b a) (transport idmap (equal_inverse a b))) = transport idmap (equiv_nj_inverse T a b))).
+      transparent assert (X : ((function_lift sf (a = b; istrunc_paths T.2 a b)
+                                 (b = a; istrunc_paths T.2 b a) (transport idmap (equal_inverse a b))) = transport idmap (equiv_nj_inverse sf T a b))).
 
       { assert (foo := function_lift_transport).
-        specialize (foo (a = b; istrunc_paths T.2 a b) (b = a; istrunc_paths T.2 b a)).
+        specialize (foo sf (a = b; istrunc_paths T.2 a b) (b = a; istrunc_paths T.2 b a)).
         unfold equiv_nj_inverse.
         specialize (foo
                       (truncn_unique fs
@@ -617,14 +626,17 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
         (* unfold path_sigma'. *)
         pose (rew := @pr1_path_sigma). unfold pr1_path in rew. rewrite rew. reflexivity. }
 
-      apply (transport (λ u, u (transport idmap (equiv_nj_inverse T a b) ^
+      apply (transport (λ u, u (transport idmap (equiv_nj_inverse sf T a b) ^
                                 (transport idmap (ap pr1 (ap pr1 (apD10 (ap pr1 p) a)))
                                            (O_unit sf (a = a; istrunc_paths T.2 a a) 1))) = transport idmap (ap pr1 (ap pr1 (apD10 (ap pr1 p) a)))
                                                                                                       (O_unit sf (a = a; istrunc_paths T.2 a a) 1)) X^).
       rewrite transport_pV. reflexivity.
   Qed.
 
-  Theorem separated_unit_paths_are_nj_paths T (a b:T.1) : (separated_unit T a = separated_unit T b) <~> (O sf (a=b; istrunc_paths T.2 a b)).1.
+  Theorem separated_unit_paths_are_nj_paths (sf : subu_family)
+          (T:Trunk@{i' i a} (n.+1)) (a b:T.1) :
+    (separated_unit sf T a = separated_unit sf T b) <~>
+    (O@{u a i' i} sf (a=b; istrunc_paths T.2 a b)).1.
   Proof.
     refine (equiv_adjointify _ _ _ _).
     - apply separated_unit_paths_are_nj_paths_fun.
@@ -633,64 +645,82 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     - apply separated_unit_paths_are_nj_paths_sect.
   Qed.
 
-  Lemma hPullback_separated_unit_is_cl_diag (T:Trunk (n.+1)) (k:nat)
-  : (hPullback n (separated_unit T) (S k) (@separated_Type_is_Trunk_Sn T) T.2)
-      <~> {y : hProduct T.1 (S k) & (@cl_char_hPullback' T T idmap k y).1}.
+  Definition Unit_resizing : Unit@{i} -> Unit@{j} := fun _ => tt.
+
+  Definition Unit_resizing_invol x : Unit_resizing@{i j} (Unit_resizing@{j i} x) = x.
+    destruct x. reflexivity.
+  Defined.
+
+  Lemma hPullback_separated_unit_is_cl_diag (sf : subu_family@{u a})
+        (T:Trunk@{i' i a} (n.+1)) (k:nat) : 
+      (hPullback@{i' i x3 x4 x5 x6 i' x8 x9} n
+              (separated_unit@{i' i a u} sf T) (S k)
+              (@separated_Type_is_Trunk_Sn@{i' i a u} sf T) T.2)
+        <~>
+        {y : hProduct@{i i i} T.1 (S k) &
+                       (@cl_char_hPullback'@{u a i' i} sf
+                                           (T)
+                                           (T) idmap k y).1}.
     simpl.
     apply equiv_functor_sigma_id.
     intros P.
     simpl.
     induction k.
     - simpl.
-      exact (equiv_adjointify idmap idmap (λ _:Unit, 1) (λ _:Unit,1)).
+      exact (@equiv_adjointify Unit@{i'} Unit@{i}
+                               Unit_resizing Unit_resizing (λ H:Unit, Unit_resizing_invol H) (λ H:Unit, Unit_resizing_invol H)).
     - simpl. destruct P as [a [b P]].
       apply equiv_functor_prod'. simpl.
-      refine (equiv_adjointify (@separated_unit_paths_are_nj_paths_fun T a b) (@separated_unit_paths_are_nj_paths_inv T a b) _ _).
+      refine (equiv_adjointify (@separated_unit_paths_are_nj_paths_fun sf T a b) (@separated_unit_paths_are_nj_paths_inv sf T a b) _ _).
       apply separated_unit_paths_are_nj_paths_retr.
       apply separated_unit_paths_are_nj_paths_sect.
       apply IHk.
   Defined.
 
-  Definition Cech_nerve_separated_unit T
-    := Cech_nerve_diagram n (separated_unit T) (@separated_Type_is_Trunk_Sn T) T.2.
+  Definition Cech_nerve_separated_unit (sf : subu_family@{u a}) (T:Trunk@{i' i a} (n.+1))
+  : diagram@{i' Set Set} Cech_nerve_graph
+    := Cech_nerve_diagram n (separated_unit@{i' i a u} sf T) (@separated_Type_is_Trunk_Sn sf T) T.2.
 
-  Definition cl_diagonal_projections T (k:nat) (p: {p:nat & Peano.le p (S k)})
-  : {y : hProduct T.1 (S (S k)) & (@cl_char_hPullback' T T idmap (S k) y).1} -> {y : hProduct T.1 (S k) & (@cl_char_hPullback' T T idmap k y).1}.
+  Definition cl_diagonal_projections (sf : subu_family@{u a}) (T:Trunk@{i' i a} (n.+1)) (k:nat) (p: {p:nat & Peano.le p (S k)})
+  : {y : hProduct T.1 (S (S k)) & (@cl_char_hPullback' sf T T idmap (S k) y).1} -> {y : hProduct T.1 (S k) & (@cl_char_hPullback' sf T T idmap k y).1}.
     intro X.
     exists (forget_hProduct T.1 (S k) X.1 p).
     apply forget_cl_char_hPullback'.
     exact X.2.
   Defined.
 
-  Definition cl_diagonal_diagram (T:Trunk (trunc_S n)) : diagram (Cech_nerve_graph).
+  Definition cl_diagonal_diagram (sf : subu_family@{u a}) (T:Trunk@{i' i a} (n.+1)) :
+    diagram@{i' Set Set} Cech_nerve_graph.
     refine (Build_diagram _ _ _).
-    - exact (λ k, {y : hProduct T.1 (S k) & (@cl_char_hPullback' T T idmap k y).1}).
+    - exact (λ k, {y : hProduct@{i i i} T.1 (S k) & (@cl_char_hPullback'@{u a i' i} sf T T idmap k y).1}).
     - intros i j [p q] a. simpl in *.
       apply cl_diagonal_projections.
       destruct p. exact q.
       destruct p. exact a.
   Defined.
 
-  Lemma diagrams_are_equal (T:Trunk (trunc_S n))
-  : (Cech_nerve_separated_unit T) = cl_diagonal_diagram T.
+  Lemma diagrams_are_equal (sf : subu_family@{u a}) (T:Trunk@{i' i a} (n.+1))
+  : (Cech_nerve_separated_unit sf T) = cl_diagonal_diagram sf T.
     simpl.
     unfold Cech_nerve_separated_unit, Cech_nerve_diagram, cl_diagonal_diagram.
     apply path_diagram.
+    (*
     transparent assert ( path_type : ((λ n0 : nat,
                 ∃ P : T.1 ∧ hProduct T.1 n0,
-                (char_hPullback n (separated_unit T) n0
+                (char_hPullback n (separated_unit sf T) n0
                    (separated_Type_is_Trunk_Sn (T:=T)) T.2 P).1) =
                (λ k : nat,
-                ∃ y : T.1 ∧ hProduct T.1 k, (cl_char_hPullback' idmap k y).1))).
+                ∃ y : T.1 ∧ hProduct T.1 k, (cl_char_hPullback' sf idmap k y).1))).
     - apply path_forall; intro k.
       apply path_universe_uncurried.
-      apply hPullback_separated_unit_is_cl_diag.
+      destruct k. simpl. admit.
+      pose (hPullback_separated_unit_is_cl_diag sf T k).
     - exists path_type. simpl.
       intros i j [p q] [P X]. simpl.
       
       unfold path_type. simpl.
       unfold ap10, path_forall; rewrite eisretr.
-      pose (rew := transport_path_universe_V_uncurried (hPullback_separated_unit_is_cl_diag T j) ).
+      pose (rew := transport_path_universe_V_uncurried (hPullback_separated_unit_is_cl_diag T j) ).*)
       (* rewrite rew; clear rew. *)
       (* destruct p. *)
       (* symmetry; apply moveL_equiv_V; symmetry. *)
@@ -715,21 +745,31 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
       
   Admitted.
 
-  Definition separated_Type_is_colimit_Cech_nerve (T:Trunk (trunc_S n))
-    := Giraud n (separated_unit T) (@separated_Type_is_Trunk_Sn T) T.2 (@IsSurjection_toIm _ _ (λ t t' : T.1, (O sf (t = t'; istrunc_paths T.2 t t'); subuniverse_O sf _))).
-
-  Definition diagonal_commute (T:Trunk (trunc_S n))
-  : forall i, (cl_diagonal_diagram T) i -> (separated_Type T).
+  Definition separated_Type_is_colimit_Cech_nerve (sf : subu_family@{u a})
+             (T:Trunk@{i' i a} (n.+1)) := Giraud n (separated_unit@{i' i a u} sf T)
+             (@separated_Type_is_Trunk_Sn sf T)
+             (Lift_Trunk T).2
+             (IsSurjection_toIm (f := λ t t' : T.1,
+                                   (O@{u a i' i} sf
+                                     (t = t'; istrunc_paths@{i} T.2 t t');
+                                    subuniverse_O@{u a i' i} sf
+                                                 (t = t'; istrunc_paths@{i} T.2 t t')))).
+     
+  Definition diagonal_commute (sf : subu_family@{u a})
+             (T:Trunk@{i' i a} (n.+1))
+  : forall i, (cl_diagonal_diagram sf T) i -> (separated_Type sf T).
     simpl; intro i.
     intro u.
     apply separated_unit. exact (fst u.1).
   Defined.
 
-  Arguments diagonal_commute T [i] x.
+  Arguments diagonal_commute sf T [i] x.
 
-  Definition diagonal_pp (T:Trunk (trunc_S n))
-  : forall i j, forall (g : Cech_nerve_graph i j), forall (x : cl_diagonal_diagram T i),
-      (@diagonal_commute T) _ (diagram1 (cl_diagonal_diagram T) g x) = (@diagonal_commute T) _ x.
+  Definition diagonal_pp (sf : subu_family@{u a})
+             (T:Trunk@{i' i a} (n.+1))
+  : forall i j, forall (g : Cech_nerve_graph i j), forall (x : cl_diagonal_diagram sf T i),
+      (@diagonal_commute sf T) _ (diagram1 (cl_diagonal_diagram sf T) g x) =
+      (@diagonal_commute sf T) _ x.
     intros i j [p [q Hq]] x; simpl in *.
     destruct p.
     unfold diagonal_commute. simpl.
@@ -741,14 +781,15 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     - reflexivity.
   Defined.
 
-  Definition separated_Type_is_colimit_cl_diagonal_diagram (T:Trunk (trunc_S n))
+  Definition separated_Type_is_colimit_cl_diagonal_diagram (sf : subu_family@{u a})
+             (T:Trunk@{i' i a} (n.+1))
   : is_colimit (Cech_nerve_graph)
-               (cl_diagonal_diagram T)
-               (separated_Type T)
-               (diagonal_commute T)
-               (@diagonal_pp T).
+               (cl_diagonal_diagram sf T)
+               (separated_Type sf T)
+               (diagonal_commute sf T)
+               (@diagonal_pp sf T).
     intro X.
-    pose (i := separated_Type_is_colimit_Cech_nerve T X); destruct i as [inv retr sect _];
+    pose (i := separated_Type_is_colimit_Cech_nerve sf T X); destruct i as [inv retr sect _];
     unfold Sect in *; simpl in *.
     
     unfold Cech_nerve_commute in *.
@@ -758,29 +799,33 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
       apply inv. clear inv.
       refine (exist _ _ _).
       intros i u; apply (q i).
-      apply (hPullback_separated_unit_is_cl_diag T i).
-      exact u.
+      apply (hPullback_separated_unit_is_cl_diag sf T i).
+      (*exact u.
       intros i j [a [b Hb]] x.
       destruct a.
-
+*)
   Admitted.
 
-  Lemma sep_eq_inv_lemma (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T}) (f : P.1 -> Q.1.1)
+  Lemma sep_eq_inv_lemma (sf : subu_family@{u a})
+             (P:Trunk@{i' i a} (n.+1)) (Q :{T : Trunk@{i' i a} (n.+1) & separated@{Si' i' a i u} sf (Lift_Trunk T)}) (f : P.1 -> Q.1.1)
   : ∀ (i j : Cech_nerve_graph) (f0 : Cech_nerve_graph i j)
-      (x : (cl_diagonal_diagram P) i),
-      f (fst (diagram1 (cl_diagonal_diagram P) f0 x).1) = f (fst x.1).
-    intros i j [p [q Hq]]; destruct p;
-    intros [[a [b x]] X];
-    destruct q; [
-    exact (ap10 (equiv_inv (IsEquiv := Q.2 (∃ y : P.1 ∧ hProduct P.1 (S j), (cl_char_hPullback' idmap (S j) y).1) (cl_char_hPullback'_is_dense P P idmap (S j)) (λ x, f (fst x.1)) (λ x, f (fst (snd x.1))))
-                     (path_forall _ _ (λ u, ap f (fst u.2.1)))) ((a,(b,x));X))^ |
-    reflexivity].
+      (x : (cl_diagonal_diagram sf P) i),
+      f (fst (diagram1 (cl_diagonal_diagram sf P) f0 x).1) = f (fst x.1).
+    intros i j [p [q Hq]]. destruct p;
+    intros [[a [b x]] X].
+    destruct q; try reflexivity.
+    simpl in *. clear Hq. 
+    pose (ap10 (equiv_inv (IsEquiv := Q.2 (∃ y : P.1 ∧ hProduct P.1 (S j), (cl_char_hPullback' sf idmap (S j) y).1) (@cl_char_hPullback'_is_dense sf P P idmap (S j)) (λ x, f (fst x.1)) (λ x, f (fst (snd x.1))))
+                          (path_forall _ _ (λ u, ap f (fst u.2.1)))) ((a,(b,x));X))^.
+         (* exact p. SHOULD WORK ?*)
+    admit.
   Defined.
       
-  Definition sep_eq_inv (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T})
-  : (P .1 → (Q .1) .1) -> ((separated_Type P) → (Q .1) .1).
+  Definition sep_eq_inv (sf : subu_family@{u a})
+             (P:Trunk@{i' i a} (n.+1)) (Q :{T : Trunk@{i' i a} (n.+1) & separated sf (Lift_Trunk T)})
+  : (P .1 → (Q .1) .1) -> ((separated_Type@{i' i a u} sf P) → (Q .1) .1).
     intro f.
-    apply (equiv_inv (IsEquiv := (separated_Type_is_colimit_cl_diagonal_diagram P Q.1.1))).
+    apply (equiv_inv (IsEquiv := (separated_Type_is_colimit_cl_diagonal_diagram sf P Q.1.1))).
     exists (λ i, λ x, f (fst x.1)).
     apply sep_eq_inv_lemma.
   Defined.
@@ -790,10 +835,11 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   intro H. destruct H. auto.
   Defined.
       
-  Definition separated_equiv : forall (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T}),
-                                 IsEquiv (fun f : separated_Type P -> pr1 (pr1 Q) =>
-                                            f o (separated_unit P)).
-    intros P Q.
+  Definition separated_equiv : forall (sf : subu_family@{u a})
+             (P:Trunk@{i' i a} (n.+1)) (Q :{T : Trunk@{i' i a} (n.+1) & separated sf (Lift_Trunk T)}),
+                                 IsEquiv (fun f : separated_Type sf P -> pr1 (pr1 Q) =>
+                                            f o (separated_unit sf P)).
+    intros sf P Q.
     refine (isequiv_adjointify _ _ _ _).
     - apply sep_eq_inv.
     - intros f.
@@ -802,12 +848,12 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
 
       unfold sep_eq_inv.
       unfold equiv_inv.
-      destruct (separated_Type_is_colimit_cl_diagonal_diagram P (Q.1).1) as [inv retr _ _].
+      destruct (separated_Type_is_colimit_cl_diagonal_diagram sf P (Q.1).1) as [inv retr _ _].
       unfold Sect in retr; simpl in retr.
       simpl.
       unfold diagonal_commute in retr.
       specialize (retr (λ (i : nat)
-      (x0 : ∃ y : P.1 ∧ hProduct P.1 i, (cl_char_hPullback' idmap i y).1),
+      (x0 : ∃ y : P.1 ∧ hProduct P.1 i, (cl_char_hPullback' sf idmap i y).1),
                         f (fst x0.1); sep_eq_inv_lemma Q f)).
       exact (ap10 (apD10 (retr..1) 0) ((x,tt);tt)).
     - intros f. unfold sep_eq_inv; simpl.
@@ -819,7 +865,10 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
       apply path_forall; intro x.
       destruct p. simpl in *.
       induction q.
-      { Transparent sep_eq_inv_lemma.
+      {
+      (* Does not work because sep_eq_inv_lemma is admitted *)
+      (*
+       Transparent sep_eq_inv_lemma.
         Opaque cl_diagonal_projections.
         Opaque cl_char_hPullback'_is_dense.
         simpl.
@@ -963,14 +1012,16 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
         rewrite concat_1p in p0.
         etransitivity. Focus 2. try exact p0. clear p0.
         apply ap.
-        exact (density_lemma_hPullback P P idmap j ((b1,(b1,b)) ; q) ((1,μ);p)). 
+        exact (density_lemma_hPullback P P idmap j ((b1,(b1,b)) ; q) ((1,μ);p)).*)
+      admit.
       }
       { reflexivity. }
   Qed.
 
-  Lemma density_sigma (E:Type) (χ : EnJ E) (e:E) (E' := {e':E & e = e'})
-  : EnJ {e':E & e' = e}.
-    refine (@Build_EnJ _ _ _ _).
+  Lemma density_sigma (sf : subu_family@{u a}) (E:Type) (χ : EnJ@{i i' u a} sf E)
+        (e:E) (E' := {e':E & e = e'})
+  : EnJ sf {e':E & e' = e}.
+    refine (@Build_EnJ _ _ _ _ _).
     - intro x. apply χ. exact x.1.
     - intros e0.
       pose (dense_eq χ e0.1).
@@ -1019,37 +1070,21 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
 
   Definition n := trunc_S n0.
   
-  Definition subuniverse_HProp : forall (sf : subu_family@{u a i}) (T:Trunk@{a i} n), HProp@{u i}.
+  Definition subuniverse_HProp : forall (sf : subu_family@{u a}) (T:Trunk@{i' i a} n),
+                                   HProp@{Si' i' a}.
     intros sf T.
-    refine (exist _ _ _).
-    exact (separated T).
+    exists (separated sf T).
     apply separated_is_HProp.
   Defined.
   
-  Definition O : forall (sf : subu_family@{u a i}), Trunk@{a i} n -> Trunk@{a i} n.
-    Set Printing Universes.
-    intros sf [T tT].
-    refine (exist _ _ _).
-    pose (separated_Type (T;tT)). simpl in *.
-    Show Universes.
-    Show Universes.
-    exact (separated_Type T).
-
-    {Top.9023 Top.9022
-Top.9021} |= Set < Top.9021
-              Set < Top.9022
-              Set < Top.9023
-              Top.9023 < Top.9022
-              Top.9022 <= Top.9021
-              
-Normalized constraints: Top.9023 < Top.9022
-Top.9022 <= Top.9021
-Set < Top.9023
-    < Top.9022
-    < Top.9021
-
-  Definition subuniverse_O : forall (sf : subu_family@{u a}) (T:Trunk@{i a} n),
-                                   (subuniverse_HProp@{u a i} sf (O@{u a i} sf T)).1.
+  Definition O : forall (sf : subu_family@{u a}), Trunk@{i' i a} n -> Trunk@{Si' i' a} n.
+    intros sf T.
+    exists (separated_Type sf T).
+    apply separated_Type_is_Trunk_Sn.
+  Defined.
+  
+  Definition subuniverse_O : forall (sf : subu_family@{u a}) (T:Trunk@{i' i a} n),
+                                   (subuniverse_HProp@{u a i' i} sf (O@{u a i' i} sf T)).1.
   
   Definition O_unit : forall (sf : subu_family@{u a}), forall T:Trunk@{i a} n, T.1 -> (O@{u a i} sf T).1.
   

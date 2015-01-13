@@ -101,7 +101,7 @@
   mismatched has been fixed recently by considering homotopy type
   theory, an extension of Martin-Löf type theory with new
   principles inspired by category theory and homotopy theory, and
-  which corresponds closely to higher toposes.
+  which corresponds closely to higher topoi.
   % 
   In this paper, we give a computer-checked construction of
   Lawvere-Tierney sheafification in homotopy type theory, which allows
@@ -116,6 +116,42 @@
 \section{Introduction}
 \label{sec:intro}
 
+The sheaf construction, or sheafification~\cite{maclanemoerdijk}, is a
+very powerful tool to construct new topoi from already existing ones,
+allowing logical principles---that can not be proven to be true or false
+in the old topos---to be valided (or invalided) in the new topos.
+%
+The most common use of sheafification is to construct a boolean
+topos, thus validating the classical principle of the law of excluded
+middle (EM), from an intuitionistic topos. 
+%
+An other famous (revisited) application has been developed by Paul
+Cohen~\cite{cohen1966} to prove that the continuum hypothesis is
+independent of the usual axioms of Zermelo-Fr\ae nkel set theory, even
+in presence of the axiom of choice (AC).
+
+Even if similar questions have been considered around the Curry-Howard
+isomorphism, there is no canonical way to extend a programming language
+such as type theory while keeping consistency automatically. 
+%
+For instance, much effort have been done to provide a computational
+content to the law of excluded middle in order to define a constructive
+version of classical logic. This has lead to various calculi, with
+most notably the $\lambda \mu$-calculus of
+Parigot~\cite{parigot1993classical}, but this has not allow to define
+a new version of type theory with classical principles.
+%
+Other works have tried to extend continuation-passing-style (CPS)
+transformation to type theory, but they have been faced with the
+difficulty that the CPS transformation is incompatible with (full) dependent
+sums~\cite{barthe2002cps}, which puts emphasis on the tedious link
+between the axiom of choice and the law of excluded middle in type theory.
+
+Nevertheless the axiom of choice Coquand, Herbelin, Krivine.
+%
+% Some works have tried to provide a realization of the axiom of choice 
+% compatible with classical logic 
+
 \begin{itemize}
 \item 
   links between HoTT and higher topos theory 
@@ -123,22 +159,6 @@
   modalities in HoTT
 \item 
   Giraud's axiom
-\item
-  previous attempts to extend Gödel's double negation to 
-  Martin-Löf type theory
-\item 
-  compare to the work of Parigot on $\lambda\mu$-calculus (Classical proofs as programs), and Coquand 
-  (A realization of the negative interpretation of the Axiom of
-  Choice)
-\item
-  work of Hugo Herbelin, A Constructive Proof of Dependent Choice,
-  Compatible with Classical Logic
-\item
-  Barthe (CPS Translating Inductive and Coinductive Types)
-  ``No translation is possible along the same lines for small $\Sigma$-types
-  and sum types with dependent case.''
-\item 
-  
 \end{itemize}
 
 
@@ -393,7 +413,7 @@ of its closure is closed.
 
   $$\xymatrix{
     \sum_{e:E} (\chi~ e) \ar[r]^f \ar[d]_{\pi_1} & F \\
-    E \ar@{-->}[ru]&
+    E \ar@{-->}[ru]_{!}&
   }$$
 \end{defi}
 
@@ -405,7 +425,7 @@ of its closure is closed.
 
   $$\xymatrix{
     \sum_{e:E} (\chi~ e) \ar[r]^f \ar[d]_{\pi_1} & F \\
-    E \ar@{-->}[ru]&
+    E \ar@{-->}[ru]_{\exists !}&
   }$$
 \end{defi}
 

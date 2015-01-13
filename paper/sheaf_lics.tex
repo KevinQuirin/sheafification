@@ -434,6 +434,18 @@ Once the first modality is defined, the extension to all $\Type_n$ is
 automatic. It means that the new principles we want to add in the new
 theory must be introduced ine the first modality. 
 
+We have to be careful~: if we want to propagate the properties of the
+first modality $\modal_{-1}$, all the higher modalities $\modal_n$ must be compatible
+with $\modal_{-1}$, \ie we want the property
+\begin{prop}
+  If $P:\HProp$, and $\widehat P$ is $P$ seen as a $\Type_n$, then $\modal_n \widehat P = \modal_{-1} P$, and the
+  following coherence diagram commute 
+  $$\xymatrix{
+    \modal_{-1} P \ar@{=}[r] & \modal_n \widehat P \\
+    P \ar@{=}[r] \ar[u]^{\eta_{-1}} & \widehat P \ar[u]_{\eta_n}
+  }$$
+\end{prop}
+
 The sheafification process works exactly that way
 in~\cite{maclanemoerdijk}~: from a left exact modality on the internal
 logic (a Lawvere-Tierney topology), we define a new left exact
@@ -503,7 +515,7 @@ both parts proposition~\ref{prop:sheaf_prop}.
 
 We now need to show that $\square$ is universal. The following
 lemma is central in the proof~:
-\begin{lem}
+\begin{lem}\label{lem:sepiscolim}
   Let $T:\Type_{n+1}$. Then $\square T$ is the colimit of the closed
   diagonal diagram
   $$\xymatrix{ 
@@ -549,9 +561,22 @@ The fact that these two form an equivalence is technical, we refer to
 the formalization for an explicit proof.
 \end{proof}
 
-Now that $\square T$ is a colimit, we can easily define an inverse to
-$\lambda\,(f:\square T \to U),~x \circ \mu_T$ for any separated type
-$U$, using the universal property of the colimit.
+Now, let $Q$ be a separated $\Type_{n+1}$, and $f:T \to Q$. Then the
+following diagram commutes
+$$\xymatrix{ 
+    \cdots \overline{\Delta_3} \tar[r] \ar[rd]_{f\circ \pi_1} & \overline{\Delta_2}
+    \dar[r] \ar[d]^{f\circ \pi_1} &
+    \overline{\Delta_1} = T \ar[ld]^{f\circ \pi_1}\\
+    & Q &
+  }$$
+But we know (lemma~\ref{lem:sepiscolim}) that $\square T$ is the
+colimit of the closed diagonals diagram, thus there is an universal
+arrow $\square T \to Q$.
+
+This proves the following proposition
+\begin{prop}
+  $(\square,\mu)$ defines a reflective subuniverse on $\Type_{n+1}$.
+\end{prop}
 
 We now have to prove point {\it (v)} in the definition of
 modality. Let $A:\Type_{n+1}$ be a sheaf and $B:A \to \Type_{n+1}$ be
@@ -561,14 +586,35 @@ subobject of E.
 
 Let $f,g$ be two maps from $\sum_{e:E} (\chi\,e)$ to $\sum_{x:A}
 (Bx)$, equal when precomposed with $\pi_1$.
-
-As $A$ is separated, for any $x:E$, the first components of $f x$ and
-$g x$ are equal. For the second components, notice that for all $x:E$,
+$$\xymatrix{
+  \sum_{e:E} (\chi\, e) \dar[r]^{f\circ\pi_1}_{g\circ \pi_1} \ar[d]_{\mathrm{dense}}& \sum_{x :A} (Bx) \\
+  E \dar[ru]^f_g&
+}$$
+We can restrict the previous diagram to 
+$$\xymatrix{
+  \sum_{e:E} (\chi\, e) \dar[rr]^{\pi_1\circ f\circ\pi_1}_{\pi\circ g\circ \pi_1} \ar[d]_{\mathrm{dense}}&& A \\
+  E \dar[rru]^{\pi_1\circ f}_{\pi_1\circ g}&
+},$$ 
+and as $A$ is separated, $\pi_1\circ f = \pi_2 \circ g$.
+For the second components, let $x:E$. Notice that for all $x:E$,
 $\sum_{y:E} x = y$ has a dense subobject, $\sum_{y:\sum_{e:E} (\chi\,
-  e)} x=y_1$. 
-Using the separation property with these type, one can show the second
-components of $f x$ and $g x$ are equals too, with respect to the
-first path.
+  e)} x=y_1$~:
+
+$$\xymatrix{
+  \sum_{y:\sum_{e:E} (\chi\,
+  e)} x=y_1 \dar[rrr]^{\pi_2\circ f\circ\pi_1\circ \pi_1}_{\pi_2\circ g\circ \pi_1\circ \pi_1} \ar[d]_{\mathrm{dense}}&&& B\,x \\
+  \sum_{y:E} x = y \dar[rrru]^{\pi_2\circ f\circ \pi_1}_{\pi_2\circ g\circ \pi_1}&
+}$$
+Using the sepatation property of $B\,x$, one can show that second
+components, transported correctly along the first components equality,
+are equal. The complete proof can be found in the formalisation.
+This proves the following proposition
+\begin{prop}
+  $(\square,\mu)$ defines a modality on $\Type_{n+1}$.
+\end{prop}
+
+As this modality is just a step in the construction, we will not show
+that it is left exact, we will do it only for the sheafification modality.
 
 \subsection{From Separated Type to Sheaf}
 \label{ssec:separated-to-sheaf}

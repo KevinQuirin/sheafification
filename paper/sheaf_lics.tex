@@ -631,7 +631,23 @@ to build a sheaf~:
 \end{lem}
 
 As any separated type $T$ embeds in $\left(\Type_n^\modal\right)^T$,
-it suffices to take the closure of $T$ to get a sheaf.
+it suffices to take the closure of $T$ to get a sheaf, and the unit
+$\nu_T:T \to \star T$ is obvious.
+\begin{prop}
+  $(\star,\nu)$ defines a reflective subuniverse.
+\end{prop}
+\begin{proof}
+  Let $T,Q:\Type_{n+1}$ such that $Q$ is a sheaf. Let $f:T\to Q$.
+  Because $Q$ is a sheaf, it is in particular separated ; thus we can
+  extend $f$ to $\square f:\square T\to Q$.
+
+  But as $\star T$ is the closure of $\square T$, $\square T$ is dense
+  into $\star T$, so the sheaf property of $Q$ allows to extend
+  $\square f$ to $\star f:\star T \to Q$.
+
+  As all these steps are universal, the composition is.
+\end{proof}
+
 
 \subsection{Summary}
 \label{ssec:summary}

@@ -94,14 +94,14 @@ Module Definitions (nj : subuniverse_struct) (mod : Modality nj).
       char :> E -> Trunk@{i' i a} n ;
       dense_eq : forall e:E, ({e':E & e=e'}) = (O@{u a i' i} sf (char e)).1 ;
       dense_diag : forall x:{e:E & (char e).1}, forall u:{e':{e:E & (char e).1} & x.1 = e'.1}, (equiv_path _ _ (dense_eq x.1)) o (incl_Aeq_Eeq char x) = (O_unit sf _) o ((eq_dense_1 char x))
-                                                                                                                                                                       (* For A a subobject of E, and x:A, this diagram commute : *)
-                                                                                                                                                                       (*                                                         *)   
-                                                                                                                                                                       (*   {e':A & x.1 = e'.1} === (χ x.1).1                     *)
-                                                                                                                                                                       (*          |                    |                         *)
-                                                                                                                                                                       (*        ι |                    | η                       *)
-                                                                                                                                                                       (*          |                    |                         *)
-                                                                                                                                                                       (*          v                    v                         *)
-                                                                                                                                                                       (*    {e':E & x.1 = e'}  === (O sf (χ x.1)).1.1            *)
+    (* For A a subobject of E, and x:A, this diagram commute : *)
+    (*                                                         *)   
+    (*   {e':A & x.1 = e'.1} === (χ x.1).1                     *)
+    (*          |                    |                         *)
+    (*        ι |                    | η                       *)
+    (*          |                    |                         *)
+    (*          v                    v                         *)
+    (*    {e':E & x.1 = e'}  === (O sf (χ x.1)).1.1            *)
                                                                                                                                                                        
     }.
 

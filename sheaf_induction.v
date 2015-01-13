@@ -174,19 +174,18 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     exact T.2.
   Defined.
 
-  Definition Δ (T:Trunk@{i' i a} (n.+1)) := nchar_to_sub (δ@{i' i a x y} T).
+  Definition Δ (T:Trunk@{i' i a} (n.+1)) := nchar_to_sub (δ@{i' i a} T).
   
   Definition clδ (sf : subu_family) (T:Trunk@{i' i a} (n.+1)) := O@{u a i' i} sf o (δ T).
 
   Definition clΔ (sf : subu_family) (T:Trunk@{i' i a} (n.+1)) :=
-    nchar_to_sub (clδ@{i' i a u x y} sf T).
+    nchar_to_sub (clδ@{i' i a u} sf T).
 
-  
   Definition kpsic_func_univ_func (sf : subu_family)
              (T:Trunk@{i' i a} (n.+1))
              (a : T .1)
              (b : T .1)
-             (p : ((clδ@{i' i a u x y} sf T) (a, b)) .1)
+             (p : ((clδ@{i' i a u} sf T) (a, b)) .1)
              (* (Ωj := (T .1 → subuniverse_Type sf; T_nType_j_Type_trunc T) *)
              (*        : ∃ x, IsTrunc (trunc_S n) x) *)
              (* (inj := (pr1:separated_Type@{Si' i a u i'} sf T → Ωj .1) : *)
@@ -204,7 +203,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
              (T:Trunk@{i' i a} (n.+1))
              (a : T .1)
              (b : T .1)
-             (p : ((clδ@{i' i a u x y} sf T) (a, b)) .1)
+             (p : ((clδ@{i' i a u} sf T) (a, b)) .1)
              (* (Ωj := (T .1 → subuniverse_Type; T_nType_j_Type_trunc T) *)
              (*        : ∃ x, IsTrunc (trunc_S n) x) *)
              (* (inj := (pr1:separated_Type T → Ωj .1) : separated_Type T → Ωj .1) *)
@@ -221,7 +220,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
              (T:Trunk@{i' i a} (n.+1))
              (a : T .1)
              (b : T .1)
-             (p : ((clδ@{i' i a u x y} sf T) (a, b)) .1)
+             (p : ((clδ@{i' i a u} sf T) (a, b)) .1)
         (* (Ωj := (T .1 → subuniverse_Type; T_nType_j_Type_trunc T) *)
         (*        : ∃ x, IsTrunc (trunc_S n) x) *)
         (* (inj := (pr1:separated_Type T → Ωj .1) : separated_Type T → Ωj .1) *)
@@ -369,7 +368,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
 
   Lemma separated_unit_paths_are_nj_paths_retr (sf : subu_family)
              (T:Trunk@{i' i a} (n.+1)) (a b:T.1) 
-  : Sect (separated_unit_paths_are_nj_paths_inv sf T a b)
+  : Sect (separated_unit_paths_are_nj_paths_inv@{i' i a Si' u} sf T a b)
          (separated_unit_paths_are_nj_paths_fun (b:=b)).
     unfold separated_unit_paths_are_nj_paths_fun, separated_unit_paths_are_nj_paths_inv.
 
@@ -510,7 +509,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   Lemma separated_unit_paths_are_nj_paths_sect (sf : subu_family)
              (T:Trunk@{i' i a} (n.+1)) (a b:T.1) 
   : Sect (separated_unit_paths_are_nj_paths_fun (b:=b))
-         (separated_unit_paths_are_nj_paths_inv sf T a b).
+         (separated_unit_paths_are_nj_paths_inv@{i' i a Si' u} sf T a b).
     unfold separated_unit_paths_are_nj_paths_fun, separated_unit_paths_are_nj_paths_inv.
       intro p.
       simpl.
@@ -807,21 +806,22 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   Admitted.
 
   Lemma sep_eq_inv_lemma (sf : subu_family@{u a})
-             (P:Trunk@{i' i a} (n.+1)) (Q :{T : Trunk@{i' i a} (n.+1) & separated@{Si' i' a i u} sf (Lift_Trunk T)}) (f : P.1 -> Q.1.1)
+             (P:Trunk@{i' i a} (n.+1)) (Q :{T : Trunk@{i' i a} (n.+1) & separated@{i' i a _i u} sf ( T)}) (f : P.1 -> Q.1.1)
   : ∀ (i j : Cech_nerve_graph) (f0 : Cech_nerve_graph i j)
       (x : (cl_diagonal_diagram sf P) i),
       f (fst (diagram1 (cl_diagonal_diagram sf P) f0 x).1) = f (fst x.1).
     intros i j [p [q Hq]]. destruct p;
     intros [[a [b x]] X].
     destruct q; try reflexivity.
-    simpl in *. clear Hq. 
-    pose (ap10 (equiv_inv (IsEquiv := Q.2 (∃ y : P.1 ∧ hProduct P.1 (S j), (cl_char_hPullback' sf idmap (S j) y).1) (@cl_char_hPullback'_is_dense sf P P idmap (S j)) (λ x, f (fst x.1)) (λ x, f (fst (snd x.1))))
-                          (path_forall _ _ (λ u, ap f (fst u.2.1)))) ((a,(b,x));X))^.
-         exact p. 
+    simpl in *. clear Hq.
+    (* pose (ap10 (equiv_inv (IsEquiv := Q.2 (∃ y : P.1 ∧ hProduct P.1 (S j), (cl_char_hPullback' sf idmap (S j) y).1) (@cl_char_hPullback'_is_dense sf P P idmap (S j)) (λ x, f (fst x.1)) (λ x, f (fst (snd x.1)))) *)
+    (*                       (path_forall _ _ (λ u, ap f (fst u.2.1)))) ((a,(b,x));X))^. *)
+         (* exact p.  *)
+         admit.
   Defined.
       
   Definition sep_eq_inv (sf : subu_family@{u a})
-             (P:Trunk@{i' i a} (n.+1)) (Q :{T : Trunk@{i' i a} (n.+1) & separated sf (Lift_Trunk T)})
+             (P:Trunk@{i' i a} (n.+1)) (Q :{T : Trunk@{i' i a} (n.+1) & separated sf (T)})
   : (P .1 → (Q .1) .1) -> ((separated_Type@{i' i a u} sf P) → (Q .1) .1).
     intro f.
     apply (equiv_inv (IsEquiv := (separated_Type_is_colimit_cl_diagonal_diagram sf P Q.1.1))).
@@ -834,8 +834,12 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   intro H. destruct H. auto.
   Defined.
       
+  (* Definition separated_equiv : forall (sf : subu_family@{u a}) *)
+  (*            (P:Trunk@{i' i a} (n.+1)) (Q :{T : Trunk@{i' i a} (n.+1) & separated sf (Lift_Trunk T)}), *)
+  (*                                IsEquiv (fun f : separated_Type sf P -> pr1 (pr1 Q) => *)
+  (*                                           f o (separated_unit sf P)). *)
   Definition separated_equiv : forall (sf : subu_family@{u a})
-             (P:Trunk@{i' i a} (n.+1)) (Q :{T : Trunk@{i' i a} (n.+1) & separated sf (Lift_Trunk T)}),
+             (P:Trunk@{i' i a} (n.+1)) (Q :{T : Trunk@{i' i a} (n.+1) & separated sf T}),
                                  IsEquiv (fun f : separated_Type sf P -> pr1 (pr1 Q) =>
                                             f o (separated_unit sf P)).
     intros sf P Q.
@@ -1017,7 +1021,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
       { reflexivity. }
   Qed.
 
-  Lemma density_sigma (sf : subu_family@{u a}) (E:Type) (χ : EnJ@{i i' u a} sf E)
+  Lemma density_sigma (sf : subu_family@{u a}) (E:Type) (χ : EnJ@{i i' a u} sf E)
         (e:E) (E' := {e':E & e = e'})
   : EnJ sf {e':E & e' = e}.
     refine (@Build_EnJ _ _ _ _ _).
@@ -1059,52 +1063,596 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
       simpl in p. exact p.
   Defined.
 
+    
+  (**** From separated to sheaf ****)
+
+  Definition closure_naturality_fun (sf:subu_family@{u a})
+             (E : Type)
+             (F : Type)
+             (A : Type)
+             (m : A -> E)
+             (Trm : forall b : E, IsTrunc n (hfiber m b))
+             (Γ : F -> E)
+  : {b : F & (pr1 (O sf ( (hfiber m (Γ b) ; Trm (Γ b)))))} -> {b : F & hfiber (pr1 (P:=λ b0 : E, pr1 (cloture sf (nsub_to_char n (A; (m; Trm))) b0))) (Γ b)} :=
+    λ X, (pr1 X ; (((Γ (pr1 X) ; O_rec sf (hfiber m (Γ (pr1 X)); Trm (Γ (pr1 X)))
+                        (O sf (nsub_to_char n (A; (m; Trm)) (Γ (pr1 X))))
+                        (subuniverse_O sf _)
+                        (λ Hb : pr1 (hfiber m (Γ (pr1 X)); Trm (Γ (pr1 X))),
+                                O_unit sf (nsub_to_char n (A; (m; Trm)) (Γ (pr1 X))) Hb) 
+                        (pr2 X))) ; idpath)).
+
+  Definition closure_naturality_inv (sf:subu_family@{u a})
+             (E : Type)
+             (F : Type)
+             (A : Type)
+             (m : A -> E)
+             (Trm : ∀ b : E, IsTrunc n (hfiber m b))
+             (Γ : F -> E)
+  : {b : F & hfiber (pr1 (P:=λ b0 : E, pr1 (cloture sf (nsub_to_char n (A; (m; Trm))) b0))) (Γ b)} -> {b : F & (pr1 (O sf ( (hfiber m (Γ b) ; Trm (Γ b)))))}.
+    intro X; exists (pr1 X).
+    generalize (pr2 (pr1 (pr2 X))); apply O_rec. apply subuniverse_O.
+    intro HHb; apply O_unit.
+    destruct (pr2 (pr2 X)). exact HHb.
+  Defined.
+
+  Definition closure_naturality_retr (sf:subu_family@{u a})
+             (E : Type)
+             (F : Type)
+             (A : Type)
+             (m : A -> E)
+             (Trm : ∀ b : E, IsTrunc n (hfiber m b))
+             (Γ : F -> E)
+  : Sect (closure_naturality_inv sf Trm Γ) (closure_naturality_fun sf Trm Γ).
+    intro X; unfold closure_naturality_fun, closure_naturality_inv; simpl.
+    destruct X as [b Hb]; simpl.
+    apply path_sigma' with (p := idpath); simpl.
+    destruct Hb as [[b0 Hb0] eq]; simpl in *.
+    destruct eq.
+
+    pose (rew1 := ap10 (eissect _ (IsEquiv := (O_equiv sf (nsub_to_char n (A; (m; Trm)) b0) (O sf (existT (IsTrunc n) (hfiber m b0) (Trm b0))) (subuniverse_O _ _))) (λ x, x)) ( equiv_inv (IsEquiv := O_equiv sf (hfiber m b0; Trm b0)
+                (O sf (nsub_to_char n (A; (m; Trm)) b0)) (subuniverse_O _ _)) (λ t : hfiber m b0, O_unit sf (hfiber m b0; Trm b0) t) Hb0)).
+
+    pose (rew2 := ap10 (eissect _ (IsEquiv := O_equiv sf (hfiber m b0; Trm b0) (O sf (nsub_to_char n (A; (m; Trm)) b0)) (subuniverse_O _ _)) (λ x, x)) Hb0).
+
+    unfold nsub_to_char, hfiber in *; simpl in *.
+
+    unfold O_rec; simpl.
+
+    apply path_sigma' with (p := path_sigma' (λ x:E, (cloture sf (λ b : E, (∃ x : A, m x = b; Trm b)) x) .1) (@idpath _ b0) (rew1 @ rew2)).
+    simpl in *.
+    destruct (rew1 @ rew2); simpl. reflexivity.
+  Defined.
+
+  Definition closure_naturality_sect (sf:subu_family@{u a})
+             (E : Type)
+             (F : Type)
+             (A : Type)
+             (m : A -> E)
+             (Trm : ∀ b : E, IsTrunc n (hfiber m b))
+             (Γ : F -> E)
+  : Sect (closure_naturality_fun sf Trm Γ) (closure_naturality_inv sf Trm Γ).
+    intro X; unfold closure_naturality_fun; simpl.
+    destruct X as [b Hb]; simpl.
+    apply @path_sigma' with (p := idpath); simpl.
+    unfold O_rec.
+
+    pose (rew1 := ap10 (eissect _ (IsEquiv := O_equiv sf (hfiber m (Γ b); Trm (Γ b))
+             (O sf (nsub_to_char n (A; (m; Trm)) (Γ b))) (subuniverse_O _ _)) (λ x, x))
+                         (equiv_inv (IsEquiv := O_equiv sf (nsub_to_char n (A; (m; Trm)) (Γ b))
+          (O sf (hfiber m (Γ b); Trm (Γ b)))(subuniverse_O _ _))
+        (λ Hb0 : hfiber m (Γ b),
+         O_unit sf (nsub_to_char n (A; (m; Trm)) (Γ b)) Hb0) Hb)
+         ).
+
+    pose (rew2 := ap10 (eissect _ (IsEquiv := O_equiv sf (nsub_to_char n (A; (m; Trm)) (Γ b))
+          (O sf (hfiber m (Γ b); Trm (Γ b)))(subuniverse_O _ _)) (λ x, x)) Hb).
+    
+    exact (rew1 @ rew2).
+  Defined.
+
+  Definition closure_naturality (sf:subu_family@{u a}) E F A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) (Γ : F -> E) :
+    {b : F & (pr1 (O sf ((hfiber (pr1 m) (Γ b)) ; (pr2 m) (Γ b))))} = {b : F & hfiber (pr1 (pr2 (cloture' sf m))) (Γ b)}.
+    unfold hfiber; simpl.
+                     
+    destruct m as [m Trm]; simpl.
+    apply path_universe_uncurried.
+    exists (closure_naturality_fun sf _ _).
+    apply (isequiv_adjointify _ _ (closure_naturality_retr sf _ _) (closure_naturality_sect sf _ _)).
+  Defined.
+
+  Definition cloture_fun (sf:subu_family@{u a})
+        (E : Type@{i})
+        (P : E -> J@{i' u i a})
+        (Q : E -> Trunk@{Si' i' a} n)
+        (f : forall e:E, (P e).1.1 -> (Q e).1)
+  : {e:E | (O@{u a Si' i'} sf (Lift_Trunk@{i' i a Si' i'} ((P e).1.1; IsHProp_IsTrunc (pr2 (pr1 (P e))) n0))).1} -> {e:E | (O sf (Q e)).1}
+    := (λ b, (pr1 b;
+              O_rec@{u a Si' i'} sf (Lift_Trunk (pr1 (pr1 (P (pr1 b))); IsHProp_IsTrunc (pr2 (pr1 (P (pr1 b)))) n0))
+                    (O@{u a Si' i'} sf (Q (pr1 b)))
+                    (subuniverse_O _ _)
+                    (λ X2 : pr1 (pr1 (P (pr1 b))),
+                            O_unit sf (Q (pr1 b)) (f (b.1) X2))
+                    (pr2 b))).
+    
+  Definition cloture_fun_restriction (sf:subu_family@{u a})
+        (E : Type@{i})
+        (P : E -> J@{i' u i a})
+        (Q : E -> Trunk@{Si' i' a} n)
+        (f : forall e:E, (P e).1.1 -> (Q e).1)
+  :forall (e : {e:E | (P e).1.1}),
+     pr2 (cloture_fun@{u a i i' Si'} sf P Q f (e.1; O_unit@{u a Si' i'} sf (Lift_Trunk (pr1 (pr1 (P (pr1 e))); IsHProp_IsTrunc (pr2 (pr1 (P (pr1 e)))) n0)) (pr2 e))) = O_unit sf (Q (pr1 e)) ((f (pr1 e) (pr2 e)))
+    := λ e, ap10 (eisretr _ (IsEquiv := (O_equiv sf (Lift_Trunk (((P e .1) .1) .1; IsHProp_IsTrunc ((P e .1) .1) .2 n0)) (O@{u a Si' i'} sf (Q e .1)))(subuniverse_O _ _)) (λ X, O_unit sf _ (f _ X))) (e.2).
+
+  Lemma cloture_fun_ (sf:subu_family@{u a})
+        (E : Type@{i})
+        (P : E -> J@{i' u i a})
+        (Q : E -> Trunk@{Si' i' a} n)
+        (f : forall e:E, (P e).1.1 -> (Q e).1)
+        (g : forall e:E, (O sf (Lift_Trunk (pr1 (pr1 (P e)); IsHProp_IsTrunc (pr2 (pr1 (P e))) n0))).1)
+        (h : forall e:E, (Q e).1)
+        (H : forall e:E, forall X:(P e).1.1, f e X = h e)
+  : forall (e:E), pr2 (cloture_fun@{u a i i' Si'} sf P Q f (e; g e)) = O_unit sf (Q e) (h e).
+    intro e.
+    pose (foo := ap10 (eissect _ (IsEquiv := O_equiv sf (Lift_Trunk (((P e) .1) .1; IsHProp_IsTrunc ((P e) .1) .2 n0))
+          (O sf (Q e))(subuniverse_O _ _)) (λ _, O_unit sf (Q e) (h e))) (g e)); simpl in foo.
+    assert ((λ X2 : ((P e) .1) .1, O_unit sf (Q e) (f e X2)) = (λ X2 : ((P e) .1) .1, O_unit sf (Q e) (h e))).
+      apply path_forall; intro X2.
+      rewrite <- H  with (X := X2).
+      reflexivity.
+    apply (transport _ foo).
+    exact (ap10 (ap (equiv_inv (IsEquiv := O_equiv sf (Lift_Trunk (((P e) .1) .1; IsHProp_IsTrunc ((P e) .1) .2 n0))
+          (O sf (Q e))(subuniverse_O _ _))) X) (g e)).
+  Defined.
+
+  Definition E_to_Y'A (sf:subu_family@{u a})
+             (A : Trunk@{i' i a} (trunc_S n))
+             (B : SnType_j_Type@{Si' i' a i u} sf)
+             (m : pr1 A -> pr1 (pr1 B))
+             (X1 : ∀ b : pr1 (pr1 B), IsTrunc n (hfiber m b))
+             (closed0 : closed' sf (m; X1))
+             (E : Type@{i})
+             (χ : E -> J@{i' u i a})
+             (X : {b : E & pr1 ((pr1 (P:=λ b0 : HProp, ~ ~ pr1 b0) o χ) b)} -> pr1 A)
+             (X0 : E)
+             (inv_B : (pr1
+                         (nchar_to_sub
+                            (pr1
+                               (P:=λ b : HProp, (Oj tt b).1) o χ)) -> pr1 (pr1 B)) -> E -> pr1 (pr1 B))
+             (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ)))
+             (Y := inv_B (m o X) : E -> pr1 (pr1 B))
+    := (λ b, (pr1 b ; (X b ; (inverse (ap10 (retr_B (m o X)) b)))))  : {b : E & pr1 (pr1 (χ b))} -> {b : E & hfiber@{i' i'} m (Y b)}.
+
+  Definition clE_to_clY'A (sf:subu_family@{u a})
+             (A : Trunk@{i' i a} (trunc_S n))
+             (B : SnType_j_Type@{Si' i' a i u} sf)
+             (m : pr1 A -> pr1 (pr1 B))
+             (X1 : ∀ b : pr1 (pr1 B), IsTrunc@{i'} n (hfiber m b))
+             (closed0 : closed' sf (m; X1))
+             (E : Type@{i})
+             (χ : E -> J@{i' u i a})
+             (X : {b : E & pr1 ((pr1 (P:=λ b0 : HProp, ~ ~ pr1 b0) o χ) b)} -> pr1 A)
+             (X0 : E)
+             (inv_B : (pr1
+                         (nchar_to_sub
+                            (pr1
+                               (P:=λ b : HProp, (Oj tt b).1) o χ)) -> pr1 (pr1 B)) -> E -> pr1 (pr1 B))
+             (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ)))
+             (Y := inv_B (m o X) : E -> pr1 (pr1 B)) :
+    {b:E & (pr1 (O sf (Lift_Trunk (pr1 (pr1 (χ b)); IsHProp_IsTrunc (pr2 (pr1 (χ b))) n0))))} -> {b : E & (pr1 (O sf (hfiber m (Y b) ; X1 (Y b))))}
+    := cloture_fun sf χ (λ x, (hfiber m (Y x); X1 (Y x)))
+                   (λ e p, pr2 (E_to_Y'A _ _ closed0 _ X0 retr_B (e;p))).
+
+  Lemma equalpr2_restriction_χ (sf:subu_family@{u a})
+        (A : Trunk@{i' i a} (trunc_S n))
+        (B : SnType_j_Type@{Si' i' a i u} sf)
+        (m : pr1 A -> pr1 (pr1 B))
+        (X1 : ∀ b : pr1 (pr1 B), IsTrunc n (hfiber m b))
+        (closed0 : closed' sf (m; X1))
+        (E : Type)
+        (χ : E -> J)
+        (X : {b : E & pr1 ((pr1 (P:=λ b0 : HProp, ~ ~ pr1 b0) o χ) b)} -> pr1 A)
+        (X0 : E)
+        (inv_B : (pr1
+                         (nchar_to_sub
+                            (pr1
+                               (P:=λ b : HProp, (Oj tt b).1) o χ)) -> pr1 (pr1 B)) -> E -> pr1 (pr1 B))
+        (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ)))
+        (Y := inv_B (m o X) : E -> pr1 (pr1 B))
+  : forall (b : {e : E & pr1 (pr1 (χ e))}), 
+      pr2 (clE_to_clY'A _ _ closed0 _ X0 retr_B (pr1 b ; O_unit sf (Lift_Trunk (pr1 (pr1 (χ (pr1 b))); IsHProp_IsTrunc (pr2 (pr1 (χ (pr1 b)))) n0)) (pr2 b))) = O_unit sf ({x : pr1 A & m x = Y (pr1 b)}; X1 (Y (pr1 b))) (pr2 (E_to_Y'A _ _ closed0 _ X0 retr_B b)).
+  Proof.
+    unfold clE_to_clY'A. intro b.
+    pose (foo := cloture_fun_restriction sf χ (λ x, (hfiber m (Y x); X1 (Y x))) (λ e p, pr2 (E_to_Y'A _ _ closed0 _ X0 retr_B (e;p))) b).
+    unfold Y, hfiber in *.
+    rewrite <- (eta_sigma (A:=E) (P:=λ x, ((χ x) .1) .1) b).
+    apply foo.
+  Defined.
+
+  Lemma ap_equalf (A B C:Type) (x y : C -> B) (a : A) eq (φ : A -> C): (ap10 (ap (x:=x) (y:=y) (λ (f : C -> B), λ (t:A), f (φ t)) eq)) a = ap10 eq (φ a).
+    destruct eq; simpl. reflexivity.
+  Qed.
+
+  Definition J' := (∃ b : Trunk@{i' i a} -1,
+                      Reflective_Subuniverse_base_case.notnot (Lift_Trunk@{i' i a Si' i'} b)).
+
+  Parameter j_is_nj' : forall sf, forall (P:HProp@{i _i a}), (j P).1 = (O@{u a i' i} sf (Lift_Trunk ((P.1; IsHProp_IsTrunc P.2 n0)))).1.
+
+  Definition closed_to_sheaf_inv (sf:subu_family@{u a})
+        (A : Trunk@{i' i a} (trunc_S n))
+        (B : SnType_j_Type@{Si' i' a i u} sf)
+             (m : {f : pr1 A -> pr1 (pr1 B) & ∀ b : pr1 (pr1 B), IsTrunc n (hfiber f b)})
+             (closed : closed' sf m)
+             (E : Type@{i})
+             (χ : E -> J@{i' u i a})
+             (eq := snd (pr2 B) E χ)
+  : ((nchar_to_sub (pr1 o χ)) .1 -> A .1) -> (E -> A .1).
+    intros X X0.
+    destruct (snd (pr2 B) E χ) as [inv_B retr_B sect_B adj_B].
+    destruct (closed (inv_B ((pr1 m) o X) X0)) as [inv_closed retr_closed sect_closed adj_closed].
+    pose (X2:=pr2 (χ X0)). simpl in X2. apply (transport idmap  (j_is_nj' sf (((χ X0) .1)))) in X2.
+    pose (p := (@clE_to_clY'A sf A B (pr1 m) (pr2 m) closed E χ X X0 inv_B retr_B (X0;X2)).2).
+    exact (inv_closed p).1.
+  Defined.
+
+  Definition closed_to_sheaf_retr (sf:subu_family@{u a})
+        (A : Trunk@{i' i a} (trunc_S n))
+        (B : SnType_j_Type@{Si' i' a i u} sf)
+             (m : {f : pr1 A -> pr1 (pr1 B) & ∀ b : pr1 (pr1 B), IsTrunc n (hfiber f b)})
+             (closed : closed' sf m)
+             (E : Type@{i})
+             (χ : E -> J@{i' u i a})
+             (eq := snd (pr2 B) E χ)
+
+  : Sect (@closed_to_sheaf_inv sf A B m closed E χ) (E_to_χmono_map (Lift_Trunk A) χ).
+    intro X.
+    destruct m as [m Trm].
+    apply path_forall; intro b.
+    unfold closed_to_sheaf_inv, E_to_χmono_map, nsub_to_char, hfiber in *; simpl in *.
+    destruct (snd B.2 E χ) as [inv_B retr_B sect_B adj_B].
+
+    destruct (closed (inv_B (λ t : {b0 : E & pr1 (pr1 (P:= (λ b1:HProp, ~ ~ (pr1 b1))) (χ b0))}, m (X t)) (pr1 b))) as [inv_closed retr_closed sect_closed adj_closed].
+(*
+    pose (rew1 := ap10 (eissect _ (IsEquiv :=
+                                        O_equiv sf
+                                             ({x : pr1 A &
+                                                   m x =
+                                                   inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X t)) (pr1 b)};
+                Trm (inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X t)) (pr1 b)))
+                (O sf
+                   (nsub_to_char n (pr1 (Lift_Trunk A); (m; Trm))
+                                 (inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X t))
+                                        (pr1 b))))(subuniverse_O sf _)) (λ x, x))).
+    unfold Sect, E_to_χ_map, nsub_to_char, hfiber, O_rec in *; simpl in *.
+    simpl.
+    rewrite rew1; clear rew1.
+
+    pose (foo := (@equalpr2_restriction_χ A B m Trm closed E χ X (pr1 b) inv_B retr_B b)).
+    unfold clE_to_clY'A, E_to_Y'A, O_rec, hfiber in foo; simpl in foo.
+    unfold Sect, E_to_χ_map, nsub_to_char, hfiber, O_rec in *; simpl in *.
+
+    pose (bar := j_is_nj_unit ((χ b .1) .1) (b.2)).
+    unfold Oj_unit, transport, Sect, E_to_χ_map, nsub_to_char, hfiber, O_rec in *; simpl in *.
+    
+    assert ((λ k : ~ ((χ b .1) .1) .1, k b .2) = (χ b .1) .2).
+      apply path_forall; intro x.
+      destruct ((χ b .1) .2 x).
+
+    assert (fooo := transport (λ x,  match j_is_nj (χ b .1) .1 in (_ = a) return a with
+                                       | 1%path => x
+                                     end =
+                                     O_unit sf (((χ b .1) .1) .1; IsHProp_IsTrunc ((χ b .1) .1) .2 n0)
+                                            b .2) X0 bar).
+    simpl in fooo.
+    rewrite <- fooo in foo.
+    
+    apply transport with (x := O_unit sf ({x : A .1 | m x = inv_B (λ t, m (X t)) b .1};
+                                          Trm (inv_B (λ t : {b : E | ((χ b) .1) .1}, m (X t)) b .1))
+                                      (X b; inverse (ap10 (retr_B (λ t, m (X t))) b)))
+                         (y:=_).
+   
+    exact (inverse foo).
+    rewrite (eissect _ (IsEquiv := closed (inv_B (m o X) (let (proj1_sig, _) := b in proj1_sig)))).
+    (* rewrite sect_closed. *)
+    reflexivity.*)
+    admit.
+  Defined.
+
+  Definition closed_to_sheaf_sect (sf:subu_family@{u a})
+        (A : Trunk@{i' i a} (trunc_S n))
+        (B : SnType_j_Type@{Si' i' a i u} sf)
+             (m : {f : pr1 A -> pr1 (pr1 B) & ∀ b : pr1 (pr1 B), IsTrunc n (hfiber f b)})
+             (closed : closed' sf m)
+             (E : Type@{i})
+             (χ : E -> J@{i' u i a})
+             (eq := snd (pr2 B) E χ)
+
+  : Sect (E_to_χmono_map (Lift_Trunk A) χ) (@closed_to_sheaf_inv sf A B m closed E χ).
+    destruct m as [m Trm].
+    intro X; unfold closed_to_sheaf_inv; simpl in *.
+    apply path_forall; intro b.
+    unfold E_to_χmono_map, nsub_to_char, hfiber, O_rec in *; simpl in *.
+    destruct (snd B.2 E χ) as [inv_B retr_B sect_B adj_B].
+    destruct (closed (inv_B (λ t : {b0 : E & pr1 (pr1 (P:= (λ b1:HProp, ~ ~ (pr1 b1))) (χ b0))}, m (X (pr1 t))) b)) as [inv_closed retr_closed sect_closed adj_closed].
+    (*
+    pose (foo := ap10 (eissect _ (IsEquiv :=
+                             O_equiv sf
+                                  ({x : pr1 A &
+                                        m x =
+                                        inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X (pr1 t))) b};
+                                   Trm (inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X (pr1 t))) b))
+                                  (O sf
+                                        (nsub_to_char n (pr1 (Lift_Trunk A); (m; Trm))
+                      (inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X (pr1 t)))
+                         b))) (subuniverse_O _ _)) (λ x, x))).
+    simpl in *. rewrite foo; clear foo.
+    pose (foo := ap10 (sect_B (m o X))). 
+    set (Y := inv_B (m o (X o pr1) ) : E -> pr1 (pr1 B)).
+
+    apply transport with
+      (x := O_unit sf ({x : A .1 | m x = Y b}; Trm (Y b)) (X b; inverse (foo b))) (y:=_).
+  
+    unfold E_to_χ_map, nsub_to_char, hfiber, O_rec, Y in *; simpl in *.
+   
+    pose (h := (λ e, (X e; inverse (foo e))) : ∀ e : E, {x : A .1 | m x = inv_B (λ t : {b : E | ((χ b) .1) .1}, m (X t .1)) e}).
+    assert ((∀ (e : E) (X0 : ((χ e) .1) .1),
+          (X e;
+           inverse
+             (ap10 
+                      (retr_B (λ t : {b : E | ((χ b) .1) .1}, m (X t .1)))
+                      (e; X0))) = h e)).
+      intros; unfold h, foo. apply path_sigma' with (p := idpath); simpl.
+      apply ap.
+      clear eq. specialize (adj_B (m o X)). 
+      apply (transport (λ x:((λ (f : E -> (B .1) .1) (t : {b0 : E | ((χ b0) .1) .1}), f t .1)
+         (inv_B (λ t : {b0 : E | ((χ b0) .1) .1}, m (X t .1))) =
+       (λ t : {b0 : E | ((χ b0) .1) .1}, m (X t .1))), ((ap10  x (e; X0)) = (ap10  (sect_B (λ t : E, m (X t))) e))) (inverse adj_B)).
+      clear adj_B.
+      exact (@ap_equalf {b0 : E | ((χ b0) .1) .1} ((B .1) .1) E (inv_B (λ t : {b : E | ((χ b) .1) .1}, (λ t0 : E, m (X t0)) t .1)) (λ t : E, m (X t)) (e;X0) (sect_B (λ t : E, m (X t))) pr1).
+
+    exact (inverse (@cloture_fun_ E χ (λ x, (hfiber m (Y x); Trm (Y x))) (λ e p, pr2 (E_to_Y'A _ _ closed _ b retr_B (e;p))) (λ b, match j_is_nj (χ b) .1 in (_ = y) return y with | 1%path => (χ b) .2 end) h X0 b)).
+
+    rewrite (eissect _ (IsEquiv := closed
+       (inv_B
+          (λ x : ∃ b0 : E, (let (proj1_sig, _) := χ b0 in proj1_sig).1,
+           m (X (let (proj1_sig, _) := x in proj1_sig))) b))).
+    (* rewrite sect_closed. *)
+    reflexivity.*)
+    admit.
+  Defined.
+
+  Lemma compose_equiv {A B C D:Type} (φ : A -> B) (u v : B -> C) (f : C -> D)
+        (equiv_compose_φ : IsEquiv (ap (λ x, x o φ) (x:= f o u) (y := f o v)))
+        (Monof_f : IsMonof f)
+  : IsEquiv (ap (λ x, x o φ) (x:=u) (y:=v)).
+    unfold IsMonof in *; simpl in *.
+
+    pose (e1 := (Monof_f B u v)).
+    pose (e2 := (equiv_compose_φ)).
+    pose (e3 := @isequiv_inverse _ _ _ (Monof_f A (u o φ) (v o φ))).
+
+    assert (((ap (λ u0 : A → C, f o u0))^-1 o (ap (λ x : B → D, x o φ) o (ap (λ u0 : B → C, f o u0) (x:=u) (y:=v)))) = (ap (λ x : B → C, x o φ))).
+    apply path_forall; intro p.
+    apply (@equiv_inj _ _ _ (Monof_f A (u o φ) (v o φ))). rewrite eisretr.
+    destruct p; reflexivity.
+
+    destruct X. exact (@isequiv_compose _ _ _ (@isequiv_compose _ _ _ e1 _ _ e2) _ _ e3).
+  Qed.
+
+  Axiom Lift_IsEquiv: forall  (A:Type2@{i j}) B (f: A -> B) (H : IsEquiv@{i j} f), IsEquiv@{i i} f.
+
+  
+  Definition closed_to_sheaf (sf:subu_family@{u a})
+        (A : Trunk@{i' i a} (trunc_S n))
+        (B : SnType_j_Type@{Si' i' a i u} sf)
+        (m : {f : (pr1 A) -> (pr1 (pr1 B)) & forall b, IsTrunc n (hfiber f b)}) (Monom : IsMono m.1)
+  : closed' sf m  -> Snsheaf_struct@{Si' i' a i u} sf (Lift_Trunk A).
+    intro cl_m.
+    split.
+    - destruct m as [m Hm]. destruct B as [[B TrB] [Bsep Bsheaf]]. simpl in *. clear Bsheaf.
+      unfold closed', closed, nsub_to_char in cl_m; simpl in cl_m.
+      intros T χ _ f g. unfold E_to_χ_map in *; simpl in *.
+      specialize (Bsep T χ (m o f) (m o g)).
+      unfold E_to_χ_map in *; simpl in *.
+      assert (Monofm := IsMono_to_IsMonof Monom).
+      exact (@compose_equiv ({t:T & (χ t).1}) T A.1 B pr1 f g m Bsep Monofm).
+    - intros E χ.
+      pose (isequiv_adjointify@{i' i} _ (@closed_to_sheaf_inv sf A B m cl_m E χ) (@closed_to_sheaf_retr sf A B m cl_m E χ) (@closed_to_sheaf_sect sf A B m cl_m E χ)).
+      exact (Lift_IsEquiv i).
+  Defined.
+
+  Definition mono_is_hfiber (T U : Type) (m : T -> U) (Monom : IsMono m) :
+    ∀ b , IsTrunc n (hfiber m b).
+    intro. apply IsHProp_IsTrunc.
+    apply IsEmbedding_IsMono. exact Monom.
+  Defined.
+
+  Definition separated_to_sheaf_Type (sf:subu_family@{u a}) (T : Type@{i}) (U : Type@{i'})
+             (m : T -> U) (Monom : IsMono m) : Type@{i'}  :=
+    pr1 (cloture'@{i' u a Si'} sf (m; mono_is_hfiber Monom)).    
+  
+  Definition separated_to_sheaf_IsTrunc_Sn (sf:subu_family@{u a}) (T : Trunk@{i' i a} (trunc_S n))
+             (U : Trunk@{Si' i' a} (trunc_S n)) m Monom :
+    IsTrunc@{i'} (trunc_S n) (@separated_to_sheaf_Type@{u a i i' Si'} sf T.1 U.1 m Monom).
+    apply (@trunc_sigma _ (fun P => _)).
+    exact (U.2).
+    intro a.
+    apply (@trunc_succ _ _).
+    exact (O sf (nsub_to_char n (((Lift_Trunk T).1; (m ; mono_is_hfiber Monom))) a)).2.
+  Defined.
+
+  Definition IsMono_fromIm_inv {A B} (f : A -> B) (x y : Im f): x.1 = y.1 -> x=y.
+    intro X.
+    apply path_sigma with (p := X).
+    apply path_ishprop.
+  Defined.
+  
+  Definition IsMono_fromIm {A B} (f : A -> B) : IsMono (fromIm (f:=f)). 
+    intros x y; apply (isequiv_adjointify (ap (fromIm (f:=f))) (IsMono_fromIm_inv x y)).
+    - intro a.
+      destruct x as [x s]; destruct y as [y r]; simpl in *.
+      destruct a; simpl in *.     unfold IsMono_fromIm_inv. simpl.
+      destruct (path_ishprop s r); simpl in *.
+      reflexivity.
+    - intro a.
+      unfold IsMono_fromIm_inv, path_ishprop.
+      destruct a, x as [x s]; simpl.
+      rewrite (contr 1); reflexivity.
+  Defined.
+
+  Lemma Sigma_IsHProp_O (sf:subu_family@{u a}) (T: Type@{j}) (χ : T -> Trunk@{i' i a} n) (H : forall x, IsHProp (χ x).1)
+  : forall x, IsHProp ((O@{u a i' i} sf (χ x)).1).
+    intro x. specialize (H x).
+    assert ((O sf (χ x)).1 = ((O sf ((χ x).1; IsHProp_IsTrunc H n0)).1)).
+    repeat apply (ap pr1). apply ap. apply truncn_unique. exact fs. reflexivity.
+    rewrite X. apply (transport IsHProp (j_is_nj sf ((χ x).1;H))). apply Reflective_Subuniverse_base_case._j.
+  Qed.
+
+  Lemma transport'_1 (A : Type) (P : A → Type) (x : A) (u : P x) v (H : 1=v)
+  : transport P v u = u.
+    destruct H. reflexivity.
+  Qed.
+  
+  Lemma IsMono_IsHProp_cloture (sf:subu_family@{u a}) (T: Type@{j}) (χ : T -> Trunk@{i' i a} n) (Monom : IsMono (pr1 : (sigT (pr1 o χ)) -> T))
+  : forall x, IsHProp ((O@{u a i' i} sf (χ x)).1).
+    apply Sigma_IsHProp_O.
+    intro x.
+    apply hprop_allpath.
+    intros u v.
+    specialize (Monom (x;u) (x;v)).
+    pose (equiv_inv (IsEquiv := Monom) 1)..2. simpl in p.
+    etransitivity; try exact p.
+    unfold pr1_path. rewrite eisretr. reflexivity.
+  Defined.
+
+  Lemma IsMono_cloture (sf:subu_family@{u a})
+        (T: Type@{j}) (χ : T -> Trunk@{i' i a} n)  (Monom : IsMono (pr1 : (sigT (pr1 o χ)) -> T))
+  : IsMono (pr1 : (sigT (pr1 o ((O@{u a i' i} sf) o χ))) -> T).
+
+    intros [x px] [y py].
+    simpl; refine (isequiv_adjointify _ _ _ _).
+    - intro p. apply path_sigma' with p. 
+      assert (IsHProp (O sf (χ y)).1).
+      apply IsMono_IsHProp_cloture. exact Monom.
+      apply (@path_ishprop _ X). 
+    - intro p. simpl. destruct p. simpl.
+      unfold path_ishprop.
+      destruct (center (px = py)). reflexivity.
+    - intro p.
+      unfold path_sigma'. simpl.
+      pose (IsMono_IsHProp_cloture sf _ Monom y).
+      apply eta'_path_sigma.
+      assert (IsHProp ((transport (fun X => (O sf (χ X)).1) p..1 px) = py)).
+      apply trunc_succ. apply i.
+      apply (@path_ishprop _ X).
+  Qed.
+
+  Lemma IsMono_cloture' (sf:subu_family@{u a}) (T : Type@{i'}) (U:Type@{i}) (m : U -> T) (Monom : IsMono@{i' i'} m)
+  : IsMono@{i' i'} (cloture' sf (m;mono_is_hfiber Monom)).2.1.
+    unfold cloture', cloture, nsub_to_char, nchar_to_sub; simpl.
+    pose (@IsMono_cloture sf T (λ b0 : T, (hfiber m b0; mono_is_hfiber Monom (b:=b0)))).
+    refine (i _).
+    apply IsEmbedding_IsMono.
+    intro x. unfold Overture.hfiber. simpl.
+    pose (snd (IsEmbedding_IsMono m) Monom).
+    apply (hprop_allpath).
+    intros [[p p'] pp] [[q q'] qq]. simpl in *.
+    refine (path_sigma' _ _ _).
+    apply path_sigma' with (pp @ qq^).
+    assert (IsHProp (hfiber m q)).
+    apply i0.
+    apply (@path_ishprop _ X).
+    simpl.
+    destruct pp. destruct qq. hott_simpl.
+    destruct (path_ishprop (transport (λ x : T, hfiber m x) 1 p') q').
+    reflexivity.
+  Defined.
+                                    
+  Definition separated_to_sheaf (sf:subu_family@{u a}) (T:{T : Trunk@{i' i a} (n.+1) & separated@{i' i a _i u} sf T})
+             (U:SnType_j_Type@{Si' i' a i u} sf) (m: T.1.1 -> U.1.1) (Monom: IsMono@{i' i'} m) : 
+    Snsheaf_struct@{Si' i' a i u} sf
+                  (Lift_Trunk (@separated_to_sheaf_Type@{u a i i' Si'} sf T.1.1 U.1.1 m Monom;
+                   @separated_to_sheaf_IsTrunc_Sn@{u a i' i Si'} sf T.1 U.1 m Monom)).
+    refine (closed_to_sheaf _ _ _ _).
+    pose ((pr2 (cloture' sf (m;mono_is_hfiber Monom)))). simpl in s.
+    pose (@IsMono_cloture'@{u a i' i' u} sf U.1.1 T.1.1 m Monom).
+    Unset Printing Universes.
+    pose ((pr1 (cloture' sf (m;mono_is_hfiber Monom)))). simpl in *.
+    pose (closed_to_sheaf ((cloture' sf (m;mono_is_hfiber Monom));i) U).
+    specialize (s0 s i).
+    i). _ _ _ _).
+    exact U.
+    exact ((pr2 (cloture' (m;mono_is_hfiber Monom)))).
+    exact (@IsMono_cloture' U.1.1 T.1.1 m Monom).
+    apply cloture_is_closed'.
+  Defined.
+
+  Definition sheafification_Type (T:Trunk (trunc_S n)) :=
+    @separated_to_sheaf_Type (separated_Type T) 
+                             (T.1 -> subuniverse_Type) (fromIm (f:=_)) 
+                             (IsMono_fromIm (f:=_)).
+
+  Definition sheafification_istrunc (T:Trunk (trunc_S n)) : 
+    IsTrunc (trunc_S n) (sheafification_Type T).
+    apply (separated_to_sheaf_IsTrunc_Sn (separated_Type T; separated_Type_is_Trunk_Sn (T:=T)) 
+                              (T.1 -> subuniverse_Type; T_nType_j_Type_trunc T)).
+  Defined.
+
+  Definition sheafification_trunc (T:Trunk (trunc_S n)) : Trunk (trunc_S n) :=
+    (sheafification_Type T ; sheafification_istrunc  (T:=T)).
+
+  Definition sheafification_ (T:Trunk (trunc_S n)) : Snsheaf_struct (sheafification_trunc T)
+    
+    
+    := separated_to_sheaf (((existT (IsTrunc (trunc_S n)) (separated_Type T) (separated_Type_is_Trunk_Sn (T:=T)))); @separated_Type_is_separated T) (T_nType_j_Type_sheaf T) (IsMono_fromIm (f:=_)).
+
+  Definition sheafification (T:Trunk (trunc_S n)) : SnType_j_Type :=
+    ((sheafification_Type T ; sheafification_istrunc  (T:=T)); sheafification_ T).
+
+  
 End Type_to_separated_Type.
+
 
 Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_struct.
   Export nj. Export mod.
-  Module Export TtsT := Type_to_separated_Type nj mod.
+  Module Export TdsT := Type_to_separated_Type nj mod.
 
   Definition n0:trunc_index := n.
 
   Definition n := trunc_S n0.
 
-  Definition subuniverse_HProp : forall (sf : subu_family@{u a}) (T:Trunk@{i' i a} n),
-                                   HProp@{i' i a}.
-    intros sf T.
-    exists (separated sf T).
-    repeat (apply trunc_forall; intro). apply hprop_isequiv.
-  Defined.
+  Definition subu_family := subu_family : Type2le@{u a}.
   
-  Definition O : forall (sf : subu_family@{u a}), Trunk@{i' i a} n -> Trunk@{i' i a} n.
+  Definition subuniverse_HProp : forall (sf : subu_family@{u a}) (T:Trunk@{i' i a} n),
+                                   HProp@{Si' i' a}.
+    intros sf T.
+    exists (separated@{i' i a _i u} sf T).
+    apply separated_is_HProp@{i' i' i a _i u i'}.
+  Defined.
+
+  Definition O : forall (sf : subu_family@{u a}), Trunk@{i' i a} n -> Trunk@{Si' i' a} n.
     intros sf T.
     exists (separated_Type sf T).
-    (* apply separated_Type_is_Trunk_Sn. *)
-    admit.
+    apply separated_Type_is_Trunk_Sn.
   Defined.
   
   Definition subuniverse_O : forall (sf : subu_family@{u a}) (T:Trunk@{i' i a} n),
-                                   (subuniverse_HProp@{u a i' i} sf (O@{u a i' i} sf T)).1.
+                               (subuniverse_HProp@{u a Si' i' Si'' i} sf (O@{u a i' i Si'} sf T)).1 :=
+    fun sf T => @separated_Type_is_separated sf T.
   
-  Definition O_unit : forall (sf : subu_family@{u a}), forall T:Trunk@{i a} n, T.1 -> (O@{u a i} sf T).1.
-  
-  Definition O_equiv : forall (sf : subu_family@{u a}), forall (P : Trunk@{i a} n) (Q : Trunk@{j a} n) (modQ : (subuniverse_HProp@{u a j} sf Q).1),
-                        IsEquiv@{i j} (fun f : (O@{u a i} sf P).1 -> Q.1 => f o (O_unit@{u a i} sf P)).
-  
+  Definition O_unit : forall (sf : subu_family@{u a}),
+                      forall T:Trunk@{i' i a} n, T.1 -> (O@{u a i' i Si'} sf T).1 :=
+    fun sf T => separated_unit sf T.
+    
+  Definition O_equiv : forall (sf : subu_family@{u a}),
+                       forall (P : Trunk@{i' i a} n) (Q : Trunk@{i' i a} n)
+                              (modQ : (subuniverse_HProp@{u a i' i Si _i} sf Q).1),
+                         IsEquiv@{i' i} (fun f : (O@{u a i' i Si'} sf P).1 -> Q.1 => f o (O_unit@{u a i' i Si'} sf P)).
+    intros. exact (@separated_equiv sf P (Q;modQ)).
+  Defined.
+        
+  Definition subu_sigma_sheaf : forall (sf:subu_family@{u a}) (A:Trunk@{i' i a} n) (modA : (subuniverse_HProp@{u a i' i Si _i} sf A).1) (B: A.1 -> Trunk@{i' i a} n) (modB : forall a, (subuniverse_HProp@{u a i' i Si _i} sf (B a)).1), (subuniverse_HProp@{u a i' i Si _i} sf (({x:A.1 & (B x).1} ; trunc_sigma@{i i i' i} (A.2) (λ x, (B x).2)): Trunk@{i' i a} n)).1.
 
-  
-  Definition separation_reflective_subuniverse
-  : subuniverse_struct (trunc_S n)
-    := Build_subuniverse_struct
-          (λ T, existT (λ T, IsHProp T) (separated T) (separated_is_HProp (T:=T)))
-          separation
-          separated_unit
-          separated_equiv.
-  
-  Definition separated_modality : Modality (trunc_S n).
-    refine (Build_Modality _ separation_reflective_subuniverse _).
-    intros A B. simpl in *.
-    destruct A as [A sepA]. simpl in sepA.
+    intros sf A sepA B sepB. simpl in *.
     unfold separated.
     intros E χ f g. simpl in *.
     refine (isequiv_adjointify _ _ _ _).
@@ -1115,14 +1663,14 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
       apply (equiv_inv (IsEquiv := sepA E χ (pr1 o f) (pr1 o g))).
       apply path_forall; intro y. exact (ap10 H y)..1.
       simpl.
-      pose (p := (B (g x).1).2).
-      simpl in p.
+      pose (p := (sepB (g x).1)).
       specialize (p {e':E & e' = x}).
+      pose (density_sigma χ x).
       specialize (p (density_sigma χ x)).
 
       unfold equiv_inv.
       unfold IsMono in p; simpl in p.
-      specialize (p (λ z, transport (λ u, (B (g u).1).1.1) z.2 (transport (λ x0 : A.1, ((B x0).1).1)
+      specialize (p (λ z, transport (λ u, (B (g u).1).1) z.2 (transport (λ x0 : A.1, ((B x0).1))
                                                                           (ap10
                                                                              ((let (equiv_inv, eisretr, eissect, _) :=
                                                                                    sepA E χ (pr1 o f) (pr1 o g) in
@@ -1131,7 +1679,7 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
                                                                                              (E_to_χ_map A χ (pr1 o g))
                                                                                              (λ y : (nchar_to_sub χ).1, (ap10 H y) ..1))) z.1)
                                                                           (f z.1).2))).
-      specialize (p (λ z, transport (λ u, (B (g u).1).1.1) z.2 (g z.1).2)).
+      specialize (p (λ z, transport (λ u, (B (g u).1).1) z.2 (g z.1).2)).
 
       pose (X := λ X, (ap10 (equiv_inv (IsEquiv := p) X) (x;1))); simpl in X; apply X. clear X.
       unfold E_to_χ_map; simpl.
@@ -1171,6 +1719,7 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
       apply isequiv_inverse.
       rewrite eissect. simpl.
       unfold pr1_path, pr2_path.
+      (*
       pose (help := (@exist
         _
         (fun
@@ -1188,7 +1737,7 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
                      @proj1_sig Type
                        (fun T0 : Type => IsTrunc (trunc_S minus_two) T0)
                        (@subuniverse_HProp (trunc_S n)
-                          separation_reflective_subuniverse T))
+                          sf T))
                     (B x)))
               (@proj1_sig
                  (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A)
@@ -1201,13 +1750,13 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
                         @proj1_sig Type
                           (fun T0 : Type => IsTrunc (trunc_S minus_two) T0)
                           (@subuniverse_HProp (trunc_S n)
-                             separation_reflective_subuniverse T))
+                             sf T))
                        (B x)))
                  (f
                     (@proj1_sig E
                        (fun b : E =>
                         @proj1_sig Type
-                          (fun T : Type => IsTrunc sheaf_def_and_thm.n T)
+                          (fun T : Type => IsTrunc n0 T)
                           (@char E χ b)) e)))
               (@proj1_sig
                  (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A)
@@ -1220,13 +1769,13 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
                         @proj1_sig Type
                           (fun T0 : Type => IsTrunc (trunc_S minus_two) T0)
                           (@subuniverse_HProp (trunc_S n)
-                             separation_reflective_subuniverse T))
+                             sf T))
                        (B x)))
                  (g
                     (@proj1_sig E
                        (fun b : E =>
                         @proj1_sig Type
-                          (fun T : Type => IsTrunc sheaf_def_and_thm.n T)
+                          (fun T : Type => IsTrunc n0 T)
                           (@char E χ b)) e))) p0
               (@proj2_sig
                  (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A)
@@ -1239,13 +1788,13 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
                         @proj1_sig Type
                           (fun T0 : Type => IsTrunc (trunc_S minus_two) T0)
                           (@subuniverse_HProp (trunc_S n)
-                             separation_reflective_subuniverse T))
+                             sf T))
                        (B x)))
                  (f
                     (@proj1_sig E
                        (fun b : E =>
                         @proj1_sig Type
-                          (fun T : Type => IsTrunc sheaf_def_and_thm.n T)
+                          (fun T : Type => IsTrunc n0 T)
                           (@char E χ b)) e))))
            (@proj2_sig
               (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A)
@@ -1258,13 +1807,13 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
                      @proj1_sig Type
                        (fun T0 : Type => IsTrunc (trunc_S minus_two) T0)
                        (@subuniverse_HProp (trunc_S n)
-                          separation_reflective_subuniverse T))
+                          sf T))
                     (B x)))
               (g
                  (@proj1_sig E
                     (fun b : E =>
                      @proj1_sig Type
-                       (fun T : Type => IsTrunc sheaf_def_and_thm.n T)
+                       (fun T : Type => IsTrunc n0 T)
                        (@char E χ b)) e))))
         (ap pr1 (ap10 p e))
         (pr2_path (ap10 p e)))). simpl in help.
@@ -1545,10 +2094,14 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
         { unfold XX; clear foo; clear XX. simpl.
           unfold path_forall_1, eta_path_forall.
           unfold moveR_equiv_V. simpl. hott_simpl. }
-      }
+      } *)
+      admit.
+      - admit.
   Defined.
 
-  Lemma IsTrunc_n_paths_IsTrunc_Sn (X:Type) (m:trunc_index)
+
+
+(*  Lemma IsTrunc_n_paths_IsTrunc_Sn (X:Type) (m:trunc_index)
   : (forall x y:X, IsTrunc m (x=y)) -> IsTrunc m.+1 X.
     revert X.
     induction m.
@@ -1558,518 +2111,4 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
     intros X H.
     intros x y. simpl. unfold IsTrunc in *.
   Abort.
-
-  (**** From separated to sheaf ****)
-
-  Definition closure_naturality_fun
-             (E : Type)
-             (F : Type)
-             (A : Type)
-             (m : A -> E)
-             (Trm : forall b : E, IsTrunc n (hfiber m b))
-             (Γ : F -> E)
-  : {b : F & pr1 (pr1 (O sf ( (hfiber m (Γ b) ; Trm (Γ b)))))} -> {b : F & hfiber (pr1 (P:=λ b0 : E, pr1 (cloture (nsub_to_char n (A; (m; Trm))) b0))) (Γ b)}
-    := λ X, (pr1 X ; (((Γ (pr1 X) ; O_rec (hfiber m (Γ (pr1 X)); Trm (Γ (pr1 X)))
-                        (O sf (nsub_to_char n (A; (m; Trm)) (Γ (pr1 X))))
-                        (λ Hb : pr1 (hfiber m (Γ (pr1 X)); Trm (Γ (pr1 X))),
-                                nj.(O_unit) (nsub_to_char n (A; (m; Trm)) (Γ (pr1 X))) Hb) 
-                        (pr2 X))) ; idpath)).
-
-  Definition closure_naturality_inv
-             (E : Type)
-             (F : Type)
-             (A : Type)
-             (m : A -> E)
-             (Trm : ∀ b : E, IsTrunc n (hfiber m b))
-             (Γ : F -> E)
-  : {b : F & hfiber (pr1 (P:=λ b0 : E, pr1 (cloture (nsub_to_char n (A; (m; Trm))) b0))) (Γ b)} -> {b : F & pr1 (pr1 (O sf ( (hfiber m (Γ b) ; Trm (Γ b)))))}.
-    intro X; exists (pr1 X).
-    generalize (pr2 (pr1 (pr2 X))); apply O_rec; intro HHb; apply nj.(O_unit).
-    destruct (pr2 (pr2 X)). exact HHb.
-  Defined.
-
-  Definition closure_naturality_retr
-             (E : Type)
-             (F : Type)
-             (A : Type)
-             (m : A -> E)
-             (Trm : ∀ b : E, IsTrunc n (hfiber m b))
-             (Γ : F -> E)
-  : Sect (closure_naturality_inv Trm Γ) (closure_naturality_fun Trm Γ).
-    intro X; unfold closure_naturality_fun, closure_naturality_inv; simpl.
-    destruct X as [b Hb]; simpl.
-    apply path_sigma' with (p := idpath); simpl.
-    destruct Hb as [[b0 Hb0] eq]; simpl in *.
-    destruct eq.
-
-    pose (rew1 := ap10 (eissect _ (IsEquiv := (nj.(O_equiv) (nsub_to_char n (A; (m; Trm)) b0) (O sf (existT (IsTrunc n) (hfiber m b0) (Trm b0))))) (λ x, x)) ( equiv_inv (IsEquiv := O_equiv nj (hfiber m b0; Trm b0)
-                (O sf (nsub_to_char n (A; (m; Trm)) b0))) (λ t : hfiber m b0, O_unit sf (hfiber m b0; Trm b0) t) Hb0)).
-
-    pose (rew2 := ap10 (eissect _ (IsEquiv := nj.(O_equiv) (hfiber m b0; Trm b0) (O sf (nsub_to_char n (A; (m; Trm)) b0))) (λ x, x)) Hb0).
-
-    unfold nsub_to_char, hfiber in *; simpl in *.
-
-    unfold O_rec; simpl.
-
-    apply path_sigma' with (p := path_sigma' (λ x:E, (cloture (λ b : E, (∃ x : A, m x = b; Trm b)) x) .1) (@idpath _ b0) (rew1 @ rew2)).
-    simpl in *.
-    destruct (rew1 @ rew2); simpl. reflexivity.
-  Defined.
-
-  Definition closure_naturality_sect
-             (E : Type)
-             (F : Type)
-             (A : Type)
-             (m : A -> E)
-             (Trm : ∀ b : E, IsTrunc n (hfiber m b))
-             (Γ : F -> E)
-  : Sect (closure_naturality_fun Trm Γ) (closure_naturality_inv Trm Γ).
-    intro X; unfold closure_naturality_fun; simpl.
-    destruct X as [b Hb]; simpl.
-    apply @path_sigma' with (p := idpath); simpl.
-    unfold O_rec.
-
-    pose (rew1 := ap10 (eissect _ (IsEquiv := nj.(O_equiv) (hfiber m (Γ b); Trm (Γ b))
-             (O sf (nsub_to_char n (A; (m; Trm)) (Γ b)))) (λ x, x))
-                         (equiv_inv (IsEquiv := O_equiv nj (nsub_to_char n (A; (m; Trm)) (Γ b))
-          (O sf (hfiber m (Γ b); Trm (Γ b))))
-        (λ Hb0 : hfiber m (Γ b),
-         O_unit sf (nsub_to_char n (A; (m; Trm)) (Γ b)) Hb0) Hb)
-         ).
-
-    pose (rew2 := ap10 (eissect _ (IsEquiv := O_equiv nj (nsub_to_char n (A; (m; Trm)) (Γ b))
-          (O sf (hfiber m (Γ b); Trm (Γ b)))) (λ x, x)) Hb).
-    
-    exact (rew1 @ rew2).
-  Defined.
-
-  Definition closure_naturality E F A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) (Γ : F -> E) :
-    {b : F & pr1 (pr1 (O sf ((hfiber (pr1 m) (Γ b)) ; (pr2 m) (Γ b))))} = {b : F & hfiber (pr1 (pr2 (cloture' m))) (Γ b)}.
-    unfold hfiber; simpl.
-                     
-    destruct m as [m Trm]; simpl.
-    apply path_universe_uncurried.
-    exists (closure_naturality_fun _ _).
-    apply (isequiv_adjointify _ _ (closure_naturality_retr _ _) (closure_naturality_sect _ _)).
-  Defined.
-
-  Definition cloture_fun
-        (E : Type)
-        (P : E -> J)
-        (Q : E -> Trunk n)
-        (f : forall e:E, (P e).1.1 -> (Q e).1)
-  : {e:E | (O sf (pr1 (pr1 (P e)); IsHProp_IsTrunc (pr2 (pr1 (P e))) n0)).1.1} -> {e:E | (O sf (Q e)).1.1}
-    := (λ b, (pr1 b;
-              O_rec (pr1 (pr1 (P (pr1 b))); IsHProp_IsTrunc (pr2 (pr1 (P (pr1 b)))) n0)
-                    (O sf (Q (pr1 b)))
-                    (λ X2 : pr1 (pr1 (P (pr1 b))),
-                            nj.(O_unit) (Q (pr1 b)) (f (b.1) X2))
-                    (pr2 b))).
-    
-  Definition cloture_fun_restriction
-        (E : Type)
-        (P : E -> J)
-        (Q : E -> Trunk n)
-        (f : forall e:E, (P e).1.1 -> (Q e).1)
-  :forall (e : {e:E | (P e).1.1}), pr2 (cloture_fun P Q f (pr1 e; nj.(O_unit) (pr1 (pr1 (P (pr1 e))); IsHProp_IsTrunc (pr2 (pr1 (P (pr1 e)))) n0) (pr2 e))) = nj.(O_unit) (Q (pr1 e)) ((f (pr1 e) (pr2 e)))
-    := λ e, ap10 (eisretr _ (IsEquiv := (O_equiv nj (((P e .1) .1) .1; IsHProp_IsTrunc ((P e .1) .1) .2 n0) (O sf (Q e .1)))) (λ X, nj.(O_unit) _ (f _ X))) (e.2).
-
-  Lemma cloture_fun_
-        (E : Type)
-        (P : E -> J)
-        (Q : E -> Trunk n)
-        (f : forall e:E, (P e).1.1 -> (Q e).1)
-        (g : forall e:E, (O sf (pr1 (pr1 (P e)); IsHProp_IsTrunc (pr2 (pr1 (P e))) n0)).1.1)
-        (h : forall e:E, (Q e).1)
-        (H : forall e:E, forall X:(P e).1.1, f e X = h e)
-  : forall (e:E), pr2 (cloture_fun P Q f (e; g e)) = nj.(O_unit) (Q e) (h e).
-    intro e.
-    pose (foo := ap10 (eissect _ (IsEquiv := O_equiv nj (((P e) .1) .1; IsHProp_IsTrunc ((P e) .1) .2 n0)
-          (O sf (Q e))) (λ _, O_unit sf (Q e) (h e))) (g e)); simpl in foo.
-    assert ((λ X2 : ((P e) .1) .1, O_unit sf (Q e) (f e X2)) = (λ X2 : ((P e) .1) .1, O_unit sf (Q e) (h e))).
-      apply path_forall; intro X2.
-      rewrite <- H  with (X := X2).
-      reflexivity.
-    apply (transport _ foo).
-    exact (ap10 (ap (equiv_inv (IsEquiv := O_equiv nj (((P e) .1) .1; IsHProp_IsTrunc ((P e) .1) .2 n0)
-          (O sf (Q e)))) X) (g e)).
-  Defined.
-
-  Definition E_to_Y'A
-             (A : Trunk (trunc_S n))
-             (B : SnType_j_Type)
-             (m : pr1 A -> pr1 (pr1 B))
-             (X1 : ∀ b : pr1 (pr1 B), IsTrunc n (hfiber m b))
-             (closed0 : closed' (m; X1))
-             (E : Type)
-             (χ : E -> J)
-             (X : {b : E & pr1 ((pr1 (P:=λ b0 : HProp, ~ ~ pr1 b0) o χ) b)} -> pr1 A)
-             (X0 : E)
-             (inv_B : (pr1
-                         (nchar_to_sub
-                            (pr1
-                               (P:=λ b : HProp,
-                                         pr1 ((pr1 (P:=λ P : HProp, pr1 (is_classical P)) o Oj) b))
-                               o χ)) -> pr1 (pr1 B)) -> E -> pr1 (pr1 B))
-             (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ)))
-             (Y := inv_B (m o X) : E -> pr1 (pr1 B))
-    := (λ b, (pr1 b ; (X b ; (inverse (ap10 (retr_B (m o X)) b)))))  : {b : E & pr1 (pr1 (χ b))} -> {b : E & hfiber m (Y b)}.
-
-  Definition clE_to_clY'A
-             (A : Trunk (trunc_S n))
-             (B : SnType_j_Type)
-             (m : pr1 A -> pr1 (pr1 B))
-             (X1 : ∀ b : pr1 (pr1 B), IsTrunc n (hfiber m b))
-             (closed0 : closed' (m; X1))
-             (E : Type)
-             (χ : E -> J)
-             (X : {b : E & pr1 ((pr1 (P:=λ b0 : HProp, ~ ~ pr1 b0) o χ) b)} -> pr1 A)
-             (X0 : E)
-             (inv_B : (pr1
-                         (nchar_to_sub
-                            (pr1
-                               (P:=λ b : HProp,
-                                         pr1 ((pr1 (P:=λ P : HProp, pr1 (is_classical P)) o Oj) b))
-                               o χ)) -> pr1 (pr1 B)) -> E -> pr1 (pr1 B))
-             (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ)))
-             (Y := inv_B (m o X) : E -> pr1 (pr1 B))
-
-    := cloture_fun χ (λ x, (hfiber m (Y x); X1 (Y x))) (λ e p, pr2 (E_to_Y'A _ _ closed0 _ X0 retr_B (e;p)))
-:
-         {b:E & pr1 (pr1 (O sf (pr1 (pr1 (χ b)); IsHProp_IsTrunc (pr2 (pr1 (χ b))) n0)))} -> {b : E & pr1 (pr1 (O sf (hfiber m (Y b) ; X1 (Y b))))}.
-
-  Lemma equalpr2_restriction_χ
-        (A : Trunk (trunc_S n))
-        (B : SnType_j_Type)
-        (m : pr1 A -> pr1 (pr1 B))
-        (X1 : ∀ b : pr1 (pr1 B), IsTrunc n (hfiber m b))
-        (closed0 : closed' (m; X1))
-        (E : Type)
-        (χ : E -> J)
-        (X : {b : E & pr1 ((pr1 (P:=λ b0 : HProp, ~ ~ pr1 b0) o χ) b)} -> pr1 A)
-        (X0 : E)
-        (inv_B : (pr1
-                    (nchar_to_sub
-                       (pr1
-                          (P:=λ b : HProp,
-                                    pr1 ((pr1 (P:=λ P : HProp, pr1 (is_classical P)) o Oj) b))
-                          o χ)) -> pr1 (pr1 B)) -> E -> pr1 (pr1 B))
-        (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ)))
-        (Y := inv_B (m o X) : E -> pr1 (pr1 B))
-  : forall (b : {e : E & pr1 (pr1 (χ e))}), 
-      pr2 (clE_to_clY'A _ _ closed0 _ X0 retr_B (pr1 b ; nj.(O_unit) (pr1 (pr1 (χ (pr1 b))); IsHProp_IsTrunc (pr2 (pr1 (χ (pr1 b)))) n0) (pr2 b))) = O_unit sf ({x : pr1 A & m x = Y (pr1 b)}; X1 (Y (pr1 b))) (pr2 (E_to_Y'A _ _ closed0 _ X0 retr_B b)).
-  Proof.
-    unfold clE_to_clY'A. intro b.
-    pose (foo := cloture_fun_restriction χ (λ x, (hfiber m (Y x); X1 (Y x))) (λ e p, pr2 (E_to_Y'A _ _ closed0 _ X0 retr_B (e;p))) b).
-    unfold Y, hfiber in *.
-    rewrite <- (eta_sigma (A:=E) (P:=λ x, ((χ x) .1) .1) b).
-    apply foo.
-  Defined.
-
-  Lemma ap_equalf (A B C:Type) (x y : C -> B) (a : A) eq (φ : A -> C): (ap10 (ap (x:=x) (y:=y) (λ (f : C -> B), λ (t:A), f (φ t)) eq)) a = ap10 eq (φ a).
-    destruct eq; simpl. reflexivity.
-  Qed.
-  
-  Definition closed_to_sheaf_inv
-             (A : Trunk (trunc_S n))
-             (B : SnType_j_Type)
-             (m : {f : pr1 A -> pr1 (pr1 B) & ∀ b : pr1 (pr1 B), IsTrunc n (hfiber f b)})
-             (closed : closed' m)
-             (E : Type)
-             (χ : E -> J)
-             (eq := snd (pr2 B) E χ)
-  : ((nchar_to_sub (pr1 o χ)) .1 -> A .1) -> (E -> A .1).
-    intros X X0.
-    destruct (snd (pr2 B) E χ) as [inv_B retr_B sect_B adj_B].
-    pose (X2:=pr2 (χ X0)). apply (transport idmap  (j_is_nj (((χ X0) .1)))) in X2.
-    destruct (closed (inv_B ((pr1 m) o X) X0)) as [inv_closed retr_closed sect_closed adj_closed].
-    
-    exact ((pr1 (P:=_) o inv_closed) (pr2 (pr1 (pr2 (closure_naturality_fun _ _ (@clE_to_clY'A A B (pr1 m) (pr2 m) closed E χ X X0 inv_B retr_B (X0;X2))))))).
-  Defined.
-
-  Definition closed_to_sheaf_retr 
-             (A : Trunk (trunc_S n))
-             (B : SnType_j_Type)
-             (m : {f : pr1 A -> pr1 (pr1 B) & ∀ b : pr1 (pr1 B), IsTrunc n (hfiber f b)})
-             (closed : closed' m)
-             (E : Type)
-             (χ : E -> J)
-             (eq := snd (pr2 B) E χ)
-
-  : Sect (@closed_to_sheaf_inv A B m closed E χ) (E_to_χmono_map A (χ)).
-    intro X.
-    destruct m as [m Trm].
-    apply path_forall; intro b.
-    unfold closed_to_sheaf_inv, E_to_χmono_map, nsub_to_char, hfiber in *; simpl in *.
-    destruct (snd B.2 E χ) as [inv_B retr_B sect_B adj_B].
-
-    destruct (closed (inv_B (λ t : {b0 : E & pr1 (pr1 (P:= (λ b1:HProp, ~ ~ (pr1 b1))) (χ b0))}, m (X t)) (pr1 b))) as [inv_closed retr_closed sect_closed adj_closed].
-
-    pose (rew1 := ap10 (eissect _ (IsEquiv :=
-                                        nj.(O_equiv)
-                                             ({x : pr1 A &
-                                                   m x =
-                                                   inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X t)) (pr1 b)};
-                Trm (inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X t)) (pr1 b)))
-                (O sf
-                   (nsub_to_char n (pr1 A; (m; Trm))
-                                 (inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X t))
-                                        (pr1 b))))) (λ x, x))).
-    unfold Sect, E_to_χ_map, nsub_to_char, hfiber, O_rec in *; simpl in *.
-    rewrite rew1; clear rew1.
-
-    pose (foo := (@equalpr2_restriction_χ A B m Trm closed E χ X (pr1 b) inv_B retr_B b)).
-    unfold clE_to_clY'A, E_to_Y'A, O_rec, hfiber in foo; simpl in foo.
-    unfold Sect, E_to_χ_map, nsub_to_char, hfiber, O_rec in *; simpl in *.
-
-    pose (bar := j_is_nj_unit ((χ b .1) .1) (b.2)).
-    unfold Oj_unit, transport, Sect, E_to_χ_map, nsub_to_char, hfiber, O_rec in *; simpl in *.
-    
-    assert ((λ k : ~ ((χ b .1) .1) .1, k b .2) = (χ b .1) .2).
-      apply path_forall; intro x.
-      destruct ((χ b .1) .2 x).
-
-    assert (fooo := transport (λ x,  match j_is_nj (χ b .1) .1 in (_ = a) return a with
-                                       | 1%path => x
-                                     end =
-                                     O_unit sf (((χ b .1) .1) .1; IsHProp_IsTrunc ((χ b .1) .1) .2 n0)
-                                            b .2) X0 bar).
-    simpl in fooo.
-    rewrite <- fooo in foo.
-    
-    apply transport with (x := O_unit sf ({x : A .1 | m x = inv_B (λ t, m (X t)) b .1};
-                                          Trm (inv_B (λ t : {b : E | ((χ b) .1) .1}, m (X t)) b .1))
-                                      (X b; inverse (ap10 (retr_B (λ t, m (X t))) b)))
-                         (y:=_).
-   
-    exact (inverse foo).
-    rewrite (eissect _ (IsEquiv := closed (inv_B (m o X) (let (proj1_sig, _) := b in proj1_sig)))).
-    (* rewrite sect_closed. *)
-    reflexivity.
-  Defined.
-
-  Definition closed_to_sheaf_sect
-             (A : Trunk (trunc_S n))
-             (B : SnType_j_Type)
-             (m : {f : pr1 A -> pr1 (pr1 B) & ∀ b : pr1 (pr1 B), IsTrunc n (hfiber f b)})
-             (closed : closed' m)
-             (E : Type)
-             (χ : E -> J)
-             (eq := snd (pr2 B) E χ)
-
-  : Sect (E_to_χmono_map A (χ)) (@closed_to_sheaf_inv A B m closed E χ).
-    destruct m as [m Trm].
-    intro X; unfold closed_to_sheaf_inv; simpl in *.
-    apply path_forall; intro b.
-    unfold E_to_χmono_map, nsub_to_char, hfiber, O_rec in *; simpl in *.
-    destruct (snd B.2 E χ) as [inv_B retr_B sect_B adj_B].
-    destruct (closed (inv_B (λ t : {b0 : E & pr1 (pr1 (P:= (λ b1:HProp, ~ ~ (pr1 b1))) (χ b0))}, m (X (pr1 t))) b)) as [inv_closed retr_closed sect_closed adj_closed].
-
-    rewrite (ap10 (eissect _ (IsEquiv :=
-                             nj.(O_equiv)
-                                  ({x : pr1 A &
-                                        m x =
-                                        inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X (pr1 t))) b};
-                                   Trm (inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X (pr1 t))) b))
-                                  (O sf
-                                        (nsub_to_char n (pr1 A; (m; Trm))
-                      (inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X (pr1 t)))
-                         b)))) (λ x, x))).
-
-    pose (foo := ap10 (sect_B (m o X))). 
-    set (Y := inv_B (m o (X o pr1) ) : E -> pr1 (pr1 B)).
-
-    apply transport with
-      (x := O_unit sf ({x : A .1 | m x = Y b}; Trm (Y b)) (X b; inverse (foo b))) (y:=_).
-  
-    unfold E_to_χ_map, nsub_to_char, hfiber, O_rec, Y in *; simpl in *.
-   
-    pose (h := (λ e, (X e; inverse (foo e))) : ∀ e : E, {x : A .1 | m x = inv_B (λ t : {b : E | ((χ b) .1) .1}, m (X t .1)) e}).
-    assert ((∀ (e : E) (X0 : ((χ e) .1) .1),
-          (X e;
-           inverse
-             (ap10 
-                      (retr_B (λ t : {b : E | ((χ b) .1) .1}, m (X t .1)))
-                      (e; X0))) = h e)).
-      intros; unfold h, foo. apply path_sigma' with (p := idpath); simpl.
-      apply ap.
-      clear eq. specialize (adj_B (m o X)). 
-      apply (transport (λ x:((λ (f : E -> (B .1) .1) (t : {b0 : E | ((χ b0) .1) .1}), f t .1)
-         (inv_B (λ t : {b0 : E | ((χ b0) .1) .1}, m (X t .1))) =
-       (λ t : {b0 : E | ((χ b0) .1) .1}, m (X t .1))), ((ap10  x (e; X0)) = (ap10  (sect_B (λ t : E, m (X t))) e))) (inverse adj_B)).
-      clear adj_B.
-      exact (@ap_equalf {b0 : E | ((χ b0) .1) .1} ((B .1) .1) E (inv_B (λ t : {b : E | ((χ b) .1) .1}, (λ t0 : E, m (X t0)) t .1)) (λ t : E, m (X t)) (e;X0) (sect_B (λ t : E, m (X t))) pr1).
-
-    exact (inverse (@cloture_fun_ E χ (λ x, (hfiber m (Y x); Trm (Y x))) (λ e p, pr2 (E_to_Y'A _ _ closed _ b retr_B (e;p))) (λ b, match j_is_nj (χ b) .1 in (_ = y) return y with | 1%path => (χ b) .2 end) h X0 b)).
-
-    rewrite (eissect _ (IsEquiv := closed
-       (inv_B
-          (λ x : ∃ b0 : E, (let (proj1_sig, _) := χ b0 in proj1_sig).1,
-           m (X (let (proj1_sig, _) := x in proj1_sig))) b))).
-    (* rewrite sect_closed. *)
-    reflexivity.
-  Defined.
-
-  Lemma compose_equiv {A B C D:Type} (φ : A -> B) (u v : B -> C) (f : C -> D)
-        (equiv_compose_φ : IsEquiv (ap (λ x, x o φ) (x:= f o u) (y := f o v)))
-        (Monof_f : IsMonof f)
-  : IsEquiv (ap (λ x, x o φ) (x:=u) (y:=v)).
-    unfold IsMonof in *; simpl in *.
-
-    pose (e1 := (Monof_f B u v)).
-    pose (e2 := (equiv_compose_φ)).
-    pose (e3 := @isequiv_inverse _ _ _ (Monof_f A (u o φ) (v o φ))).
-
-    assert (((ap (λ u0 : A → C, f o u0))^-1 o (ap (λ x : B → D, x o φ) o (ap (λ u0 : B → C, f o u0) (x:=u) (y:=v)))) = (ap (λ x : B → C, x o φ))).
-    apply path_forall; intro p.
-    apply (@equiv_inj _ _ _ (Monof_f A (u o φ) (v o φ))). rewrite eisretr.
-    destruct p; reflexivity.
-
-    destruct X. exact (@isequiv_compose _ _ _ (@isequiv_compose _ _ _ e1 _ _ e2) _ _ e3).
-  Qed.
-
-      
-  Definition closed_to_sheaf (A:Trunk (trunc_S n)) (B:SnType_j_Type) (m : {f : (pr1 A) -> (pr1 (pr1 B)) & forall b, IsTrunc n (hfiber f b)}) (Monom : IsMono m.1)
-  : closed' m  -> Snsheaf_struct A.
-    intro cl_m.
-    split.
-    - destruct m as [m Hm]. destruct B as [[B TrB] [Bsep Bsheaf]]. simpl in *. clear Bsheaf.
-      unfold closed', closed, nsub_to_char in cl_m; simpl in cl_m.
-      intros T χ f g. unfold E_to_χ_map in *; simpl in *.
-      specialize (Bsep T χ (m o f) (m o g)).
-      unfold E_to_χ_map in *; simpl in *.
-      assert (Monofm := IsMono_to_IsMonof Monom).
-      exact (@compose_equiv ({t:T & (χ t).1}) T A.1 B pr1 f g m Bsep Monofm).
-    - exact (λ E χ, isequiv_adjointify _ (@closed_to_sheaf_inv A B m cl_m E χ) (@closed_to_sheaf_retr A B m cl_m E χ) (@closed_to_sheaf_sect A B m cl_m E χ)).
-  Defined.
-
-  Definition mono_is_hfiber (T U : Type) (m : T -> U) (Monom : IsMono m) :
-    ∀ b , IsTrunc n (hfiber m b).
-    intro. apply IsHProp_IsTrunc.
-    apply IsEmbedding_IsMono. exact Monom.
-  Defined.
-
-  Definition separated_to_sheaf_Type (T U: Type) (m : T -> U) (Monom : IsMono m) : Type  :=
-    pr1 (cloture' (m; mono_is_hfiber Monom)).    
-  
-  Definition separated_to_sheaf_IsTrunc_Sn (T U : Trunk (trunc_S n)) m Monom :
-    IsTrunc (trunc_S n) (@separated_to_sheaf_Type T.1 U.1 m Monom).
-    apply (@trunc_sigma _ (fun P => _)).
-    exact (U.2).
-    intro a.
-    apply (@trunc_succ _ _).
-    exact (pr2 (pr1 (O sf (nsub_to_char n (T.1; (m ; mono_is_hfiber Monom)) a)))).
-  Defined.
-
-  Definition IsMono_fromIm_inv {A B} (f : A -> B) (x y : Im f): x.1 = y.1 -> x=y.
-    intro X.
-    apply path_sigma with (p := X).
-    apply path_ishprop.
-  Defined.
-  
-  Definition IsMono_fromIm {A B} (f : A -> B) : IsMono (fromIm (f:=f)). 
-    intros x y; apply (isequiv_adjointify (ap (fromIm (f:=f))) (IsMono_fromIm_inv x y)).
-    - intro a.
-      destruct x as [x s]; destruct y as [y r]; simpl in *.
-      destruct a; simpl in *.     unfold IsMono_fromIm_inv. simpl.
-      destruct (path_ishprop s r); simpl in *.
-      reflexivity.
-    - intro a.
-      unfold IsMono_fromIm_inv, path_ishprop.
-      destruct a, x as [x s]; simpl.
-      rewrite (contr 1); reflexivity.
-  Defined.
-
-  Lemma Sigma_IsHProp_O (T: Type) (χ : T -> Trunk n) (H : forall x, IsHProp (χ x).1)
-  : forall x, IsHProp ((O sf (χ x)).1.1).
-    intro x. specialize (H x).
-    assert (((O sf (χ x)).1).1 = ((O sheaf_def_and_thm.nj
-                                     ((χ x).1; IsHProp_IsTrunc H sheaf_def_and_thm.n0)).1).1).
-    repeat apply (ap pr1). apply ap. apply truncn_unique. exact fs. reflexivity.
-    rewrite X. apply (transport IsHProp (j_is_nj ((χ x).1;H))). apply _j.
-  Qed.
-
-  Lemma transport'_1 (A : Type) (P : A → Type) (x : A) (u : P x) v (H : 1=v)
-  : transport P v u = u.
-    destruct H. reflexivity.
-  Qed.
-  
-  Lemma IsMono_IsHProp_cloture (T: Type) (χ : T -> Trunk n) (Monom : IsMono (pr1 : (sigT (pr1 o χ)) -> T))
-  : forall x, IsHProp ((O sf (χ x)).1.1).
-    apply Sigma_IsHProp_O.
-    intro x.
-    apply hprop_allpath.
-    intros u v.
-    specialize (Monom (x;u) (x;v)).
-    pose (equiv_inv (IsEquiv := Monom) 1)..2. simpl in p.
-    etransitivity; try exact p.
-    unfold pr1_path. rewrite eisretr. reflexivity.
-  Defined.
-
-  Lemma IsMono_cloture (T: Type) (χ : T -> Trunk n) (Monom : IsMono (pr1 : (sigT (pr1 o χ)) -> T))
-  : IsMono (pr1 : (sigT (pr1 o pr1 o ((O sf) o χ))) -> T).
-
-    intros [x px] [y py].
-    simpl; refine (isequiv_adjointify _ _ _ _).
-    - intro p. apply path_sigma' with p. 
-      refine (path_ishprop _ _). apply IsMono_IsHProp_cloture. exact Monom.
-    - intro p. simpl. destruct p. simpl.
-      unfold path_ishprop.
-      destruct (center (px = py)). reflexivity.
-    - intro p.
-      unfold path_sigma'. simpl.
-      pose (IsMono_IsHProp_cloture _ Monom y).
-      apply eta'_path_sigma. apply path_ishprop.
-  Qed.
-
-  Lemma IsMono_cloture' (T U:Type) (m : U -> T) (Monom : IsMono m)
-  : IsMono (cloture' (m;mono_is_hfiber Monom)).2.1.
-    unfold cloture', cloture, nsub_to_char, nchar_to_sub; simpl.
-    pose (@IsMono_cloture T (λ b0 : T, (hfiber m b0; mono_is_hfiber Monom (b:=b0)))).
-    refine (i _).
-    apply IsEmbedding_IsMono.
-    intro x. unfold Overture.hfiber. simpl.
-    pose (snd (IsEmbedding_IsMono m) Monom).
-    apply (hprop_allpath).
-    intros [[p p'] pp] [[q q'] qq]. simpl in *.
-    refine (path_sigma' _ _ _).
-    apply path_sigma' with (pp @ qq^).
-    refine (path_ishprop _ _).
-    simpl.
-    destruct pp. destruct qq. hott_simpl.
-    destruct (path_ishprop (transport (λ x : T, hfiber m x) 1 p') q').
-    reflexivity.
-  Defined.
-                                    
-  Definition separated_to_sheaf (T:{T : Trunk (trunc_S n) & separated T}) (U:SnType_j_Type) m Monom :
-    Snsheaf_struct (@separated_to_sheaf_Type T.1.1 U.1.1 m Monom; @separated_to_sheaf_IsTrunc_Sn _ _ m Monom).
-    refine (closed_to_sheaf _ _ _ _).
-    exact U.
-    exact ((pr2 (cloture' (m;mono_is_hfiber Monom)))).
-    exact (@IsMono_cloture' U.1.1 T.1.1 m Monom).
-    apply cloture_is_closed'.
-  Defined.
-
-  Definition sheafification_Type (T:Trunk (trunc_S n)) :=
-    @separated_to_sheaf_Type (separated_Type T) 
-                             (T.1 -> subuniverse_Type) (fromIm (f:=_)) 
-                             (IsMono_fromIm (f:=_)).
-
-  Definition sheafification_istrunc (T:Trunk (trunc_S n)) : 
-    IsTrunc (trunc_S n) (sheafification_Type T).
-    apply (separated_to_sheaf_IsTrunc_Sn (separated_Type T; separated_Type_is_Trunk_Sn (T:=T)) 
-                              (T.1 -> subuniverse_Type; T_nType_j_Type_trunc T)).
-  Defined.
-
-  Definition sheafification_trunc (T:Trunk (trunc_S n)) : Trunk (trunc_S n) :=
-    (sheafification_Type T ; sheafification_istrunc  (T:=T)).
-
-  Definition sheafification_ (T:Trunk (trunc_S n)) : Snsheaf_struct (sheafification_trunc T)
-    
-    
-    := separated_to_sheaf (((existT (IsTrunc (trunc_S n)) (separated_Type T) (separated_Type_is_Trunk_Sn (T:=T)))); @separated_Type_is_separated T) (T_nType_j_Type_sheaf T) (IsMono_fromIm (f:=_)).
-
-  Definition sheafification (T:Trunk (trunc_S n)) : SnType_j_Type :=
-    ((sheafification_Type T ; sheafification_istrunc  (T:=T)); sheafification_ T).
-
-  
+ *)

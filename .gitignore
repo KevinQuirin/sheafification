@@ -2,3 +2,6 @@
 *.glob
 *.v.d
 *.aux
+*.log
+paper/IEEEtran.cls
+reflective_subuniverse_O_different_level.v

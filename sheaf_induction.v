@@ -8,6 +8,7 @@ Require Import sheaf_base_case.
 Require Import sheaf_def_and_thm.
 Require Import cloture_hpullback.
 
+Set Printing Universes.
 Set Universe Polymorphism.
 Global Set Primitive Projections. 
 Set Implicit Arguments.
@@ -24,7 +25,6 @@ Arguments istrunc_paths {A} {n} H x y: simpl never.
 Arguments truncn_unique _ {n} A B H: simpl never.
 Arguments isequiv_functor_sigma {A P B Q} f {H} g {H0}: simpl never.
 
-Set Printing Universes.
 
 Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   Export nj. Export mod.
@@ -138,7 +138,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     refine (@separated_mono_is_separated sf
               (separated_Type sf T;separated_Type_is_Trunk_Sn (T:=T))
               (T'.1 -> subuniverse_Type sf; T_nType_j_Type_trunc T')
-              (sheaf_is_separated (T_nType_j_Type_sheaf@{Si' i' a i u} sf T'))
+              (sheaf_is_separated (T_nType_j_Type_sheaf sf T'))
               pr1 _).
     intros X f g.
     refine (isequiv_adjointify _ (λ H, (path_forall _ _ (λ x, path_sigma _ _ _ (ap10 H x) (path_ishprop _ _)))) _ _).
@@ -162,7 +162,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     {T : Trunk@{Si' i' a} (n.+1) & separated sf T} :=
     exist@{Si' Si'} (separated sf)
          (separated_Type@{i' i a u} sf T; separated_Type_is_Trunk_Sn (T:=T))
-         (separated_Type_is_separated@{i' i a Si' u} (T:=T)).
+         (separated_Type_is_separated (T:=T)).
       
   Definition separated_unit (sf : subu_family) (T:Trunk@{i' i a} (n.+1)) :
     T.1 -> separated_Type@{i' i a u} sf T := toIm _.
@@ -174,19 +174,19 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     exact T.2.
   Defined.
 
-  Definition Δ (T:Trunk@{i' i a} (n.+1)) := nchar_to_sub (δ@{i' i a} T).
+  Definition Δ (T:Trunk@{i' i a} (n.+1)) := nchar_to_sub (δ@{i' i a x y} T).
   
   Definition clδ (sf : subu_family) (T:Trunk@{i' i a} (n.+1)) := O@{u a i' i} sf o (δ T).
 
   Definition clΔ (sf : subu_family) (T:Trunk@{i' i a} (n.+1)) :=
-    nchar_to_sub (clδ@{i' i a u} sf T).
+    nchar_to_sub (clδ@{i' i a u x y} sf T).
 
   
   Definition kpsic_func_univ_func (sf : subu_family)
              (T:Trunk@{i' i a} (n.+1))
              (a : T .1)
              (b : T .1)
-             (p : ((clδ@{i' i a u} sf T) (a, b)) .1)
+             (p : ((clδ@{i' i a u x y} sf T) (a, b)) .1)
              (* (Ωj := (T .1 → subuniverse_Type sf; T_nType_j_Type_trunc T) *)
              (*        : ∃ x, IsTrunc (trunc_S n) x) *)
              (* (inj := (pr1:separated_Type@{Si' i a u i'} sf T → Ωj .1) : *)
@@ -204,7 +204,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
              (T:Trunk@{i' i a} (n.+1))
              (a : T .1)
              (b : T .1)
-             (p : ((clδ@{i' i a u} sf T) (a, b)) .1)
+             (p : ((clδ@{i' i a u x y} sf T) (a, b)) .1)
              (* (Ωj := (T .1 → subuniverse_Type; T_nType_j_Type_trunc T) *)
              (*        : ∃ x, IsTrunc (trunc_S n) x) *)
              (* (inj := (pr1:separated_Type T → Ωj .1) : separated_Type T → Ωj .1) *)
@@ -221,7 +221,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
              (T:Trunk@{i' i a} (n.+1))
              (a : T .1)
              (b : T .1)
-             (p : ((clδ@{i' i a u} sf T) (a, b)) .1)
+             (p : ((clδ@{i' i a u x y} sf T) (a, b)) .1)
         (* (Ωj := (T .1 → subuniverse_Type; T_nType_j_Type_trunc T) *)
         (*        : ∃ x, IsTrunc (trunc_S n) x) *)
         (* (inj := (pr1:separated_Type T → Ωj .1) : separated_Type T → Ωj .1) *)
@@ -369,7 +369,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
 
   Lemma separated_unit_paths_are_nj_paths_retr (sf : subu_family)
              (T:Trunk@{i' i a} (n.+1)) (a b:T.1) 
-  : Sect (separated_unit_paths_are_nj_paths_inv@{i' i a Si' u} sf T a b)
+  : Sect (separated_unit_paths_are_nj_paths_inv sf T a b)
          (separated_unit_paths_are_nj_paths_fun (b:=b)).
     unfold separated_unit_paths_are_nj_paths_fun, separated_unit_paths_are_nj_paths_inv.
 
@@ -510,7 +510,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   Lemma separated_unit_paths_are_nj_paths_sect (sf : subu_family)
              (T:Trunk@{i' i a} (n.+1)) (a b:T.1) 
   : Sect (separated_unit_paths_are_nj_paths_fun (b:=b))
-         (separated_unit_paths_are_nj_paths_inv@{i' i a Si' u} sf T a b).
+         (separated_unit_paths_are_nj_paths_inv sf T a b).
     unfold separated_unit_paths_are_nj_paths_fun, separated_unit_paths_are_nj_paths_inv.
       intro p.
       simpl.
@@ -817,8 +817,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     simpl in *. clear Hq. 
     pose (ap10 (equiv_inv (IsEquiv := Q.2 (∃ y : P.1 ∧ hProduct P.1 (S j), (cl_char_hPullback' sf idmap (S j) y).1) (@cl_char_hPullback'_is_dense sf P P idmap (S j)) (λ x, f (fst x.1)) (λ x, f (fst (snd x.1))))
                           (path_forall _ _ (λ u, ap f (fst u.2.1)))) ((a,(b,x));X))^.
-         (* exact p. SHOULD WORK ?*)
-    admit.
+         exact p. 
   Defined.
       
   Definition sep_eq_inv (sf : subu_family@{u a})
@@ -1069,18 +1068,19 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
   Definition n0:trunc_index := n.
 
   Definition n := trunc_S n0.
-  
+
   Definition subuniverse_HProp : forall (sf : subu_family@{u a}) (T:Trunk@{i' i a} n),
-                                   HProp@{Si' i' a}.
+                                   HProp@{i' i a}.
     intros sf T.
     exists (separated sf T).
-    apply separated_is_HProp.
+    repeat (apply trunc_forall; intro). apply hprop_isequiv.
   Defined.
   
-  Definition O : forall (sf : subu_family@{u a}), Trunk@{i' i a} n -> Trunk@{Si' i' a} n.
+  Definition O : forall (sf : subu_family@{u a}), Trunk@{i' i a} n -> Trunk@{i' i a} n.
     intros sf T.
     exists (separated_Type sf T).
-    apply separated_Type_is_Trunk_Sn.
+    (* apply separated_Type_is_Trunk_Sn. *)
+    admit.
   Defined.
   
   Definition subuniverse_O : forall (sf : subu_family@{u a}) (T:Trunk@{i' i a} n),

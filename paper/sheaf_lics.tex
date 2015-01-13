@@ -15,6 +15,7 @@
 \newtheorem{prop}[thm]{Proposition}
 \newtheorem{defi}[thm]{Definition}
 \newtheorem{lem}[thm]{Lemma}
+\newtheorem{ax}[thm]{Axiom}
 
 \newcommand{\mynote}[2]{
     \fbox{\bfseries\sffamily\scriptsize#1}
@@ -161,7 +162,7 @@ Our work is mainly based on the stratification by $\Type_n$~:
 \begin{defi}
   $\IsType n$ is defined by induction on $n\geqslant -2$~:
   \begin{itemize}
-  \item $\IsType {(-2)} X$ if $X$ is a contractible type, {\em ie} $X$
+  \item $\IsType {(-2)} X$ if $X$ is a contractible type, \ie $X$
     is pointed by $c:X$, and every other point in $X$ is connected to $c$.
   \item $\IsType {(n+1)} X = \prod_{x,y:X} \IsType n (x=y).$
   \end{itemize}
@@ -296,6 +297,7 @@ extend it to every $\Type_n$ without collapsing every type.
 
 \subsection{Generalized pullbacks}
 \label{sec:gener-pb}
+\kq{Do we keep this name ?}
 
 \begin{defi}
   Let $f:X \to Y$ be a map, and $p:\nat$. The $p$-pullback of $f$,
@@ -320,10 +322,16 @@ $$X\times_Y \cdots\times_Y X = \sum_{x:X^n} (f x_1 = f x_2) \land
 with canonical projections.
 \end{defi}
 
-The Giraud axiom asserts that, if $f:X\to Y$ is a surjection, then the
-colimit of $C(f)$ is $Y$. Viewing homotopy type theory as a
+\begin{ax}[Giraud]
+  If $f:X\to Y$ is a surjection, then the
+colimit of $C(f)$ is $Y$.
+\end{ax}
+
+Viewing homotopy type theory as a
 type-theoristic version of higher topos theory, \cite{lurie} suggests that this
 axiom can be proved, although we admit it in this paper.
+
+Formalization of colimits is based on the formalization of limits in~\cite{lumsdaine}.
 
 \section{Sheaves}
 \label{sec:sheaves}
@@ -349,7 +357,7 @@ and a left exact modality $\modal$ on $\Type_n$.
 \begin{defi}
   Let $E$ be a type, and $\chi:E \to \Type_n$. The subobject $A$ of $E$
   classified by $\chi$ is {\em dense} in $E$ if its $\modal$-closure
-  is $E$ seen as a subobject of $E$, {\em ie}
+  is $E$ seen as a subobject of $E$, \ie
   $$\forall e:E,~ \left(\sum_{e':E} e=e'\right) \simeq (\modal (\chi~e)).$$ 
   Moreover, for all $x:A$ we need the following coherence diagram to
   commute
@@ -414,8 +422,34 @@ From these definitions, one can show that
 \section{Construction of sheafification}
 \label{sec:sheafification}
 
-We mimic the construction in~\cite{maclanemoerdijk}
+We mimic the construction in~\cite{maclanemoerdijk}. 
+From any left exact modality on $\HProp$, we extend the new principles
+it gives to every $\Type_n,\,n\geqslant 0$.
+Actually, if $n_0$ is a fixed truncation index, and $\modal$ a left
+exact modality on $\Type_{n_0}$, then we can in the same
+way extend the properties of the modality to any $\Type_n$, for
+$n > n_0$.
 
+Once the first modality is defined, the extension to all $\Type_n$ is
+automatic. It means that the new principles we want to add in the new
+theory must be introduced ine the first modality. 
+
+The sheafification process works exactly that way
+in~\cite{maclanemoerdijk}~: from a left exact modality on the internal
+logic (a Lawvere-Tierney topology), we define a new left exact
+modality on the whole topos. We view that as the induction step
+between $\HProp$ and $\Type_0$, and we want to extend it.
+
+\kq{Bof ; maybe rewrite this}
+
+As in most of sheafification process, it will be done in
+two steps~:
+\begin{enumerate}[(i)]
+\item {\em separation~:} In this step, we {\em remove} the lack of
+  sheafness from the type we are considering.
+\item {\em completion~:} In this step, we add what lacks now to the
+  separated type to be a sheaf.
+\end{enumerate}
 \subsection{For h-propositions}
 \label{ssec:h-propositions}
 
@@ -423,6 +457,9 @@ For the case $n=-1$, one can take any left exact modality on
 $\HProp$. Here we took the $\lnot\lnot$ modality~:
 $$\forall P:\HProp,~\modal_j P = \lnot\lnot P.$$
 One can easily show that it defines a left exact modality.
+
+The $\lnot\lnot$-modality allows to work with a propositional law of
+excluded middle. 
 
 \subsection{From Type to Separated Type}
 \label{ssec:from-type-separated}
@@ -481,7 +518,7 @@ in~\cite{maclanemoerdijk}, where they consider only the kernel pair of
 $\mu_T$ instead of the \v{C}ech nerve.
 
 \begin{proof}
-  As $\mu_T$ is an embedding, we know by Giraud axiom that $\square T$ is the colimit
+  As $\mu_T$ is an surjection, we know by Giraud axiom that $\square T$ is the colimit
   of $C(\mu_T)$. If we can show that $C(\mu_T) = C(\id)$, the the
   result will follow. 
 
@@ -494,7 +531,22 @@ $\mu_T$ instead of the \v{C}ech nerve.
   \end{align*}
 By induction on $k$, and the preservation of products by $\modal$, it
 suffices to show that for all $a,b:T$, $\modal (a=b) = (\mu_T a =
-\mu_T b)$, which is true by univalence.
+\mu_T b)$. By univalence, we want arrows in both ways, forming an
+equivalence.
+\begin{itemize}
+\item Suppose $p : (\mu_T a = \mu_T b)$. Then projecting $p$ along
+  first components yields $q : \prod_{t:T} \modal(a=t) = \modal (b=t)
+  $.
+  Taking for example $t=b$, we deduce $\modal (a=b) = \modal(a=a)$,
+  and the latter is inhabited by $\eta_{a=a} 1$.
+\item Suppose now $p : \modal(a=b)$. Let $\iota$ be the first
+  projection from $\square T \to (T \to \Type_n^\modal)$. $\iota$ is
+  an embedding, thus it suffices to prove $\iota (\mu_T a) = \iota
+  (\mu_T b)$, \ie $\prod_{t:T}\modal (a=t) = \modal (b=t)$. The latter
+  remains true by univalence.
+\end{itemize}
+The fact that these two form an equivalence is technical, we refer to
+the formalization for an explicit proof.
 \end{proof}
 
 Now that $\square T$ is a colimit, we can easily define an inverse to
@@ -708,12 +760,12 @@ Saunders MacLane and Ieke Moerdijk.
 \newblock Springer-Verlag, 1992.
 
 \bibitem[HTT]{lurie}
-Jacob Lurie
-\newblock{\em Higher Topos Theory}
+Jacob Lurie.
+\newblock{\em Higher Topos Theory}.
 
-\bibitem[lumsdaine]{lumsdaine}
-Lumsdaine
-\newblock{Diagrams and limits}
+\bibitem[AKL]{lumsdaine}
+Peter LeFanu Lumsdaine, Jeremy Avigad and Chris Kapulkin.
+\newblock{\em Homotopy limits in type theory}.
 
 \end{thebibliography}
 

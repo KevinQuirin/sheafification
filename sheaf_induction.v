@@ -187,7 +187,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
              (b : T .1)
              (p : ((clδ@{i' i a u} sf T) (a, b)) .1)
              (* (Ωj := (T .1 → subuniverse_Type sf; T_nType_j_Type_trunc T) *)
-             (*        : ∃ x, IsTrunc (trunc_S n) x) *)
+             (*        : ∃ x, IsTrunc (n.+1) x) *)
              (* (inj := (pr1:separated_Type@{Si' i a u i'} sf T → Ωj .1) : *)
              (*           separated_Type sf T → Ωj .1) *)
              (* (X : IsMono inj) *)
@@ -205,7 +205,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
              (b : T .1)
              (p : ((clδ@{i' i a u} sf T) (a, b)) .1)
              (* (Ωj := (T .1 → subuniverse_Type; T_nType_j_Type_trunc T) *)
-             (*        : ∃ x, IsTrunc (trunc_S n) x) *)
+             (*        : ∃ x, IsTrunc (n.+1) x) *)
              (* (inj := (pr1:separated_Type T → Ωj .1) : separated_Type T → Ωj .1) *)
              (* (X : IsMono inj) *)
              (t : T .1)
@@ -222,7 +222,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
              (b : T .1)
              (p : ((clδ@{i' i a u} sf T) (a, b)) .1)
         (* (Ωj := (T .1 → subuniverse_Type; T_nType_j_Type_trunc T) *)
-        (*        : ∃ x, IsTrunc (trunc_S n) x) *)
+        (*        : ∃ x, IsTrunc (n.+1) x) *)
         (* (inj := (pr1:separated_Type T → Ωj .1) : separated_Type T → Ωj .1) *)
         (* (X : IsMono inj) *)
         (t : T .1)
@@ -1205,7 +1205,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   Defined.
 
   Definition E_to_Y'A (sf:subu_family@{u a})
-             (A : Trunk@{Si' i' a} (trunc_S n))
+             (A : Trunk@{Si' i' a} (n.+1))
              (B : SnType_j_Type@{Si' i' a i u} sf)
              (m : pr1 A -> pr1 (pr1 B))
              (X1 : ∀ b : pr1 (pr1 B), IsTrunc n (hfiber m b))
@@ -1223,7 +1223,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     := (λ b, (pr1 b ; (X b ; (inverse (ap10 (retr_B (m o X)) b)))))  : {b : E & pr1 (pr1 (χ b))} -> {b : E & hfiber@{i' i'} m (Y b)}.
 
   Definition clE_to_clY'A (sf:subu_family@{u a})
-             (A : Trunk@{Si' i' a} (trunc_S n))
+             (A : Trunk@{Si' i' a} (n.+1))
              (B : SnType_j_Type@{Si' i' a i u} sf)
              (m : pr1 A -> pr1 (pr1 B))
              (X1 : ∀ b : pr1 (pr1 B), IsTrunc@{i'} n (hfiber m b))
@@ -1243,7 +1243,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
                    (λ e p, pr2 (E_to_Y'A _ _ closed0 _ X0 retr_B (e;p))).
 
   Lemma equalpr2_restriction_χ (sf:subu_family@{u a})
-        (A : Trunk@{Si' i' a} (trunc_S n))
+        (A : Trunk@{Si' i' a} (n.+1))
         (B : SnType_j_Type@{Si' i' a i u} sf)
         (m : pr1 A -> pr1 (pr1 B))
         (X1 : ∀ b : pr1 (pr1 B), IsTrunc n (hfiber m b))
@@ -1275,7 +1275,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   Parameter j_is_nj' : forall sf, forall (P:HProp@{i _i a}), (j P).1 = (O@{u a i' i} sf (Lift_Trunk ((P.1; IsHProp_IsTrunc P.2 n0)))).1.
 
   Definition closed_to_sheaf_inv (sf:subu_family@{u a})
-        (A : Trunk@{Si' i' a} (trunc_S n))
+        (A : Trunk@{Si' i' a} (n.+1))
         (B : SnType_j_Type@{Si' i' a i u} sf)
              (m : {f : pr1 A -> pr1 (pr1 B) & ∀ b : pr1 (pr1 B), IsTrunc n (hfiber f b)})
              (closed : closed' sf m)
@@ -1292,7 +1292,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   Defined.
 
   Definition closed_to_sheaf_retr (sf:subu_family@{u a})
-        (A : Trunk@{Si' i' a} (trunc_S n))
+        (A : Trunk@{Si' i' a} (n.+1))
         (B : SnType_j_Type@{Si' i' a i u} sf)
              (m : {f : pr1 A -> pr1 (pr1 B) & ∀ b : pr1 (pr1 B), IsTrunc n (hfiber f b)})
              (closed : closed' sf m)
@@ -1355,7 +1355,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   Defined.
 
   Definition closed_to_sheaf_sect (sf:subu_family@{u a})
-        (A : Trunk@{Si' i' a} (trunc_S n))
+        (A : Trunk@{Si' i' a} (n.+1))
         (B : SnType_j_Type@{Si' i' a i u} sf)
              (m : {f : pr1 A -> pr1 (pr1 B) & ∀ b : pr1 (pr1 B), IsTrunc n (hfiber f b)})
              (closed : closed' sf m)
@@ -1436,7 +1436,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   Qed.
 
   Definition closed_to_sheaf (sf:subu_family@{u a})
-        (A : Trunk@{Si' i' a} (trunc_S n))
+        (A : Trunk@{Si' i' a} (n.+1))
         (B : SnType_j_Type@{Si' i' a i u} sf)
         (m : {f : (pr1 A) -> (pr1 (pr1 B)) & forall b, IsTrunc n (hfiber f b)}) (Monom : IsMono m.1)
   : closed' sf m  -> Snsheaf_struct@{Si' i' a i u} sf A.
@@ -1463,9 +1463,9 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
              (m : T -> U) (Monom : IsMono m) : Type@{i'}  :=
     pr1 (cloture'@{i' u a Si'} sf (m; mono_is_hfiber Monom)).    
   
-  Definition separated_to_sheaf_IsTrunc_Sn (sf:subu_family@{u a}) (T : Trunk@{Si' i' a} (trunc_S n))
-             (U : Trunk@{Si' i' a} (trunc_S n)) m Monom :
-    IsTrunc@{i'} (trunc_S n) (@separated_to_sheaf_Type@{u a i' Si'} sf T.1 U.1 m Monom).
+  Definition separated_to_sheaf_IsTrunc_Sn (sf:subu_family@{u a}) (T : Trunk@{Si' i' a} (n.+1))
+             (U : Trunk@{Si' i' a} (n.+1)) m Monom :
+    IsTrunc@{i'} (n.+1) (@separated_to_sheaf_Type@{u a i' Si'} sf T.1 U.1 m Monom).
     apply (@trunc_sigma _ (fun P => _)).
     exact (U.2).
     intro a.
@@ -1560,8 +1560,9 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     reflexivity.
   Defined.
                                     
-  Definition separated_to_sheaf (sf:subu_family@{u a}) (T:{T : Trunk@{Si' i' a} (n.+1) & separated@{Si' i' a i u} sf T})
-             (U:SnType_j_Type@{Si' i' a i u} sf) (m: T.1.1 -> U.1.1) (Monom: IsMono@{i' i'} m) :
+  Definition separated_to_sheaf (sf:subu_family@{u a})
+             (T:{T : Trunk@{Si' i' a} (n.+1) & separated@{Si' i' a i u} sf T} : Type@{Si'})
+             (U:SnType_j_Type sf) (m: T.1.1 -> U.1.1) (Monom: IsMono@{i' i'} m) :
     Snsheaf_struct@{Si' i' a i u} sf
                   (@separated_to_sheaf_Type@{u a i' Si'} sf T.1.1 U.1.1 m Monom;
                    @separated_to_sheaf_IsTrunc_Sn@{u a Si' i'} sf T.1 U.1 m Monom).
@@ -1572,30 +1573,30 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     apply cloture_is_closed'.
   Defined.
 
-  Definition sheafification_Type (sf:subu_family@{u a}) (T:Trunk@{i' i a} (trunc_S n)) :=
+  Definition sheafification_Type (sf:subu_family@{u a}) (T:Trunk@{i' i a} (n.+1)) :=
     @separated_to_sheaf_Type@{u a i' Si'} sf (separated_Type sf T) 
                              (T.1 -> subuniverse_Type sf) (fromIm (f:=_)) 
                              (IsMono_fromIm (f:=_)) : Type@{i'}.
 
-  Definition sheafification_istrunc (sf:subu_family@{u a}) (T:Trunk@{i' i a} (trunc_S n)) : 
-    IsTrunc@{i'} (trunc_S n) (sheafification_Type@{u a i' i Si'} sf T).
+  Definition sheafification_istrunc (sf:subu_family@{u a}) (T:Trunk@{i' i a} (n.+1)) : 
+    IsTrunc@{i'} (n.+1) (sheafification_Type@{u a i' i Si'} sf T).
     pose (s := exist (IsTrunc@{i'} (n.+1)) ((Lift_Trunk T).1 -> subuniverse_Type@{u a i' i} sf)
                        (T_nType_j_Type_trunc@{Si' i' a u i} (Lift_Trunk T)) : Trunk@{Si' i' i} _).
     apply (separated_to_sheaf_IsTrunc_Sn (sf:=sf)
                       (separated_Type sf T; separated_Type_is_Trunk_Sn (T:=T)) s).    
   Defined.
 
-  Definition sheafification_trunc (sf:subu_family@{u a}) (T:Trunk (trunc_S n)) : Trunk (trunc_S n) :=
-    (sheafification_Type sf T ; sheafification_istrunc  (T:=T)).
+  Definition sheafification_trunc (sf:subu_family@{u a}) (T:Trunk@{i' i a} (n.+1)) :
+                                       Trunk@{Si' i' a} (n.+1) :=
+    (sheafification_Type@{u a i' i Si'} sf T ; sheafification_istrunc  (T:=T)).
 
-  Definition sheafification_  (sf:subu_family@{u a}) (T:Trunk (trunc_S n)) :
-    Snsheaf_struct sf (sheafification_trunc sf T)
-    
-    
-    := separated_to_sheaf (((existT (IsTrunc (trunc_S n)) (separated_Type sf T) (separated_Type_is_Trunk_Sn (T:=T)))); @separated_Type_is_separated sf T) (T_nType_j_Type_sheaf sf (Lift_Trunk T)) (IsMono_fromIm (f:=_)).
+  Definition sheafification_  (sf:subu_family@{u a}) (T:Trunk@{i' i a} (n.+1)) :
+    Snsheaf_struct@{Si' i' a i u} sf (sheafification_trunc@{u a i' i Si'} sf T)
+    := separated_to_sheaf (((existT (IsTrunc (n.+1)) (separated_Type sf T) (separated_Type_is_Trunk_Sn (T:=T)))); @separated_Type_is_separated sf T) (T_nType_j_Type_sheaf sf (Lift_Trunk T)) (IsMono_fromIm (f:=_)).
 
-  Definition sheafification (sf:subu_family@{u a}) (T:Trunk (trunc_S n)) : SnType_j_Type sf :=
-    ((sheafification_Type sf T ; sheafification_istrunc  (T:=T)); sheafification_ sf T).
+  Definition sheafification (sf:subu_family@{u a}) (T:Trunk@{i' i a} (n.+1))
+  : SnType_j_Type@{Si' i' a i u} sf :=
+    ((sheafification_Type@{u a i' i Si'} sf T ; sheafification_istrunc  (T:=T)); sheafification_ sf T).
 
   Unset Printing Universes.
 
@@ -1721,7 +1722,7 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
 
   Definition n0:trunc_index := n.
 
-  Definition n := trunc_S n0.
+  Definition n := n.+10.
 
   Definition subu_family := subu_family : Type2le@{u a}.
   
@@ -1832,27 +1833,27 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
            (@transport
               _
               (fun
-                 x : @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
+                 x : @proj1_sig Type (fun T : Type => IsTrunc (n.+1) T)
                        A =>
-               @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
-                 (@proj1_sig (Trunk (trunc_S n))
-                    (fun T : Trunk (trunc_S n) =>
+               @proj1_sig Type (fun T : Type => IsTrunc (n.+1) T)
+                 (@proj1_sig (Trunk (n.+1))
+                    (fun T : Trunk (n.+1) =>
                      @proj1_sig Type
                        (fun T0 : Type => IsTrunc (trunc_S minus_two) T0)
-                       (@subuniverse_HProp (trunc_S n)
+                       (@subuniverse_HProp (n.+1)
                           sf T))
                     (B x)))
               (@proj1_sig
-                 (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A)
+                 (@proj1_sig Type (fun T : Type => IsTrunc (n.+1) T) A)
                  (fun
                     x : @proj1_sig Type
-                          (fun T : Type => IsTrunc (trunc_S n) T) A =>
-                  @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
-                    (@proj1_sig (Trunk (trunc_S n))
-                       (fun T : Trunk (trunc_S n) =>
+                          (fun T : Type => IsTrunc (n.+1) T) A =>
+                  @proj1_sig Type (fun T : Type => IsTrunc (n.+1) T)
+                    (@proj1_sig (Trunk (n.+1))
+                       (fun T : Trunk (n.+1) =>
                         @proj1_sig Type
                           (fun T0 : Type => IsTrunc (trunc_S minus_two) T0)
-                          (@subuniverse_HProp (trunc_S n)
+                          (@subuniverse_HProp (n.+1)
                              sf T))
                        (B x)))
                  (f
@@ -1862,16 +1863,16 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
                           (fun T : Type => IsTrunc n0 T)
                           (@char E χ b)) e)))
               (@proj1_sig
-                 (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A)
+                 (@proj1_sig Type (fun T : Type => IsTrunc (n.+1) T) A)
                  (fun
                     x : @proj1_sig Type
-                          (fun T : Type => IsTrunc (trunc_S n) T) A =>
-                  @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
-                    (@proj1_sig (Trunk (trunc_S n))
-                       (fun T : Trunk (trunc_S n) =>
+                          (fun T : Type => IsTrunc (n.+1) T) A =>
+                  @proj1_sig Type (fun T : Type => IsTrunc (n.+1) T)
+                    (@proj1_sig (Trunk (n.+1))
+                       (fun T : Trunk (n.+1) =>
                         @proj1_sig Type
                           (fun T0 : Type => IsTrunc (trunc_S minus_two) T0)
-                          (@subuniverse_HProp (trunc_S n)
+                          (@subuniverse_HProp (n.+1)
                              sf T))
                        (B x)))
                  (g
@@ -1881,16 +1882,16 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
                           (fun T : Type => IsTrunc n0 T)
                           (@char E χ b)) e))) p0
               (@proj2_sig
-                 (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A)
+                 (@proj1_sig Type (fun T : Type => IsTrunc (n.+1) T) A)
                  (fun
                     x : @proj1_sig Type
-                          (fun T : Type => IsTrunc (trunc_S n) T) A =>
-                  @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
-                    (@proj1_sig (Trunk (trunc_S n))
-                       (fun T : Trunk (trunc_S n) =>
+                          (fun T : Type => IsTrunc (n.+1) T) A =>
+                  @proj1_sig Type (fun T : Type => IsTrunc (n.+1) T)
+                    (@proj1_sig (Trunk (n.+1))
+                       (fun T : Trunk (n.+1) =>
                         @proj1_sig Type
                           (fun T0 : Type => IsTrunc (trunc_S minus_two) T0)
-                          (@subuniverse_HProp (trunc_S n)
+                          (@subuniverse_HProp (n.+1)
                              sf T))
                        (B x)))
                  (f
@@ -1900,16 +1901,16 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
                           (fun T : Type => IsTrunc n0 T)
                           (@char E χ b)) e))))
            (@proj2_sig
-              (@proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T) A)
+              (@proj1_sig Type (fun T : Type => IsTrunc (n.+1) T) A)
               (fun
-                 x : @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
+                 x : @proj1_sig Type (fun T : Type => IsTrunc (n.+1) T)
                        A =>
-               @proj1_sig Type (fun T : Type => IsTrunc (trunc_S n) T)
-                 (@proj1_sig (Trunk (trunc_S n))
-                    (fun T : Trunk (trunc_S n) =>
+               @proj1_sig Type (fun T : Type => IsTrunc (n.+1) T)
+                 (@proj1_sig (Trunk (n.+1))
+                    (fun T : Trunk (n.+1) =>
                      @proj1_sig Type
                        (fun T0 : Type => IsTrunc (trunc_S minus_two) T0)
-                       (@subuniverse_HProp (trunc_S n)
+                       (@subuniverse_HProp (n.+1)
                           sf T))
                     (B x)))
               (g

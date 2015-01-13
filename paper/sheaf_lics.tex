@@ -441,7 +441,7 @@ theory must be introduced ine the first modality.
 We have to be careful~: if we want to propagate the properties of the
 first modality $\modal_{-1}$, all the higher modalities $\modal_n$ must be compatible
 with $\modal_{-1}$, \ie we want the property
-\begin{prop}
+\begin{prop}\label{prop:hprop}
   If $P:\HProp$, and $\widehat P$ is $P$ seen as a $\Type_n$, then $\modal_n \widehat P = \modal_{-1} P$, and the
   following coherence diagram commute 
   $$\xymatrix{
@@ -481,7 +481,7 @@ excluded middle.
 \label{ssec:from-type-separated}
 In this section, we suppose given a truncation index $n\geqslant -1$,
 and a left exact modality $\modal$ on $\Type_n$, compatible with the
-modality on $\HProp$.
+modality on $\HProp$ in the sense of proposition~\ref{prop:hprop}.
 
 Let $T$ be in $\Type_{n+1}$. We define $\square T$ as the image of
 $\modal^T \circ \{\cdot\}_T$, as in
@@ -648,6 +648,7 @@ The last thing to prove is the cumulativity of our sheafifications~:
   If $T:\Type_n$, then $\modal T = \star \widehat T$ (where $\widehat
   T$ is $T$ seen as a $\Type_{n+1}$.
 \end{prop}
+It will imply that $\star$ is compatible with $\HProp$ in the sense of proposition~\ref{prop:hprop}.
 \section{Future Works}
 \label{sec:future-works}
 

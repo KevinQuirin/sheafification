@@ -1598,6 +1598,120 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   : SnType_j_Type@{Si' i' a i u} sf :=
     ((sheafification_Type@{u a i' i Si'} sf T ; sheafification_istrunc  (T:=T)); sheafification_ sf T).
 
+  Unset Printing Universes.
+
+  Lemma good_sheafification (sf:subu_family@{u a}) (T:Trunk (trunc_S n))
+  : (sheafification sf T).1.1 = {u : T.1 -> subuniverse_Type sf & (Oj tt (Trunc -1 ({a:T.1 & (λ t' : T.1,
+          (O sf (a = t'; istrunc_paths T.2 a t');
+          subuniverse_O sf (a = t'; istrunc_paths T.2 a t'))) = u}); _)).1}.
+    unfold sheafification, sheafification_Type, separated_to_sheaf, separated_to_sheaf_Type, cloture; simpl.
+    unfold cloture, nsub_to_char, fromIm, hfiber, mono_is_hfiber; simpl.
+    apply path_universe_uncurried.
+    apply equiv_functor_sigma_id.
+    intros a. simpl.
+    apply equiv_path.
+    transparent assert (hp : HProp).
+    { exists (∃ x : separated_Type sf T, x.1 = a).
+      exact ((snd
+           (IsEmbedding_IsMono
+              (λ
+               im : Im
+                      (λ t t' : T.1,
+                       (O sf (t = t'; istrunc_paths T.2 t t');
+                       subuniverse_O sf (t = t'; istrunc_paths T.2 t t'))),
+               im.1))
+           (IsMono_fromIm
+              (f:=λ t t' : T.1,
+                  (O sf (t = t'; istrunc_paths T.2 t t');
+                   subuniverse_O sf (t = t'; istrunc_paths T.2 t t')))) a)). }
+    pose (p := j_is_nj sf hp).
+    unfold hp in *; simpl in *; clear hp.
+    rewrite <- p. clear p.
+    apply ap.
+    apply truncn_unique. exact fs. simpl.
+    unfold separated_Type, Im, Overture.hfiber. simpl.
+    apply univalence_hprop.
+    - exact (snd
+       (IsEmbedding_IsMono
+          (λ
+           im : Im
+                  (λ t t' : T.1,
+                   (O sf (t = t'; istrunc_paths T.2 t t');
+                   subuniverse_O sf (t = t'; istrunc_paths T.2 t t'))), im.1))
+       (IsMono_fromIm
+          (f:=λ t t' : T.1,
+              (O sf (t = t'; istrunc_paths T.2 t t');
+              subuniverse_O sf (t = t'; istrunc_paths T.2 t t')))) a).
+
+    - exact (istrunc_truncation (-1)
+       (∃ a0 : T.1,
+        (λ t' : T.1,
+         (O sf (a0 = t'; istrunc_paths T.2 a0 t');
+          subuniverse_O sf (a0 = t'; istrunc_paths T.2 a0 t'))) = a)).
+      
+    - split.
+      + intros [[x y] p]. destruct p. simpl.
+      revert y. apply Trunc_rec. intros [y z].
+      apply tr.
+      exists y.
+      exact z.
+      + apply Trunc_ind.
+        intro x.
+        exact (snd
+       (IsEmbedding_IsMono
+          (λ
+           im : Im
+                  (λ t t' : T.1,
+                   (O sf (t = t'; istrunc_paths T.2 t t');
+                   subuniverse_O sf (t = t'; istrunc_paths T.2 t t'))), im.1))
+       (IsMono_fromIm
+          (f:=λ t t' : T.1,
+              (O sf (t = t'; istrunc_paths T.2 t t');
+               subuniverse_O sf (t = t'; istrunc_paths T.2 t t')))) a).
+        intros [x q].
+        refine (exist _ _ _).
+        exists a.
+        apply tr. exists x. exact q.
+        reflexivity.
+  Qed.
+        
+        
+        
+    
+    
+      
+      
+
+        
+    match goal with
+      |[|- (O sf ?X).1 = _] => pose (j_is_nj sf X) end.
+
+
+    
+  Definition sheafification_unit (sf:subu_family@{u a}) (T:Trunk (trunc_S n))
+  : T.1 -> (sheafification sf T).1.1.
+    intros x. unfold sheafification, sheafification_Type, separated_to_sheaf, separated_to_sheaf_Type, cloture; simpl.
+    unfold cloture, nsub_to_char, fromIm, hfiber, mono_is_hfiber; simpl.
+    exists (separated_unit sf T x).1.
+    apply O_unit. simpl.
+    refine (exist _ _ _).
+    apply separated_unit. exact x.
+    simpl. reflexivity.
+  Defined.
+
+  Definition sheafification_equiv (sf : subu_family@{u a}) (P : Trunk n.+1) (Q : Trunk n.+1) (modQ : (Snsheaf_struct sf Q))
+  : IsEquiv (fun f : (sheafification sf P).1.1 -> Q.1 => f o (sheafification_unit sf P)).
+    destruct modQ as [sepQ sheafQ].
+    refine (isequiv_adjointify _ _ _ _).
+    - intro f.
+      unfold sheafification, sheafification_Type, separated_to_sheaf, separated_to_sheaf_Type, cloture; simpl.
+      unfold cloture, nsub_to_char, fromIm, hfiber, mono_is_hfiber; simpl.
+      intros [φ b].
+      Set Printing Universes.
+      pose (separated_equiv P (existT (separated sf) Q sepQ)).
+    
+    
+
   
 End Type_to_separated_Type.
 

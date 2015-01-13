@@ -2,6 +2,7 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{xspace}
 
 % *** MATH PACKAGES ***
 %
@@ -22,6 +23,8 @@
 \newcommand\kq[1]{\mynote{KQ}{#1}}
 \newcommand\nt[1]{\mynote{NT}{#1}}
 
+\newcommand{\ie}{i.e,\xspace}
+\newcommand{\eg}{e.g,\xspace}
 
 % *** Do not adjust lengths that control margins, column widths, etc. ***
 % *** Do not use packages that alter fonts (such as pslatex).         ***
@@ -78,20 +81,23 @@
 
   Sheafification is a popular tool in (higher) topos theory which
   allows to extend the internal logic of a topos with new
-  principles. One of the most famous applications is the possibility to
-  transform a topos into a boolean topos using the dense topology, which
-  corresponds in essence to Gödel's double negation translation. 
+  principles. One of its most famous applications is the possibility
+  to transform a topos into a boolean (classical) topos using the
+  dense topology, which corresponds in essence to Gödel's double
+  negation translation.
   % 
   The same construction has not been considered in Martin-Löf type
-  theory because of a mismatch between topos and type theory. This
+  theory because of a mismatch between topos theory and type theory. This
   mismatched has been fixed recently by considering homotopy type
   theory, an extension of Martin-Löf type theory with new
-  principles inspired by category theory and homotopy theory.
+  principles inspired by category theory and homotopy theory, and
+  which corresponds closely to higher toposes.
   % 
-  In this paper, we give a computer checked construction of
+  In this paper, we give a computer-checked construction of
   Lawvere-Tierney sheafification in homotopy type theory, which allows
   in particular to give a meaning to the (propositional) law of
-  excluded middle inside homotopy type theory, without axiom.
+  excluded middle inside homotopy type theory, without axiom, being
+  compatible with the full type-theoretic axiom of choice.
   
 \end{abstract}
 

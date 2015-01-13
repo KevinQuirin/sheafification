@@ -814,8 +814,8 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     intros [[a [b x]] X].
     destruct q; try reflexivity.
     simpl in *. clear Hq.
-    (* pose (ap10 (equiv_inv (IsEquiv := Q.2 (∃ y : P.1 ∧ hProduct P.1 (S j), (cl_char_hPullback' sf idmap (S j) y).1) (@cl_char_hPullback'_is_dense sf P P idmap (S j)) (λ x, f (fst x.1)) (λ x, f (fst (snd x.1)))) *)
-    (*                       (path_forall _ _ (λ u, ap f (fst u.2.1)))) ((a,(b,x));X))^. *)
+    (* pose (ap10 (equiv_inv (IsEquiv := Q.2 ((∃ y : P.1 ∧ hProduct P.1 (S j), (cl_char_hPullback' sf idmap (S j) y).1) : Type@{_i})(@cl_char_hPullback'_is_dense sf P P idmap (S j)) (λ x, f (fst x.1)) (λ x, f (fst (snd x.1)))) *)
+                          (* (path_forall _ _ (λ u, ap f (fst u.2.1)))) ((a,(b,x));X))^. *)
          (* exact p.  *)
          admit.
   Defined.
@@ -1301,15 +1301,14 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
              (eq := snd (pr2 B) E χ)
 
   : Sect (@closed_to_sheaf_inv sf A B m closed E χ) (E_to_χmono_map A χ).
+    Unset Printing Universes. 
     intro X.
     destruct m as [m Trm].
     apply path_forall; intro b.
     unfold closed_to_sheaf_inv, E_to_χmono_map, nsub_to_char, hfiber in *; simpl in *.
     destruct (snd B.2 E χ) as [inv_B retr_B sect_B adj_B].
-
-    destruct (closed (inv_B (λ t : {b0 : E & pr1 (pr1 (P:= (λ b1:HProp, ~ ~ (pr1 b1))) (χ b0))}, m (X t)) (pr1 b))) as [inv_closed retr_closed sect_closed adj_closed].
-    (*
-    pose (rew1 := ap10 (eissect _ (IsEquiv :=
+    
+    (* assert (rew1 := ap10 (eissect _ (IsEquiv :=
                                         O_equiv sf
                                              ({x : pr1 A &
                                                    m x =
@@ -1318,8 +1317,8 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
                 (O sf
                    (nsub_to_char n (pr1 A; (m; Trm))
                                  (inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X t))
-                                        (pr1 b))))(subuniverse_O sf _)) (λ x, x))).
-    unfold Sect, E_to_χ_map, nsub_to_char, hfiber, O_rec in *; simpl in *.
+                                        (pr1 b)))) (subuniverse_O sf _)) (λ x, x))).
+    unfold Sect, E_to_χ_map, nsub_to_char, hfiber, O_rec, equiv_inv in *; simpl in *.
     simpl.
     rewrite rew1; clear rew1.
 
@@ -1600,10 +1599,13 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
 
   Unset Printing Universes.
 
-  Lemma good_sheafification (sf:subu_family@{u a}) (T:Trunk (trunc_S n))
-  : (sheafification sf T).1.1 = {u : T.1 -> subuniverse_Type sf & (Oj tt (Trunc -1 ({a:T.1 & (λ t' : T.1,
-          (O sf (a = t'; istrunc_paths T.2 a t');
-          subuniverse_O sf (a = t'; istrunc_paths T.2 a t'))) = u}); _)).1}.
+  Definition good_sheafification_Type (sf:subu_family@{u a}) (T:Trunk@{i' i a} (n.+1))
+    := {u : T.1 -> subuniverse_Type sf & (Oj tt (Trunc -1 ({a:T.1 & (λ t' : T.1,
+                                             (O sf (a = t'; istrunc_paths T.2 a t');
+                                              subuniverse_O sf (a = t'; istrunc_paths T.2 a t'))) = u}); _)).1}.
+
+  Lemma good_sheafification_Type_is_sheafification_Type (sf:subu_family@{u a}) (T:Trunk (trunc_S n))
+  : (sheafification sf T).1.1 = good_sheafification_Type sf T.
     unfold sheafification, sheafification_Type, separated_to_sheaf, separated_to_sheaf_Type, cloture; simpl.
     unfold cloture, nsub_to_char, fromIm, hfiber, mono_is_hfiber; simpl.
     apply path_universe_uncurried.
@@ -1674,41 +1676,181 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
         apply tr. exists x. exact q.
         reflexivity.
   Qed.
-        
-        
-        
-    
-    
-      
-      
 
-        
-    match goal with
-      |[|- (O sf ?X).1 = _] => pose (j_is_nj sf X) end.
-
-
-    
-  Definition sheafification_unit (sf:subu_family@{u a}) (T:Trunk (trunc_S n))
-  : T.1 -> (sheafification sf T).1.1.
-    intros x. unfold sheafification, sheafification_Type, separated_to_sheaf, separated_to_sheaf_Type, cloture; simpl.
-    unfold cloture, nsub_to_char, fromIm, hfiber, mono_is_hfiber; simpl.
-    exists (separated_unit sf T x).1.
-    apply O_unit. simpl.
+  Definition good_sheafification (sf:subu_family@{u a}) (T:Trunk@{i' i a} (n.+1))
+  : SnType_j_Type@{Si' i' a i u} sf.
     refine (exist _ _ _).
-    apply separated_unit. exact x.
-    simpl. reflexivity.
+    exists (good_sheafification_Type sf T).
+    rewrite <- good_sheafification_Type_is_sheafification_Type.
+    exact _.2.
+    match goal with
+      |[|- Snsheaf_struct sf ?X] => assert (eq : (sheafification sf T).1 = X)
+    end.
+    refine (path_sigma' _ _ _).
+    apply good_sheafification_Type_is_sheafification_Type.
+    apply path_ishprop.
+    destruct eq.
+    exact _.2.
   Defined.
 
-  Definition sheafification_equiv (sf : subu_family@{u a}) (P : Trunk n.+1) (Q : Trunk n.+1) (modQ : (Snsheaf_struct sf Q))
-  : IsEquiv (fun f : (sheafification sf P).1.1 -> Q.1 => f o (sheafification_unit sf P)).
+  Definition good_sheafification_unit (sf:subu_family@{u a}) (T:Trunk (trunc_S n))
+  : T.1 -> (good_sheafification sf T).1.1.
+    intro x.
+    exists (separated_unit sf T x).1.
+    apply Oj_unit. simpl.
+    apply tr.
+    exists x. reflexivity.
+  Defined.
+
+  Definition density_sheafification (sf : subu_family@{u a}) (T:Trunk@{i' i a} (n.+1))
+  : (good_sheafification_Type sf T) -> J.
+    intros [u x].
+    unfold J, nchar_to_sub. simpl.
+    exists ((Trunc -1 ({a:T.1 & (λ t' : T.1,
+                                             (O sf (a = t'; istrunc_paths T.2 a t');
+                                              subuniverse_O sf (a = t'; istrunc_paths T.2 a t'))) = u}); _)).
+    exact x.
+  Defined.
+
+  Definition sheafification_equiv (sf : subu_family@{u a}) (P:Trunk@{i' i a} (n.+1)) (Q : Trunk@{i' i a} (n.+1)) (modQ : (Snsheaf_struct sf Q))
+  : IsEquiv (fun f : (good_sheafification sf P).1.1 -> Q.1 => f o (good_sheafification_unit sf P)).
     destruct modQ as [sepQ sheafQ].
     refine (isequiv_adjointify _ _ _ _).
     - intro f.
-      unfold sheafification, sheafification_Type, separated_to_sheaf, separated_to_sheaf_Type, cloture; simpl.
-      unfold cloture, nsub_to_char, fromIm, hfiber, mono_is_hfiber; simpl.
-      intros [φ b].
-      Set Printing Universes.
-      pose (separated_equiv P (existT (separated sf) Q sepQ)).
+      pose (g := equiv_inv (IsEquiv := separated_equiv P (existT (separated sf) Q sepQ)) f); simpl in g.
+      
+      (* specialize (sheafQ (separated_Type sf P) (density_sheafification sf P)). *)
+      (* Universe unification. *)
+      (* This should produce a way to extend (g : separated_Type sf P → Q.1) to its closure, namely (((good_sheafification sf P).1).1 → Q.1). Then, all this is universal *)
+  Admitted.
+
+  Definition sheafification_modality (sf:subu_family@{u a}) (A:Trunk@{i' i a} n.+1) (modA : Snsheaf_struct sf A) (B: A.1 -> Trunk@{i' i a} n.+1) (modB : forall a, (Snsheaf_struct sf (B a))) 
+  : Snsheaf_struct sf (({x:A.1 & (B x).1} ; trunc_sigma@{i i i' i} (A.2) (λ x, (B x).2)): Trunk@{i' i a} n.+1).
+    destruct modA as [sepA sheafA].
+    split.
+    -
+      (* separation is a modality *)
+      admit.
+    - intros E χ.
+      refine (isequiv_adjointify _ _ _ _).
+      + simpl.
+        intros φ e.
+        destruct ((sheafA E χ)) as [inva retra secta _]. unfold Sect in *; simpl in *.
+        pose (a := inva (pr1 o φ) e).
+        exists a.
+        unfold E_to_χmono_map in *; simpl in *.
+        specialize (modB a).
+        destruct modB as [sepB sheafB]. simpl in *.        
+        specialize (sheafB {e':E & e = e'} (λ x, χ x.1)).
+        refine (equiv_inv (IsEquiv := sheafB) _ (e;1)).
+        intros [[b p] h].
+        destruct p. simpl in *.
+        specialize (retra (pr1 o φ)).
+        apply ap10 in retra.
+        specialize (retra (e;h)). simpl in retra.
+        unfold a.
+        apply (transport (λ U, (B U).1) retra^).
+        exact (φ (e;h)).2.
+      + intro φ; simpl in *.
+        unfold E_to_χmono_map; simpl in *.
+        apply path_forall; intros [e h].
+        refine (path_sigma' _ _ _).
+        { exact (ap10 (eisretr _ (IsEquiv := sheafA E χ) (pr1 o φ)) (e;h)). }
+        { unfold equiv_inv.
+          destruct ((sheafA E χ)) as [inva retra secta adja]. unfold Sect in *; simpl in *.
+          destruct (modB (inva
+             (λ x : ∃ b : E, (let (proj1_sig, _) := χ b in proj1_sig).1,
+                let (proj1_sig, _) := φ x in proj1_sig) e)) as [sepB sheafB].
+          destruct (sheafB (∃ e' : E, e = e') (λ x, (χ x.1))) as [invb retrb sectb adjb].
+          simpl in *. clear adjb.
+          admit. }
+      + intro φ; simpl in *.
+        apply path_forall; intro e.
+        refine (path_sigma' _ _ _).
+        { exact (ap10 (eissect _ (IsEquiv := sheafA E χ) (pr1 o φ)) e). }
+        { admit. }
+  Qed.
+  
+  Definition cumulativity (sf:subu_family@{u a}) (T:Trunk@{i' i a} n) (SnT : IsTrunc@{i} (n.+1) T.1)
+  : (O sf T).1 <~> (good_sheafification_Type sf (T.1;SnT)).
+    refine (equiv_adjointify _ _ _ _).
+    - unfold good_sheafification_Type.
+      intros x.
+      refine (exist _ _ _).
+      intros y.
+      refine (exist _ _ _).
+      exists (x = O_unit sf T y).
+      apply istrunc_paths.
+      apply trunc_succ.
+      exact _.2.
+      refine (subuniverse_paths ((O sf T);subuniverse_O sf _) _ _).
+      match goal with
+        |[|- (Oj tt ?X).1 ] => set (foo := X)
+      end.
+      
+      pose (j_is_nj sf foo).
+      simpl in *.
+      rewrite p. clear p. clear foo.
+
+      (** Test *)
+      assert (u:T.1) by admit.
+      assert (X : O_unit sf T u = x) by admit. destruct X.
+
+      apply O_unit.
+      simpl. apply tr.
+      exists u.
+      apply path_forall; intro x.
+      simpl.
+      (* follows from left exactness of O *)
+      (** *)
+      
+      (* revert x
+      transparent assert (shf :  ((O sf T).1 → subuniverse_Type sf)).
+      { intro x.
+        exists ?.
+        apply subuniverse_O. }
+      refine (O_rec_dep sf T shf _ _).1. *)
+      admit.
+      
+    - unfold good_sheafification_Type.
+      intros [u p]. simpl in *.
+      assert (p0 := j_is_nj sf (Trunc (-1)
+           (∃ a : T.1,
+            (λ t' : T.1,
+             (O sf (a = t'; istrunc_paths SnT a t');
+             subuniverse_O sf (a = t'; istrunc_paths SnT a t'))) = u);
+        istrunc_truncation (-1)
+          (∃ a : T.1,
+           (λ t' : T.1,
+            (O sf (a = t'; istrunc_paths SnT a t');
+            subuniverse_O sf (a = t'; istrunc_paths SnT a t'))) = u))). simpl in p0.
+      rewrite p0 in p. clear p0.
+
+
+      (** test *)
+      assert (x : (Trunc (-1)
+         (∃ a : T.1,
+          (λ t' : T.1,
+           (O sf (a = t'; istrunc_paths SnT a t');
+           subuniverse_O sf (a = t'; istrunc_paths SnT a t'))) = u);
+      IsHProp_IsTrunc
+        (istrunc_truncation (-1)
+           (∃ a : T.1,
+            (λ t' : T.1,
+             (O sf (a = t'; istrunc_paths SnT a t');
+              subuniverse_O sf (a = t'; istrunc_paths SnT a t'))) = u)) n0).1) by admit.
+      clear p. simpl in x.
+      apply O_unit.
+      (** *)
+      revert p.
+      match goal with
+        |[|- (O sf ?P).1 -> (O sf ?Q).1] => set (PP := P); set (QQ := Q)
+      end.
+      apply (O_rec sf PP (O sf QQ) (subuniverse_O sf _)). *)
+      admit.
+  
+       
+  
     
     
 
@@ -2216,3 +2358,5 @@ Module Separation (nj : subuniverse_struct) (mod : Modality nj) <: subuniverse_s
     intros x y. simpl. unfold IsTrunc in *.
   Abort.
  *)
+
+  

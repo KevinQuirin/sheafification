@@ -40,13 +40,15 @@
 \usepackage{enumerate}
 \usepackage{wasysym}
 \usepackage[all]{xy}
-\def\dar[#1]{\ar@<2pt>[#1]\ar@<-2pt>[#1]}
+\def\dar[#1]{\ar@<2pt>[#1]\ar@<-2pt>[#1]} %double arrows in xy
+\def\tar[#1]{\ar@<2pt>[#1]\ar@<0pt>[#1]\ar@<-2pt>[#1]} %triple arrows in xy
 \DeclareMathOperator{\Type}{Type}
 \DeclareMathOperator{\HProp}{HProp}
 \DeclareMathOperator{\nat}{nat}
 \DeclareMathOperator{\Unit}{Unit}
 \DeclareMathOperator{\im}{Im}
 \DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\Contr}{Contr}
 \newcommand{\modal}{\ensuremath{\ocircle}}
 
 \begin{document}
@@ -224,6 +226,9 @@ Since basic operations (dependent products, products, sigma types) are
 stable for truncation levels, all theorem in~\cite{hottbook}, chapter
 7.7 remains true.
 
+Another useful property is that we can extend property {\it (iii)} to
+dependent product.
+
 Moreover, left exactness implies in particular fibers preservations~:
 \begin{prop}
 For any $n$-truncated types $X$ and $Y$,
@@ -239,6 +244,28 @@ $$\xymatrix{
 where $\pi_1 \circ \gamma = \eta_X$, and $\pi_2 \circ \gamma$ is the
 usual modalisation of paths.
 \end{prop}
+
+
+Another useful properties of modalities is the following~:
+\begin{prop}
+  If $P:\HProp$, then $\modal \widehat P : \HProp$, where $\widehat P$
+  is $P$ seen as a $p$-type.
+\end{prop}
+
+A left exact modality leads to a new theory with new principles. A
+basic example is the {\em open modality of $P$} for a $P:\HProp$, $\modal_P T = P \to T$. 
+When one works in the subuniverse defined by this modality, defining
+an inhabitant of a type $T$ is actually an inhabitant of $P \to
+T$. Thus, being in this subuniverse is just adding the axiom $P$ to
+the theory. Sadly, adding an axiom using the modality does not add any
+computational content to $P$, thus it is not completely satisfactory.
+
+Another example is the $\lnot\lnot$-modality, $\modal_{\lnot\lnot} T = (T
+\to \bot) \to \bot$. Although we might think it enables us to use
+classical reasonings in the corresponding reflective subuniverse, the
+main problem is that every type in the new universe is an $\HProp$,
+which is very restrictive.
+
 \subsection{Generalized pullbacks}
 \label{sec:gener-pb}
 
@@ -259,28 +286,23 @@ $$X\times_Y \cdots\times_Y X = \sum_{x:X^n} (f x_1 = f x_2) \land
 \begin{defi}
   If $f:X \to Y$ is a map, then the {\em \v{C}ech nerve} of $f$ is the
   diagram
-  $$C(f) := \cdots
-    X \times_Y X \times_Y X
-   \underset{\longrightarrow}{\stackrel{\longrightarrow}{\longrightarrow}}
-   X \times_Y X 
-\stackrel{\longrightarrow}{\longrightarrow} X$$
+  $$\xymatrix{
+    C(f) := \cdots~ X \times_Y X \times_Y X \tar[r] & X \times_Y X \dar[r] & X
+  }$$
 with canonical projections.
 \end{defi}
 
 The Giraud axiom asserts that, if $f:X\to Y$ is a surjection, then the
-colimit of $C(f)$ is $Y$. See~\cite{lurie}.
+colimit of $C(f)$ is $Y$. Viewing homotopy type theory as a
+type-theoristic version of higher topos theory, it seems that this
+axiom can be proved~\cite{lurie}, although we admit it in this paper.
 
 \section{Sheaves}
 \label{sec:sheaves}
 
-We define sheaves by induction on the homotopical truncation level of types
-~: we define sheaves in $\HProp$ as the classical types ({\em ie}
-implied by their double negation), and
-we define sheaves on $\Type_{n+1}$ {\em via} usual definition of sheaves,
-as seen in~\cite{maclanemoerdijk} and sheaves on $\Type_n$. Of course,
-the definition must be cumulative.
-
-We will call $\mathcal S_i$ the universe of sheaves on $\Type_i$.
+We will define sheaves by induction on the homotopical truncation level of types
+~: the base case will be any left exact modality on $\HProp$, and we
+give in this section some definitions useful for the inductive case.
 
 % \subsection{Definitions and first properties}
 % \label{sec:def}
@@ -347,6 +369,11 @@ of its closure is closed.
   }$$
 \end{defi}
 
+Note that these definitions are almost the same as the ones
+in~\cite{maclanemoerdijk}. The main difference is that {\em separated}
+is defined for $n$-subobjects,
+while {\em sheaf} only for $-1$-subobject.
+
 From these definitions, one can show that
 \begin{prop}\label{prop:sheaf_prop}
   \begin{itemize}
@@ -355,8 +382,6 @@ From these definitions, one can show that
     $a:A$, $(B~a)$ is a sheaf, then $\prod_{a:A}B~a$ is a sheaf.
   \end{itemize}
 \end{prop}
-
-
 
 \section{Construction of sheafification}
 \label{sec:sheafification}
@@ -392,6 +417,10 @@ In type theory words,
             (\lambda t,~\modal (a=t)) = u\right\|
 \end{align*}
 
+There again, the separation step has the same definition as
+in~\cite{maclanemoerdijk}, using $\Type_n^\modal$ instead of the
+$j$-subobject classifier.
+
 \begin{prop}
   For all $T:\Type_{n+1}$, $\square T$ is separated.  
 \end{prop}
@@ -417,6 +446,11 @@ lemma is central in the proof~:
 \stackrel{\longrightarrow}{\longrightarrow} \overline{\Delta_1},$$
 where $\Delta_k$ is the $k$-pullback of $\id : T \to T$.
 \end{lem}
+
+This lemma is an adaptation of the sheafification process
+in~\cite{maclanemoerdijk}, where they consider only the kernel pair of
+$\mu_T$ instead of the \v{C}ech nerve.
+
 \begin{proof}
   As $\mu_T$ is an embedding, we know by Giraud axiom that $\square T$ is the colimit
   of $C(\mu_T)$. If we can show that $C(\mu_T) = C(\id)$, the the

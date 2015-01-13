@@ -8,3 +8,6 @@
 paper/IEEEtran.cls
 reflective_subuniverse_O_different_level.v
 paper/sheaf_lics.pdf
+*.bbl
+*.blg
+*.bst

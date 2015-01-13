@@ -1205,7 +1205,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   Defined.
 
   Definition E_to_Y'A (sf:subu_family@{u a})
-             (A : Trunk@{i' i a} (trunc_S n))
+             (A : Trunk@{Si' i' a} (trunc_S n))
              (B : SnType_j_Type@{Si' i' a i u} sf)
              (m : pr1 A -> pr1 (pr1 B))
              (X1 : ∀ b : pr1 (pr1 B), IsTrunc n (hfiber m b))
@@ -1223,7 +1223,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     := (λ b, (pr1 b ; (X b ; (inverse (ap10 (retr_B (m o X)) b)))))  : {b : E & pr1 (pr1 (χ b))} -> {b : E & hfiber@{i' i'} m (Y b)}.
 
   Definition clE_to_clY'A (sf:subu_family@{u a})
-             (A : Trunk@{i' i a} (trunc_S n))
+             (A : Trunk@{Si' i' a} (trunc_S n))
              (B : SnType_j_Type@{Si' i' a i u} sf)
              (m : pr1 A -> pr1 (pr1 B))
              (X1 : ∀ b : pr1 (pr1 B), IsTrunc@{i'} n (hfiber m b))
@@ -1243,7 +1243,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
                    (λ e p, pr2 (E_to_Y'A _ _ closed0 _ X0 retr_B (e;p))).
 
   Lemma equalpr2_restriction_χ (sf:subu_family@{u a})
-        (A : Trunk@{i' i a} (trunc_S n))
+        (A : Trunk@{Si' i' a} (trunc_S n))
         (B : SnType_j_Type@{Si' i' a i u} sf)
         (m : pr1 A -> pr1 (pr1 B))
         (X1 : ∀ b : pr1 (pr1 B), IsTrunc n (hfiber m b))
@@ -1272,13 +1272,10 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     destruct eq; simpl. reflexivity.
   Qed.
 
-  Definition J' := (∃ b : Trunk@{i' i a} -1,
-                      Reflective_Subuniverse_base_case.notnot (Lift_Trunk@{i' i a Si' i'} b)).
-
   Parameter j_is_nj' : forall sf, forall (P:HProp@{i _i a}), (j P).1 = (O@{u a i' i} sf (Lift_Trunk ((P.1; IsHProp_IsTrunc P.2 n0)))).1.
 
   Definition closed_to_sheaf_inv (sf:subu_family@{u a})
-        (A : Trunk@{i' i a} (trunc_S n))
+        (A : Trunk@{Si' i' a} (trunc_S n))
         (B : SnType_j_Type@{Si' i' a i u} sf)
              (m : {f : pr1 A -> pr1 (pr1 B) & ∀ b : pr1 (pr1 B), IsTrunc n (hfiber f b)})
              (closed : closed' sf m)
@@ -1295,7 +1292,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   Defined.
 
   Definition closed_to_sheaf_retr (sf:subu_family@{u a})
-        (A : Trunk@{i' i a} (trunc_S n))
+        (A : Trunk@{Si' i' a} (trunc_S n))
         (B : SnType_j_Type@{Si' i' a i u} sf)
              (m : {f : pr1 A -> pr1 (pr1 B) & ∀ b : pr1 (pr1 B), IsTrunc n (hfiber f b)})
              (closed : closed' sf m)
@@ -1303,7 +1300,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
              (χ : E -> J@{i' u i a})
              (eq := snd (pr2 B) E χ)
 
-  : Sect (@closed_to_sheaf_inv sf A B m closed E χ) (E_to_χmono_map (Lift_Trunk A) χ).
+  : Sect (@closed_to_sheaf_inv sf A B m closed E χ) (E_to_χmono_map A χ).
     intro X.
     destruct m as [m Trm].
     apply path_forall; intro b.
@@ -1311,7 +1308,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     destruct (snd B.2 E χ) as [inv_B retr_B sect_B adj_B].
 
     destruct (closed (inv_B (λ t : {b0 : E & pr1 (pr1 (P:= (λ b1:HProp, ~ ~ (pr1 b1))) (χ b0))}, m (X t)) (pr1 b))) as [inv_closed retr_closed sect_closed adj_closed].
-(*
+    (*
     pose (rew1 := ap10 (eissect _ (IsEquiv :=
                                         O_equiv sf
                                              ({x : pr1 A &
@@ -1319,7 +1316,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
                                                    inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X t)) (pr1 b)};
                 Trm (inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X t)) (pr1 b)))
                 (O sf
-                   (nsub_to_char n (pr1 (Lift_Trunk A); (m; Trm))
+                   (nsub_to_char n (pr1 A; (m; Trm))
                                  (inv_B (λ t : {b0 : E & pr1 (pr1 (χ b0))}, m (X t))
                                         (pr1 b))))(subuniverse_O sf _)) (λ x, x))).
     unfold Sect, E_to_χ_map, nsub_to_char, hfiber, O_rec in *; simpl in *.
@@ -1358,7 +1355,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
   Defined.
 
   Definition closed_to_sheaf_sect (sf:subu_family@{u a})
-        (A : Trunk@{i' i a} (trunc_S n))
+        (A : Trunk@{Si' i' a} (trunc_S n))
         (B : SnType_j_Type@{Si' i' a i u} sf)
              (m : {f : pr1 A -> pr1 (pr1 B) & ∀ b : pr1 (pr1 B), IsTrunc n (hfiber f b)})
              (closed : closed' sf m)
@@ -1366,7 +1363,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
              (χ : E -> J@{i' u i a})
              (eq := snd (pr2 B) E χ)
 
-  : Sect (E_to_χmono_map (Lift_Trunk A) χ) (@closed_to_sheaf_inv sf A B m closed E χ).
+  : Sect (E_to_χmono_map A χ) (@closed_to_sheaf_inv sf A B m closed E χ).
     destruct m as [m Trm].
     intro X; unfold closed_to_sheaf_inv; simpl in *.
     apply path_forall; intro b.
@@ -1438,14 +1435,11 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     destruct X. exact (@isequiv_compose _ _ _ (@isequiv_compose _ _ _ e1 _ _ e2) _ _ e3).
   Qed.
 
-  Axiom Lift_IsEquiv: forall  (A:Type2@{i j}) B (f: A -> B) (H : IsEquiv@{i j} f), IsEquiv@{i i} f.
-
-  
   Definition closed_to_sheaf (sf:subu_family@{u a})
-        (A : Trunk@{i' i a} (trunc_S n))
+        (A : Trunk@{Si' i' a} (trunc_S n))
         (B : SnType_j_Type@{Si' i' a i u} sf)
         (m : {f : (pr1 A) -> (pr1 (pr1 B)) & forall b, IsTrunc n (hfiber f b)}) (Monom : IsMono m.1)
-  : closed' sf m  -> Snsheaf_struct@{Si' i' a i u} sf (Lift_Trunk A).
+  : closed' sf m  -> Snsheaf_struct@{Si' i' a i u} sf A.
     intro cl_m.
     split.
     - destruct m as [m Hm]. destruct B as [[B TrB] [Bsep Bsheaf]]. simpl in *. clear Bsheaf.
@@ -1456,8 +1450,7 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
       assert (Monofm := IsMono_to_IsMonof Monom).
       exact (@compose_equiv ({t:T & (χ t).1}) T A.1 B pr1 f g m Bsep Monofm).
     - intros E χ.
-      pose (isequiv_adjointify@{i' i} _ (@closed_to_sheaf_inv sf A B m cl_m E χ) (@closed_to_sheaf_retr sf A B m cl_m E χ) (@closed_to_sheaf_sect sf A B m cl_m E χ)).
-      exact (Lift_IsEquiv i).
+      exact (isequiv_adjointify@{i' i'} _ (@closed_to_sheaf_inv sf A B m cl_m E χ) (@closed_to_sheaf_retr sf A B m cl_m E χ) (@closed_to_sheaf_sect sf A B m cl_m E χ)).
   Defined.
 
   Definition mono_is_hfiber (T U : Type) (m : T -> U) (Monom : IsMono m) :
@@ -1466,13 +1459,13 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     apply IsEmbedding_IsMono. exact Monom.
   Defined.
 
-  Definition separated_to_sheaf_Type (sf:subu_family@{u a}) (T : Type@{i}) (U : Type@{i'})
+  Definition separated_to_sheaf_Type (sf:subu_family@{u a}) (T : Type@{i'}) (U : Type@{i'})
              (m : T -> U) (Monom : IsMono m) : Type@{i'}  :=
     pr1 (cloture'@{i' u a Si'} sf (m; mono_is_hfiber Monom)).    
   
-  Definition separated_to_sheaf_IsTrunc_Sn (sf:subu_family@{u a}) (T : Trunk@{i' i a} (trunc_S n))
+  Definition separated_to_sheaf_IsTrunc_Sn (sf:subu_family@{u a}) (T : Trunk@{Si' i' a} (trunc_S n))
              (U : Trunk@{Si' i' a} (trunc_S n)) m Monom :
-    IsTrunc@{i'} (trunc_S n) (@separated_to_sheaf_Type@{u a i i' Si'} sf T.1 U.1 m Monom).
+    IsTrunc@{i'} (trunc_S n) (@separated_to_sheaf_Type@{u a i' Si'} sf T.1 U.1 m Monom).
     apply (@trunc_sigma _ (fun P => _)).
     exact (U.2).
     intro a.
@@ -1567,46 +1560,42 @@ Module Type_to_separated_Type (nj : subuniverse_struct) (mod : Modality nj).
     reflexivity.
   Defined.
                                     
-  Definition separated_to_sheaf (sf:subu_family@{u a}) (T:{T : Trunk@{i' i a} (n.+1) & separated@{i' i a _i u} sf T})
-             (U:SnType_j_Type@{Si' i' a i u} sf) (m: T.1.1 -> U.1.1) (Monom: IsMono@{i' i'} m) : 
+  Definition separated_to_sheaf (sf:subu_family@{u a}) (T:{T : Trunk@{Si' i' a} (n.+1) & separated@{Si' i' a i u} sf T})
+             (U:SnType_j_Type@{Si' i' a i u} sf) (m: T.1.1 -> U.1.1) (Monom: IsMono@{i' i'} m) :
     Snsheaf_struct@{Si' i' a i u} sf
-                  (Lift_Trunk (@separated_to_sheaf_Type@{u a i i' Si'} sf T.1.1 U.1.1 m Monom;
-                   @separated_to_sheaf_IsTrunc_Sn@{u a i' i Si'} sf T.1 U.1 m Monom)).
+                  (@separated_to_sheaf_Type@{u a i' Si'} sf T.1.1 U.1.1 m Monom;
+                   @separated_to_sheaf_IsTrunc_Sn@{u a Si' i'} sf T.1 U.1 m Monom).
     refine (closed_to_sheaf _ _ _ _).
-    pose ((pr2 (cloture' sf (m;mono_is_hfiber Monom)))). simpl in s.
-    pose (@IsMono_cloture'@{u a i' i' u} sf U.1.1 T.1.1 m Monom).
-    Unset Printing Universes.
-    pose ((pr1 (cloture' sf (m;mono_is_hfiber Monom)))). simpl in *.
-    pose (closed_to_sheaf ((cloture' sf (m;mono_is_hfiber Monom));i) U).
-    specialize (s0 s i).
-    i). _ _ _ _).
     exact U.
-    exact ((pr2 (cloture' (m;mono_is_hfiber Monom)))).
-    exact (@IsMono_cloture' U.1.1 T.1.1 m Monom).
+    exact ((pr2 (cloture' sf (m;mono_is_hfiber Monom)))).
+    exact (@IsMono_cloture' sf U.1.1 T.1.1 m Monom).
     apply cloture_is_closed'.
   Defined.
 
-  Definition sheafification_Type (T:Trunk (trunc_S n)) :=
-    @separated_to_sheaf_Type (separated_Type T) 
-                             (T.1 -> subuniverse_Type) (fromIm (f:=_)) 
-                             (IsMono_fromIm (f:=_)).
+  Definition sheafification_Type (sf:subu_family@{u a}) (T:Trunk@{i' i a} (trunc_S n)) :=
+    @separated_to_sheaf_Type@{u a i' Si'} sf (separated_Type sf T) 
+                             (T.1 -> subuniverse_Type sf) (fromIm (f:=_)) 
+                             (IsMono_fromIm (f:=_)) : Type@{i'}.
 
-  Definition sheafification_istrunc (T:Trunk (trunc_S n)) : 
-    IsTrunc (trunc_S n) (sheafification_Type T).
-    apply (separated_to_sheaf_IsTrunc_Sn (separated_Type T; separated_Type_is_Trunk_Sn (T:=T)) 
-                              (T.1 -> subuniverse_Type; T_nType_j_Type_trunc T)).
+  Definition sheafification_istrunc (sf:subu_family@{u a}) (T:Trunk@{i' i a} (trunc_S n)) : 
+    IsTrunc@{i'} (trunc_S n) (sheafification_Type@{u a i' i Si'} sf T).
+    pose (s := exist (IsTrunc@{i'} (n.+1)) ((Lift_Trunk T).1 -> subuniverse_Type@{u a i' i} sf)
+                       (T_nType_j_Type_trunc@{Si' i' a u i} (Lift_Trunk T)) : Trunk@{Si' i' i} _).
+    apply (separated_to_sheaf_IsTrunc_Sn (sf:=sf)
+                      (separated_Type sf T; separated_Type_is_Trunk_Sn (T:=T)) s).    
   Defined.
 
-  Definition sheafification_trunc (T:Trunk (trunc_S n)) : Trunk (trunc_S n) :=
-    (sheafification_Type T ; sheafification_istrunc  (T:=T)).
+  Definition sheafification_trunc (sf:subu_family@{u a}) (T:Trunk (trunc_S n)) : Trunk (trunc_S n) :=
+    (sheafification_Type sf T ; sheafification_istrunc  (T:=T)).
 
-  Definition sheafification_ (T:Trunk (trunc_S n)) : Snsheaf_struct (sheafification_trunc T)
+  Definition sheafification_  (sf:subu_family@{u a}) (T:Trunk (trunc_S n)) :
+    Snsheaf_struct sf (sheafification_trunc sf T)
     
     
-    := separated_to_sheaf (((existT (IsTrunc (trunc_S n)) (separated_Type T) (separated_Type_is_Trunk_Sn (T:=T)))); @separated_Type_is_separated T) (T_nType_j_Type_sheaf T) (IsMono_fromIm (f:=_)).
+    := separated_to_sheaf (((existT (IsTrunc (trunc_S n)) (separated_Type sf T) (separated_Type_is_Trunk_Sn (T:=T)))); @separated_Type_is_separated sf T) (T_nType_j_Type_sheaf sf (Lift_Trunk T)) (IsMono_fromIm (f:=_)).
 
-  Definition sheafification (T:Trunk (trunc_S n)) : SnType_j_Type :=
-    ((sheafification_Type T ; sheafification_istrunc  (T:=T)); sheafification_ T).
+  Definition sheafification (sf:subu_family@{u a}) (T:Trunk (trunc_S n)) : SnType_j_Type sf :=
+    ((sheafification_Type sf T ; sheafification_istrunc  (T:=T)); sheafification_ sf T).
 
   
 End Type_to_separated_Type.

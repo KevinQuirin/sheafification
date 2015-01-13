@@ -26,12 +26,14 @@
 \usepackage{wasysym}
 \usepackage[all]{xy}
 \def\dar[#1]{\ar@<2pt>[#1]\ar@<-2pt>[#1]}
+\def\tar[#1]{\ar@<2pt>[#1]\ar@<0pt>[#1]\ar@<-2pt>[#1]}
 \DeclareMathOperator{\Type}{Type}
 \DeclareMathOperator{\HProp}{HProp}
 \DeclareMathOperator{\nat}{nat}
 \DeclareMathOperator{\Unit}{Unit}
 \DeclareMathOperator{\im}{Im}
 \DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\Contr}{Contr}
 \newcommand{\modal}{\ensuremath{\ocircle}}
 
 \begin{document}
@@ -165,6 +167,27 @@ $$\xymatrix{
 where $\pi_1 \circ \gamma = \eta_X$, and $\pi_2 \circ \gamma$ is the
 usual modalisation of paths.
 \end{prop}
+
+Another useful properties of modalities is the following~:
+\begin{prop}
+  If $P:\HProp$, then $\modal \widehat P : \HProp$, where $\widehat P$
+  is $P$ seen as a $p$-type.
+\end{prop}
+
+A left exact modality leads to a new theory with new principles. A
+basic example is the {\em open modality of $P$} for a $P:\HProp$, $\modal_P T = P \to T$. 
+When one works in the subuniverse defined by this modality, defining
+an inhabitant of a type $T$ is actually an inhabitant of $P \to
+T$. Thus, being in this subuniverse is just adding the axiom $P$ to
+the theory. Sadly, adding an axiom using the modality does not add any
+computational content to $P$, thus it is not completely satisfactory.
+
+Another example is the $\lnot\lnot$-modality, $\modal_{\lnot\lnot} T = (T
+\to \bot) \to \bot$. Although we might think it enables us to use
+classical reasonings in the corresponding reflective subuniverse, the
+main problem is that every type in the new universe is an $\HProp$,
+which is very restrictive.
+
 \subsection{Generalized pullbacks}
 \label{sec:gener-pb}
 
@@ -185,11 +208,9 @@ $$X\times_Y \cdots\times_Y X = \sum_{x:X^n} (f x_1 = f x_2) \land
 \begin{defi}
   If $f:X \to Y$ is a map, then the {\em \v{C}ech nerve} of $f$ is the
   diagram
-  $$C(f) := \cdots
-    X \times_Y X \times_Y X
-   \underset{\longrightarrow}{\stackrel{\longrightarrow}{\longrightarrow}}
-   X \times_Y X 
-\stackrel{\longrightarrow}{\longrightarrow} X$$
+  $$\xymatrix{
+    C(f) := \cdots~ X \times_Y X \times_Y X \tar[r] & X \times_Y X \dar[r] & X
+  }$$
 with canonical projections.
 \end{defi}
 
@@ -199,12 +220,9 @@ colimit of $C(f)$ is $Y$. See~\cite{lurie}.
 \section{Sheaves}
 \label{sec:sheaves}
 
-We define sheaves by induction on the homotopical truncation level of types
-~: we define sheaves in $\HProp$ as the classical types ({\em ie}
-implied by their double negation), and
-we define sheaves on $\Type_{n+1}$ {\em via} usual definition of sheaves,
-as seen in~\cite{maclanemoerdijk} and sheaves on $\Type_n$. Of course,
-the definition must be cumulative.
+We will define sheaves by induction on the homotopical truncation level of types
+~: the base case will be any left exact modality on $\HProp$, and we
+give in this section some definitions useful for th inductive case.
 
 We will call $\mathcal S_i$ the universe of sheaves on $\Type_i$.
 
@@ -273,6 +291,11 @@ of its closure is closed.
   }$$
 \end{defi}
 
+Note that these definitions are almost the same as the ones
+in~\cite{maclanemoerdijk}. The main difference is that {\em separated}
+is defined for $n$-subobjects,
+while {\em sheaf} only for $-1$-subobject.
+
 From these definitions, one can show that
 \begin{prop}\label{prop:sheaf_prop}
   \begin{itemize}
@@ -318,6 +341,10 @@ In type theory words,
             (\lambda t,~\modal (a=t)) = u\right\|
 \end{align*}
 
+There again, the separation step has the same definition as
+in~\cite{maclanemoerdijk}, using $\Type_n^\modal$ instead of the
+$j$-subobject classifier.
+
 \begin{prop}
   For all $T:\Type_{n+1}$, $\square T$ is separated.  
 \end{prop}
@@ -338,11 +365,17 @@ lemma is central in the proof~:
 \begin{lem}
   Let $T:\Type_{n+1}$. Then $\square T$ is the colimit of the closed
   diagonal diagram
-  $$\cdots \overline{\Delta_3} \underset{\longrightarrow}{\stackrel{\longrightarrow}{\longrightarrow}}
-   \overline{\Delta_2}
-\stackrel{\longrightarrow}{\longrightarrow} \overline{\Delta_1},$$
+  $$\xymatrix{ 
+    \cdots \overline{\Delta_3} \tar[r] & \overline{\Delta_2} \dar[r] &
+    \overline{\Delta_1}
+  }$$
 where $\Delta_k$ is the $k$-pullback of $\id : T \to T$.
 \end{lem}
+
+This lemma is an adaptation of the sheafification process
+in~\cite{maclanemoerdijk}, where they consider only the kernel pair of
+$\mu_T$ instead of the \v{C}ech nerve.
+
 \begin{proof}
   As $\mu_T$ is an embedding, we know by Giraud axiom that $\square T$ is the colimit
   of $C(\mu_T)$. If we can show that $C(\mu_T) = C(\id)$, the the
@@ -381,6 +414,7 @@ Using the separation property with these type, one can show the second
 components of $f x$ and $g x$ are equals too, with respect to the
 first path.
 
+
 \subsection{From Separated Type to Sheaf}
 \label{ssec:separated-to-sheaf}
 
@@ -403,6 +437,18 @@ $$\star T = \sum_{u:T \to \Type_n^\modal} \lnot\lnot\left\| \sum_{a:X}
 
 We already know that $\star$ defines a modality. It remains to show
 that this modality is left exact.
+
+Let $T:\Type_{n+1}$ such that $\star X$ is contractible. Let
+$x,y:T$. We want to show that $\star (x=y)$ is contractible.
+
+As $\star T$ is contractible, we have a center $u_0 : T \to
+\Type_n^\modal$ with an hypothesis $H_0 :  \lnot\lnot\left\| \sum_{a:X} 
+            (\lambda t,~\modal (a=t)) = u_0\right\|$, and a
+          contractibility condition $c : \prod_{t:\star T} x = (u_0,H_0)$.
+As $\Contr (\star (x=y))$ is a $\HProp$-sheaf, we can change $H_0$
+into a $a:T$ and a proof $u_0 = (\lambda t,~\modal (a=t))$.
+Finally, $c$ type becomes $\prod_{v:\star T} v_1 =  (\lambda t,~\modal (a=t))$.
+
 
 The last thing to prove is the cumulativity of our sheafifications~:
 \begin{prop}
@@ -557,7 +603,7 @@ The authors would like to thank...
 
 \bibitem[RS13]{sets_in_hott}
 Egbert Rijke and Bas Spitters.
-\newblock Sets in homotopy type theory.
+\newblock {\em Sets in homotopy type theory}.
 \newblock 2013.
 
 \bibitem[{Uni}13]{hottbook}
@@ -575,8 +621,8 @@ Jacob Lurie
 \newblock{\em Higher Topos Theory}
 
 \bibitem[lumsdaine]{lumsdaine}
-Lumsdaine
-\newblock{Diagrams and limits}
+Peter LeFanu Lumsdaine, Jeremy Avigad and Chris Kapulkin
+\newblock{\em Homotopy limits in type theory}
 
 \end{thebibliography}
 

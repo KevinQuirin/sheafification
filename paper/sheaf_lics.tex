@@ -41,8 +41,8 @@
 \usepackage{enumerate}
 \usepackage{wasysym}
 \usepackage[all]{xy}
-\def\dar[#1]{\ar@<2pt>[#1]\ar@<-2pt>[#1]} %double arrows in xy
-\def\tar[#1]{\ar@<2pt>[#1]\ar@<0pt>[#1]\ar@<-2pt>[#1]} %triple arrows in xy
+\def\dar[#1]#2{\ar@<-#2>[#1]\ar@<#2>[#1]} %double arrows in xy
+\def\tar[#1]#2{\ar@<#2>[#1]\ar@<0pt>[#1]\ar@<-#2>[#1]} %triple arrows in xy
 \DeclareMathOperator{\Type}{Type}
 \DeclareMathOperator{\HProp}{HProp}
 \DeclareMathOperator{\IsHProp}{IsHProp}
@@ -52,7 +52,11 @@
 \DeclareMathOperator{\id}{id}
 \DeclareMathOperator{\Contr}{Contr}
 \DeclareMathOperator{\IsContr}{IsContr}
-\newcommand{\IsType}[1]{\mathrm{Is-}#1\mathrm{-type}}
+
+\def\mymathhyphen{{\hbox{-}}}
+
+\newcommand{\IsType}[1]{\mathrm{Is\mymathhyphen}#1\mathrm{\mymathhyphen
+    type}}
 \newcommand{\modal}{\ensuremath{\ocircle}}
 
 \begin{document}
@@ -317,7 +321,7 @@ $$X\times_Y \cdots\times_Y X = \sum_{x:X^n} (f x_1 = f x_2) \land
   If $f:X \to Y$ is a map, then the {\em \v{C}ech nerve} of $f$ is the
   diagram
   $$\xymatrix{
-    C(f) := \cdots~ X \times_Y X \times_Y X \tar[r] & X \times_Y X \dar[r] & X
+    C(f) := \cdots~ X \times_Y X \times_Y X \tar[r]{4pt} & X \times_Y X \dar[r]{2pt} & X
   }$$
 with canonical projections.
 \end{defi}
@@ -518,8 +522,8 @@ lemma is central in the proof~:
 \begin{lem}\label{lem:sepiscolim}
   Let $T:\Type_{n+1}$. Then $\square T$ is the colimit of the closed
   diagonal diagram
-  $$\xymatrix{ 
-    \cdots \overline{\Delta_3} \tar[r] & \overline{\Delta_2} \dar[r] &
+  $$\xymatrix @C=4em  { 
+    \cdots \overline{\Delta_3} \tar[r]{4pt} & \overline{\Delta_2} \dar[r]{2pt} &
     \overline{\Delta_1}
   }$$
 where $\Delta_k$ is the $k$-pullback of $\id : T \to T$.
@@ -563,9 +567,9 @@ the formalization for an explicit proof.
 
 Now, let $Q$ be a separated $\Type_{n+1}$, and $f:T \to Q$. Then the
 following diagram commutes
-$$\xymatrix{ 
-    \cdots \overline{\Delta_3} \tar[r] \ar[rd]_{f\circ \pi_1} & \overline{\Delta_2}
-    \dar[r] \ar[d]^{f\circ \pi_1} &
+$$\xymatrix @C=4em{ 
+    \cdots \overline{\Delta_3} \tar[r]{4pt} \ar[rd]_{f\circ \pi_1} & \overline{\Delta_2}
+    \dar[r]{2pt} \ar[d]^{f\circ \pi_1} &
     \overline{\Delta_1} = T \ar[ld]^{f\circ \pi_1}\\
     & Q &
   }$$
@@ -586,15 +590,15 @@ subobject of E.
 
 Let $f,g$ be two maps from $\sum_{e:E} (\chi\,e)$ to $\sum_{x:A}
 (Bx)$, equal when precomposed with $\pi_1$.
-$$\xymatrix{
-  \sum_{e:E} (\chi\, e) \dar[r]^{f\circ\pi_1}_{g\circ \pi_1} \ar[d]_{\mathrm{dense}}& \sum_{x :A} (Bx) \\
-  E \dar[ru]^f_g&
+$$\xymatrix @R=4em @C=4em{
+  \sum_{e:E} (\chi\, e) \ar@<-2pt>[r]_{g\circ\pi_1} \ar@<2pt>[r]^{f\circ \pi_1} \ar[d]_{\mathrm{dense}}& \sum_{x :A} (Bx) \\
+  E \ar@<-2pt>[ru]_{g} \ar@<2pt>[ru]^{f}&
 }$$
 We can restrict the previous diagram to 
-$$\xymatrix{
-  \sum_{e:E} (\chi\, e) \dar[rr]^{\pi_1\circ f\circ\pi_1}_{\pi\circ g\circ \pi_1} \ar[d]_{\mathrm{dense}}&& A \\
-  E \dar[rru]^{\pi_1\circ f}_{\pi_1\circ g}&
-},$$ 
+$$\xymatrix @R=4em @C=5em{
+  \sum_{e:E} (\chi\, e) \ar@<-2pt>[r]_{\pi_1\circ g\circ\pi_1} \ar@<2pt>[r]^{\pi_1\circ f\circ \pi_1} \ar[d]_{\mathrm{dense}}& \sum_{x :A} (Bx) \\
+  E \ar@<-2pt>[ru]_{\pi_1\circ g} \ar@<2pt>[ru]^{\pi_1\circ f}&
+}$$
 and as $A$ is separated, $\pi_1\circ f = \pi_2 \circ g$.
 For the second components, let $x:E$. Notice that for all $x:E$,
 $\sum_{y:E} x = y$ has a dense subobject, $\sum_{y:\sum_{e:E} (\chi\,
@@ -602,8 +606,8 @@ $\sum_{y:E} x = y$ has a dense subobject, $\sum_{y:\sum_{e:E} (\chi\,
 
 $$\xymatrix{
   \sum_{y:\sum_{e:E} (\chi\,
-  e)} x=y_1 \dar[rrr]^{\pi_2\circ f\circ\pi_1\circ \pi_1}_{\pi_2\circ g\circ \pi_1\circ \pi_1} \ar[d]_{\mathrm{dense}}&&& B\,x \\
-  \sum_{y:E} x = y \dar[rrru]^{\pi_2\circ f\circ \pi_1}_{\pi_2\circ g\circ \pi_1}&
+  e)} x=y_1 \dar[rrr]{2pt}^{\pi_2\circ f\circ\pi_1\circ \pi_1}_{\pi_2\circ g\circ \pi_1\circ \pi_1} \ar[d]_{\mathrm{dense}}&&& B\,x \\
+  \sum_{y:E} x = y \dar[rrru]{2pt}^{\pi_2\circ f\circ \pi_1}_{\pi_2\circ g\circ \pi_1}&
 }$$
 Using the sepatation property of $B\,x$, one can show that second
 components, transported correctly along the first components equality,

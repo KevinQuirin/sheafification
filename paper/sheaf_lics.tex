@@ -53,6 +53,7 @@
 \DeclareMathOperator{\id}{id}
 \DeclareMathOperator{\Contr}{Contr}
 \DeclareMathOperator{\IsContr}{IsContr}
+\DeclareMathOperator{\precompose}{\mathrm{precompose}}
 
 \def\mymathhyphen{{\hbox{-}}}
 
@@ -446,10 +447,52 @@ We refer to~\cite{hottbook} for more details.
 
 Formalization of colimits is based on the formalization of limits in~\cite{lumsdaine}.
 
-Definition of graphs, diagrams, is\_colimit. 
+In section~\ref{sec:giraud-ax}, we need to consider colimits of
+diagrams.
+The following definition comes from~\cite{lumsdaine}~:
+\begin{defi}
+  A {\em graph} $G$ is the data of
+  \begin{itemize}
+  \item a type $G_0$ of vertices ;
+  \item for all $i,j:G_0$, a type $G_1(i,j)$ of edges.
+  \end{itemize}
 
-Maybe the HIT of colimit, at least say that using HIT, all colimits
-exists. 
+  A {\em diagram} $D$ on a graph $G$ is the data of
+  \begin{itemize}
+  \item for all $i:G_0$, a type $D_0(i)$ ;
+  \item for all $i,j:G_0$ and all $\phi : G_1(i,j)$, a map $D_1(\phi)
+    : D_0(i) \to D_0(j)$
+  \end{itemize}
+\end{defi}
+
+Now, we define what it means for a type to be a colimit of a diagram. 
+\begin{defi}
+Let $G$ be a graph, and $D$ be a diagram on $G$. 
+Let $P:\Type$ together with
+\begin{itemize}
+\item a map $q_i : D_0(i) \to P$ for all
+vertex $i:G_0$, \ie $$q : \prod_{i:G_0} D_0(i) \to P$$
+\item for all vertices $i,j:G_0$ and all edges $\phi:G_1(i,j)$, a path
+  $p_{i,j}^\phi : q_j \circ D_1(\phi) = q_i$, \ie
+  $$p : \prod_{i,j:G_0} \prod_{\phi:G_1(i,j)} q_j \circ D_1(\phi) = q_i.$$
+\end{itemize}
+
+Then $P$ is the {\em colimit} of $D$ if for any other $X:\Type$, the
+map
+$$\lambda f:P \to X,~ \left( \lambda i,~f \circ q_i~;~ \lambda i\, j\,
+  \phi,~ \precompose_f (p(i, j, g))) \right)$$
+is an equivalence.
+\end{defi}
+
+Essentially, being a colimit means making the diagram commutes, and
+being universal for this property.
+
+Note that using higer inductive types, every diagram $D$ on a graph
+$G$ admits a colimit, the type $Q$ whose constructors are
+\begin{itemize}
+\item $q:\prod_{i:G_0} D_0(i) \to Q$
+\item $p:\prod_{i,j:G_0} \prod_{\phi:G_1(i,j)} q_j \circ D_1(\phi) = q_i$
+\end{itemize}
 
 \subsection{Giraud's axiom}
 \label{sec:giraud-ax}

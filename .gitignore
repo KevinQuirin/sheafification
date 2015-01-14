@@ -13,3 +13,4 @@ paper/sheaf_lics.pdf
 *.bst
 *.el
 *.out
+*.old.*

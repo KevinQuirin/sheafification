@@ -1,0 +1,1092 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{xspace}
+\usepackage[colorlinks=true]{hyperref}
+
+% *** MATH PACKAGES ***
+%
+\usepackage[cmex10]{amsmath}
+\usepackage{amssymb,amsthm,amsfonts}
+
+
+\newtheorem{thm}{Theorem}
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{defi}[thm]{Definition}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{ax}[thm]{Axiom}
+
+\newcommand{\mynote}[2]{
+    \fbox{\bfseries\sffamily\scriptsize#1}
+    {\small$\blacktriangleright$\textsf{\emph{#2}}$\blacktriangleleft$}~}
+
+\newcommand\kq[1]{\mynote{KQ}{#1}}
+\newcommand\nt[1]{\mynote{NT}{#1}}
+
+\newcommand{\ie}{i.e,\xspace}
+\newcommand{\eg}{e.g,\xspace}
+
+% *** Do not adjust lengths that control margins, column widths, etc. ***
+% *** Do not use packages that alter fonts (such as pslatex).         ***
+% There should be no need to do such things with IEEEtran.cls V1.6 and later.
+% (Unless specifically asked to do so by the journal or conference you plan
+% to submit to, of course. )
+
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+
+\usepackage{enumerate}
+\usepackage{wasysym}
+\usepackage[all]{xy}
+\def\dar[#1]#2{\ar@<-#2>[#1]\ar@<#2>[#1]} %double arrows in xy
+\def\tar[#1]#2{\ar@<#2>[#1]\ar@<0pt>[#1]\ar@<-#2>[#1]} %triple arrows in xy
+\DeclareMathOperator{\Type}{Type}
+\DeclareMathOperator{\HProp}{HProp}
+\DeclareMathOperator{\IsHProp}{IsHProp}
+\DeclareMathOperator{\nat}{nat}
+\DeclareMathOperator{\Unit}{Unit}
+\DeclareMathOperator{\im}{Im}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\Contr}{Contr}
+\DeclareMathOperator{\IsContr}{IsContr}
+
+\def\mymathhyphen{{\hbox{-}}}
+
+\newcommand{\IsType}[1]{\mathrm{Is\mymathhyphen}#1\mathrm{\mymathhyphen
+    type}}
+\newcommand{\modal}{\ensuremath{\ocircle}}
+\newcommand \True {\mathrm{true}}
+\newcommand \False {\mathrm{false}}
+\newcommand \closure[1] {\overline{#1}}
+\newcommand \Char[1] {\chi_{#1}}%{\mathrm{char}(#1)}
+\newcommand \E {\mathcal{E}}
+\newcommand \Hom[1] {\mathrm{Hom}_{#1}}
+\newcommand \Sh[1] {\mathrm{Sh}_{#1}}
+
+ \IEEEpubid{} 
+
+\begin{document}
+%
+% paper title
+% Titles are generally capitalized except for words such as a, an, and, as,
+% at, but, by, for, in, nor, of, on, or, the, to and up, which are usually
+% not capitalized unless they are the first or last word of the title.
+% Linebreaks \\ can be used within to get better formatting as desired.
+% Do not put math or special symbols in the title.
+\title{Lawvere-Tierney Sheafification\\ in Homotopy Type Theory}
+
+
+% author names and affiliations
+% use a multiple column layout for up to three different
+% affiliations
+\author{\IEEEauthorblockN{Kevin Quirin and Nicolas Tabareau}
+\IEEEauthorblockA{Inria \\ \'Ecole des Mines de Nantes \\ Nantes, France}}
+
+% conference papers do not typically use \thanks and this command
+% is locked out in conference mode. If really needed, such as for
+% the acknowledgment of grants, issue a \IEEEoverridecommandlockouts
+% after \documentclass
+
+
+% make the title area
+\maketitle
+
+% As a general rule, do not put math, special symbols or citations
+% in the abstract
+\begin{abstract}
+
+  Sheafification is a popular tool in topos theory which
+  allows to extend the internal logic of a topos with new
+  principles. One of its most famous applications is the possibility
+  to transform a topos into a boolean topos using the
+  dense topology, which corresponds in essence to Gödel's double
+  negation translation.
+  % 
+  The same construction has not been considered in Martin-Löf type
+  theory because of a mismatch between topos theory and type theory. This
+  mismatched has been fixed recently by considering homotopy type
+  theory, an extension of Martin-Löf type theory with new
+  principles inspired by category theory and homotopy theory, and
+  which corresponds closely to higher topoi.
+  % 
+  In this paper, we give a computer-checked construction of
+  Lawvere-Tierney sheafification in homotopy type theory, which allows
+  in particular to give a meaning to the (propositional) law of
+  excluded middle inside homotopy type theory, without axiom, being
+  compatible with the full type-theoretic axiom of choice.
+  
+\end{abstract}
+
+% no keywords
+
+\section{Introduction}
+\label{sec:intro}
+
+Sheafification~\cite{maclanemoerdijk} is a very powerful geometric
+construction that has been initially stated in topology and has
+quickly been lifted to mathematical logic.
+%
+In the field of topos theory, it provides a way to construct new topoi
+from already existing ones, allowing logical principles---that can not
+be proven to be true or false in the old topos---to be valid (or
+invalid) in the new topos.
+%
+The most common use of sheafification is the construction a boolean
+topos, thus validating the classical principle of the law of excluded
+middle (EM), from an intuitionistic topos using the dense topology. 
+%
+An other famous application has been developed by
+Cohen~\cite{cohen1966} to prove that the continuum hypothesis is
+independent of the usual axioms of Zermelo-Fr\ae nkel set theory, even
+in presence of the axiom of choice (AC). The initial work of Cohen
+uses forcing but can be rephrased in terms of
+sheafification~\cite{maclanemoerdijk}.
+
+Even if similar questions have been considered around the Curry-Howard
+isomorphism, there is no canonical way to extend a programming
+language such as type theory with new logical or computational
+principle while keeping consistency automatically.
+%
+For instance, much effort have been done to provide a computational
+content to the law of excluded middle in order to define a
+constructive version of classical logic. This has lead to various
+calculi, with most notably the $\lambda \mu$-calculus of
+Parigot~\cite{parigot1993classical}, but this line of work has not
+appeared to be fruitful to define a new version of type theory with
+classical principles.
+%
+Other works have tried to extend continuation-passing-style (CPS)
+transformation to type theory, but they have been faced with the
+difficulty that the CPS transformation is incompatible with (full) dependent
+sums~\cite{barthe2002cps}, which puts emphasis on the tedious link
+between the axiom of choice and the law of excluded middle in type theory.
+
+Nevertheless the axiom of choice has shown to be realizable by
+computational meaning in a classical setting by techniques turning
+around the notion of (modified) bar induction
+\cite{berardi1998computational}, Krivine's
+realizability~\cite{krivine2003dependent} and even more recently with
+restriction on elimination of dependent sums and lazy
+evaluation~\cite{herbelin2012constructive}.
+%
+
+Unfortunately, all those works---although they provide very nice and
+sophisticated theoretical results---do not share the generality and
+simplicity of sheafification in topos theory and are not amenable to a
+direct integration into proof assistant based on type theory such as
+Coq or Agda.  
+%
+However, type theory is known to be quite closed to topos theory so
+one could wonder why similar techniques have not been developed in the
+field of type theory. 
+%
+The answer to this question has been given recently by the advent of
+homotopy type theory~\cite{hottbook}, which is an extension of
+Martin-Löf type theory with principles inspired by (higher) category
+theory and homotopy theory, such as higher inductive
+types~\cite{lumsdaine2011higher,lumsdaine2013higher} and
+Voevodsky's univalence principle~\cite{kapulkin2012simplicial}. 
+%
+
+This new point of view on type theory has revealed the
+homotopy structure of types where for instance homotopical
+propositions (or $\Type_{-1}$) are just types with an irrelevant equality and
+homotopical sets (or $\Type_{0}$)  are types with a propositional
+equality and so on for $\Type_{n}$.
+%
+The development of univalence has also shed some light on the
+difficulty to make the AC and EM coexist in type theory. Indeed, it
+has been shown that a naive (non-propositional) version of EM is
+inconsistent with univalence.
+
+When restricted to homotopical propositions and sets, homotopy type
+theory corresponds quite closely to topos theory but the mismatch
+starts when considering higher homotopical types.
+%
+Fortunately, a higher version of topos theory has been developed
+recently by mathematicians, synthesized in the monograph of Lurie on
+higher topos theory~\cite{lurie}. 
+%
+Lurie has developed all the tools that have been defined in
+topos theory, but in a higher setting. In particular, the theory of
+sheaves has been lifted to higher topos theory.
+%
+As the notion of higher topoi appears to correspond very closely
+to homotopy type theory, this provides a new hope that tackling the problem of
+extending the power of type theory using sheafification is actually possible.
+
+Nevertheless, the adaptation of the sheafification in higher topos
+theory to homotopy type theory is not straightforward because the
+construction in higher topoi is restricted to the initial
+Grothendieck which is still very topological, and not very amenable to
+formalization in type theory. It seems more promising to use a
+generalized sheafification, called Lawvere-Tierney
+sheafification~\cite{maclanemoerdijk}, but this construction has not
+been considered yet in the setting of higher topos theory. 
+
+\subsection{Lawvere-Tierney Topology}
+
+Lawvere-Tierney sheafification in a topos $\E$ is based on an abstract
+point of view on the topology to be considered, being simply an
+endomorphism on the classifying object $\Omega$ of $\E$  
+%
+$$
+j : \Omega \rightarrow \Omega
+$$
+%
+that is required to preserve $\True$ ($j \ \True = \True$), to be
+idempotent ($j \circ j = j$) and compatible with products ($j \circ
+\wedge = \wedge \circ (j, j)$).
+%
+A typical example is given by double negation.
+
+Every Lawvere-Tierney topology $j$ induces a closure operator
+$A \mapsto \closure{A}$ on subojects. If we see a subobject $A$ of $E$
+as a characteristic function $\Char{A}$, the closure $\closure{A}$
+corresponds to the subobject of $E$ whose characteristic function is 
+%
+$$
+\Char{\closure{A}} = j \circ \Char{A}.
+$$
+%
+A suboject $A$ of $E$ is said to
+be dense when $\closure{A} = E$.
+
+The idea is then to define sheaves in $\E$ as objects of $\E$ for
+which it is impossible to make a distinction between objects and their
+dense subobjects. This idea is formalized by saying that for every
+dense subobject $A$ of $E$, the following canonical map is an
+isomorphism
+%
+\begin{equation}\label{equ:sheaf_def}
+\Hom{\E}(E,F) \rightarrow \Hom{\E}(A,F).
+\end{equation}
+%
+On can show that $\Sh{\E}$, the full sub-category of $\E$ given by
+sheaves, is again a topos, with classifying object
+%
+$$
+\Omega_j = \{ P \in \E \ | \ j P  = P \}.
+$$
+%
+Thus, in case of the double negation, the resulting topos is boolean  
+and admits classical reasoning.
+
+But furthermore, one can defined a left adjoint, the sheafification
+functor, 
+%
+$$
+a_j : \E \rightarrow \Sh{\E}
+$$
+to the inclusion functor, which exhibits $\Sh{\E}$ as a reflective
+subcatefory of $\E$ (which is a particular case of localization). This
+means that logical principles valid in $\E$ are still valid in
+$\Sh{\E}$.
+
+
+\subsection{Overview of the Result}
+
+The main contribution of this article is the development of a
+computer-checked definition of Lawvere-Tierney sheafification in the
+setting of homotopy type theory.
+%
+This provides a way to give a meaning to the propositional law of
+excluded middle, and more generally, combined with the previous work on
+forcing in type theory~\cite{jaber2012extending}, it allows to reuse
+results derived for topos theory, such as independence results.
+
+To extend Lawvere-Tierney sheafification to homotopy type theory, the
+first thing to realize is that the construction can not be done in one
+step anymore. It must be done by induction on the level of homotopy of
+types. More precisely, the first layer of sheafification is defined
+for $\Type_{0}$ , given a topology on $\Type_{-1}$. This part
+corresponds to sheafification for topoi. Then, assuming that the
+sheafification has been constructed up to level $n$, one can defined
+the sheafification for $\Type_{n+1}$.
+%
+This inductive process in the definition of sheafification is similar
+to construction in the Grothendieck setting, where the
+sheafification is obtained by applying the plus-construction $n+1$ to
+$\Type_{n}$~\cite[Chapter~6]{lurie}.
+
+This inductive step requires to formalize the notion of left-exact
+reflective subuniverse, which corresponds to a stratified
+version of left-exact modalities introduced
+in~\cite[Chapter~7]{hottbook}. A Lawvere-Tierney topology can thus be
+seen as a left-exact modality on $\Type_{-1}$ and sheafification as
+a way to extend it as a left-exact modality on $\Type_{n}$ for any $n$.
+
+Compare to the definition of sheafification in topos theory, the main
+change comes from the fact that in homotopy type theory, there is not
+a single object classifier but rather an $n$-object classifier for
+each $n\geq -2$ which classifies functions with $n$-truncated homotopy
+fibers~\cite{sets_in_hott}. This means that when monomorphisms are used in topos
+theoretic definition, the correct generalization may be $n$-truncated homotopy
+fibers or monomorphims (\ie $-1$-truncated homotopy
+fibers) depending on the context.
+
+For instance, the notion of separated objects (which is a technical
+tool in the construction of the sheafification), for which the morphism
+(\ref{equ:sheaf_def}) is just a monomorphism, is generalized in two
+different ways.  
+%
+The subobjects to be considered are given by $n$-truncated fibers,
+while the morphism (\ref{equ:sheaf_def}) is still required to be a
+monomorphism.
+
+In other technical difficulty is the fact that sheafification in topos
+theory uses the fact that epimorphisms are coequalizers of their
+kernel pairs. This properties does not holds in higher topoi, but it
+can be replaced by Giraud's axiom which basically allows to replace 
+ kernel pairs by \v{C}ech nerves.
+
+Finally, one of the main difficulty in our formalization is that many
+equlity which are trival (b yproof irrelevance) in the topos theoretic
+setting becomes relevant and requires a carreful use of univalence
+with appropriate isomorphisms.
+
+\subsection{Plan of the Paper}
+
+Section~\ref{sec:hott} defines the foundations of homotopy type theory
+and the definition of modalities, on which this paper is based.
+%
+Section~\ref{sec:sheaves} defines the notion of sheaves in homotopy
+type theory.
+%
+Section~\ref{sec:sheafification} depicts the construction of the
+sheafification functor.
+%
+Section~\ref{sec:formalization} presents the details of the
+  formalization in Coq.
+%
+Finally, Section~\ref{sec:future-works} concludes on future works.
+
+
+\section{Preliminaries on Homotopy Type Theory}
+\label{sec:hott}
+
+In this section, we review some basic definitions in homotopy type
+theory that are central in our formalization but not specific to
+sheafification. 
+%
+Section~\ref{ssec:hott} introduces the notion of homotopy types and
+classifying objects as defined in~\cite{sets_in_hott}.
+%
+Section~\ref{sec:colim-homot-type} introduces the notion of colimits
+in homotopy type theory. 
+%
+And Section~\ref{sec:giraud-ax} defines (a particular case of)
+Giraud's axiom on higher topoi that we need in the definition of
+sheafification.
+
+The definition of Section~\ref{ssec:hott} are part of the Coq library
+available at \url{https://github.com/HoTT/HoTT}, while other definitions
+and theorems are specific to our formalization. 
+
+
+ \subsection{Homotopy Types and Classifying Objects}
+\label{ssec:hott}
+
+Our work is mainly based on the stratification by $\Type_n$~:
+\begin{defi}
+  $\IsType n$ is defined by induction on $n\geqslant -2$~:
+  \begin{itemize}
+  \item $\IsType {(-2)} X$ if $X$ is a contractible type, \ie $X$
+    is pointed by $c:X$, and every other point in $X$ is connected to $c$.
+  \item $\IsType {(n+1)} X = \prod_{x,y:X} \IsType n (x=y).$
+  \end{itemize}
+  Then, $\Type_n = \sum_{X:\Type} \IsType n X$.
+\end{defi}
+For a type $X$, to be in $\Type_n$ means that path spaces of $X$ are
+trivial after $n+1$ iteration.
+We define some shortcuts
+\begin{itemize}
+\item $\IsContr := \IsType {(-2)}$ and $\Contr := \Type_{-2}$
+\item $\IsHProp := \IsType {(-1)}$ and $\HProp := \Type_{-1}$
+\end{itemize}
+
+Using higher inductive types, one can define for any type $X$ $\|X\| : \HProp$
+generated by 
+\begin{itemize}
+\item a function $|\cdot|_X : X \to \|X\|$,
+\item paths $x=y$ for all $x,y:\|X\|$.
+\end{itemize}
+$\|X\|$ is called the {\em (propositional) truncation of $X$}. The recursion principle asserts~:
+\begin{lem}
+  For any $A:\Type$ and $B:\HProp$, if $f:A \to B$ then there is an
+  induced $g:\|A\|\to B$ such that $g(|a|)= f(a)$ for any $a:A$.
+\end{lem}
+We refer to~\cite{hottbook} for more details.
+
+Working in $\Type_n$ allows to use the subobjects classification as in~\cite{sets_in_hott}~: for
+all type $B$, $\Type_n$ classifies subobjects of $B$ with $n$-truncated
+fibers ; we have an equivalence
+$$\left(\sum_{A:\Type} \sum_{f:A \to B} \prod_{b\in B}
+\IsType n~\mathrm{fib}_f(b)\right) \simeq (B \to \Type_n)$$
+and a pullback (with $\Type_n^\bullet$ the universe of pointed
+$n$-truncated types)~:
+$$
+\xymatrix{
+  A \ar[r]^{t_f} \ar[d]_f & \Type_n^\bullet \ar[d]^{\pi_1}\\
+  B \ar[r]_{\chi_f} & \Type_n
+}
+$$
+forall $f$ with $n$-truncated fibers, with 
+$$t_f = \lambda a,~(\mathrm{fib}_f(f(a)),(a,\mathrm{idpath})).$$
+
+\subsection{Colimits in Homotopy Type Theory }
+\label{sec:colim-homot-type}
+
+\nt{Kevin -> complete this subsection}
+
+Formalization of colimits is based on the formalization of limits in~\cite{lumsdaine}.
+
+Definition of graphs, diagrams, is\_colimit. 
+
+Maybe the HIT of colimit, at least say that using HIT, all colimits
+exists. 
+
+\subsection{Giraud's axiom}
+\label{sec:giraud-ax}
+
+\begin{defi}
+  Let $f:X \to Y$ be a map, and $p:\nat$. The $p$-pullback of $f$,
+  noted $X\times_Y \cdots\times_Y X$ is
+  the limit of the diagram
+  $$\xymatrix{
+    X \ar[rd]^f & \cdots & X \ar[ld]_f \\
+      &    Y   &
+  }$$
+  with $p$ copies of $X$. The $0$-pullback of $f$ is $\Unit$.
+\end{defi}
+
+In homotopy type theory, we have 
+$$X\times_Y \cdots\times_Y X = \sum_{x:X^n} (f x_1 = f x_2) \land
+\cdots \land (f x_{n-1} = f x_n).$$
+\begin{defi}
+  If $f:X \to Y$ is a map, then the {\em \v{C}ech nerve} of $f$ is the
+  diagram
+  $$\xymatrix{
+    C(f) := \cdots~ X \times_Y X \times_Y X \tar[r]{4pt} & X \times_Y X \dar[r]{2pt} & X
+  }$$
+where the arrows are the canonical projections.
+\end{defi}
+
+\begin{ax}[Giraud]
+  If $f:X\to Y$ is a surjection, then the
+colimit of $C(f)$ is $Y$.
+\end{ax}
+
+Viewing homotopy type theory as a
+type-theoristic version of higher topos theory, \cite{lurie} suggests that this
+axiom can be proved, although we admit it in this paper.
+
+
+
+\section{Left exact Modalities}
+\label{sec:lexmod}
+
+\cite{shulman-higher-modalities}
+
+\subsection{Definition}
+
+We use the following definition of truncated left exact modalities~:
+\begin{defi}
+  Let $p$ be a truncation index. Then a left exact modality is the
+  data of
+  \begin{enumerate}[(i)]
+  \item A predicate $P:\Type_p \to \HProp$
+  \item For every $p$-truncated type $A$, a $p$-truncated type
+    $\modal A$ such that $P(\modal A)$
+  \item For every $p$-truncated type $A$, a map $\eta_A:A \to
+    \modal A$
+  \end{enumerate}
+  such that
+  \begin{enumerate}[(i)]
+    \setcounter{enumi}{3}
+  \item For every $p$-truncated types $A$ and $B$, if $P(B)$ then
+    $$\left\{
+      \begin{array}{rcl}
+        (\modal A \to B) & \to & (A \to B) \\
+        f & \mapsto & f \circ \eta_A
+      \end{array} \right.$$
+    is an equivalence.
+  \item For all $A:\Type_p$ and $B:A \to \Type_p$ such that $P(A)$
+    and $\prod_{x:A} P(B x)$, then $P\left( \sum_{x:A} B(x)\right)$
+  \item For all $A:\Type_p$ and $x,y:A$, if $\modal A$ is
+    contractible, then $\modal (x=y)$ is contractible.
+  \end{enumerate}
+  Conditions (i) to (iv) define a {\em reflective subuniverse}, (i) to
+  (v) a {\em modality}.
+\end{defi}
+
+The type of all $p$-types such that $P$ will be noted $\Type^\modal_p$
+
+Since basic operations (dependent products, products, sigma types) are
+stable for truncation levels, all theorem in~\cite{hottbook}, chapter
+7.7 remains true.
+In particular, if $X:\Type_p$ verifies $P(X)$, then for any $x,y:X$, $P(x=y)$.
+
+Another useful property is that we can extend property {\it (iii)} to
+dependent product.
+
+Moreover, left exactness implies in particular fibers preservations~:
+\begin{prop}
+For any $n$-truncated types $X$ and $Y$,
+and any map $f:X \to Y$, the modalisation of fiber of $f$ above any element $y:Y$
+is the fiber of $\modal f$ above $\eta_Y y$~:
+$$\modal \left(\sum_{x:X}  (f x = y)\right) = \sum_{x:\modal X} (\modal f x = \eta_Y y).$$
+
+Moreover the following diagram commute
+$$\xymatrix{
+  \sum_{x:X} (f x = y) \ar[r]^\eta \ar[d]_\gamma & \modal \left(\sum_{x:X}  (f x = y)\right) \ar@{=}[dl]\\
+  \sum_{x:\modal X} (\modal f x = \eta_Y y) &
+}$$
+where $\pi_1 \circ \gamma = \eta_X$, and $\pi_2 \circ \gamma$ is the
+usual modalisation of paths.
+\end{prop}
+
+
+As we want, a left exact modality preserves $\HProp$~:
+\begin{prop}
+  If $P:\HProp$, then $\modal \widehat P : \HProp$, where $\widehat P$
+  is $P$ seen as a $p$-type.
+\end{prop}
+
+\subsection{Examples of Left Exact Modalities}
+
+A basic example is the {\em open modality of $P$} for a $P:\HProp$,
+$\modal_P T = P \to T$.  When one works in the subuniverse defined by
+this modality, defining an inhabitant of a type $T$ is actually giving
+an inhabitant of $P \to T$. Thus, being in this subuniverse is just
+adding the axiom $P$ to the theory. Sadly, adding an axiom this way
+does not add any computational content to $P$, thus is not completely
+satisfactory.
+
+Another example is the $\lnot\lnot$-modality, $\modal_{\lnot\lnot} T = (T
+\to \bot) \to \bot$. Although we might think it enables us to use
+classical reasonings in the corresponding reflective subuniverse, the
+main problem is that every type in the new universe is an $\HProp$,
+which is very restrictive. 
+We will use this modality only in the $\HProp$ layer, and try to
+extend it to every $\Type_n$ without collapsing every type.
+
+
+\subsection{The new type theory arising from a left exact modality}
+
+A left exact modality leads to a new theory with new principles. 
+
+
+\section{Sheaves}
+\label{sec:sheaves}
+
+We will define sheaves by induction on the homotopical truncation level of types
+~: the base case will be any left exact modality on $\HProp$, and we
+give in this section some definitions useful for the inductive case.
+
+% \subsection{Definitions and first properties}
+% \label{sec:def}
+
+In this section, we suppose given a truncation index $n\geqslant -1$,
+and a left exact modality $\modal$ on $\Type_n$.
+
+\begin{defi}
+  Let $E$ be a type. The {\em closure} of a subobject of $E$ classified by $\chi$
+  is the subobject of $E$ classified by $\modal \circ \chi$.
+
+  The subobject of $E$ classified by $\chi$ is said {\em closed in
+    $E$} if its closure is itself : $\chi = \modal \circ \chi$.
+\end{defi}
+
+\begin{defi}
+  Let $E$ be a type, and $\chi:E \to \Type_n$. The subobject $A$ of $E$
+  classified by $\chi$ is {\em dense} in $E$ if its $\modal$-closure
+  is $E$ seen as a subobject of $E$, \ie
+  $$\forall e:E,~ \left(\sum_{e':E} e=e'\right) \simeq (\modal (\chi~e)).$$ 
+  Moreover, for all $x:A$ we need the following coherence diagram to
+  commute
+  $$\xymatrix{
+    \sum_{e':A} x = e' \ar@{=}[r] \ar[d]_\iota & (\chi~x) \ar[d]^{\eta_{(\chi~x)}}\\
+    \sum_{e':E} x = e' \ar@{=}[r] & \modal (\chi~x)
+  }$$
+  where $\iota: x \mapsto ({x_1}_1 ; x_2)$.
+\end{defi}
+
+It follows from fibers preservation that any $n$-subobject of a type seen as a $n$-subobject
+of its closure is closed.
+
+\begin{defi}[Restriction]
+  For any $A, E:\Type$ and $F:\Type_{n+1}$, we define~:
+  \begin{itemize}
+  \item if $A \hookrightarrow E$, $M_E^\chi$ is the map sending an
+    arrow $f~:~E\to F$ to $\restriction f A$ the restriction of $f$ to $A$.
+  \item if $A \to E$ with $n$-truncated fibers, $\Phi_E^\chi$ is the
+    map sending $f~:~E \to f$ to $\restriction f A$.
+  \end{itemize}
+\end{defi}
+
+\begin{defi}[Separated Type]
+  A type $F$ in $\Type_{n+1}$ is {\em separated} if for all type $E$, and
+  all dense subobject of $E$ classified by $\chi~:~E \to \Type_n$,
+  $\Phi_E^\chi$ is a monomorphism. In other words, the dotted arrow,
+  if exists, is unique.
+
+  $$\xymatrix{
+    \sum_{e:E} (\chi~ e) \ar[r]^f \ar[d]_{\pi_1} & F \\
+    E \ar@{-->}[ru]_{!}&
+  }$$
+\end{defi}
+
+\begin{defi}[Sheaves]
+  A type $F$ of $\Type_{n+1}$ is a {\em $(n+1)$-sheaf} if it is
+  separated, and for all type $E$ and all dense subobject of $E$
+  classified by $\chi~:~E \to \Type_{-1}$, $M_E^\chi$ is an
+  equivalence. In other words, the dotted arrow exists and is unique.
+
+  $$\xymatrix{
+    \sum_{e:E} (\chi~ e) \ar[r]^f \ar[d]_{\pi_1} & F \\
+    E \ar@{-->}[ru]_{\exists !}&
+  }$$
+\end{defi}
+
+Note that these definitions are almost the same as the ones
+in~\cite{maclanemoerdijk}. The main difference is that {\em separated}
+is defined for $n$-subobjects,
+while {\em sheaf} only for $-1$-subobject.
+
+From these definitions, one can show that
+\begin{prop}\label{prop:sheaf_prop}
+  \begin{itemize}
+  \item $\Type_n^\modal$ is a sheaf.
+  \item If $A:\Type_{n+1}$ and $B:A \to \Type_{n+1}$ such that for all
+    $a:A$, $(B~a)$ is a sheaf, then $\prod_{a:A}B~a$ is a sheaf.
+  \end{itemize}
+\end{prop}
+
+\section{Construction of sheafification}
+\label{sec:sheafification}
+
+We mimic the construction in~\cite{maclanemoerdijk}. 
+From any left exact modality on $\HProp$, we extend the new principles
+it gives to every $\Type_n,\,n\geqslant 0$.
+Actually, if $n_0$ is a fixed truncation index, and $\modal$ a left
+exact modality on $\Type_{n_0}$, then we can in the same
+way extend the properties of the modality to any $\Type_n$, for
+$n > n_0$.
+
+Once the first modality is defined, the extension to all $\Type_n$ is
+automatic. It means that the new principles we want to add in the new
+theory must be introduced ine the first modality. 
+
+We have to be careful~: if we want to propagate the properties of the
+first modality $\modal_{-1}$, all the higher modalities $\modal_n$ must be compatible
+with $\modal_{-1}$, \ie we want the property
+\begin{prop}\label{prop:hprop}
+  If $P:\HProp$, and $\widehat P$ is $P$ seen as a $\Type_n$, then $\modal_n \widehat P = \modal_{-1} P$, and the
+  following coherence diagram commute 
+  $$\xymatrix{
+    \modal_{-1} P \ar@{=}[r] & \modal_n \widehat P \\
+    P \ar@{=}[r] \ar[u]^{\eta_{-1}} & \widehat P \ar[u]_{\eta_n}
+  }$$
+\end{prop}
+
+The sheafification process works exactly that way
+in~\cite{maclanemoerdijk}~: from a left exact modality on the internal
+logic (a Lawvere-Tierney topology), we define a new left exact
+modality on the whole topos. We view that as the induction step
+between $\HProp$ and $\Type_0$, and we want to extend it.
+
+\kq{Bof ; maybe rewrite this}
+
+As in most of sheafification process, it will be done in
+two steps~:
+\begin{enumerate}[(i)]
+\item {\em separation~:} In this step, we {\em remove} the lack of
+  sheafness from the type we are considering.
+\item {\em completion~:} In this step, we add what lacks now to the
+  separated type to be a sheaf.
+\end{enumerate}
+\subsection{For h-propositions}
+\label{ssec:h-propositions}
+
+For the case $n=-1$, one can take any left exact modality on
+$\HProp$. Here we took the $\lnot\lnot$ modality~:
+$$\forall P:\HProp,~\modal_j P = \lnot\lnot P.$$
+One can easily show that it defines a left exact modality.
+
+The $\lnot\lnot$-modality allows to work with a propositional law of
+excluded middle. 
+
+\subsection{From Type to Separated Type}
+\label{ssec:from-type-separated}
+In this section, we suppose given a truncation index $n\geqslant -1$,
+and a left exact modality $\modal$ on $\Type_n$, compatible with the
+modality on $\HProp$ in the sense of proposition~\ref{prop:hprop}.
+
+Let $T$ be in $\Type_{n+1}$. We define $\square T$ as the image of
+$\modal^T \circ \{\cdot\}_T$, as in
+$$\xymatrix{
+  T \ar[r]^{\{\cdot\}_T} \ar[d]_{\mu_T} & \Type_n^T \ar[d]^{\modal^T} \\
+  \square T \ar[r]& \left( \Type_n^\modal \right)^T
+}, $$
+where $\{\cdot\}_T$ is the singleton map $\lambda (t:T),~\lambda
+(t':T),~t=t'$.
+In type theory words, 
+\begin{align*}
+\square T &= \im (\lambda~t:T,~\lambda~ t',~ \modal (t = t')) \\
+          &= \sum_{u:T \to \Type_n^\modal} \left\| \sum_{a:X} 
+            (\lambda t,~\modal (a=t)) = u\right\|
+\end{align*}
+
+There again, the separation step has the same definition as
+in~\cite{maclanemoerdijk}, using $\Type_n^\modal$ instead of the
+$j$-subobject classifier.
+
+\begin{prop}
+  For all $T:\Type_{n+1}$, $\square T$ is separated.  
+\end{prop}
+
+\begin{proof}
+We will use the following lemma~:
+\begin{lem}
+  A $(n+1)$-truncated type $T$ with an embedding $f : T \to U$
+  into a separated $(n+1)$-truncated type $U$ is itself separated.
+\end{lem}
+As $\square T$ embeds in $\left( \Type_n^\modal \right)^T$, we only
+have to show that the latter is separated. But it is the case with
+both parts proposition~\ref{prop:sheaf_prop}.
+\end{proof}
+
+We now need to show that $\square$ is universal. The following
+lemma is central in the proof~:
+\begin{lem}\label{lem:sepiscolim}
+  Let $T:\Type_{n+1}$. Then $\square T$ is the colimit of the closed
+  diagonal diagram
+  $$\xymatrix @C=4em  { 
+    \cdots \overline{\Delta_3} \tar[r]{4pt} & \overline{\Delta_2} \dar[r]{2pt} &
+    \overline{\Delta_1}
+  }$$
+where $\Delta_k$ is the $k$-pullback of $\id : T \to T$.
+\end{lem}
+
+This lemma is an adaptation of the sheafification process
+in~\cite{maclanemoerdijk}, where they consider only the kernel pair of
+$\mu_T$ instead of the \v{C}ech nerve.
+
+\begin{proof}
+  As $\mu_T$ is an surjection, we know by Giraud axiom that $\square T$ is the colimit
+  of $C(\mu_T)$. If we can show that $C(\mu_T) = C(\id)$, the the
+  result will follow. 
+
+  Let $k:\nat$, let's show that 
+  \begin{align*}
+    &\sum_{t:T^k} (\mu_T t_1 = \mu_T t_2 \land \cdots
+      \land \mu_T t_{k-1} \mu_T t_k)\\
+    &= \sum_{t:T^k} \modal (t_1 = t_2 \land \cdots
+      \land t_{k-1} = t_k)
+  \end{align*}
+By induction on $k$, and the preservation of products by $\modal$, it
+suffices to show that for all $a,b:T$, $\modal (a=b) = (\mu_T a =
+\mu_T b)$. By univalence, we want arrows in both ways, forming an
+equivalence.
+\begin{itemize}
+\item Suppose $p : (\mu_T a = \mu_T b)$. Then projecting $p$ along
+  first components yields $q : \prod_{t:T} \modal(a=t) = \modal (b=t)
+  $.
+  Taking for example $t=b$, we deduce $\modal (a=b) = \modal(a=a)$,
+  and the latter is inhabited by $\eta_{a=a} 1$.
+\item Suppose now $p : \modal(a=b)$. Let $\iota$ be the first
+  projection from $\square T \to (T \to \Type_n^\modal)$. $\iota$ is
+  an embedding, thus it suffices to prove $\iota (\mu_T a) = \iota
+  (\mu_T b)$, \ie $\prod_{t:T}\modal (a=t) = \modal (b=t)$. The latter
+  remains true by univalence.
+\end{itemize}
+The fact that these two form an equivalence is technical, we refer to
+the formalization for an explicit proof.
+\end{proof}
+
+Now, let $Q$ be a separated $\Type_{n+1}$, and $f:T \to Q$. Then the
+following diagram commutes
+$$\xymatrix @C=4em{ 
+    \cdots \overline{\Delta_3} \tar[r]{4pt} \ar[rd]_{f\circ \pi_1} & \overline{\Delta_2}
+    \dar[r]{2pt} \ar[d]^{f\circ \pi_1} &
+    \overline{\Delta_1} = T \ar[ld]^{f\circ \pi_1}\\
+    & Q &
+  }$$
+But we know (lemma~\ref{lem:sepiscolim}) that $\square T$ is the
+colimit of the closed diagonals diagram, thus there is an universal
+arrow $\square T \to Q$.
+
+This proves the following proposition
+\begin{prop}
+  $(\square,\mu)$ defines a reflective subuniverse on $\Type_{n+1}$.
+\end{prop}
+
+We now have to prove point {\it (v)} in the definition of
+modality. Let $A:\Type_{n+1}$ be a sheaf and $B:A \to \Type_{n+1}$ be
+a sheaf family. We want to show that $\sum_{x:A} (Bx)$ is
+separated. Let $E$ be a type, and $\sum_{e:E} (\chi\,e)$ a dense
+subobject of E.
+
+Let $f,g$ be two maps from $\sum_{e:E} (\chi\,e)$ to $\sum_{x:A}
+(Bx)$, equal when precomposed with $\pi_1$.
+$$\xymatrix @R=4em @C=4em{
+  \sum_{e:E} (\chi\, e) \ar@<-2pt>[r]_{g\circ\pi_1} \ar@<2pt>[r]^{f\circ \pi_1} \ar[d]_{\mathrm{dense}}& \sum_{x :A} (Bx) \\
+  E \ar@<-2pt>[ru]_{g} \ar@<2pt>[ru]^{f}&
+}$$
+We can restrict the previous diagram to 
+$$\xymatrix @R=4em @C=5em{
+  \sum_{e:E} (\chi\, e) \ar@<-2pt>[r]_{\pi_1\circ g\circ\pi_1} \ar@<2pt>[r]^{\pi_1\circ f\circ \pi_1} \ar[d]_{\mathrm{dense}}& \sum_{x :A} (Bx) \\
+  E \ar@<-2pt>[ru]_{\pi_1\circ g} \ar@<2pt>[ru]^{\pi_1\circ f}&
+}$$
+and as $A$ is separated, $\pi_1\circ f = \pi_2 \circ g$.
+For the second components, let $x:E$. Notice that for all $x:E$,
+$\sum_{y:E} x = y$ has a dense subobject, $\sum_{y:\sum_{e:E} (\chi\,
+  e)} x=y_1$~:
+
+$$\xymatrix{
+  \sum_{y:\sum_{e:E} (\chi\,
+  e)} x=y_1 \dar[rrr]{2pt}^{\pi_2\circ f\circ\pi_1\circ \pi_1}_{\pi_2\circ g\circ \pi_1\circ \pi_1} \ar[d]_{\mathrm{dense}}&&& B\,x \\
+  \sum_{y:E} x = y \dar[rrru]{2pt}^{\pi_2\circ f\circ \pi_1}_{\pi_2\circ g\circ \pi_1}&
+}$$
+Using the sepatation property of $B\,x$, one can show that second
+components, transported correctly along the first components equality,
+are equal. The complete proof can be found in the formalisation.
+This proves the following proposition
+\begin{prop}
+  $(\square,\mu)$ defines a modality on $\Type_{n+1}$.
+\end{prop}
+
+As this modality is just a step in the construction, we will not show
+that it is left exact, we will do it only for the sheafification modality.
+
+\subsection{From Separated Type to Sheaf}
+\label{ssec:separated-to-sheaf}
+
+If $T$ is already a separated type, the following lemma alllows us
+to build a sheaf~:
+\begin{lem}
+  Let $T:\Type_{n+1}$ be separated, and $U$ be a sheaf. If $T$ embeds
+  in $U$, and is closed in $U$, then $T$ is a sheaf.
+\end{lem}
+
+As any separated type $T$ embeds in $\left(\Type_n^\modal\right)^T$,
+it suffices to take the closure of $T$ to get a sheaf, and the unit
+$\nu_T:T \to \star T$ is obvious.
+\begin{prop}
+  $(\star,\nu)$ defines a reflective subuniverse.
+\end{prop}
+\begin{proof}
+  Let $T,Q:\Type_{n+1}$ such that $Q$ is a sheaf. Let $f:T\to Q$.
+  Because $Q$ is a sheaf, it is in particular separated ; thus we can
+  extend $f$ to $\square f:\square T\to Q$.
+
+  But as $\star T$ is the closure of $\square T$, $\square T$ is dense
+  into $\star T$, so the sheaf property of $Q$ allows to extend
+  $\square f$ to $\star f:\star T \to Q$.
+
+  As all these steps are universal, the composition is.
+\end{proof}
+
+
+\subsection{Summary}
+\label{ssec:summary}
+
+If $T:\Type_{n+1}$, the sheafification of $T$ is
+$$\star T = \sum_{u:T \to \Type_n^\modal} \lnot\lnot\left\| \sum_{a:X} 
+            (\lambda t,~\modal (a=t)) = u\right\|$$
+
+We already know that $\star$ defines a modality. It remains to show
+that this modality is left exact.
+
+The last thing to prove is the cumulativity of our sheafifications~:
+\begin{prop}
+  If $T:\Type_n$, then $\modal T = \star \widehat T$ (where $\widehat
+  T$ is $T$ seen as a $\Type_{n+1}$.
+\end{prop}
+It will imply that $\star$ is compatible with $\HProp$ in the sense of proposition~\ref{prop:hprop}.
+
+
+
+% An example of a floating figure using the graphicx package.
+% Note that \label must occur AFTER (or within) \caption.
+% For figures, \caption should occur after the \includegraphics.
+% Note that IEEEtran v1.7 and later has special internal code that
+% is designed to preserve the operation of \label within \caption
+% even when the captionsoff option is in effect. However, because
+% of issues like this, it may be the safest practice to put all your
+% \label just after \caption rather than within \caption{}.
+%
+% Reminder: the "draftcls" or "draftclsnofoot", not "draft", class
+% option should be used if it is desired that the figures are to be
+% displayed while in draft mode.
+%
+%\begin{figure}[!t]
+%\centering
+%\includegraphics[width=2.5in]{myfigure}
+% where an .eps filename suffix will be assumed under latex, 
+% and a .pdf suffix will be assumed for pdflatex; or what has been declared
+% via \DeclareGraphicsExtensions.
+%\caption{Simulation results for the network.}
+%\label{fig_sim}
+%\end{figure}
+
+% Note that IEEE typically puts floats only at the top, even when this
+% results in a large percentage of a column being occupied by floats.
+
+
+% An example of a double column floating figure using two subfigures.
+% (The subfig.sty package must be loaded for this to work.)
+% The subfigure \label commands are set within each subfloat command,
+% and the \label for the overall figure must come after \caption.
+% \hfil is used as a separator to get equal spacing.
+% Watch out that the combined width of all the subfigures on a 
+% line do not exceed the text width or a line break will occur.
+%
+%\begin{figure*}[!t]
+%\centering
+%\subfloat[Case I]{\includegraphics[width=2.5in]{box}%
+%\label{fig_first_case}}
+%\hfil
+%\subfloat[Case II]{\includegraphics[width=2.5in]{box}%
+%\label{fig_second_case}}
+%\caption{Simulation results for the network.}
+%\label{fig_sim}
+%\end{figure*}
+%
+% Note that often IEEE papers with subfigures do not employ subfigure
+% captions (using the optional argument to \subfloat[]), but instead will
+% reference/describe all of them (a), (b), etc., within the main caption.
+% Be aware that for subfig.sty to generate the (a), (b), etc., subfigure
+% labels, the optional argument to \subfloat must be present. If a
+% subcaption is not desired, just leave its contents blank,
+% e.g., \subfloat[].
+
+
+% An example of a floating table. Note that, for IEEE style tables, the
+% \caption command should come BEFORE the table and, given that table
+% captions serve much like titles, are usually capitalized except for words
+% such as a, an, and, as, at, but, by, for, in, nor, of, on, or, the, to
+% and up, which are usually not capitalized unless they are the first or
+% last word of the caption. Table text will default to \footnotesize as
+% IEEE normally uses this smaller font for tables.
+% The \label must come after \caption as always.
+%
+%\begin{table}[!t]
+%% increase table row spacing, adjust to taste
+%\renewcommand{\arraystretch}{1.3}
+% if using array.sty, it might be a good idea to tweak the value of
+% \extrarowheight as needed to properly center the text within the cells
+%\caption{An Example of a Table}
+%\label{table_example}
+%\centering
+%% Some packages, such as MDW tools, offer better commands for making tables
+%% than the plain LaTeX2e tabular which is used here.
+%\begin{tabular}{|c||c|}
+%\hline
+%One & Two\\
+%\hline
+%Three & Four\\
+%\hline
+%\end{tabular}
+%\end{table}
+
+
+% Note that the IEEE does not put floats in the very first column
+% - or typically anywhere on the first page for that matter. Also,
+% in-text middle ("here") positioning is typically not used, but it
+% is allowed and encouraged for Computer Society conferences (but
+% not Computer Society journals). Most IEEE journals/conferences use
+% top floats exclusively. 
+% Note that, LaTeX2e, unlike IEEE journals/conferences, places
+% footnotes above bottom floats. This can be corrected via the
+% \fnbelowfloat command of the stfloats package.
+
+\section{Formalization} 
+\label{sec:formalization}
+
+A Coq formalization is available at
+\url{https://github.com/KevinQuirin/sheafification/}.
+
+\nt{describe how many line for each, be clear about what has not been formalized}
+
+\section{Conclusion and Future Works}
+\label{sec:future-works}
+
+Prove that the Giraud axiom holds in homotopy type theory.
+
+Extend the sheafification to all types, even if non truncated.
+
+
+
+
+
+% conference papers do not normally have an appendix
+
+
+% use section* for acknowledgment
+\section*{Acknowledgment}
+
+
+The authors would like to thank...
+
+
+% trigger a \newpage just before the given reference
+% number - used to balance the columns on the last page
+% adjust value as needed - may need to be readjusted if
+% the document is modified later
+%\IEEEtriggeratref{8}
+% The "triggered" command can be changed if desired:
+%\IEEEtriggercmd{\enlargethispage{-5in}}
+
+% references section
+
+% can use a bibliography generated by BibTeX as a .bbl file
+% BibTeX documentation can be easily obtained at:
+% http://www.ctan.org/tex-archive/biblio/bibtex/contrib/doc/
+% The IEEEtran BibTeX style support page is at:
+% http://www.michaelshell.org/tex/ieeetran/bibtex/
+\bibliographystyle{IEEEtran}
+\bibliography{sheaf_lics}
+% argument is your BibTeX string definitions and bibliography database(s)
+%\bibliography{IEEEabrv,../bib/paper}
+%
+% <OR> manually copy in the resultant .bbl file
+% set second argument of \begin to the number of references
+% (used to reserve space for the reference number labels box)
+% \begin{thebibliography}{5}
+
+% \bibitem[RS13]{sets_in_hott}
+% Egbert Rijke and Bas Spitters.
+% \newblock Sets in homotopy type theory.
+% \newblock 2013.
+
+% \bibitem[{Uni}13]{hottbook}
+% {Univalent Foundations Project}.
+% \newblock {\em Homotopy Type Theory: Univalent Foundations for Mathematics}.
+% \newblock 2013.
+
+% \bibitem[MM92]{maclanemoerdijk}
+% Saunders MacLane and Ieke Moerdijk.
+% \newblock {\em Sheaves in Geometry and Logic}.
+% \newblock Springer-Verlag, 1992.
+
+% \bibitem[HTT]{lurie}
+% Jacob Lurie.
+% \newblock{\em Higher Topos Theory}.
+
+% \bibitem[AKL]{lumsdaine}
+% Peter LeFanu Lumsdaine, Jeremy Avigad and Chris Kapulkin.
+% \newblock{\em Homotopy limits in type theory}.
+
+% \end{thebibliography}
+
+
+
+
+% that's all folks
+\end{document}

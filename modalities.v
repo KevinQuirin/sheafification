@@ -61,6 +61,8 @@ Section Preliminary.
       apply istrunc_paths.
       apply trunc_succ. exact Y.1.2.
       apply subuniverse_paths.
+      exact ua.
+      exact fs.
 
       refine (O_rec_dep (hfiber f x;
            trunc_sigma X.2
@@ -122,7 +124,7 @@ Section Preliminary.
                                           (x0; (ap10 (O_rec_retr X Y f) x0)^))).1 x) = x).
       apply istrunc_paths.
       apply trunc_succ. exact (O subU X).1.2.
-      apply subuniverse_paths.
+      apply subuniverse_paths. exact ua. exact fs.
       
       refine (O_rec_dep X sheaf_family _).1.
       unfold sheaf_family in *; simpl in *; clear sheaf_family.
@@ -222,7 +224,7 @@ Section LexModality.
       transparent assert (B : (((O subU X).1).1 → subuniverse_Type (underlying_subu n.+1 mod))).
       intro rx.
       exists (function_lift subU X Y f rx = O_unit subU Y y ; istrunc_paths (trunc_succ ( (O subU Y).1.2)) _ _).
-      apply subuniverse_paths.
+      apply subuniverse_paths. exact ua. exact fs.
       
       pose subu_sigma. specialize (p0 (trunc_S n) mod (O subU X) B).
       apply p0. }

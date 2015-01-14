@@ -81,7 +81,7 @@ Section Reflective_Subuniverse_base_case.
 End Reflective_Subuniverse_base_case.
 
 Section HProp_sheaves.
-
+  Context `{ua : Univalence}.
   Context `{fs : Funext}.
 
   (* If T is a modal type, then [IsTrunc p T] is a HProp-sheaf *)
@@ -92,22 +92,29 @@ Section HProp_sheaves.
         (j_is_subU : forall P, (j P).1 = (subU.(O) (P.1; IsHProp_IsTrunc P.2 m)).1.1)
         (j_is_subU_unit : forall P x ,
                             transport idmap (j_is_subU P) (Oj_unit P x) = subU.(O_unit) (P.1; IsHProp_IsTrunc P.2 m) x)
-  : forall (T : subuniverse_Type subU), (subuniverse_HProp subuniverse_Prop (existT (IsTrunc -1) (IsTrunc p.+1 T.1.1) (hprop_trunc _ _))).1.
+  : forall (T : subuniverse_Type subU), (subuniverse_HProp subuniverse_Prop (existT (IsTrunc -1) (IsTrunc p T.1.1) (hprop_trunc _ _))).1.
     
     induction p.
-    - intros T X. apply hprop_allpath. intros x y.
-      revert X.
-      transparent assert (sheaf : (subuniverse_Type subU)).
-      { repeat refine (exist _ _ _).
-        exact (x = y).
-        apply istrunc_paths. apply trunc_succ. exact T.1.2.
-        apply subuniverse_paths. }
-      pose (rew := j_is_subU (IsHProp T.1.1; hprop_trunc _ _)). simpl in rew.
-      simpl.
+    - intros T.
+      pose (rew := j_is_subU (Contr (T.1).1; hprop_trunc (-2) (T.1).1)). simpl in *.
       rewrite rew; clear rew.
-      
-      apply (O_rec _ sheaf). unfold sheaf; clear sheaf.
-      intros X; simpl in *. apply path_ishprop.
+      intro X.
+      refine (@contr_inhabited_hprop (T.1.1) _ _).
+      apply hprop_allpath. intros x y.
+      transparent assert (sheaf : (subuniverse_Type subU)).
+      { refine (exist _ _ _).
+        refine (exist _ (x=y) _).
+        apply istrunc_paths. apply trunc_succ. exact T.1.2.
+        apply subuniverse_paths. exact ua. exact fs. }
+      revert X.
+      apply (O_rec _ sheaf).
+      intros [c pc]. unfold sheaf. simpl.
+      apply hprop_allpath.
+      intros u v. exact ((pc u)^ @ (pc v)).
+
+      revert X. apply O_rec.
+      simpl.
+      intros. exact (center _ X).
     - simpl in *. intros T X.
       unfold IsTrunc in *.
       intros x y.
@@ -115,7 +122,7 @@ Section HProp_sheaves.
       { repeat refine (exist _ _ _).
         exact (x = y).
         apply istrunc_paths. apply trunc_succ. exact T.1.2.
-        apply subuniverse_paths. }
+        apply subuniverse_paths. exact ua. exact fs. }
       specialize (IHp sheaf).
       unfold sheaf in *; clear sheaf. apply IHp.
       simpl in *.
@@ -127,18 +134,3 @@ Section HProp_sheaves.
   
 End HProp_sheaves.
 
-Section J.
-  
-  Context `{ua: Univalence}.
-  Context `{fs: Funext}.
-  
-  Definition J :=
-    pr1 (nchar_to_sub (pr1 o Oj)).
-  (* {P : HProp & j (pr1 P)} *)
-
-  Definition Oj_J_Contr (χ:J) : Contr ((j χ.1).1).
-    apply BuildContr with (center := χ.2).
-    intro. apply path_ishprop.
-  Defined.
-
-End J.

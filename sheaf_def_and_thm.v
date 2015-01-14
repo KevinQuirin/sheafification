@@ -41,7 +41,15 @@ Section Definitions.
 
   Definition islex_nj := islex_to_hfibers_preservation mod_nj islex_mod_nj.
   Definition lex_compat := islex_to_hfibers_preservation_compat mod_nj islex_mod_nj.
-  
+
+  Definition J :=
+    pr1 (nchar_to_sub (pr1 o Oj)).
+  (* {P : HProp & j (pr1 P)} *)
+
+  Definition Oj_J_Contr (χ:J) : Contr ((j χ.1).1).
+    apply BuildContr with (center := χ.2).
+    intro. apply path_ishprop.
+  Defined.
   
   Definition nJ := {T : Trunk n & (nj.(O) T).1.1}.
 
@@ -135,8 +143,8 @@ Section Definitions.
           exact (u x = v x).
           apply istrunc_paths.
           exact T.2.
-          pose subuniverse_paths.
-          specialize (p0 n nj ((T.1;Trn);nsheaf) (u x) (v x)). simpl in p0.
+          pose (subuniverse_paths).
+          specialize (p0 n nj ua fs ((T.1;Trn);nsheaf) (u x) (v x)). simpl in p0.
           assert (istrunc_paths (trunc_succ Trn) (u x) (v x) = istrunc_paths T.2 (u x) (v x)) by apply path_ishprop.
           rewrite X in p0.
           exact p0. }

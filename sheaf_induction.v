@@ -1877,12 +1877,220 @@ Section Type_to_separated_Type.
   Definition sheafification_trunc (T:Trunk (trunc_S n)) : Trunk (trunc_S n) :=
     (sheafification_Type T ; sheafification_istrunc  (T:=T)).
 
-  Definition sheafification_ (T:Trunk (trunc_S n)) : Snsheaf_struct (sheafification_trunc T)
-    
-    
-    := separated_to_sheaf (((existT (IsTrunc (trunc_S n)) (separated_Type T) (separated_Type_is_Trunk_Sn (T:=T)))); @separated_Type_is_separated T) (T_nType_j_Type_sheaf T) (IsMono_fromIm (f:=_)).
+  Definition sheafification (T:Trunk (trunc_S n)) : SnType_j_Type.
+    refine (exist _ _ _).
+    exists (sheafification_Type T).
+    apply sheafification_istrunc.
+    (* Should be separated_to_sheaf (((existT (IsTrunc (trunc_S n)) (separated_Type T) (separated_Type_is_Trunk_Sn (T:=T)))); @separated_Type_is_separated T) (T_nType_j_Type_sheaf T) (IsMono_fromIm (f:=_)). *)
+    admit.
+  Defined.
+  
+  (* Definition sheafification_ (T:Trunk (trunc_S n)) : Snsheaf_struct (sheafification_trunc T)   *)
+    (* := separated_to_sheaf (((existT (IsTrunc (trunc_S n)) (separated_Type T) (separated_Type_is_Trunk_Sn (T:=T)))); @separated_Type_is_separated T) (T_nType_j_Type_sheaf T) (IsMono_fromIm (f:=_)). *)
 
-  Definition sheafification (T:Trunk (trunc_S n)) : SnType_j_Type :=
-    ((sheafification_Type T ; sheafification_istrunc  (T:=T)); sheafification_ T).
+  (* Definition sheafification (T:Trunk (trunc_S n)) : SnType_j_Type := *)
+  (* ((sheafification_Type T ; sheafification_istrunc  (T:=T)); sheafification_ T). *)
 
+  Definition good_sheafification_Type (T:Trunk (n.+1))
+    := {u : T.1 -> subuniverse_Type nj & (Oj (Trunc -1 ({a:T.1 & (λ t' : T.1,
+                                                                         (O nj (a = t'; istrunc_paths T.2 a t'))) = u}); istrunc_truncation -1 _)).1.1}.
+
+  Lemma good_sheafification_Type_is_sheafification_Type (T:Trunk (trunc_S n))
+  : (sheafification T).1.1 = good_sheafification_Type T.
+    unfold sheafification, sheafification_Type, separated_to_sheaf, separated_to_sheaf_Type, cloture; simpl.
+    unfold cloture, nsub_to_char, fromIm, hfiber, mono_is_hfiber; simpl.
+    apply path_universe_uncurried.
+    apply equiv_functor_sigma_id.
+    intros a. simpl.
+    apply equiv_path.
+    transparent assert (hp : HProp).
+    { exists (∃ x : separated_Type T, x.1 = a).
+      exact ((snd
+           (IsEmbedding_IsMono
+              (λ
+               im : Im
+                      (λ t t' : T.1,
+                       (O nj (t = t'; istrunc_paths T.2 t t'))),
+               im.1))
+           (IsMono_fromIm
+              (f:=λ t t' : T.1,
+                  (O nj (t = t'; istrunc_paths T.2 t t')))) a)). }
+    pose (p := j_is_nj hp).
+    unfold hp in *; simpl in *; clear hp.
+    rewrite <- p. clear p.
+    repeat apply ap.
+    (* apply truncn_unique. exact fs. simpl. *)
+    unfold separated_Type, Im, Overture.hfiber. simpl.
+    apply univalence_hprop.
+    - exact (snd
+       (IsEmbedding_IsMono
+          (λ
+           im : Im
+                  (λ t t' : T.1,
+                   (O nj (t = t'; istrunc_paths T.2 t t'))), im.1))
+       (IsMono_fromIm
+          (f:=λ t t' : T.1,
+              (O nj (t = t'; istrunc_paths T.2 t t')))) a).
+
+    - exact (istrunc_truncation (-1)
+       (∃ a0 : T.1,
+        (λ t' : T.1,
+         (O nj (a0 = t'; istrunc_paths T.2 a0 t'))) = a)).
+      
+    - split.
+      + intros [[x y] p]. destruct p. simpl.
+      revert y. apply Trunc_rec. intros [y z].
+      apply tr.
+      exists y.
+      exact z.
+      + apply Trunc_ind.
+        intro x.
+        exact (snd
+       (IsEmbedding_IsMono
+          (λ
+           im : Im
+                  (λ t t' : T.1,
+                   (O nj (t = t'; istrunc_paths T.2 t t'))), im.1))
+       (IsMono_fromIm
+          (f:=λ t t' : T.1,
+              (O nj (t = t'; istrunc_paths T.2 t t')))) a).
+        intros [x q].
+        refine (exist _ _ _).
+        exists a.
+        apply tr. exists x. exact q.
+        reflexivity.
+  Qed.
+
+  Definition good_sheafification (T:Trunk (n.+1))
+  : SnType_j_Type.
+    refine (exist _ _ _).
+    exists (good_sheafification_Type T).
+    rewrite <- good_sheafification_Type_is_sheafification_Type.
+    exact _.2.
+    match goal with
+      |[|- Snsheaf_struct ?X] => assert (eq : (sheafification T).1 = X)
+    end.
+    refine (path_sigma' _ _ _).
+    apply good_sheafification_Type_is_sheafification_Type.
+    apply path_ishprop.
+    destruct eq.
+    exact _.2.
+  Defined.
+
+  Definition good_sheafification_unit (T:Trunk (trunc_S n))
+  : T.1 -> (good_sheafification T).1.1.
+    intro x.
+    exists (separated_unit T x).1.
+    apply Oj_unit. simpl.
+    apply tr.
+    exists x. reflexivity.
+  Defined.
+
+  Definition density_sheafification (T:Trunk (n.+1))
+  : (good_sheafification_Type T) -> J.
+    intros [u x].
+    unfold J, nchar_to_sub. simpl.
+    exists ((Trunc -1 ({a:T.1 & (λ t' : T.1,
+                                             (O nj (a = t'; istrunc_paths T.2 a t'))) = u}); istrunc_truncation -1 _)).
+    exact x.
+  Defined.
+
+  Lemma density_sheafification_is_sep (T : Trunk (n.+1))
+  : {e:(good_sheafification_Type T) & (density_sheafification e).1.1} <~>  separated_Type T.
+    refine (equiv_adjointify _ _ _ _).
+    - intros [e p].
+      exists e.1.
+      exact p.
+    - intros [e he].
+      refine (exist _ _ _).
+      exists e.
+      apply Oj_unit.
+      exact he. exact he.
+    - admit.
+    - admit.
+  Defined.
+
+  Lemma equiv_arrow (A B C:Type) (H : A <~> B)
+  : (A -> C) <~> (B -> C).
+    refine (equiv_adjointify _ _ _ _).
+    - intros f b; apply f. apply H; exact b.
+    - intros f a; apply f. apply H; exact a.
+    - intros f. apply path_forall; intro b. rewrite eisretr. reflexivity.
+    - intros f. apply path_forall; intro a. rewrite eissect. reflexivity.
+  Defined.
+                                          
+
+  Definition sheafification_equiv (P:Trunk (n.+1)) (Q : Trunk (n.+1)) (modQ : (Snsheaf_struct Q))
+  : IsEquiv (fun f : (good_sheafification P).1.1 -> Q.1 => f o (good_sheafification_unit P)).
+    destruct modQ as [sepQ sheafQ].
+    match goal with |[|- IsEquiv ?X] => set (foo := X) end.
+
+    transparent assert (sh_to_clsep : ((((good_sheafification P).1).1 → Q.1) -> ({e:(good_sheafification_Type P) & (density_sheafification e).1.1} → Q.1))).
+    { intros X Y.
+      apply X.
+      exact Y.1. }
+    transparent assert (clsep_to_sep : (({e:(good_sheafification_Type P) & (density_sheafification e).1.1} → Q.1) -> (separated_Type P -> Q.1))).
+    { apply equiv_arrow.
+      apply density_sheafification_is_sep. }
+    pose (sep_f := (λ (f : separated_Type P → ((Q; sepQ).1).1) 
+         (x : P.1), f (separated_unit P x))).
+    assert (foo = sep_f o clsep_to_sep o sh_to_clsep) by reflexivity.
+    rewrite X.
+    refine (isequiv_compose).
+    - exact (separated_equiv P (existT (separated) Q sepQ)).
+  Qed. 
+    
+  Definition sheafification_modality (A:Trunk n.+1) (modA : Snsheaf_struct A) (B: A.1 -> Trunk n.+1) (modB : forall a, (Snsheaf_struct (B a))) 
+  : Snsheaf_struct (({x:A.1 & (B x).1} ; trunc_sigma (A.2) (λ x, (B x).2)): Trunk n.+1).
+    destruct modA as [sepA sheafA].
+    split.
+    - assert (p := subu_sigma _ (separated_modality)). simpl in p.      
+      exact (p (A; sepA) (λ a, (B a; fst (modB a)))). 
+    - intros E χ.
+      refine (isequiv_adjointify _ _ _ _).
+      + simpl.
+        intros φ e.
+        destruct ((sheafA E χ)) as [inva retra secta _]. unfold Sect in *; simpl in *.
+        pose (a := inva (pr1 o φ) e).
+        exists a.
+        unfold E_to_χmono_map in *; simpl in *.
+        specialize (modB a).
+        destruct modB as [sepB sheafB]. simpl in *.        
+        specialize (sheafB {e':E & e = e'} (λ x, χ x.1)).
+        refine (equiv_inv (IsEquiv := sheafB) _ (e;1)).
+        intros [[b p] h].
+        destruct p. simpl in *.
+        specialize (retra (pr1 o φ)).
+        apply ap10 in retra.
+        specialize (retra (e;h)). simpl in retra.
+        unfold a.
+        apply (transport (λ U, (B U).1) retra^).
+        exact (φ (e;h)).2.
+      + intro φ; simpl in *.
+        unfold E_to_χmono_map; simpl in *.
+        apply path_forall; intros [e h].
+        refine (path_sigma' _ _ _).
+        { exact (ap10 (eisretr _ (IsEquiv := sheafA E χ) (pr1 o φ)) (e;h)). }
+        {
+          destruct ((sheafA E χ)) as [inva retra secta adja]. 
+          destruct (modB (inva
+             (λ x : ∃ b : E, (let (proj1_sig, _) := χ b in proj1_sig).1,
+                let (proj1_sig, _) := φ x in proj1_sig) e)) as [sepB sheafB].
+          destruct (sheafB (∃ e' : E, e = e') (λ x, (χ x.1))) as [invb retrb sectb adjb].
+          simpl in *. clear adjb; clear adja.
+          unfold Sect, E_to_χmono_map in *; simpl in *.
+          refine (moveR_transport_p (pr1 o B) _ _ _ _).
+          match goal with
+            |[|- invb ?X _ = _ ] => specialize (retrb X)
+          end.
+          simpl in retrb.
+          apply ap10 in retrb.
+          specialize (retrb ((e;1);h)). simpl in retrb.
+          exact retrb. }
+      + intro φ; simpl in *.
+        apply path_forall; intro e.
+        refine (path_sigma' _ _ _).
+        { exact (ap10 (eissect _ (IsEquiv := sheafA E χ) (pr1 o φ)) e). }
+        { admit. }
+  Qed.  
   

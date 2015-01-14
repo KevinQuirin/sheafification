@@ -116,30 +116,38 @@
 \section{Introduction}
 \label{sec:intro}
 
-The sheaf construction, or sheafification~\cite{maclanemoerdijk}, is a
-very powerful tool to construct new topoi from already existing ones,
-allowing logical principles---that can not be proven to be true or false
-in the old topos---to be valided (or invalided) in the new topos.
+Sheafification~\cite{maclanemoerdijk} is a very powerful geometric
+construction that has been initially stated in topology and has
+quickly been lifted to mathematical logic.
 %
-The most common use of sheafification is to construct a boolean
+In the field of topos theory, it provides a way to construct new topoi
+from already existing ones, allowing logical principles---that can not
+be proven to be true or false in the old topos---to be valid (or
+invalid) in the new topos.
+%
+The most common use of sheafification is the construction a boolean
 topos, thus validating the classical principle of the law of excluded
-middle (EM), from an intuitionistic topos. 
+middle (EM), from an intuitionistic topos using the dense topology. 
 %
-An other famous (revisited) application has been developed by Paul
+An other famous application has been developed by
 Cohen~\cite{cohen1966} to prove that the continuum hypothesis is
 independent of the usual axioms of Zermelo-Fr\ae nkel set theory, even
-in presence of the axiom of choice (AC).
+in presence of the axiom of choice (AC). The initial work of Cohen
+uses forcing but can be rephrased in terms of
+sheafification~\cite{maclanemoerdijk}.
 
 Even if similar questions have been considered around the Curry-Howard
-isomorphism, there is no canonical way to extend a programming language
-such as type theory while keeping consistency automatically. 
+isomorphism, there is no canonical way to extend a programming
+language such as type theory with new logical or computational
+principle while keeping consistency automatically.
 %
 For instance, much effort have been done to provide a computational
-content to the law of excluded middle in order to define a constructive
-version of classical logic. This has lead to various calculi, with
-most notably the $\lambda \mu$-calculus of
-Parigot~\cite{parigot1993classical}, but this has not allow to define
-a new version of type theory with classical principles.
+content to the law of excluded middle in order to define a
+constructive version of classical logic. This has lead to various
+calculi, with most notably the $\lambda \mu$-calculus of
+Parigot~\cite{parigot1993classical}, but this line of work has not
+appeared to be fruitful to define a new version of type theory with
+classical principles.
 %
 Other works have tried to extend continuation-passing-style (CPS)
 transformation to type theory, but they have been faced with the
@@ -147,14 +155,68 @@ difficulty that the CPS transformation is incompatible with (full) dependent
 sums~\cite{barthe2002cps}, which puts emphasis on the tedious link
 between the axiom of choice and the law of excluded middle in type theory.
 
-Nevertheless the axiom of choice Coquand, Herbelin, Krivine.
+Nevertheless the axiom of choice has shown to be realizable by
+computational meaning in a classical setting by techniques turning
+around the notion of (modified) bar induction
+\cite{berardi1998computational}, Krivine's
+realizability~\cite{krivine2003dependent} and even more recently with
+restriction on elimination of dependent sums and lazy
+evaluation~\cite{herbelin2012constructive}.
 %
-% Some works have tried to provide a realization of the axiom of choice 
-% compatible with classical logic 
+
+Unfortunately, all those works do not share the generality and
+simplicity of sheafification in topos theory.  
+%
+However, type theory is known to be quite closed to topos theory so
+one could wonder why similar techniques have not been developed in the
+field of type theory. 
+%
+The answer to this question has been given recently by the advent of
+homotopy type theory~\cite{hottbook}, which is an extension of
+Martin-Löf type theory with principles inspired by (higher) category
+theory and homotopy theory, such as higher inductive
+types~\cite{lumsdaine2011higher,lumsdaine2013higher} and
+Voevodsky's univalence principle~\cite{kapulkin2012simplicial}. 
+
+This new point of view on type theory has revealed the
+homotopy structure of types where for instance (homotopical)
+propositions are just types with an irrelevant equality and
+(homotopical) sets are types with a propositional equality. 
+%
+When restricted to such propositions and sets, type theory corresponds
+quite closely to topos theory but the mismatch starts when considering
+higher homotopical types. 
+%
+Fortunately, an higher version of topos theory has been developed
+recently by mathematicians, synthesized in the monograph of Lurie on
+higher topos theory~\cite{lurie}. 
+%
+Lurie has developed their all the tools that have been defined in
+topos theory, but in an higher setting. In particular, the theory of
+sheaves has been lifted to higher topos theory.
+%
+As the notion of higher topoi appears to correspond very closely
+to homotopy type theory, this provides a new hope that tackling the problem of
+extending the power of type theory using sheafification is actually possible.
+
+Nevertheless, the adaptation of the sheafification in higher topos
+theory to homotopy type theory is not straightforward because the
+construction in higher topoi is restricted to the initial
+Grothendieck which is still very topological, and not very amenable to
+formalization in type theory. It seems more promising to use a
+generalized sheafification, called Lawvere-Tierney
+sheafification~\cite{maclanemoerdijk}, but this construction has not
+been considered yet in the setting of higher topos theory. 
+
+\subsection{Lawvere-Tierney Topology}
+
+\subsection{Overview of the Result}
+
+The main contribution of this article is presents a computer check  
+
+
 
 \begin{itemize}
-\item 
-  links between HoTT and higher topos theory 
 \item 
   modalities in HoTT
 \item 

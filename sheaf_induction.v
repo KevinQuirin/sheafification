@@ -24,7 +24,23 @@ Arguments istrunc_paths {A} {n} H x y: simpl never.
 Arguments truncn_unique _ {n} A B H: simpl never.
 Arguments isequiv_functor_sigma {A P B Q} f {H} g {H0}: simpl never.
 
-
+(* Fixpoint reflectors `{ua: Univalence} `{fs: Funext} (n:trunc_index) {struct n} : forall (_:Type(T : Trunk@{i' i} n.+1), Trunk@{j' j} (n.+1). *)
+(*   destruct n. *)
+(*   - intro T. exact (Oj T).1. *)
+(*   - intros T. *)
+(*     Set Printing Universes. *)
+(*     pose (Ω := {T : Trunk n.+1 & T = On T} : Type). *)
+(*     pose ({u : T.1 -> Ω & On (existT (IsTrunc (n.+1)) (Trunc -1 {a:T.1 & pr1 o u = (λ t:T.1, On (a=t; istrunc_paths T.2 a t))}) (IsHProp_IsTrunc (istrunc_truncation -1 _) n ))}). *)
+(*     assert (forall u : T.1 -> Ω, IsTrunc (n.+1) (Trunc -1 {a:T.1 & pr1 o u = (λ t:T.1, On (a=t; istrunc_paths T.2 a t))})). *)
+(*     { intro u. *)
+(*       apply IsHProp_IsTrunc. *)
+(*       apply istrunc_truncation. } *)
+(*     assert (forall u : T.1 -> Ω, Type). *)
+(*     intro u. *)
+(*     pose ((existT (λ T:Type, IsTrunc (n.+1) T) (Trunc -1 {a:T.1 & pr1 o u = (λ t:T.1, On (a=t; istrunc_paths T.2 a t))}) (X u)) : Trunk n.+1). simpl in t. *)
+(*     specialize (On t). *)
+(*     exists ({u : T.1 -> Ω & On (existT (IsTrunc (n.+1)) (Trunc -1 {a:T.1 & pr1 o u = (λ t:T.1, On (a=t; istrunc_paths T.2 a t))}) (X u))}). *)
+                        
 Section Type_to_separated_Type.
 
   Context `{ua: Univalence}.
@@ -2040,7 +2056,7 @@ Section Type_to_separated_Type.
     - exact (separated_equiv P (existT (separated) Q sepQ)).
   Qed. 
     
-  Definition sheafification_modality (A:Trunk n.+1) (modA : Snsheaf_struct A) (B: A.1 -> Trunk n.+1) (modB : forall a, (Snsheaf_struct (B a))) 
+  Definition sheafification_subu_sigma (A:Trunk n.+1) (modA : Snsheaf_struct A) (B: A.1 -> Trunk n.+1) (modB : forall a, (Snsheaf_struct (B a))) 
   : Snsheaf_struct (({x:A.1 & (B x).1} ; trunc_sigma (A.2) (λ x, (B x).2)): Trunk n.+1).
     destruct modA as [sepA sheafA].
     split.
@@ -2058,21 +2074,19 @@ Section Type_to_separated_Type.
         destruct modB as [sepB sheafB]. simpl in *.        
         specialize (sheafB {e':E & e = e'} (λ x, χ x.1)).
         refine (equiv_inv (IsEquiv := sheafB) _ (e;1)).
-        intros [[b p] h].
-        destruct p. simpl in *.
+        intros X.
         specialize (retra (pr1 o φ)).
         apply ap10 in retra.
-        specialize (retra (e;h)). simpl in retra.
+        specialize (retra (e; transport _ X.1.2^ X.2)). simpl in retra.
         unfold a.
         apply (transport (λ U, (B U).1) retra^).
-        exact (φ (e;h)).2.
+        exact (φ (e; transport _ X.1.2^ X.2)).2.
       + intro φ; simpl in *.
         unfold E_to_χmono_map; simpl in *.
         apply path_forall; intros [e h].
         refine (path_sigma' _ _ _).
         { exact (ap10 (eisretr _ (IsEquiv := sheafA E χ) (pr1 o φ)) (e;h)). }
-        {
-          destruct ((sheafA E χ)) as [inva retra secta adja]. 
+        { destruct ((sheafA E χ)) as [inva retra secta adja]. 
           destruct (modB (inva
              (λ x : ∃ b : E, (let (proj1_sig, _) := χ b in proj1_sig).1,
                 let (proj1_sig, _) := φ x in proj1_sig) e)) as [sepB sheafB].
@@ -2091,6 +2105,43 @@ Section Type_to_separated_Type.
         apply path_forall; intro e.
         refine (path_sigma' _ _ _).
         { exact (ap10 (eissect _ (IsEquiv := sheafA E χ) (pr1 o φ)) e). }
-        { admit. }
-  Qed.  
+        {
+          refine (moveR_transport_p (pr1 o B) _ _ _ _).
+          
+          admit. }
+  Qed.
+
+  Definition sheafification_subU : subuniverse_struct (n.+1).
+    refine (Build_subuniverse_struct _ _ _ _).
+    - intro T. exists (Snsheaf_struct T). apply Snsheaf_struct_is_HProp.
+    - intros T. exact (good_sheafification T).
+    - intros T. apply good_sheafification_unit.
+    - exact (λ P Q, sheafification_equiv P Q.2).
+  Defined.
+      
+  Definition sheafification_modality : Modality (n.+1).
+    refine (Build_Modality _ _ _).
+    - exact sheafification_subU.
+    - exact (λ A B, sheafification_subu_sigma A.2 (pr1 o B) (λ a, (B a).2)).
+  Defined.
+      
+    
+  Axiom cumulativity : forall (T:Trunk n) (SnT : IsTrunc (n.+1) T.1), (O nj T).1.1 = (good_sheafification_Type (T.1;SnT)).
+
+
+  Lemma O_paths_is_paths_sheafification_unit (T:Trunk (n.+1)) (x y:T.1)
+  : ((good_sheafification_unit T x) = (good_sheafification_unit T y)) <~> (O nj (x = y; (istrunc_paths T.2 x y))).1.1.
+  Admitted.
+
+    
+  Definition sheafification_left_exact
+  : IsLex sheafification_modality.
+    intros A x y H. simpl.
+    rewrite <- (cumulativity (x = y; (istrunc_paths A.2 x y))).
+    apply (@trunc_equiv' (good_sheafification_unit A x = good_sheafification_unit A y) ((O nj (x = y; istrunc_paths A.2 x y)).1).1 (O_paths_is_paths_sheafification_unit A x y) -2).
+
+    apply (@contr_paths_contr). exact H.
+  Defined.
+    
+  
   

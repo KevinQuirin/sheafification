@@ -3,6 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{xspace}
+\usepackage[colorlinks=true]{hyperref}
 
 % *** MATH PACKAGES ***
 %
@@ -58,6 +59,14 @@
 \newcommand{\IsType}[1]{\mathrm{Is\mymathhyphen}#1\mathrm{\mymathhyphen
     type}}
 \newcommand{\modal}{\ensuremath{\ocircle}}
+\newcommand \True {\mathrm{true}}
+\newcommand \False {\mathrm{false}}
+\newcommand \closure[1] {\overline{#1}}
+\newcommand \Char[1] {\chi_{#1}}%{\mathrm{char}(#1)}
+\newcommand \E {\mathcal{E}}
+\newcommand \Hom[1] {\mathrm{Hom}_{#1}}
+\newcommand \Sh[1] {\mathrm{Sh}_{#1}}
+
 
 \begin{document}
 %
@@ -89,10 +98,10 @@
 % in the abstract
 \begin{abstract}
 
-  Sheafification is a popular tool in (higher) topos theory which
+  Sheafification is a popular tool in topos theory which
   allows to extend the internal logic of a topos with new
   principles. One of its most famous applications is the possibility
-  to transform a topos into a boolean (classical) topos using the
+  to transform a topos into a boolean topos using the
   dense topology, which corresponds in essence to Gödel's double
   negation translation.
   % 
@@ -164,8 +173,11 @@ restriction on elimination of dependent sums and lazy
 evaluation~\cite{herbelin2012constructive}.
 %
 
-Unfortunately, all those works do not share the generality and
-simplicity of sheafification in topos theory.  
+Unfortunately, all those works---although they provide very nice and
+sophisticated theoretical results---do not share the generality and
+simplicity of sheafification in topos theory and are not amenable to a
+direct integration into proof assistant based on type theory such as
+Coq or Agda.  
 %
 However, type theory is known to be quite closed to topos theory so
 one could wonder why similar techniques have not been developed in the
@@ -177,22 +189,29 @@ Martin-Löf type theory with principles inspired by (higher) category
 theory and homotopy theory, such as higher inductive
 types~\cite{lumsdaine2011higher,lumsdaine2013higher} and
 Voevodsky's univalence principle~\cite{kapulkin2012simplicial}. 
+%
 
 This new point of view on type theory has revealed the
-homotopy structure of types where for instance (homotopical)
-propositions are just types with an irrelevant equality and
-(homotopical) sets are types with a propositional equality. 
+homotopy structure of types where for instance homotopical
+propositions (or $\Type_{-1}$) are just types with an irrelevant equality and
+homotopical sets (or $\Type_{0}$)  are types with a propositional
+equality and so on for $\Type_{n}$.
 %
-When restricted to such propositions and sets, type theory corresponds
-quite closely to topos theory but the mismatch starts when considering
-higher homotopical types. 
+The development of univalence has also shed some light on the
+difficulty to make the AC and EM coexist in type theory. Indeed, it
+has been shown that a naive (non-propositional) version of EM is
+inconsistent with univalence.
+
+When restricted to homotopical propositions and sets, homotopy type
+theory corresponds quite closely to topos theory but the mismatch
+starts when considering higher homotopical types.
 %
-Fortunately, an higher version of topos theory has been developed
+Fortunately, a higher version of topos theory has been developed
 recently by mathematicians, synthesized in the monograph of Lurie on
 higher topos theory~\cite{lurie}. 
 %
-Lurie has developed their all the tools that have been defined in
-topos theory, but in an higher setting. In particular, the theory of
+Lurie has developed all the tools that have been defined in
+topos theory, but in a higher setting. In particular, the theory of
 sheaves has been lifted to higher topos theory.
 %
 As the notion of higher topoi appears to correspond very closely
@@ -210,39 +229,142 @@ been considered yet in the setting of higher topos theory.
 
 \subsection{Lawvere-Tierney Topology}
 
+Lawvere-Tierney sheafification in a topos $\E$ is based on an abstract
+point of view on the topology to be considered, being simply an
+endomorphism on the classifying object $\Omega$ of $\E$  
+%
+$$
+j : \Omega \rightarrow \Omega
+$$
+%
+that is required to preserve $\True$ ($j \ \True = \True$), to be
+idempotent ($j \circ j = j$) and compatible with products ($j \circ
+\wedge = \wedge \circ (j, j)$).
+%
+A typical example is given by double negation.
+
+Every Lawvere-Tierney topology $j$ induces a closure operator
+$A \mapsto \closure{A}$ on subojects. If we see a subobject $A$ of $E$
+as a characteristic function $\Char{A}$, the closure $\closure{A}$
+corresponds to the subobject of $E$ whose characteristic function is 
+%
+$$
+\Char{\closure{A}} = j \circ \Char{A}.
+$$
+%
+A suboject $A$ of $E$ is said to
+be dense when $\closure{A} = E$.
+
+The idea is then to define sheaves in $\E$ as objects of $\E$ for
+which it is impossible to make a distinction between objects and their
+dense subobjects. This idea is formalized by saying that for every
+dense subobject $A$ of $E$, the following canonical map is an
+isomorphism
+%
+\begin{equation}\label{equ:sheaf_def}
+\Hom{\E}(E,F) \rightarrow \Hom{\E}(A,F).
+\end{equation}
+%
+On can show that $\Sh{\E}$, the full sub-category of $\E$ given by
+sheaves, is again a topos, with classifying object
+%
+$$
+\Omega_j = \{ P \in \E \ | \ j P  \leftrightarrow P \}.
+$$
+%
+Thus, in case of the double negation, the resulting topos is boolean  
+and admits classical reasoning.
+
+But furthermore, one can defined a left adjoint, the sheafification
+functor, 
+%
+$$
+a_j : \E \rightarrow \Sh{\E}
+$$
+to the inclusion functor, which exhibits $\Sh{\E}$ as a reflective
+subcatefory of $\E$ (which is a particular case of localization). This
+means that logical principles valid in $\E$ are still valid in
+$\Sh{\E}$.
+
+
 \subsection{Overview of the Result}
 
-The main contribution of this article is presents a computer check  
+The main contribution of this article is the development of a
+computer-checked definition of Lawvere-Tierney sheafification in the
+setting of homotopy type theory.
+%
+This provides a way to give a meaning to the propositional law of
+excluded middle, and more generally, combined with the previous work on
+forcing in type theory~\cite{jaber2012extending}, it allows to reuse
+results derived for topos theory, such as independence results.
 
+To extend Lawvere-Tierney sheafification to homotopy type theory, the
+first thing to realize is that the construction can not be done in one
+step anymore. It must be done by induction on the level of homotopy of
+types. More precisely, the first layer of sheafification is defined
+for $\Type_{0}$ , given a topology on $\Type_{-1}$. This part
+corresponds to sheafification for topoi. Then, assuming that the
+sheafification has been constructed up to level $n$, one can defined
+the sheafification for $\Type_{n+1}$.
+%
+This inductive process in the definition of sheafification is similar
+to construction in the Grothendieck setting, where the
+sheafification is obtained by applying the plus-construction $n+1$ to
+$\Type_{n}$~\cite[Chapter~6]{lurie}.
 
+This inductive step requires to formalize the notion of left-exact
+reflective subuniverse, which corresponds to a stratified
+version of left-exact modalities introduced
+in~\cite[Chapter~7]{hottbook}. A Lawvere-Tierney topology can thus be
+seen as a left-exact modality on $\Type_{-1}$ and sheafification as
+a way to extend it as a left-exact modality on $\Type_{n}$ for any $n$.
 
+Compare to the definition of sheafification in topos theory, the main
+change comes from the fact that in homotopy type theory, there is not
+a single object classifier but rather an $n$-object classifier for
+each $n\geq -2$ which classifies functions with $n$-truncated homotopy
+fibers~\cite{sets_in_hott}. This means that when monomorphisms are used in topos
+theoretic definition, the correct generalization may be $n$-truncated homotopy
+fibers or monomorphims (\ie $-1$-truncated homotopy
+fibers) depending on the context.
+
+For instance, the notion of separated objects (which is a technical
+tool in the construction of the sheafification), for which the morphism
+(\ref{equ:sheaf_def}) is just a monomorphism, is generalized in two
+different ways.  
+%
+The subobjects to be considered are given by $n$-truncated fibers,
+while the morphism (\ref{equ:sheaf_def}) is still required to be a
+monomorphism.
+
+In other technical difficulty is the fact that sheafification in topos
+theory uses the fact that epimorphisms are coequalizers of their
+kernel pairs. This properties does not holds in higher topoi, but it
+can be replaced by Giraud's axiom which basically allows to replace 
+ kernel pairs by \v{C}ech nerves.
+
+Finally, one of the main difficulty in our formalization is that many
+equlity which are trival (b yproof irrelevance) in the topos theoretic
+setting becomes relevant and requires a carreful use of univalence
+with appropriate isomorphisms.
+
+\subsection{Plan of the Paper}
 \begin{itemize}
-\item 
-  modalities in HoTT
-\item 
-  Giraud's axiom
-\end{itemize}
-
-
-Plan of the paper~:
-\begin{itemize}
-\item In section~\ref{sec:hott}, we define the foundations on which
+\item Section~\ref{sec:hott}, we define the foundations on which
   our worked is based.
-\item In section~\ref{sec:sheaves}, we explain the construction of the
+\item Section~\ref{sec:sheaves}, we explain the construction of the
   sheafification functor.
-\item Finally, we discuss related works and present future works.
+\item Section~\ref{sec:formalization} presents the details of the
+  formalization in Coq.
+\item Finally, we present future works.
 \end{itemize}
-\section{Homotopy Type Theory}
+
+\section{Preliminaries on Homotopy Type Theory}
 \label{sec:hott}
 
 
 \subsection{Homotopy Type Theory}
 \label{ssec:hott}
-
-\nt{
-  Il faut au minimum introduire proprement les n-Types, le squash
-  sur les props 
-}
 
 Our work is mainly based on the stratification by $\Type_n$~:
 \begin{defi}
@@ -747,12 +869,6 @@ The last thing to prove is the cumulativity of our sheafifications~:
   T$ is $T$ seen as a $\Type_{n+1}$.
 \end{prop}
 It will imply that $\star$ is compatible with $\HProp$ in the sense of proposition~\ref{prop:hprop}.
-\section{Future Works}
-\label{sec:future-works}
-
-Prove that the Giraud axiom holds in homotopy type theory.
-
-Extend the sheafification to all types, even if non truncated.
 
 
 
@@ -850,11 +966,21 @@ Extend the sheafification to all types, even if non truncated.
 % footnotes above bottom floats. This can be corrected via the
 % \fnbelowfloat command of the stfloats package.
 
+\section{Formalization} 
+\label{sec:formalization}
 
+A Coq formalization is available at
+\url{https://github.com/KevinQuirin/sheafification/}.
 
+\nt{describe how many line for each, be clear about what has not been formalized}
 
-\section{Conclusion}
-The conclusion goes here.
+\section{Conclusion and Future Works}
+\label{sec:future-works}
+
+Prove that the Giraud axiom holds in homotopy type theory.
+
+Extend the sheafification to all types, even if non truncated.
+
 
 
 

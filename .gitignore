@@ -11,3 +11,5 @@ paper/sheaf_lics.pdf
 *.bbl
 *.blg
 *.bst
+*.el
+*.out

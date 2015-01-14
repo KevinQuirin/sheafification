@@ -131,6 +131,56 @@ Section HProp_sheaves.
       apply f.
       exact (H x y).
   Defined.
+
+  Lemma is_classical_IsEquiv
+        (m p: trunc_index)
+        (mod : Modality (m.+1))
+        (subU := underlying_subu _ mod)
+        (j_is_subU : forall P, (j P).1 = (subU.(O) (P.1; IsHProp_IsTrunc P.2 m)).1.1)
+        (j_is_subU_unit : forall P x ,
+                            transport idmap (j_is_subU P) (Oj_unit P x) = subU.(O_unit) (P.1; IsHProp_IsTrunc P.2 m) x)
+  : forall (A B : subuniverse_Type subU) (f: A.1.1 -> B.1.1), (subuniverse_HProp subuniverse_Prop (existT (IsTrunc -1) (IsEquiv f) (hprop_isequiv _))).1.
+    intros A B f.
+    pose (rew := j_is_subU (IsEquiv f; hprop_isequiv f)). simpl in *. rewrite rew.
+    intro X.
+    refine (isequiv_adjointify _ _ _ _).
+    - intro b.
+      revert X.
+      apply O_rec. intro H. simpl in H.
+      exact (f^-1 b).
+    - intro b. simpl.
+      revert X.
+      transparent assert (sh_f : (((O (underlying_subu m.+1 mod)
+                (IsEquiv f; IsHProp_IsTrunc (hprop_isequiv f) m)).1).1
+                                  → subuniverse_Type (underlying_subu m.+1 mod))).
+      { intro x.
+        refine (exist _ _ _).
+        exists (f (O_rec (IsEquiv f; IsHProp_IsTrunc (hprop_isequiv f) m) A
+                         (λ H : IsEquiv f, f^-1 b) x) = b).
+        apply istrunc_paths. apply trunc_succ. exact _.2.
+        apply subuniverse_paths. exact ua. exact fs. }
+        
+      refine (@O_rec_dep ua fs (m.+1) mod (IsEquiv f; IsHProp_IsTrunc (hprop_isequiv f) m) sh_f _).1.
+      intros X. unfold sh_f; clear sh_f.
+      simpl.
+      rewrite (ap10 (O_rec_retr (n:=m.+1) (subU := subU) (IsEquiv f; IsHProp_IsTrunc (hprop_isequiv f) m) A (λ H : IsEquiv f, f^-1 b)) X). apply eisretr.
+    - intro a. simpl.
+      revert X.
+      transparent assert (sh_f : (((O (underlying_subu m.+1 mod)
+                (IsEquiv f; IsHProp_IsTrunc (hprop_isequiv f) m)).1).1
+                                  → subuniverse_Type (underlying_subu m.+1 mod))).
+      { intro X.
+        refine (exist _ _ _).
+        exists (O_rec (IsEquiv f; IsHProp_IsTrunc (hprop_isequiv f) m) A
+                      (λ H : IsEquiv f, f^-1 (f a)) X = a).
+        apply istrunc_paths. apply trunc_succ. exact _.2.
+        apply subuniverse_paths. exact ua. exact fs. }
+      refine (@O_rec_dep ua fs (m.+1) mod (IsEquiv f; IsHProp_IsTrunc (hprop_isequiv f) m) sh_f _).1.
+      intros X. unfold sh_f; clear sh_f.
+      simpl.
+      rewrite (ap10 (O_rec_retr (n:=m.+1) (subU := subU) (IsEquiv f; IsHProp_IsTrunc (hprop_isequiv f) m) A (λ H : IsEquiv f, f^-1 (f a))) X).
+      apply eissect.
+  Qed.
   
 End HProp_sheaves.
 

@@ -75,9 +75,14 @@ Section Lemmas.
       - exists m0. reflexivity.
     Qed.
 
-    Lemma succ_not_0 (n:nat) : 0 <> S n.
-      (* discriminate *)
-    Admitted.
+    Definition succ_not_0 (n:nat) : 0 <> S n
+      := fun H => (λ H0 : S n = S n → Empty, H0 idpath)
+                    match H in (_ = y) return (y = S n → Empty) with
+                      | idpath => paths_ind 0 (λ (e : nat) _ , match e with
+                                                                 | 0 => Unit
+                                                                 | S _ => Empty
+                                                               end) tt (S n)
+                    end.
 
     Lemma le_0_is_0 (n:nat) : n <= 0 -> n = 0.
       induction n.

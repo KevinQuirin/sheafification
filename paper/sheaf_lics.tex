@@ -1011,15 +1011,19 @@ $(-1)$-subobjects
 
 \nt{Il faut introduire c'est propriété, $\Type_n^\modal$ is a sheaf
   est très importante en particulier. Il faut qu'on comprenne d'où ça
-  vient et que tu fasses un preuve, même un peu idalisée}
+  vient et que tu fasses une preuve, même un peu idalisée. Je dirais
+  que tu peux mettre des lemmes genres nj\_inter en disant que telle
+  flèche est un iso, and co.
+  En tout cas, cette partie peut et doit être bien plus longue.
+}
 
-From these definitions, one can show that
-\begin{prop}\label{prop:sheaf_prop}
-  \begin{itemize}
-  \item $\Type_n^\modal$ is a sheaf.
-  \item If $A:\Type_{n+1}$ and $B:A \to \Type_{n+1}$ such that for any
-    $a:A$, $(B~a)$ is a sheaf, then $\prod_{a:A}B~a$ is a sheaf.
-  \end{itemize}
+\begin{prop}\label{prop:sheaf-forall}
+  If $A:\Type_{n+1}$ and $B:A \to \Type_{n+1}$ such that for any
+  $a:A$, $(B~a)$ is a sheaf, then $\prod_{a:A}B~a$ is a sheaf.
+\end{prop}
+
+\begin{prop}\label{prop:sheaf-is-sheaf}
+  $\Type_n^\modal$ is a sheaf.
 \end{prop}
 
 \section{Construction of sheafification}
@@ -1112,8 +1116,10 @@ We will use the following lemma~:
   into a separated $(n+1)$-truncated type $U$ is itself separated.
 \end{lem}
 As $\square T$ embeds in $\left( \Type_n^\modal \right)^T$, we only
-have to show that the latter is separated. But it is the case with
-both parts proposition~\ref{prop:sheaf_prop}.
+have to show that the latter is separated. But it is the case because
+$\Type_n^\modal$ is a sheaf (by Proposition~\ref{prop:sheaf-is-sheaf})
+and a function type is a sheaf as soon
+as its codomain is a sheaf (by Proposition~\ref{prop:sheaf-forall}).
 \end{proof}
 
 We now need to show that $\square$ is universal. The following

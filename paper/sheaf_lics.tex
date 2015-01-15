@@ -73,6 +73,9 @@
 \newcommand \squash[1] {\| #1 \| }
 \newcommand \fib[2] {\mathrm{fib}_{#1}(#2)}
 \newcommand \colim[1] {\mathrm{colim}(Q)}
+\newcommand \zero {\mathbf{0}}
+\newcommand \one {\mathbf{1}}
+
 
  \IEEEpubid{} 
 
@@ -359,7 +362,8 @@ holds by replacing kernel pairs by \v{C}ech nerves in the statement.
 Finally, one of the main difficulty in our formalization is that many
 equalities which are trival (by proof irrelevance) in the topos theoretic
 setting becomes relevant and requires a carreful use of univalence
-with appropriate isomorphisms.
+with appropriate isomorphisms and a lot of reasoning on equalities
+between paths.
 
 \subsection{Plan of the Paper}
 
@@ -667,25 +671,60 @@ and we have decided to admit it in this paper.
 \section{Left exact Modalities}
 \label{sec:lexmod}
 
-\cite{shulman-higher-modalities}
+This section is devoted to the definition and analyze of left exact
+modalities as they have been introduced in \cite{hottbook} and
+\cite{shulman-higher-modalities}. Our definition differs slightly from
+those work in that we restrict the definition of the modality to be
+$n$-truncated types for a given truncation index $n$, instead of on
+all types.
+%
+This implies that we cannot reuse directly all results developed
+in~\cite{hottbook} as some care must be taken to check that truncation
+levels are preserved.
 
-\subsection{Definition}
+Note that similar notion of modal operator have been already studied
+extensively in non-dependent type
+theory~\cite{benton1998computational}. In those works, they connect
+modalities to computational monad in programming
+languages~\cite{moggi-monad}. However, in our setting, modalities
+correspond to idempotent monads, a property is rarely true 
+in functional programming, except for the identity monad.
 
-We use the following definition of truncated left exact modalities~:
+The notion of left exact modalities plays a central role in this paper
+because Lawvere-Tierney topologies corresponds exactly to left exact
+modalities at $-1$ and sheafification is described as an inductive
+process that produces a left exact modality at level $n+1$ from a
+level exact modality at level $n$. 
+
+Section~\ref{sec:definition} presents the definition and basic
+properties of left exact modalities. 
+%
+Section~\ref{sec:new-type-theory} discusses how a left exact modality
+induces a ne homotopy theory, and in which case this theory is
+consistent.
+%
+Finally, Section~\ref{sec:examples-left-exact} introduces some
+example, and in particular the modality for the dense topology.
+
+\subsection{Definition and Basic Properties}
+\label{sec:definition}
+
+% We use the following definition of truncated left exact modalities:
 \begin{defi}
-  Let $p$ be a truncation index. Then a left exact modality is the
-  data of
+  \label{sec:defin-basic-prop-1}
+  Let $n\geq -1$ be a truncation index. A left exact modality at level
+  $n$ is the data of
   \begin{enumerate}[(i)]
   \item A predicate $P:\Type_p \to \HProp$
-  \item For every $p$-truncated type $A$, a $p$-truncated type
+  \item For every $n$-truncated type $A$, a $n$-truncated type
     $\modal A$ such that $P(\modal A)$
-  \item For every $p$-truncated type $A$, a map $\eta_A:A \to
+  \item For every $n$-truncated type $A$, a map $\eta_A:A \to
     \modal A$
   \end{enumerate}
   such that
   \begin{enumerate}[(i)]
     \setcounter{enumi}{3}
-  \item For every $p$-truncated types $A$ and $B$, if $P(B)$ then
+  \item For every $n$-truncated types $A$ and $B$, if $P(B)$ then
     $$\left\{
       \begin{array}{rcl}
         (\modal A \to B) & \to & (A \to B) \\
@@ -701,18 +740,48 @@ We use the following definition of truncated left exact modalities~:
   (v) a {\em modality}.
 \end{defi}
 
-The type of all $p$-types such that $P$ will be noted $\Type^\modal_p$
+The type of all modal $n$-types, \ie types for which $P$ holds, is
+defined as %$\Type^\modal_p$, so 
+$$
+\Type^\modal_p \ \defeq \sum_{T : \Type_n} P (T).
+$$
+%
+Since basic type formers (dependent products, products, sigma types)
+preserves truncation levels, we can leverage all theorems on modalites
+presented in~\cite[Chapter 7.7]{hottbook}.
 
-Since basic operations (dependent products, products, sigma types) are
-stable for truncation levels, all theorem in~\cite{hottbook}, chapter
-7.7 remains true.
-In particular, if $X:\Type_p$ verifies $P(X)$, then for any $x,y:X$, $P(x=y)$.
+We now summarize the main properties that are used in our
+formalization.
+ 
+\begin{prop}
 
+stability properties
+\vspace{1em}
+
+\nt{state precisely some properties here, at least the 4 below}
+
+\vspace{1em}
+
+\begin{itemize}
+
+\item
+$\modal \one =\one $
+\item
+Stability under dependent product (7.7.2 of \cite{hottbook})
+\item
+ In particular, if $X:\Type_p$ verifies
+$P(X)$, then for any $x,y:X$, $P(x=y)$.
+\item
 Another useful property is that we can extend property {\it (iii)} to
 dependent product.
+\end{itemize}
+\end{prop}
 
-Moreover, left exactness implies in particular homotopy fibers preservations~:
+As the definition of sheafification is based on subobject classifiers
+and thus on homotopy fibers, we need to look at how left exact
+modalities preserves homotopy fibers.
 \begin{prop}
+\label{sec:defin-basic-prop}
 For any $n$-truncated types $X$ and $Y$,
 and any map $f:X \to Y$, the modalisation of fiber of $f$ above any element $y:Y$
 is the fiber of $\modal f$ above $\eta_Y y$~:
@@ -723,18 +792,66 @@ $$\xymatrix{
   \sum_{x:X} (f x = y) \ar[r]^\eta \ar[d]_\gamma & \modal \left(\sum_{x:X}  (f x = y)\right) \ar@{=}[dl]\\
   \sum_{x:\modal X} (\modal f x = \eta_Y y) &
 }$$
-where $\pi_1 \circ \gamma = \eta_X$, and $\pi_2 \circ \gamma$ is the
-usual modalisation of paths.
+where $\pi_1 \circ \gamma = \eta_X \circ \pi_1$, and $\pi_2 \circ
+\gamma$ is given by the modalisation of paths.
 \end{prop}
+\begin{proof}
+\nt{ça a du sens de mettre une preuve, non ? c'est non trivial et
+  nouveau par rapport aux travaux sur les modalités.}
+\end{proof}
 
 
-As we want, a left exact modality preserves $\HProp$~:
+In the same way, left exact modalities preserve homotopy types.
 \begin{prop}
-  If $P:\HProp$, then $\modal \widehat P : \HProp$, where $\widehat P$
-  is $P$ seen as a $p$-type.
+  Let $k \leq n$.
+  If $P:\Type_k$, then $\modal \widehat P : \Type_k$, where $\widehat P$
+  is $P$ seen as a $n$-type.
 \end{prop}
+\begin{proof}
+  An $n$-truncated type $P$ can equivalently be described as a type for
+  which the unique map to $\one$ is with $n$-truncated fibers. Thus, the
+  property is a direct corollary of
+  Proposition~\ref{sec:defin-basic-prop} and the fact that $\modal \one =
+  \one$.
+\end{proof}
+
+\subsection{The new type theory arising from a left exact modality}
+\label{sec:new-type-theory}
+
+As noticed in \cite{hottbook}, left exact modalities corresponds 
+to sub-$(\infty,1)$-topoi.
+
+A left exact modality leads to a new homotopy type theory with
+potentially new principles. 
+
+Definition of Sigma-Types. 
+
+Preservation of univalence.
+
+\nt{state the property on IsEquiv to show preservation of univalence}
+
+Every left exact modality induces a new type theory, but with more
+properties, that can make it inconsistent. We now provide a simple
+characterization of left exact modalities that give rise to a
+consistent theory.
+
+\begin{prop}
+  A left exact modality $\modal$ induces a consistent type theory if
+  and only if $\modal \zero$ can not be inhabited in the initial type
+  theory. In that case, the modality is said to be consistent.
+\end{prop}
+\begin{proof}
+  By condition (iv) of Definition~\ref{sec:defin-basic-prop-1},
+  $\modal \zero$ is an initial object of $\Type^\modal_p$, and thus
+  corresponds to false for modal mere proposition.
+  % 
+  As $\modal \one = \one$, $\Type^\modal_p$ is consistent when
+  $\modal \zero \neq \one$, that is when there is no proof of
+  $\modal \zero$.
+\end{proof}
 
 \subsection{Examples of Left Exact Modalities}
+\label{sec:examples-left-exact}
 
 A basic example is the {\em open modality of $P$} for a $P:\HProp$,
 $\modal_P T = P \to T$.  When one works in the subuniverse defined by
@@ -753,16 +870,6 @@ We will use this modality only in the $\HProp$ layer, and try to
 extend it to every $\Type_n$ without collapsing every type.
 
 
-\subsection{The new type theory arising from a left exact modality}
-
-A left exact modality leads to a new homotopy type theory with
-potentially new principles. 
-
-Definition of Sigma-Types. 
-
-Preservation of univalence.
-
-Consistency issues.
 
 
 \section{Sheaves}
@@ -1195,6 +1302,9 @@ It will imply that $\star$ is compatible with $\HProp$ in the sense of propositi
 
 A Coq formalization is available at
 \url{https://github.com/KevinQuirin/sheafification/}.
+%
+It is based on the homotopy type theory library available at
+\url{https://github.com/HoTT/HoTT}
 
 \nt{describe how many line for each, be clear about what has not been formalized}
 

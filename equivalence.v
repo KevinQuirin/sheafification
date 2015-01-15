@@ -83,14 +83,6 @@ Defined.
 Definition equiv_is_mono (A B:Type) (f: A -> B) : IsEquiv f -> IsMono f :=
   fun H x y => equiv_is_mono_eq _ _ _.
   
-Instance Tn_is_TSn : forall n, IsTrunc (trunc_S n) (Trunk n). (* Cf HoTT *)
-intro n.
-assert (Trunk n = TruncType n).
-apply path_universe_uncurried. apply issig_trunctype.
-symmetry in X. destruct X.
-apply istrunc_trunctype.
-Admitted.
-
 Definition truncn_unique n (A B : Trunk n) : A.1 = B.1 -> A = B.
   intro e. apply eq_dep_subset. intro. apply hprop_trunc. exact e.
 Defined.
@@ -113,6 +105,19 @@ Definition isequiv_truncn_unique n (A B : Trunk n)
     apply (transport (λ U, ap pr1 (path_sigma' (λ T : Type, IsTrunc n T) 1 U) = 1) (@contr (TrA = TrA) _ 1)^).
     reflexivity.   
 Defined.
+
+
+Instance Tn_is_TSn : forall n, IsTrunc (trunc_S n) (Trunk n). (* Cf HoTT *)
+intro n.
+assert (Trunk n <~> TruncType n).
+apply issig_trunctype.
+refine (trunc_equiv _ _).
+exact (TruncType n).
+exact X^-1.
+apply istrunc_trunctype.
+apply isequiv_inverse.
+Qed.
+
 
 Definition HProp_contr A (B : A -> Type) (BProp : forall a, IsHProp (B a)) (a a' : A )
            (b : B a) (b' : B a') (e : a = a') : 
@@ -154,7 +159,7 @@ Definition HTrue := (Unit; true_ishprop) : HProp.
 Theorem univalence_hprop' (A B: HProp) : (A.1 <-> B.1) -> A = B.
 Proof.
   destruct A, B. intro. apply eq_dep_subset. intro. apply hprop_trunc.
-  apply univalence_hprop; auto.
+sal  apply univalence_hprop; auto.
 Defined.
 
 

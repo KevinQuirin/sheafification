@@ -819,18 +819,16 @@ In the same way, left exact modalities preserve homotopy types.
 \label{sec:new-type-theory}
 
 As noticed in \cite{hottbook}, left exact modalities corresponds 
-to sub-$(\infty,1)$-topoi.
+to sub-$(\infty,1)$-topoi. Indeed, modal types defines a new type
+theory as modality preserves all type former, such as dependent
+products, dependent sums or inductive types (\nt{double check that}). 
 
-A left exact modality leads to a new homotopy type theory with
-potentially new principles. 
+Furthermore, when $A$ and $B$ are modal and $f : A \to B$, the mere
+proposition of $f$ being an equivalence is also modal. This means that
+univalence also holds in $\Type^\modal_p$, so it induces a good notion
+of homotopy type theory.
 
-Definition of Sigma-Types. 
-
-Preservation of univalence.
-
-\nt{state the property on IsEquiv to show preservation of univalence}
-
-Every left exact modality induces a new type theory, but with more
+Every left exact modality induces a new homotopy type theory, but with more
 properties, that can make it inconsistent. We now provide a simple
 characterization of left exact modalities that give rise to a
 consistent theory.
@@ -853,21 +851,32 @@ consistent theory.
 \subsection{Examples of Left Exact Modalities}
 \label{sec:examples-left-exact}
 
-A basic example is the {\em open modality of $P$} for a $P:\HProp$,
-$\modal_P T = P \to T$.  When one works in the subuniverse defined by
-this modality, defining an inhabitant of a type $T$ is actually giving
-an inhabitant of $P \to T$. Thus, being in this subuniverse is just
-adding the axiom $P$ to the theory. Sadly, adding an axiom this way
-does not add any computational content to $P$, thus is not completely
-satisfactory.
+A first example of left exact modality for every level $p$ is the {\em
+  open modality of $P$} for a $P:\HProp$ defined as
+$\modal_P T = P \to T$.
+%
+When one works in
+the subuniverse defined by this modality, defining an inhabitant of a
+type $T$ amounts to give an inhabitant of $P \to T$. 
+%
+Thus, being in this subuniverse corresponds to adding the axiom $P$ to the
+theory. Of course, adding an axiom this way does not add any computational
+content to $P$, and the consistency of the modallity corresponds to
+the fact that $P \to \zero$ (or $\lnot P$) is not inhabited.
 
-Another example is the $\lnot\lnot$-modality, $\modal_{\lnot\lnot} T = (T
-\to \bot) \to \bot$. Although we might think it enables us to use
-classical reasonings in the corresponding reflective subuniverse, the
-main problem is that every type in the new universe is an $\HProp$,
-which is very restrictive. 
-We will use this modality only in the $\HProp$ layer, and try to
-extend it to every $\Type_n$ without collapsing every type.
+Another example of left exact modality for every level $p$ is the
+double negation modality,
+$\modal_{\lnot\lnot} T = (T \to \zero) \to \zero$.
+%
+This modality enables to use
+classical reasonings in the corresponding reflective subuniverse, but
+every type in the new universe is collapsed to an $\HProp$, ending up
+with porpositional classical logic. 
+
+In this paper, we use the double negation modality at level $-1$ only,
+and then extend it to higher homotopy types using sheafification. This
+way, we can add classical reasoning in the type theory without
+collapsing the theory to mere propositions.
 
 
 

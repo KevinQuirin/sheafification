@@ -959,63 +959,77 @@ a type seen as a $n$-subobject of its closure is closed.
 
 As recall in Section~\ref{sec:lawv-tiern-sheaf}, in topos theory,
 sheaves are elements that can not distinguish between objects and
-their dense sub-objects. Here, we need to distinguish between
+their dense sub-objects. 
+
+\begin{defi}
+  For any type $A$ and $E$, $\iota : A -> E$ and $F:\Type_{n+1}$, we define
+    $$
+    \Phi_E^\iota : (E \to F) \to (A \to F) 
+    $$
+    %
+    as the map sending an
+    arrow $f:E\to F$ to its restriction the restriction of $f \circ m$.
+  % \item if $A \to E$ with $n$-truncated homotopy fibers, $\Phi_E^\chi$ is the
+  %   map sending $f~:~E \to f$ to $\restriction f A$.
+  % \end{itemize}
+\end{defi}
+
+Here, we need to distinguish between
 dense $(-1)$-subobjects, that will be used in the definition of
 sheaves, and dense $n$-subobjects, that will be used in the definition
 of separated types. 
 
-\begin{defi}
-  For any $A, E:\Type$ and $F:\Type_{n+1}$, we define~:
-  \begin{itemize}
-  \item if $m : A \hookrightarrow E$ is a monomorphism, we define 
-    %
-    $$
-    M_E^\chi : (E \to F) \to (A \to F)
-    $$
-    %
-    is the map sending an
-    arrow $f~:~E\to F$ to $\restriction f A$ the restriction of $f$ to $A$.
-  \item if $A \to E$ with $n$-truncated homotopy fibers, $\Phi_E^\chi$ is the
-    map sending $f~:~E \to f$ to $\restriction f A$.
-  \end{itemize}
-\end{defi}
-
 \begin{defi}[Separated Type]
   A type $F$ in $\Type_{n+1}$ is {\em separated} if for any type $E$, and
-  all dense subobject of $E$ classified by $\chi~:~E \to \Type_n$,
-  $\Phi_E^\chi$ is a monomorphism. In other words, the dotted arrow,
+  all dense $n$-subobject of $\iota : A \to E$,
+  $\Phi_E^\iota$ is a monomorphism. In other words, the dotted arrow,
   if exists, is unique.
 
   $$\xymatrix{
-    \sum_{e:E} (\chi~ e) \ar[r]^f \ar[d]_{\pi_1} & F \\
+    A \ar[r]^f \ar[d]_{\iota} & F \\
     E \ar@{-->}[ru]_{!}&
   }$$
 \end{defi}
 
 \begin{defi}[Sheaves]
   A type $F$ of $\Type_{n+1}$ is a {\em $(n+1)$-sheaf} if it is
-  separated, and for any type $E$ and all dense subobject of $E$
-  classified by $\chi~:~E \to \Type_{-1}$, $M_E^\chi$ is an
+  separated, and for any type $E$ and all dense $(-1)$-subobject of
+  $\iota : A \to E$, $\Phi_E^\iota$ is an
   equivalence. In other words, the dotted arrow exists and is unique.
 
   $$\xymatrix{
-    \sum_{e:E} (\chi~ e) \ar[r]^f \ar[d]_{\pi_1} & F \\
+    A \ar[r]^f \ar[d]_{\iota} & F \\
     E \ar@{-->}[ru]_{\exists !}&
   }$$
 \end{defi}
 
 Note that these definitions are almost the same as the ones
-in~\cite{maclanemoerdijk}. The main difference is that {\em separated}
-is defined for $n$-subobjects,
-while {\em sheaf} only for $-1$-subobject.
+in~\cite{maclanemoerdijk}. The main difference is that {separated}
+is defined for $n$-subobjects, while {sheaf} only for
+$(-1)$-subobjects.
+%
+For higher topos theory, in the Grotehndieck setting, sheaves seems
+to correspond to the second part of our definition only (assuming that
+Lawvere-Tierney topologies can still be shown to subsume Grothendieck
+toplogies for $(\infty,1)$-topoi, which is beyond the scope of this paper).
+%
 
-From these definitions, one can show that
-\begin{prop}\label{prop:sheaf_prop}
-  \begin{itemize}
-  \item $\Type_n^\modal$ is a sheaf.
-  \item If $A:\Type_{n+1}$ and $B:A \to \Type_{n+1}$ such that for any
-    $a:A$, $(B~a)$ is a sheaf, then $\prod_{a:A}B~a$ is a sheaf.
-  \end{itemize}
+
+\nt{Il faut introduire c'est propriété, $\Type_n^\modal$ is a sheaf
+  est très importante en particulier. Il faut qu'on comprenne d'où ça
+  vient et que tu fasses une preuve, même un peu idalisée. Je dirais
+  que tu peux mettre des lemmes genres nj\_inter en disant que telle
+  flèche est un iso, and co.
+  En tout cas, cette partie peut et doit être bien plus longue.
+}
+
+\begin{prop}\label{prop:sheaf-forall}
+  If $A:\Type_{n+1}$ and $B:A \to \Type_{n+1}$ such that for any
+  $a:A$, $(B~a)$ is a sheaf, then $\prod_{a:A}B~a$ is a sheaf.
+\end{prop}
+
+\begin{prop}\label{prop:sheaf-is-sheaf}
+  $\Type_n^\modal$ is a sheaf.
 \end{prop}
 
 \section{Construction of sheafification}
@@ -1108,8 +1122,10 @@ We will use the following lemma~:
   into a separated $(n+1)$-truncated type $U$ is itself separated.
 \end{lem}
 As $\square T$ embeds in $\left( \Type_n^\modal \right)^T$, we only
-have to show that the latter is separated. But it is the case with
-both parts proposition~\ref{prop:sheaf_prop}.
+have to show that the latter is separated. But it is the case because
+$\Type_n^\modal$ is a sheaf (by Proposition~\ref{prop:sheaf-is-sheaf})
+and a function type is a sheaf as soon
+as its codomain is a sheaf (by Proposition~\ref{prop:sheaf-forall}).
 \end{proof}
 
 We now need to show that $\square$ is universal. The following
@@ -1403,6 +1419,7 @@ Prove that the Giraud axiom holds in homotopy type theory.
 
 Extend the sheafification to all types, even if non truncated.
 
+Check if Lawvere-Tierney subsumes Grothendieck in higher topos theory.
 
 
 

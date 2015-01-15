@@ -243,6 +243,7 @@ Lawvere-Tierney sheafification to higher topos theory and (ii) is it
 possible to formalize this new definition in homotopy type theory.
 
 \subsection{Lawvere-Tierney Sheafification in Topos Theory}
+\label{sec:lawv-tiern-sheaf}
 
 Lawvere-Tierney sheafification in a topos $\E$ is based on an abstract
 point of view on the topology to be considered, being simply an
@@ -607,8 +608,8 @@ the purpose of this paper to discuss those axioms, we only state here
 a particular case of the last axiom which says that every groupoid
 object is effective. 
 %
-This particular case connects an epimorphism (or $-1$-truncated
-function) to the colimit of its \v{C}ech nerve. 
+This particular case connects an epimorphism (or a $-1$-connected
+function) to the colimit of its \v{C}ech nerve.
 %
 This is the $\infty$-generalization of the fact that, in a topos,
 every epimorphism is the colimit of its kernel pair, which plays a
@@ -796,7 +797,8 @@ where $\pi_1 \circ \gamma = \eta_X \circ \pi_1$, and $\pi_2 \circ
 \end{prop}
 \begin{proof}
 \nt{ça a du sens de mettre une preuve, non ? c'est non trivial et
-  nouveau par rapport aux travaux sur les modalités.}
+  nouveau par rapport aux travaux sur les modalités. Ou alors c'est
+  la preuve de Shulman qui tu n'as pas faite. En tout cas, il faut clarifier.}
 \end{proof}
 
 
@@ -883,45 +885,95 @@ collapsing the theory to mere propositions.
 \section{Sheaves}
 \label{sec:sheaves}
 
-We will define sheaves by induction on the level of homotopy type:
-the base case will be any left exact modality on $\HProp$, and we
-give in this section some definitions useful for the inductive case.
+As explained in the introduction, a Lawvere-Tierney topology for an
+topos $\E$, as defined in Section~\ref{sec:lawv-tiern-sheaf},
+corresponds to a left exact modality at level $-1$.
+%
+And sheafification corresponds to lifting this modality to a left
+exact modality at level $0$.
+%
+In homotopy type theory, it is possible to use similar ideas to lift
+any left exact modality at level $n$ to a left exact modality at level
+$n+1$ using sheafification.
+
+In this section, we suppose given a truncation index $n\geqslant -1$,
+and a left exact modality $\modal$ on $\Type_n$ and we introduce the
+definition of sheaves for $(n+1)$-types and basic properties of
+sheaves that will be useful in the next section. 
+
+% We will define sheaves by induction on the level of homotopy type:
+% the base case will be any left exact modality on $\HProp$, and we
+% give in this section some definitions useful for the inductive case.
 
 % \subsection{Definitions and first properties}
 % \label{sec:def}
 
-In this section, we suppose given a truncation index $n\geqslant -1$,
-and a left exact modality $\modal$ on $\Type_n$.
+To define sheaves, we first have to leverage the notion of dense
+subobjects for the modality $\modal$. The closure operator is defined
+using the $n$-subobject classifier $\Type_n$ introduced in
+Section~\ref{ssec:hott}.
 
 \begin{defi}
-  Let $E$ be a type. The {\em closure} of a subobject of $E$ classified by $\chi$
-  is the subobject of $E$ classified by $\modal \circ \chi$.
+  Let $E$ be a type. The {\em closure} of a subobject of $E$ with
+  n-truncated homotopy fibers (or $n$-subobject of $E$, for short),
+  classified by $\chi : E \to \Type_n$, is the subobject of $E$
+  classified by $\modal \circ \chi$.
 
-  The subobject of $E$ classified by $\chi$ is said {\em closed in
-    $E$} if its closure is itself : $\chi = \modal \circ \chi$.
+  An $n$-subobject of $E$ classified by $\chi$ is said to be {\em
+    closed in $E$} if it is equal to its closure, \ie
+  $\chi = \modal \circ \chi$.
 \end{defi}
 
+The definition of a dense $n$-subobject requires more work as the
+characteristic function $\chi_E$ of $E$ seen as an $n$-subobject of
+itself is not the constant function equal to $\one$ as it is the case
+for topoi, but rather the map 
+%
+$$\chi_E  = \lambda e . \ \sum_{e':E} e=e'.$$
+%
+This means that we need to take more care of the homotopy structure of
+this charactestic function, and in particular, the defintiion of a
+dense $n$-subobject comes with an additional coherence condition
+(which is trivial when $n=-1$).
+
 \begin{defi}
-  Let $E$ be a type, and $\chi:E \to \Type_n$. The subobject $A$ of $E$
-  classified by $\chi$ is {\em dense} in $E$ if its $\modal$-closure
-  is $E$ seen as a subobject of $E$, \ie
-  $$\forall e:E,~ \left(\sum_{e':E} e=e'\right) \simeq (\modal (\chi~e)).$$ 
-  Moreover, for any $x:A$ we need the following coherence diagram to
-  commute
+  Let $E$ be a type, and $\chi:E \to \Type_n$. The subobject $\iota :
+  A \to E$ of $E$
+  classified by $\chi$ is {\em dense} in $E$ when its $\modal$-closure
+  is equvialent to $\chi_E$, \ie
+  %
+  $$\forall e:E,~ \left(\sum_{e':E} e=e'\right) \simeq (\modal
+  (\chi~e)).$$
+  % 
+  and moreover, for any $x:A$, the following diagram 
+  commutes, 
   $$\xymatrix{
-    \sum_{e':A} x = e' \ar@{=}[r] \ar[d]_\iota & (\chi~x) \ar[d]^{\eta_{(\chi~x)}}\\
+    \sum_{e':A} x = e' \ar@{=}[r] \ar[d]_{\iota'} & (\chi~x) \ar[d]^{\eta_{(\chi~x)}}\\
     \sum_{e':E} x = e' \ar@{=}[r] & \modal (\chi~x)
   }$$
-  where $\iota: x \mapsto ({x_1}_1 ; x_2)$.
+  where $\iota': x \mapsto (\iota (\pi_1 x) ; \pi_2 x)$.
 \end{defi}
 
-It follows from homotopy fibers preservation that any $n$-subobject of a type seen as a $n$-subobject
-of its closure is closed.
+It follows from homotopy fibers preservation that any $n$-subobject of
+a type seen as a $n$-subobject of its closure is closed.
 
-\begin{defi}[Restriction]
+As recall in Section~\ref{sec:lawv-tiern-sheaf}, in topos theory,
+sheaves are elements that can not distinguish between objects and
+their dense sub-objects. Here, we need to distinguish between
+dense $(-1)$-subobjects, that will be used in the definition of
+sheaves, and dense $n$-subobjects, that will be used in the definition
+of separated types. 
+
+\begin{defi}
   For any $A, E:\Type$ and $F:\Type_{n+1}$, we define~:
   \begin{itemize}
-  \item if $A \hookrightarrow E$, $M_E^\chi$ is the map sending an
+  \item if $m : A \hookrightarrow E$ is a monomorphism, we define 
+    %
+    $$
+    M_E^\chi : (E \to F) \to (A \to F)
+    $$
+    %
+    is the map sending an
     arrow $f~:~E\to F$ to $\restriction f A$ the restriction of $f$ to $A$.
   \item if $A \to E$ with $n$-truncated homotopy fibers, $\Phi_E^\chi$ is the
     map sending $f~:~E \to f$ to $\restriction f A$.

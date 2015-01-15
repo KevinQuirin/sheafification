@@ -123,7 +123,7 @@
   In this paper, we give a computer-checked construction of
   Lawvere-Tierney sheafification in homotopy type theory, which allows
   in particular to give a meaning to the (propositional) law of
-  excluded middle inside homotopy type theory, without axiom, being
+  excluded middle inside homotopy type theory, being
   compatible with the full type-theoretic axiom of choice.
   
 \end{abstract}
@@ -352,9 +352,9 @@ monomorphism.
 
 In other technical difficulty is the fact that sheafification in topos
 theory uses the fact that epimorphisms are coequalizers of their
-kernel pairs. This properties does not holds in higher topoi, but it
-can be replaced by Giraud's axiom which basically allows to replace 
- kernel pairs by \v{C}ech nerves in the property.
+kernel pairs. This properties does not holds in higher topoi, but
+using Giraud-Rezk-Lurie axioms of $\infty$-topoi, the same property
+holds by replacing kernel pairs by \v{C}ech nerves in the statement.
 
 Finally, one of the main difficulty in our formalization is that many
 equalities which are trival (by proof irrelevance) in the topos theoretic
@@ -364,9 +364,9 @@ with appropriate isomorphisms.
 \subsection{Plan of the Paper}
 
 Section~\ref{sec:hott} defines the foundations of homotopy type theory
-and presents a particular case of GIraud's axiom. 
+and presents a particular case of Giraud-Rezk-Lurie axioms. 
 %
-Section\ref{sec:lexmod} introduces the notion of left-exact stratified
+Section~\ref{sec:lexmod} introduces the notion of left-exact stratified
 modalities, on which this paper is based.
 %
 Section~\ref{sec:sheaves} defines Lawvere-Tierney sheaves in homotopy
@@ -395,9 +395,9 @@ classifying objects as defined in~\cite{sets_in_hott}.
 Section~\ref{sec:colim-homot-type} introduces the notion of colimits
 in homotopy type theory. 
 %
-And Section~\ref{sec:giraud-ax} defines (a particular case of)
-Giraud's axiom on higher topoi that we need in the definition of
-sheafification.
+And Section~\ref{sec:giraud-ax} defines a particular case of
+Giraud-Rezk-Lurie axioms on higher topoi that we need in the
+definition of sheafification.
 %
 The definition of Section~\ref{ssec:hott} are part of the Coq library
 available at \url{https://github.com/HoTT/HoTT}, while other definitions
@@ -449,13 +449,14 @@ Using $\Type_n$ instead of just $\Type$ is the first step to connect
 type theory to higher topos theory. The next step is to exhibit a
 hierarchy of subobject classifiers on $n$-truncated homotopy fibers.
 %
-The homotopy fiber $\fib{f}(b)$ of a function $f$ at element $b$ is
+The homotopy fiber $\fib{f}{b}$ of a function $f$ at element $b$ is
 defined as 
 $$
 \fib{f}{b} \defeq \sum_{a:A} f(a) = b.
 $$ 
 %
-A function $f$ is with $n$-truncated homotopy fibers when $\fib{f}{b}$
+A function $f$ is with $n$-truncated homotopy fibers (or simply
+$n$-truncated function) when $\fib{f}{b}$
 is an $\Type_n$ for any $b$.  
 %
 Following~\cite{sets_in_hott}, it is possible to show that, for any
@@ -463,18 +464,21 @@ homotopy level $n$ and any type $B$, $\Type_n$ classifies subobjects
 of $B$ with $n$-truncated homotopy fibers in the sense that there is
 an equivalence
 %
-$$\left(\sum_{A:\Type} \sum_{f:A \to B} \prod_{b\in B}
-\IsType n~\fib{f}{b}\right) \simeq (B \to \Type_n)$$
+$$\chi : \left(\sum_{A:\Type} \sum_{f:A \to B} \prod_{b\in B}
+\IsType \
+\fib{f}{b}\right) \xrightarrow{\sim} 
+ (B \to \Type_n)$$
 %
-and a pullback (with $\Type_n^\bullet \defeq \sum_{A:\Type_n} A$ the universe of pointed
-$n$-truncated types)~:
+ such that the following diagram is a pullback for any $f$ with
+ $n$-truncated homotopy fibers:
 $$
 \xymatrix{
   A \ar[r]^{\hspace{-1em} t_f} \ar[d]_f & \Type_n^\bullet \ar[d]^{\pi_1}\\
   B \ar[r]_{\hspace{-1em} \chi_f} & \Type_n
 }
 $$
-for any $f$ with $n$-truncated homotopy fibers, with 
+with $\Type_n^\bullet \defeq \sum_{A:\Type_n} A$ the universe of pointed
+$n$-truncated types and 
 $$t_f = \lambda a,~(\fib{f}{f(a)},(a,\mathrm{idpath})).$$
 
 Finally, we need to use mere propositions has basic elements of a logic
@@ -514,7 +518,7 @@ We refer the reader to~\cite{hottbook} for more details on propositional truncat
 \subsection{Colimits in Homotopy Type Theory }
 \label{sec:colim-homot-type}
 
-In the definition of (a special case of) Giraud's axiom given in
+In the definition of (a special case of) Giraud-Rezk-Lurie axiom given in
 Section~\ref{sec:giraud-ax}, the colimit of the {\em \v{C}ech nerve}
 plays a central role.
 % 
@@ -546,9 +550,9 @@ diagram over a graph.
   \end{itemize}
 \end{defi}
 
-An colimit of a diagram $D$ over a graph $G$ is given by a type $P$
+A colimit of a diagram $D$ over a graph $G$ is given by a type $P$
 that defines a cone of $D$, plus the universal property that for any
-type $X$, the canonical map that transforms a function from $f : P
+type $X$, the canonical map that transforms a function $f : P
 \rightarrow X$ to a cone of $D$ on $X$ is an isomorphism.
 % 
 \begin{defi}
@@ -584,16 +588,33 @@ colimit in homotopy type thoery. This colimit $\colim D$ is given
 \end{itemize}
 %
 Although we have proven in our formalization that $\colim D$ is
-actually a colimit over $D$, we do not detail the proof as the
+actually a colimit over $D$, we do not detail the proof here as the
 existence of colimits is not use in the definition of the
-sheafification process. 
+sheafification process. We only make use of the following special case
+of Giraud-Rezk-Lurie axioms.
 
-\subsection{Giraud's axiom}
+\subsection{On Giraud-Rezk-Lurie axioms}
 \label{sec:giraud-ax}
 
+The Giraud-Rezk-Lurie axioms are the $\infty$-version of Giraud's
+axioms that characterize a topos. Namely, there are 4 axioms on a
+$(\infty,1)$-category that have been shown to be equivalent to be
+equivalent to $(\infty,1)$-topos~\cite[Chapter 6]{lurie}. This is not
+the purpose of this paper to discuss those axioms, we only state here
+a particular case of the last axiom which says that every groupoid
+object is effective. 
+%
+This particular case connects an epimorphism (or $-1$-truncated
+function) to the colimit of its \v{C}ech nerve. 
+%
+This is the $\infty$-generalization of the fact that, in a topos,
+every epimorphism is the colimit of its kernel pair, which plays a
+central part in the definition of sheafification.
+
 \begin{defi}
-  Let $f:X \to Y$ be a map, and $p:\nat$. The $p$-pullback of $f$,
-  noted $X\times_Y \cdots\times_Y X$ is
+  Let $f:X \to Y$ be a map, and $p:\nat$. The $p$-pullback of $f$
+  (also called the $p$-fold fiber product of $X$ over $Y$),
+  noted $X\times_Y \cdots\times_Y X$, is
   the limit of the diagram
   $$\xymatrix{
     X \ar[rd]^f & \cdots & X \ar[ld]_f \\
@@ -602,26 +623,44 @@ sheafification process.
   with $p$ copies of $X$. The $0$-pullback of $f$ is $\Unit$.
 \end{defi}
 
-In homotopy type theory, we have 
-$$X\times_Y \cdots\times_Y X = \sum_{x:X^n} (f x_1 = f x_2) \land
-\cdots \land (f x_{n-1} = f x_n).$$
+As explained in Section~\ref{sec:colim-homot-type}, every limit exists
+in (homotopy) type theory and can be described by a $\Sigma$-type. 
+%
+The particular case of a $p$-pullback is given by
+%
+$$
+X\times_Y \cdots\times_Y X = \sum_{x:X^n} (f x_1 = f x_2) \land
+\cdots \land (f x_{n-1} = f x_n).
+$$
+%
+The \v{C}ech nerve of a map $f$ can then be described as the
+simplicial object that, at degree $p$, is given by the
+$(p+1)$-pullback of $f$. The \v{C}ech nerve can thus also be described
+as a diagram over $\Delta^{op}$ (where $\Delta$ is the simplicial
+category, seen as a graph). For simplicity, we only give an intuitive
+definition here, the complete definition can be found in our
+formalization.
+%
 \begin{defi}
-  If $f:X \to Y$ is a map, then the {\em \v{C}ech nerve} of $f$ is the
-  diagram
+  Let $f$ be a map from $X$ to $Y$. The {\em \v{C}ech nerve} $C(f)$ of $f$
+  is given by the diagram
   $$\xymatrix{
     C(f) := \cdots~ X \times_Y X \times_Y X \tar[r]{4pt} & X \times_Y X \dar[r]{2pt} & X
   }$$
 where the arrows are the canonical projections.
 \end{defi}
 
-\begin{ax}[Giraud]
-  If $f:X\to Y$ is a surjection, then the
-colimit of $C(f)$ is $Y$.
+\begin{ax}[Giraud-Rezk-Lurie]
+  For any epimorphism $f : X \to Y$, the colimit of its \v{C}ech nerve
+  $C(f)$ is $Y$.
 \end{ax}
 
-Viewing homotopy type theory as a
-type-theoristic version of higher topos theory, \cite{lurie} suggests that this
-axiom can be proved, although we admit it in this paper.
+With the point of view that homotopy type theory is a type-theoristic
+version of higher topos theory, Theorem 6.1.0.6 of~\cite{lurie}
+suggests that this axiom can be proved in homotopy type theory. 
+%
+But proving this axiom seems to be a quite complex task on its own,
+and we have decided to admit it in this paper.
 
 
 

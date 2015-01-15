@@ -18,6 +18,8 @@
 \newtheorem{lem}[thm]{Lemma}
 \newtheorem{ax}[thm]{Axiom}
 
+\newcommand \defeq {\overset{de\hspace{-0.2ex}f}{=}}
+
 \newcommand{\mynote}[2]{
     \fbox{\bfseries\sffamily\scriptsize#1}
     {\small$\blacktriangleright$\textsf{\emph{#2}}$\blacktriangleleft$}~}
@@ -68,6 +70,9 @@
 \newcommand \E {\mathcal{E}}
 \newcommand \Hom[1] {\mathrm{Hom}_{#1}}
 \newcommand \Sh[1] {\mathrm{Sh}_{#1}}
+\newcommand \squash[1] {\| #1 \| }
+\newcommand \fib[2] {\mathrm{fib}_{#1}(#2)}
+\newcommand \colim[1] {\mathrm{colim}(Q)}
 
  \IEEEpubid{} 
 
@@ -108,7 +113,7 @@
   dense topology, which corresponds in essence to Gödel's double
   negation translation.
   % 
-  The same construction has not been considered in Martin-Löf type
+  The same construction has not been developed in Martin-Löf type
   theory because of a mismatch between topos theory and type theory. This
   mismatched has been fixed recently by considering homotopy type
   theory, an extension of Martin-Löf type theory with new
@@ -153,7 +158,7 @@ isomorphism, there is no canonical way to extend a programming
 language such as type theory with new logical or computational
 principle while keeping consistency automatically.
 %
-For instance, much effort have been done to provide a computational
+For instance, much efforts have been done to provide a computational
 content to the law of excluded middle in order to define a
 constructive version of classical logic. This has lead to various
 calculi, with most notably the $\lambda \mu$-calculus of
@@ -194,20 +199,20 @@ types~\cite{lumsdaine2011higher,lumsdaine2013higher} and
 Voevodsky's univalence principle~\cite{kapulkin2012simplicial}. 
 %
 
-This new point of view on type theory has revealed the
-homotopy structure of types where for instance homotopical
-propositions (or $\Type_{-1}$) are just types with an irrelevant equality and
-homotopical sets (or $\Type_{0}$)  are types with a propositional
-equality and so on for $\Type_{n}$.
+This new point of view on type theory has revealed the homotopy
+structure of types where for instance mere propositions (or
+$\Type_{-1}$) are just types with an
+irrelevant equality and sets (or $\Type_{0}$) are types
+with a propositional equality and so on for $\Type_{n}$.
 %
 The development of univalence has also shed some light on the
-difficulty to make the AC and EM coexist in type theory. Indeed, it
+difficulty to make AC and EM coexist in type theory. Indeed, it
 has been shown that a naive (non-propositional) version of EM is
 inconsistent with univalence.
 
-When restricted to homotopical propositions and sets, homotopy type
+When restricted to mere propositions and sets, homotopy type
 theory corresponds quite closely to topos theory but the mismatch
-starts when considering higher homotopical types.
+starts when considering higher homotopy types.
 %
 Fortunately, a higher version of topos theory has been developed
 recently by mathematicians, synthesized in the monograph of Lurie on
@@ -217,20 +222,24 @@ Lurie has developed all the tools that have been defined in
 topos theory, but in a higher setting. In particular, the theory of
 sheaves has been lifted to higher topos theory.
 %
-As the notion of higher topoi appears to correspond very closely
-to homotopy type theory, this provides a new hope that tackling the problem of
-extending the power of type theory using sheafification is actually possible.
+As the notion of higher topoi appears to correspond very closely to
+homotopy type theory, this provides a new hope that tackling the
+problem of extending the power of homotopy type theory using
+sheafification is actually possible.
 
 Nevertheless, the adaptation of the sheafification in higher topos
 theory to homotopy type theory is not straightforward because the
-construction in higher topoi is restricted to the initial
-Grothendieck which is still very topological, and not very amenable to
-formalization in type theory. It seems more promising to use a
-generalized sheafification, called Lawvere-Tierney
+construction in higher topoi is restricted to the initial Grothendieck
+setting which is still very topologically oriented, and not very
+amenable to formalization in type theory. It seems more promising to
+use a generalized notion of sheafification, called Lawvere-Tierney
 sheafification~\cite{maclanemoerdijk}, but this construction has not
-been considered yet in the setting of higher topos theory. 
+been considered yet in the setting of higher topos theory. This rises
+two issues that this paper addresses: (i) how to lift the notion of
+Lawvere-Tierney sheafification to higher topos theory and (ii) is it
+possible to formalize this new definition in homotopy type theory.
 
-\subsection{Lawvere-Tierney Topology}
+\subsection{Lawvere-Tierney Sheafification in Topos Theory}
 
 Lawvere-Tierney sheafification in a topos $\E$ is based on an abstract
 point of view on the topology to be considered, being simply an
@@ -268,7 +277,7 @@ isomorphism
 \Hom{\E}(E,F) \rightarrow \Hom{\E}(A,F).
 \end{equation}
 %
-On can show that $\Sh{\E}$, the full sub-category of $\E$ given by
+One can show that $\Sh{\E}$, the full sub-category of $\E$ given by
 sheaves, is again a topos, with classifying object
 %
 $$
@@ -278,13 +287,13 @@ $$
 Thus, in case of the double negation, the resulting topos is boolean  
 and admits classical reasoning.
 
-But furthermore, one can defined a left adjoint, the sheafification
-functor, 
+But furthermore, one can defined a left adjoint to the inclusion, the
+sheafification functor
 %
 $$
 a_j : \E \rightarrow \Sh{\E}
 $$
-to the inclusion functor, which exhibits $\Sh{\E}$ as a reflective
+which exhibits $\Sh{\E}$ as a reflective
 subcatefory of $\E$ (which is a particular case of localization). This
 means that logical principles valid in $\E$ are still valid in
 $\Sh{\E}$.
@@ -303,24 +312,24 @@ results derived for topos theory, such as independence results.
 
 To extend Lawvere-Tierney sheafification to homotopy type theory, the
 first thing to realize is that the construction can not be done in one
-step anymore. It must be done by induction on the level of homotopy of
-types. More precisely, the first layer of sheafification is defined
-for $\Type_{0}$ , given a topology on $\Type_{-1}$. This part
-corresponds to sheafification for topoi. Then, assuming that the
-sheafification has been constructed up to level $n$, one can defined
-the sheafification for $\Type_{n+1}$.
+single step anymore. It must rather be performed by induction on the
+level of homotopy types. More precisely, the first layer of
+sheafification is defined for $\Type_{0}$, given a topology on
+$\Type_{-1}$. This part corresponds to sheafification for topoi. Then,
+assuming that the sheafification has been constructed up to level $n$,
+one can defined the sheafification for $\Type_{n+1}$.
 %
 This inductive process in the definition of sheafification is similar
 to construction in the Grothendieck setting, where the
 sheafification is obtained by applying the plus-construction $n+1$ to
-$\Type_{n}$~\cite[Chapter~6]{lurie}.
+$n$-types~\cite[Chapter~6]{lurie}.
 
 This inductive step requires to formalize the notion of left-exact
-reflective subuniverse, which corresponds to a stratified
-version of left-exact modalities introduced
-in~\cite[Chapter~7]{hottbook}. A Lawvere-Tierney topology can thus be
-seen as a left-exact modality on $\Type_{-1}$ and sheafification as
-a way to extend it as a left-exact modality on $\Type_{n}$ for any $n$.
+reflective subuniverse, which corresponds to a stratified version of
+left-exact modalities introduced in~\cite[Chapter~7]{hottbook}. A
+Lawvere-Tierney topology can thus be seen as a left-exact modality on
+$\Type_{-1}$ and sheafification as an inductive process that extends
+it as a left-exact modality on $\Type_{n}$ for any $n$.
 
 Compare to the definition of sheafification in topos theory, the main
 change comes from the fact that in homotopy type theory, there is not
@@ -329,14 +338,15 @@ each $n\geq -2$ which classifies functions with $n$-truncated homotopy
 fibers~\cite{sets_in_hott}. This means that when monomorphisms are used in topos
 theoretic definition, the correct generalization may be $n$-truncated homotopy
 fibers or monomorphims (\ie $-1$-truncated homotopy
-fibers) depending on the context.
+fibers) depending on the purpose of the definition.
 
 For instance, the notion of separated objects (which is a technical
-tool in the construction of the sheafification), for which the morphism
+notion used in the construction of the sheafification functor), \ie
+objects for which the morphism
 (\ref{equ:sheaf_def}) is just a monomorphism, is generalized in two
 different ways.  
 %
-The subobjects to be considered are given by $n$-truncated fibers,
+The subobjects to be considered are given by $n$-truncated homotopy fibers,
 while the morphism (\ref{equ:sheaf_def}) is still required to be a
 monomorphism.
 
@@ -344,26 +354,30 @@ In other technical difficulty is the fact that sheafification in topos
 theory uses the fact that epimorphisms are coequalizers of their
 kernel pairs. This properties does not holds in higher topoi, but it
 can be replaced by Giraud's axiom which basically allows to replace 
- kernel pairs by \v{C}ech nerves.
+ kernel pairs by \v{C}ech nerves in the property.
 
 Finally, one of the main difficulty in our formalization is that many
-equlity which are trival (b yproof irrelevance) in the topos theoretic
+equalities which are trival (by proof irrelevance) in the topos theoretic
 setting becomes relevant and requires a carreful use of univalence
 with appropriate isomorphisms.
 
 \subsection{Plan of the Paper}
 
 Section~\ref{sec:hott} defines the foundations of homotopy type theory
-and the definition of modalities, on which this paper is based.
+and presents a particular case of GIraud's axiom. 
 %
-Section~\ref{sec:sheaves} defines the notion of sheaves in homotopy
+Section\ref{sec:lexmod} introduces the notion of left-exact stratified
+modalities, on which this paper is based.
+%
+Section~\ref{sec:sheaves} defines Lawvere-Tierney sheaves in homotopy
 type theory.
 %
-Section~\ref{sec:sheafification} depicts the construction of the
+Section~\ref{sec:sheafification} explains the construction of the
 sheafification functor.
 %
-Section~\ref{sec:formalization} presents the details of the
-  formalization in Coq.
+Section~\ref{sec:formalization} discusses the details of the
+formalization in Coq, in particular issues concerning universe
+polymorphism.
 %
 Finally, Section~\ref{sec:future-works} concludes on future works.
 
@@ -384,16 +398,34 @@ in homotopy type theory.
 And Section~\ref{sec:giraud-ax} defines (a particular case of)
 Giraud's axiom on higher topoi that we need in the definition of
 sheafification.
-
+%
 The definition of Section~\ref{ssec:hott} are part of the Coq library
 available at \url{https://github.com/HoTT/HoTT}, while other definitions
 and theorems are specific to our formalization. 
 
+As a prerequisite, we encourage the reader be familiar with type theory and
+in particular the point of view developed
+in~\cite{hottbook}. Nevertheless, we recall most of the central definitions 
+that we use so that the paper is sufficiently self-contained.
+%
 
+ 
  \subsection{Homotopy Types and Classifying Objects}
 \label{ssec:hott}
 
-Our work is mainly based on the stratification by $\Type_n$~:
+One of the most direct application of homotopical notion to type
+theory is the introduction of homotopy types. 
+%
+Using the analogy that points in a space correspond to elements of a
+type and that paths between two points correspond to 
+elements of the corresponding identity type (which defines equality in type theory),  
+%
+an $n$-type is simply a type
+for which equality becomes trivial up to level $n$. 
+%
+Voevodsky has realized that this notion admits a compact inductive definition
+internal to type theory, given by
+% Our work is mainly based on the stratification by $\Type_n$~:
 \begin{defi}
   $\IsType n$ is defined by induction on $n\geqslant -2$~:
   \begin{itemize}
@@ -403,76 +435,129 @@ Our work is mainly based on the stratification by $\Type_n$~:
   \end{itemize}
   Then, $\Type_n = \sum_{X:\Type} \IsType n X$.
 \end{defi}
-For a type $X$, to be in $\Type_n$ means that path spaces of $X$ are
-trivial after $n+1$ iteration.
-We define some shortcuts
+% For a type $X$, to be in $\Type_n$ means that path spaces of $X$ are
+% trivial after $n+1$ iteration.
+%
+We also define some syntactic sugar for contractible types and mere propositions.
+
 \begin{itemize}
 \item $\IsContr := \IsType {(-2)}$ and $\Contr := \Type_{-2}$
 \item $\IsHProp := \IsType {(-1)}$ and $\HProp := \Type_{-1}$
 \end{itemize}
 
-Working in $\Type_n$ allows to use the subobjects classification as in~\cite{sets_in_hott}~: for
-all type $B$, $\Type_n$ classifies subobjects of $B$ with $n$-truncated
-fibers ; we have an equivalence
+Using $\Type_n$ instead of just $\Type$ is the first step to connect
+type theory to higher topos theory. The next step is to exhibit a
+hierarchy of subobject classifiers on $n$-truncated homotopy fibers.
+%
+The homotopy fiber $\fib{f}(b)$ of a function $f$ at element $b$ is
+defined as 
+$$
+\fib{f}{b} \defeq \sum_{a:A} f(a) = b.
+$$ 
+%
+A function $f$ is with $n$-truncated homotopy fibers when $\fib{f}{b}$
+is an $\Type_n$ for any $b$.  
+%
+Following~\cite{sets_in_hott}, it is possible to show that, for any
+homotopy level $n$ and any type $B$, $\Type_n$ classifies subobjects
+of $B$ with $n$-truncated homotopy fibers in the sense that there is
+an equivalence
+%
 $$\left(\sum_{A:\Type} \sum_{f:A \to B} \prod_{b\in B}
-\IsType n~\mathrm{fib}_f(b)\right) \simeq (B \to \Type_n)$$
-and a pullback (with $\Type_n^\bullet$ the universe of pointed
+\IsType n~\fib{f}{b}\right) \simeq (B \to \Type_n)$$
+%
+and a pullback (with $\Type_n^\bullet \defeq \sum_{A:\Type_n} A$ the universe of pointed
 $n$-truncated types)~:
 $$
 \xymatrix{
-  A \ar[r]^{t_f} \ar[d]_f & \Type_n^\bullet \ar[d]^{\pi_1}\\
-  B \ar[r]_{\chi_f} & \Type_n
+  A \ar[r]^{\hspace{-1em} t_f} \ar[d]_f & \Type_n^\bullet \ar[d]^{\pi_1}\\
+  B \ar[r]_{\hspace{-1em} \chi_f} & \Type_n
 }
 $$
-forall $f$ with $n$-truncated fibers, with 
-$$t_f = \lambda a,~(\mathrm{fib}_f(f(a)),(a,\mathrm{idpath})).$$
+for any $f$ with $n$-truncated homotopy fibers, with 
+$$t_f = \lambda a,~(\fib{f}{f(a)},(a,\mathrm{idpath})).$$
 
-Using higher inductive types, one can define for any type $X$ $\|X\| : \HProp$
-generated by 
+Finally, we need to use mere propositions has basic elements of a logic
+when characterizing properties of types or functions. 
+%
+But as some constructors do not preserve the level of homotopy type
+(\eg sums or $\Sigma$-types), we need to introduce $\squash{X}$, the
+{\em (propositional) truncation} of $X$ (also called bracket type, or
+squash type). This operation on types allows to truncate a type down
+to a mere proposition. Then for instance, the existential
+quantification on mere propositions ``there exists x:A such that
+P(x)'' can be defined as $ \squash{\sum_{x:A} P(x)}.  $
+
+Also proposition truncation could be seen as a primitive type former
+in homotopy type theory, it can be defined using higher inductive
+types. We adopt this point of view as it allows to maintain the slogan
+that homotopy type theory is type theory plus univalence and higher
+inductive types.
+%
+
+Given any type type $X$, its propositional truncation 
+$\squash{X} : \HProp$ is generated by 
 \begin{itemize}
-\item a function $|\cdot|_X : X \to \|X\|$,
-\item paths $x=y$ for all $x,y:\|X\|$.
+\item a function $|\cdot|_X : X \to \squash{X}$,
+\item for any $x,y:\squash{X}$, a path $x=y$.
 \end{itemize}
-$\|X\|$ is called the {\em (propositional) truncation of $X$}. The recursion principle asserts~:
+% 
+The recursion principle $\squash{A}$ of asserts that any mere
+proposition that follows from $A$ already follows from $\squash{A}$.
 \begin{lem}
   For any $A:\Type$ and $B:\HProp$, if $f:A \to B$ then there is an
-  induced $g:\|A\|\to B$ such that $g(|a|)= f(a)$ for any $a:A$.
+  induced $g:\squash{X}\to B$ such that $g(|a|)= f(a)$ for any $a:A$.
 \end{lem}
-We refer to~\cite{hottbook} for more details.
+%
+We refer the reader to~\cite{hottbook} for more details on propositional truncation.
 
 \subsection{Colimits in Homotopy Type Theory }
 \label{sec:colim-homot-type}
 
-\nt{Kevin -> complete this subsection}
+In the definition of (a special case of) Giraud's axiom given in
+Section~\ref{sec:giraud-ax}, the colimit of the {\em \v{C}ech nerve}
+plays a central role.
+% 
+Following the notion of (homotopy) limits of diagrams over graphs that
+has been defined in homotopy type theory~\cite{lumsdaine}, we present
+here a definition of colimits of diagrams overs graphs. 
+%
+The main difference between limits and colimits is that limits are
+simply given by $\Sigma$-types, and thus exists already in traditional
+type theory, whereas the situation is more complicated for colimits as
+it requires the use of higher inductive types.
 
-Formalization of colimits is based on the formalization of limits in~\cite{lumsdaine}.
 
-In section~\ref{sec:giraud-ax}, we need to consider colimits of
-diagrams.
-The following definition comes from~\cite{lumsdaine}~:
+Following~\cite{lumsdaine}, we introduce the notion of graph and
+diagram over a graph.
+%
 \begin{defi}
   A {\em graph} $G$ is the data of
   \begin{itemize}
   \item a type $G_0$ of vertices ;
-  \item for all $i,j:G_0$, a type $G_1(i,j)$ of edges.
+  \item for any $i,j:G_0$, a type $G_1(i,j)$ of edges.
   \end{itemize}
 
-  A {\em diagram} $D$ on a graph $G$ is the data of
+  A {\em diagram} $D$ over a graph $G$ is the data of
   \begin{itemize}
-  \item for all $i:G_0$, a type $D_0(i)$ ;
-  \item for all $i,j:G_0$ and all $\phi : G_1(i,j)$, a map $D_1(\phi)
+  \item for any $i:G_0$, a type $D_0(i)$ ;
+  \item for any $i,j:G_0$ and all $\phi : G_1(i,j)$, a map $D_1(\phi)
     : D_0(i) \to D_0(j)$
   \end{itemize}
 \end{defi}
 
-Now, we define what it means for a type to be a colimit of a diagram. 
+An colimit of a diagram $D$ over a graph $G$ is given by a type $P$
+that defines a cone of $D$, plus the universal property that for any
+type $X$, the canonical map that transforms a function from $f : P
+\rightarrow X$ to a cone of $D$ on $X$ is an isomorphism.
+% 
 \begin{defi}
 Let $G$ be a graph, and $D$ be a diagram on $G$. 
 Let $P:\Type$ together with
 \begin{itemize}
-\item a map $q_i : D_0(i) \to P$ for all
+\item a map $q_i : D_0(i) \to P$ for any
 vertex $i:G_0$, \ie $$q : \prod_{i:G_0} D_0(i) \to P$$
-\item for all vertices $i,j:G_0$ and all edges $\phi:G_1(i,j)$, a path
+\item for any vertices $i,j:G_0$ and all edges $\phi:G_1(i,j)$, a path
   $p_{i,j}^\phi : q_j \circ D_1(\phi) = q_i$, \ie
   $$p : \prod_{i,j:G_0} \prod_{\phi:G_1(i,j)} q_j \circ D_1(\phi) = q_i.$$
 \end{itemize}
@@ -482,17 +567,26 @@ map
 $$\lambda f:P \to X,~ \left( \lambda i,~f \circ q_i~;~ \lambda i\, j\,
   \phi,~ \precompose_f (p(i, j, g))) \right)$$
 is an equivalence.
+
+\nt{say what is $\precompose_f $}
 \end{defi}
 
-Essentially, being a colimit means making the diagram commutes, and
-being universal for this property.
+% Essentially, being a colimit means making the diagram commutes, and
+% being universal for this property.
 
-Note that using higer inductive types, every diagram $D$ on a graph
-$G$ admits a colimit, the type $Q$ whose constructors are
+Using higer inductive types, every diagram $D$ on a graph $G$ admits a
+colimit in homotopy type thoery. This colimit $\colim D$ is given
+%
 \begin{itemize}
-\item $q:\prod_{i:G_0} D_0(i) \to Q$
-\item $p:\prod_{i,j:G_0} \prod_{\phi:G_1(i,j)} q_j \circ D_1(\phi) = q_i$
+\item a function $q:\prod_{i:G_0} D_0(i) \to \colim D$
+\item for any $i,j:G_0$ and $\phi:G_1(i,j)$, a path
+  $q_j \circ D_1(\phi) = q_i$.
 \end{itemize}
+%
+Although we have proven in our formalization that $\colim D$ is
+actually a colimit over $D$, we do not detail the proof as the
+existence of colimits is not use in the definition of the
+sheafification process. 
 
 \subsection{Giraud's axiom}
 \label{sec:giraud-ax}
@@ -559,9 +653,9 @@ We use the following definition of truncated left exact modalities~:
         f & \mapsto & f \circ \eta_A
       \end{array} \right.$$
     is an equivalence.
-  \item For all $A:\Type_p$ and $B:A \to \Type_p$ such that $P(A)$
+  \item for any $A:\Type_p$ and $B:A \to \Type_p$ such that $P(A)$
     and $\prod_{x:A} P(B x)$, then $P\left( \sum_{x:A} B(x)\right)$
-  \item For all $A:\Type_p$ and $x,y:A$, if $\modal A$ is
+  \item for any $A:\Type_p$ and $x,y:A$, if $\modal A$ is
     contractible, then $\modal (x=y)$ is contractible.
   \end{enumerate}
   Conditions (i) to (iv) define a {\em reflective subuniverse}, (i) to
@@ -578,7 +672,7 @@ In particular, if $X:\Type_p$ verifies $P(X)$, then for any $x,y:X$, $P(x=y)$.
 Another useful property is that we can extend property {\it (iii)} to
 dependent product.
 
-Moreover, left exactness implies in particular fibers preservations~:
+Moreover, left exactness implies in particular homotopy fibers preservations~:
 \begin{prop}
 For any $n$-truncated types $X$ and $Y$,
 and any map $f:X \to Y$, the modalisation of fiber of $f$ above any element $y:Y$
@@ -635,8 +729,8 @@ Consistency issues.
 \section{Sheaves}
 \label{sec:sheaves}
 
-We will define sheaves by induction on the homotopical truncation level of types
-~: the base case will be any left exact modality on $\HProp$, and we
+We will define sheaves by induction on the level of homotopy type:
+the base case will be any left exact modality on $\HProp$, and we
 give in this section some definitions useful for the inductive case.
 
 % \subsection{Definitions and first properties}
@@ -658,7 +752,7 @@ and a left exact modality $\modal$ on $\Type_n$.
   classified by $\chi$ is {\em dense} in $E$ if its $\modal$-closure
   is $E$ seen as a subobject of $E$, \ie
   $$\forall e:E,~ \left(\sum_{e':E} e=e'\right) \simeq (\modal (\chi~e)).$$ 
-  Moreover, for all $x:A$ we need the following coherence diagram to
+  Moreover, for any $x:A$ we need the following coherence diagram to
   commute
   $$\xymatrix{
     \sum_{e':A} x = e' \ar@{=}[r] \ar[d]_\iota & (\chi~x) \ar[d]^{\eta_{(\chi~x)}}\\
@@ -667,7 +761,7 @@ and a left exact modality $\modal$ on $\Type_n$.
   where $\iota: x \mapsto ({x_1}_1 ; x_2)$.
 \end{defi}
 
-It follows from fibers preservation that any $n$-subobject of a type seen as a $n$-subobject
+It follows from homotopy fibers preservation that any $n$-subobject of a type seen as a $n$-subobject
 of its closure is closed.
 
 \begin{defi}[Restriction]
@@ -675,13 +769,13 @@ of its closure is closed.
   \begin{itemize}
   \item if $A \hookrightarrow E$, $M_E^\chi$ is the map sending an
     arrow $f~:~E\to F$ to $\restriction f A$ the restriction of $f$ to $A$.
-  \item if $A \to E$ with $n$-truncated fibers, $\Phi_E^\chi$ is the
+  \item if $A \to E$ with $n$-truncated homotopy fibers, $\Phi_E^\chi$ is the
     map sending $f~:~E \to f$ to $\restriction f A$.
   \end{itemize}
 \end{defi}
 
 \begin{defi}[Separated Type]
-  A type $F$ in $\Type_{n+1}$ is {\em separated} if for all type $E$, and
+  A type $F$ in $\Type_{n+1}$ is {\em separated} if for any type $E$, and
   all dense subobject of $E$ classified by $\chi~:~E \to \Type_n$,
   $\Phi_E^\chi$ is a monomorphism. In other words, the dotted arrow,
   if exists, is unique.
@@ -694,7 +788,7 @@ of its closure is closed.
 
 \begin{defi}[Sheaves]
   A type $F$ of $\Type_{n+1}$ is a {\em $(n+1)$-sheaf} if it is
-  separated, and for all type $E$ and all dense subobject of $E$
+  separated, and for any type $E$ and all dense subobject of $E$
   classified by $\chi~:~E \to \Type_{-1}$, $M_E^\chi$ is an
   equivalence. In other words, the dotted arrow exists and is unique.
 
@@ -713,7 +807,7 @@ From these definitions, one can show that
 \begin{prop}\label{prop:sheaf_prop}
   \begin{itemize}
   \item $\Type_n^\modal$ is a sheaf.
-  \item If $A:\Type_{n+1}$ and $B:A \to \Type_{n+1}$ such that for all
+  \item If $A:\Type_{n+1}$ and $B:A \to \Type_{n+1}$ such that for any
     $a:A$, $(B~a)$ is a sheaf, then $\prod_{a:A}B~a$ is a sheaf.
   \end{itemize}
 \end{prop}
@@ -761,7 +855,7 @@ two steps~:
 \item {\em completion~:} In this step, we add what lacks now to the
   separated type to be a sheaf.
 \end{enumerate}
-\subsection{For h-propositions}
+\subsection{For mere propositions}
 \label{ssec:h-propositions}
 
 For the case $n=-1$, one can take any left exact modality on
@@ -798,7 +892,7 @@ in~\cite{maclanemoerdijk}, using $\Type_n^\modal$ instead of the
 $j$-subobject classifier.
 
 \begin{prop}
-  For all $T:\Type_{n+1}$, $\square T$ is separated.  
+  For any $T:\Type_{n+1}$, $\square T$ is separated.  
 \end{prop}
 
 \begin{proof}
@@ -841,7 +935,7 @@ $\mu_T$ instead of the \v{C}ech nerve.
       \land t_{k-1} = t_k)
   \end{align*}
 By induction on $k$, and the preservation of products by $\modal$, it
-suffices to show that for all $a,b:T$, $\modal (a=b) = (\mu_T a =
+suffices to show that for any $a,b:T$, $\modal (a=b) = (\mu_T a =
 \mu_T b)$. By univalence, we want arrows in both ways, forming an
 equivalence.
 \begin{itemize}
@@ -895,7 +989,7 @@ $$\xymatrix @R=4em @C=5em{
   E \ar@<-2pt>[ru]_{\pi_1\circ g} \ar@<2pt>[ru]^{\pi_1\circ f}&
 }$$
 and as $A$ is separated, $\pi_1\circ f = \pi_2 \circ g$.
-For the second components, let $x:E$. Notice that for all $x:E$,
+For the second components, let $x:E$. Notice that for any $x:E$,
 $\sum_{y:E} x = y$ has a dense subobject, $\sum_{y:\sum_{e:E} (\chi\,
   e)} x=y_1$~:
 

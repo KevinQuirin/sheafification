@@ -451,10 +451,23 @@ Section LexModality.
       apply function_lift_equiv'. exact fs. apply equiv_inverse. simpl.
       unfold T', hfiber, square_fiber_map; simpl.
       hott_simpl.
-      (* This is done in https://github.com/HoTT/HoTT/blob/master/contrib/old/FiberSequences.v  by three_by_three *)
-
-      admit.
-
+      apply equiv_path.
+      pose
+        (q := three_by_three f
+                        (O_rec X (O subU Y) (O_unit subU Y o f))
+                        (O_unit subU X)
+                        (O_unit subU Y)
+                        (λ a, (ap10 (O_rec_retr X (O subU Y) (O_unit subU Y o f)) a)^)
+                        y
+                        rx
+                        p^).
+      repeat rewrite inv_V in q.
+      etransitivity; try exact q. clear q.
+      apply path_universe_uncurried.
+      apply equiv_functor_sigma_id. intro a.
+      unfold square_fiber_map.
+      rewrite inv_V. 
+      apply equiv_path; reflexivity.
       unfold oT', T'. simpl.
       unfold IsLex in islex.
       assert (Tr_fibηX : forall rx, IsTrunc n.+1 (hfiber (O_unit subU X) rx)).

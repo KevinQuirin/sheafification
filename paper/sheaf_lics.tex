@@ -845,30 +845,34 @@ The proof is based on the following central result.
   $\modal (\fib f y)$ is contractible, then $\modal X = Y$.
 \end{lem}
 %
-As $\sum_{x:\modal X} (\modal f x = \eta_Y y)$ is modal, we
-can define $$\phi:\modal \left(\sum_{x:X}  (f x = y)\right) \to
-\sum_{x:\modal X} (\modal f x = \eta_Y y).$$
-We just need to check that the image of its fibers by $\modal$ are
+It is straighforward to define a map
+$$\phi:\sum_{x:X}  (f x = y)\to
+\sum_{x:\modal X} (\modal f x = \eta_Y y),$$
+using $\eta$ functions.
+We just need to check that every $\modal(\fib \phi {x;p})$ is
 contractible.
+Technical transformations allow to prove
+$$\fib\phi{x;p} = \fib s {y;p^{-1}}$$
+for some $a:\modal X$, $b:\modal Y$ and 
+$$s:\fib{\eta_X}a \to \fib{\eta_Y}b.$$
 %
 From definition of left exactness, one can deduce the following:
 \begin{lem}
   Let $A,B:\Type_p$. Let $f:A\to B$. If $\modal A$ and $\modal B$ are
   contractible, then so is $\fib f b$ for any $b:B$.
 \end{lem}
-We can rewrite $\fib \phi {x;p}$ in terms of the fiber of a fonction
-$\fib {\eta_X} a \to \fib {\eta_Y} b$.
-
+Thus, we just need to prove that $\modal(\fib {\eta_X} a)$ and
+$\modal(\fib {\eta_Y} b)$ are contractible.
 But we have the lemma:
 \begin{lem}
   Let $A:\Type_p$. Then for any $y:\modal A$, $\modal(\fib {\eta_A}
   y)$ is contractible.
 \end{lem}
 
-Finally, $\modal(\fib \phi {x;p})$ is contractible, and the result is proved.
-\kq{Finish that}
+Finally, $\modal(\fib s{y;p^{-1}})$ is contractible, so $\modal(\fib \phi {x;p})$ also, and the result is proved.
+%\kq{Finish that}
 
-\nt{Indeed, I can't follow the proof for the moment}
+%\nt{Indeed, I can't follow the proof for the moment}
 \end{proof}
 
 In the same way, left exact modalities preserve homotopy types.
@@ -941,7 +945,7 @@ $\modal_{\lnot\lnot} T = (T \to \zero) \to \zero$.
 This modality enables to use
 classical reasonings in the corresponding reflective subuniverse, but
 every type in the new universe is collapsed to an $\HProp$, ending up
-with porpositional classical logic. 
+with propositional classical logic. 
 
 In this paper, we use the double negation modality at level $-1$ only,
 and then extend it to higher homotopy types using sheafification. This
@@ -1147,7 +1151,22 @@ functions is a sheaf as soon as its codomain is a sheaf.
   $a:A$, $(B~a)$ is a sheaf, then $\prod_{a:A}B~a$ is a sheaf.
 \end{prop}
 \begin{proof}
-  \nt{add a short proof here}
+  \begin{itemize}
+  \item {\em Separation:} Let $E:\Type$, $\chi:E \to \Type_n$ dense
+    and $\phi_1,\phi_2:E\to \prod_{a:A} (B\, a)$ equal on
+    $\sum_{e:E}(\chi\, e)$ \ie $\phi_1\circ \pi_1 = \phi_2\circ
+    \pi_1$.
+    Then for any $a:A$, $(\lambda x:E,~\phi_1\, x\,
+    a)$
+    and $(\lambda x:E,~\phi_2\, x\, a)$
+    coincide on $\sum_{e:E}(\chi\, e)$, and as $B\, a$ is separated,
+    they coincide also on all $E$.
+  \item {\em Sheaf:} Let $E:\Type$, $\chi:E\to \HProp$ dense and
+    $f:\sum_{e:E} (\chi\, e)\to \prod_{a:A} (B\,a)$. Let $a:A$ ; the
+    map $(\lambda x,~f\,x \,a)$ is valued in the sheaf $B\, a$, so it
+    can be extended to all $E$, allowing $f$ to be extended to all $E$.
+  \end{itemize}
+%  \nt{add a short proof here}
 \end{proof}
 
 \section{Construction of sheafification}
@@ -1200,11 +1219,17 @@ This construction may be seen as the first induction step between
 $\HProp$ and $\Type_0$. 
 
 \nt{je ne comprends pas ce passage, c'est quoi sheafness ? }
+
+\kq{c'est une vision plutôt grothendieck en fait. La separation ``enlève''
+  ce qui empêche à $T$ d'être un faisceau, et la sheafification
+  rajoute ce qui manque pour être un faisceau. Mais c'était plutôt mal
+  dit, effectivement}
+
 For a given induction step, the sheafification is defined in two
 steps:
 \begin{enumerate}[(i)]
-\item {\em separation:} In this step, we {\em remove} the lack of
-  sheafness from the type we are considering.
+\item {\em separation:} In this step, we construct a {\em free}
+  separated object.
 \item {\em completion:} In this step, we add what lacks now to the
   separated type to be a sheaf.
 \end{enumerate}
@@ -1230,9 +1255,9 @@ sense of proposition~\ref{prop:hprop}.
 
 Let $T : \Type_{n+1}$. We define $\separated T$ as the image (see
 Section~\ref{sec:epi-mono-fact}) of
-$\modal^T \circ \{\cdot\}_T$, as in
+$\modal_n^T \circ \{\cdot\}_T$, as in
 $$\xymatrix{
-  T \ar[r]^{\{\cdot\}_T} \ar[d]_{\mu_T} & \Type_n^T \ar[d]^{\modal^T} \\
+  T \ar[r]^{\{\cdot\}_T} \ar[d]_{\mu_T} & \Type_n^T \ar[d]^{\modal_n^T} \\
   \separated T \ar[r]& \left( \Type_n^\modal \right)^T
 }, $$
 where $\{\cdot\}_T$ is the singleton map $\lambda (t:T),~\lambda
@@ -1242,9 +1267,9 @@ $\separated T$ can be given explicitly by
 %
 $$
 \begin{array}{rcl}
-\separated T &\defeq & \im (\lambda~t:T,~\lambda~ t',~ \modal (t = t')) \\
-          & \defeq & \sum_{u:T \to \Type_n^\modal} \left\| \sum_{a:X} 
-            (\lambda t,~\modal (a=t)) = u\right\|.
+\separated T &\defeq & \im (\lambda~t:T,~\lambda~ t',~ \modal_n (t = t')) \\
+          & \defeq & \sum_{u:T \to \Type_n^\modal} \left\| \sum_{a:T} 
+            (\lambda t,~\modal_n (a=t)) = u\right\|.
 \end{array}
 $$
 %
@@ -1269,7 +1294,7 @@ and a function type is a sheaf as soon
 as its codomain is a sheaf (by Proposition~\ref{prop:sheaf-forall}).
 \end{proof}
 
-To show that $\separated$ is a modality, we need t show that $\separated T$
+To show that $\separated$ is a modality, we need to show that $\separated T$
 is universal among separated type below $T$. This comes from the
 following central lemma which connects $\separated T$ to the colimit of
 the \v{C}ech nerve of $\mu_T$.
@@ -1300,23 +1325,23 @@ is replaced by its \v{C}ech nerve.
   \begin{align*}
     &\sum_{t:T^k} (\mu_T t_1 = \mu_T t_2 \land \cdots
       \land \mu_T t_{k-1} \mu_T t_k)\\
-    &= \sum_{t:T^k} \modal (t_1 = t_2 \land \cdots
+    &= \sum_{t:T^k} \modal_n (t_1 = t_2 \land \cdots
       \land t_{k-1} = t_k)
   \end{align*}
-By induction on $k$, and the preservation of products by $\modal$, it
-suffices to show that for any $a,b:T$, $\modal (a=b) = (\mu_T a =
+By induction on $k$, and the preservation of products by $\modal_n$, it
+suffices to show that for any $a,b:T$, $\modal_n (a=b) = (\mu_T a =
 \mu_T b)$. By univalence, we want arrows in both ways, forming an
 equivalence.
 \begin{itemize}
 \item Suppose $p : (\mu_T a = \mu_T b)$. Then projecting $p$ along
-  first components yields $q : \prod_{t:T} \modal(a=t) = \modal (b=t)
+  first components yields $q : \prod_{t:T} \modal_n(a=t) = \modal_n (b=t)
   $.
-  Taking for example $t=b$, we deduce $\modal (a=b) = \modal(a=a)$,
+  Taking for example $t=b$, we deduce $\modal_n (a=b) = \modal_n(a=a)$,
   and the latter is inhabited by $\eta_{a=a} 1$.
-\item Suppose now $p : \modal(a=b)$. Let $\iota$ be the first
+\item Suppose now $p : \modal_n(a=b)$. Let $\iota$ be the first
   projection from $\separated T \to (T \to \Type_n^\modal)$. $\iota$ is
   an embedding, thus it suffices to prove $\iota (\mu_T a) = \iota
-  (\mu_T b)$, \ie $\prod_{t:T}\modal (a=t) = \modal (b=t)$. The latter
+  (\mu_T b)$, \ie $\prod_{t:T}\modal_n (a=t) = \modal_n (b=t)$. The latter
   remains true by univalence.
 \end{itemize}
 The fact that these two form an equivalence is technical, we refer to
@@ -1336,7 +1361,7 @@ colimit of the closed diagonals diagram, thus there is an universal
 arrow $\separated T \to Q$.
 %
 This is enough to state the following proposition.
-\begin{prop}
+\begin{prop}\label{prop:sep-subu}
   $(\separated,\mu)$ defines a reflective subuniverse on $\Type_{n+1}$.
 \end{prop}
 
@@ -1372,7 +1397,7 @@ Using the sepatation property of $B\,x$, one can show that second
 components, transported correctly along the first components equality,
 are equal. The complete proof can be found in the formalisation.
 This proves the following proposition
-\begin{prop}
+\begin{prop}\label{prop:sep-mod}
   $(\separated,\mu)$ defines a modality on $\Type_{n+1}$.
 \end{prop}
 
@@ -1382,47 +1407,100 @@ that it is left exact, we will only do it for the sheafification modality.
 \subsection{From Separated Type to Sheaf}
 \label{ssec:separated-to-sheaf}
 
-\nt{put the definition of $\modal_{n+1}$ upfront}
+%\nt{put the definition of $\modal_{n+1}$ upfront}
+If $T:\Type_{n+1}$, let  $\modal_{n+1}T$ be the cloture of $\square T$
+seen as a subobject of $T \to \Type_n^\modal$. Explicitly
+$$\modal_{n+1} T = \sum_{u:T \to \Type_n^\modal} \modal_{-1}\left\| \sum_{a:T} 
+            (\lambda t,~\modal_n (a=t)) = u\right\|$$
 
-If $T$ is already a separated type, the following lemma alllows us
-to build a sheaf:
+We begin by proving that $\modal_{n+1}$ is compatible with $\modal_n$
+on lower homotopy types.
+\begin{prop}
+  If $T:\Type_n$, then $\modal_{n+1}T = \modal_n T$.
+\end{prop}
+\begin{proof}
+  We prove it by induction on $n$~:
+  \begin{itemize}
+  \item For $n=-1$: Let $T:\HProp$. Then
+    \begin{align*}
+      \modal_{0} T &= \sum_{u:T \to \Type_n^\modal} \modal_{-1}\left\| \sum_{a:T} 
+      (\lambda t,~\modal_{-1} (a=t)) = u\right\| \\
+      &= \sum_{u:T \to \Type_n^\modal} \modal_{-1}\left( \sum_{a:T} 
+      (\lambda t,~\modal_{-1} (a=t)) = u\right)
+    \end{align*}
+    because the type inside the truncation is already in $\HProp$.
+    Now, let define $\phi : \modal_{-1} T \to \modal_0T$ by
+    $$\phi t = (\lambda t',\, \modal_{-1}(t=t') ; \eta
+    (t;\mathrm{idpath}))$$
+    and $\psi : \modal_0T\to \modal_{-1} T$ by obtaining the
+    witness $a:T$, and letting
+    $$\psi (u;x) = \eta_T a.$$
+    These two maps form an equivalence.
+  \item Suppose now that $\modal_{n+1}$ is compatible with all $\modal_k$ on
+    lower homotopy types. Let $\modal_{n+2}$ be as above, and let
+    $T:\Type_{n+1}$. Then
+    \begin{align*}
+      \modal_{n+2} T &= \sum_{u:T \to \Type_{n+1}^\modal} \modal_{-1}\left\| \sum_{a:T} 
+            (\lambda t,~\modal_{n+1} (a=t)) = u\right\| \\
+                     &= \sum_{u:T \to \Type_{n+1}^\modal} \modal_{-1}\left\| \sum_{a:T} 
+            (\lambda t,~\modal_{n} (a=t)) = u\right\|
+    \end{align*}
+    because $\modal_{n+1}$ is compatible with $\modal_{n}$, and
+    $(a=t):\Type_n$.
+    
+    It lefts to prove that $u:T\to\Type_n^\modal$, \ie that for all
+    $t:T$, $\IsType n (u\, t)$.
+    But for any truncation index $p$, the predicate $\IsType p:\HProp$
+    is a a sheaf, so we can get rid of $\modal_{-1}$, and pick up what
+    is inside the truncation. Thus, we know that for all $t:T$, $u\, t
+    = \modal_n(a=t) : \Type_n$.
+  \end{itemize}
+\end{proof}
+
+This also proves that $\modal_{n+1}$ is compatible with $\modal_{-1}$
+in the sense of proposition~\ref{prop:hprop}.
+
+To prove that $\modal_{n+1} T$ is a sheaf for any $T:\Type_{n+1}$, we
+use the following:
 \begin{lem}
-  Let $T:\Type_{n+1}$ be separated, and $U$ be a sheaf. If $T$ embeds
-  in $U$, and is closed in $U$, then $T$ is a sheaf.
+  Let $X:\Type_{n+1}$ be separated, and $U$ be a sheaf. If $X$ embeds
+  in $U$, and is closed in $U$, then $X$ is a sheaf.
 \end{lem}
 
-As any separated type $T$ embeds in $\left(\Type_n^\modal\right)^T$,
-it suffices to take the closure of $T$ to get a sheaf, and the unit
-$\nu_T:T \to \star T$ is obvious.
+As $T\to \Type_n^\modal$ is a sheaf, and any object is closed into its
+cloture, $\modal_{n+1}T$ is indeed a sheaf.
+
 \begin{prop}
-  $(\star,\nu)$ defines a reflective subuniverse.
+  $(\modal_{n+1},\nu)$ defines a reflective subuniverse.
 \end{prop}
 \begin{proof}
   Let $T,Q:\Type_{n+1}$ such that $Q$ is a sheaf. Let $f:T\to Q$.
   Because $Q$ is a sheaf, it is in particular separated ; thus we can
   extend $f$ to $\separated f:\separated T\to Q$.
 
-  But as $\star T$ is the closure of $\separated T$, $\separated T$ is dense
-  into $\star T$, so the sheaf property of $Q$ allows to extend
-  $\separated f$ to $\star f:\star T \to Q$.
+  But as $\modal_{n+1} T$ is the closure of $\separated T$, $\separated T$ is dense
+  into $\modal_{n+1} T$, so the sheaf property of $Q$ allows to extend
+  $\separated f$ to $\modal_{n+1} f:\modal_{n+1} T \to Q$.
 
   As all these steps are universal, the composition is.
 \end{proof}
 
-
-If $T:\Type_{n+1}$, the sheafification of $T$ is
-$$\star T = \sum_{u:T \to \Type_n^\modal} \lnot\lnot\left\| \sum_{a:X} 
-            (\lambda t,~\modal (a=t)) = u\right\|$$
-
-We already know that $\star$ defines a modality. It remains to show
-that this modality is left exact.
-
-The last thing to prove is the cumulativity of our sheafifications:
+Using the same idea of proof as in proposition~\ref{prop:sep-mod}, we have
 \begin{prop}
-  If $T:\Type_n$, then $\modal T = \star \widehat T$ (where $\widehat
-  T$ is $T$ seen as a $\Type_{n+1}$.
+  $(\modal_{n+1},\nu)$ defines a reflective subuniverse.
 \end{prop}
-It will imply that $\star$ is compatible with $\HProp$ in the sense of proposition~\ref{prop:hprop}.
+
+The last step is the left-exactness of $\modal_{n+1}$. Let
+$T:\Type_{n+1}$, and $x,y:T$. Suppose that $\Contr(\modal_{n+1} T)$.
+Thanks to compatibility between $\modal_{n+1}$ and $\modal_n$ for
+$n-\Type$, it suffices to show that $\modal_n(x=y)$ is contractible.
+
+The same proof as in proposition~\ref{prop:sep-subu} leads to
+\begin{prop}
+  For all $a,b:T$, $\modal_n(a=b) = (\nu_T a = \nu_T b)$.
+\end{prop}
+As $\modal_{n+1} T$ is contractible, any path space of $\modal T$ is
+contractible, in particular $(\nu_T a=\nu_T b)$.
 
 \subsection{Summary}
 \label{ssec:summary}

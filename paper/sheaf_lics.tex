@@ -777,7 +777,7 @@ stability properties
 \item
 $\modal \one =\one $
 \item
-Stability under dependent product (7.7.2 of \cite{hottbook})
+Stability under product and dependent product (7.7.2 of \cite{hottbook})
 \item
  In particular, if $X:\Type_p$ verifies
 $P(X)$, then for any $x,y:X$, $P(x=y)$.
@@ -1025,7 +1025,7 @@ toplogies for $(\infty,1)$-topoi, which is beyond the scope of this paper).
 %
 
 
-\nt{Il faut introduire c'est propriété, $\Type_n^\modal$ is a sheaf
+\nt{Il faut mieux introduire ces propriétés, $\Type_n^\modal$ is a sheaf
   est très importante en particulier. Il faut qu'on comprenne d'où ça
   vient et que tu fasses une preuve, même un peu idalisée. Je dirais
   que tu peux mettre des lemmes genres nj\_inter en disant que telle
@@ -1174,7 +1174,9 @@ in~\cite{maclanemoerdijk}, where they consider only the kernel pair of
 $\mu_T$ instead of the \v{C}ech nerve.
 
 \begin{proof}
-  As $\mu_T$ is an surjection, we know by Giraud axiom that $\square T$ is the colimit
+  As $\mu_T$ is an surjection, using the particular case of the last
+  Giraud-Rezk-Lurie axiom introduced in Section~\ref{sec:giraud-ax},
+  we know that $\square T$ is the colimit
   of $C(\mu_T)$. If we can show that $C(\mu_T) = C(\id)$, the the
   result will follow. 
 
@@ -1265,6 +1267,8 @@ that it is left exact, we will do it only for the sheafification modality.
 \subsection{From Separated Type to Sheaf}
 \label{ssec:separated-to-sheaf}
 
+\nt{put the definition of $\modal_{n+1}$ upfront}
+
 If $T$ is already a separated type, the following lemma alllows us
 to build a sheaf~:
 \begin{lem}
@@ -1291,9 +1295,6 @@ $\nu_T:T \to \star T$ is obvious.
 \end{proof}
 
 
-\subsection{Summary}
-\label{ssec:summary}
-
 If $T:\Type_{n+1}$, the sheafification of $T$ is
 $$\star T = \sum_{u:T \to \Type_n^\modal} \lnot\lnot\left\| \sum_{a:X} 
             (\lambda t,~\modal (a=t)) = u\right\|$$
@@ -1308,7 +1309,11 @@ The last thing to prove is the cumulativity of our sheafifications~:
 \end{prop}
 It will imply that $\star$ is compatible with $\HProp$ in the sense of proposition~\ref{prop:hprop}.
 
+\subsection{Summary}
+\label{ssec:summary}
 
+\nt{Recap what has been done, and give the final result about EM with
+  the dense topology as a corollary.}
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
@@ -1422,7 +1427,8 @@ because universe levels must be the same for every $n$.
 \section{Conclusion and Future Works}
 \label{sec:future-works}
 
-Prove that the Giraud axiom holds in homotopy type theory.
+Prove that the Giraud-Rezk-Lurie axiom holds in homotopy type theory,
+or at least the particular case we need.
 
 Extend the sheafification to all types, even if non truncated.
 

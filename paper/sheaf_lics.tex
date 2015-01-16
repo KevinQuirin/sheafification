@@ -436,7 +436,7 @@ Voevodsky has realized that this notion admits a compact inductive definition
 internal to type theory, given by
 % Our work is mainly based on the stratification by $\Type_n$~:
 \begin{defi}
-  $\IsType n$ is defined by induction on $n\geqslant -2$~:
+  $\IsType n$ is defined by induction on $n\geqslant -2$:
   \begin{itemize}
   \item $\IsType {(-2)} X$ if $X$ is a contractible type, \ie $X$
     is pointed by $c:X$, and every other point in $X$ is connected to $c$.
@@ -542,7 +542,7 @@ inhabited (\ie $\|\fib f y\|$ holds for all $y$).
 
 It is then fairly obvious that the canonical function $\hat f : A \to
 \im(f)$ is (-1)-connected, thus the following proposition holds
-(\cite{hottbook}, Lemma 7.6.4)~:
+(\cite{hottbook}, Lemma 7.6.4):
 \begin{prop}
   A map $f:A\to B$ factors through $\im(f)$ as a (-1)-connected
   function followed by a (-1)-truncated function.
@@ -822,7 +822,7 @@ exact modalities preserve homotopy fibers.
 \label{sec:defin-basic-prop}
 For any $n$-truncated types $X$ and $Y$,
 and any map $f:X \to Y$, the modalisation of fiber of $f$ above any element $y:Y$
-is the fiber of $\modal f$ above $\eta_Y y$~:
+is the fiber of $\modal f$ above $\eta_Y y$:
 $$\modal \left(\sum_{x:X}  (f x = y)\right) = \sum_{x:\modal X} (\modal f x = \eta_Y y).$$
 
 Moreover the following diagram commute
@@ -851,7 +851,7 @@ can define $$\phi:\modal \left(\sum_{x:X}  (f x = y)\right) \to
 We just need to check that the image of its fibers by $\modal$ are
 contractible.
 %
-From definition of left exactness, one can deduce the following~:
+From definition of left exactness, one can deduce the following:
 \begin{lem}
   Let $A,B:\Type_p$. Let $f:A\to B$. If $\modal A$ and $\modal B$ are
   contractible, then so is $\fib f b$ for any $b:B$.
@@ -859,7 +859,7 @@ From definition of left exactness, one can deduce the following~:
 We can rewrite $\fib \phi {x;p}$ in terms of the fiber of a fonction
 $\fib {\eta_X} a \to \fib {\eta_Y} b$.
 
-But we have the lemma~:
+But we have the lemma:
 \begin{lem}
   Let $A:\Type_p$. Then for any $y:\modal A$, $\modal(\fib {\eta_A}
   y)$ is contractible.
@@ -1039,7 +1039,7 @@ their dense sub-objects.
     as the map sending an
     arrow $f:E\to F$ to its restriction the restriction of $f \circ m$.
   % \item if $A \to E$ with $n$-truncated homotopy fibers, $\Phi_E^\chi$ is the
-  %   map sending $f~:~E \to f$ to $\restriction f A$.
+  %   map sending $f:~E \to f$ to $\restriction f A$.
   % \end{itemize}
 \end{defi}
 
@@ -1160,7 +1160,7 @@ induction on the truncation index $n$, a
 left exact modality $\modal_n$ at level $n$ that extends $\modal_{-1}$ in the
 sense that the following property holds.
 %
-% We have to be careful~: if we want to propagate the properties of the
+% We have to be careful: if we want to propagate the properties of the
 % first modality $\modal_{-1}$, all the higher modalities $\modal_n$ must be compatible
 % with $\modal_{-1}$, \ie we want the property
 \begin{prop}\label{prop:hprop}
@@ -1203,9 +1203,9 @@ $\HProp$ and $\Type_0$.
 For a given induction step, the sheafification is defined in two
 steps:
 \begin{enumerate}[(i)]
-\item {\em separation~:} In this step, we {\em remove} the lack of
+\item {\em separation:} In this step, we {\em remove} the lack of
   sheafness from the type we are considering.
-\item {\em completion~:} In this step, we add what lacks now to the
+\item {\em completion:} In this step, we add what lacks now to the
   separated type to be a sheaf.
 \end{enumerate}
 
@@ -1213,7 +1213,7 @@ steps:
 % \label{ssec:h-propositions}
 
 % For the case $n=-1$, one can take any left exact modality on
-% $\HProp$. Here we took the $\lnot\lnot$ modality~:
+% $\HProp$. Here we took the $\lnot\lnot$ modality:
 % $$\forall P:\HProp,~\modal_j P = \lnot\lnot P.$$
 % One can easily show that it defines a left exact modality.
 
@@ -1359,7 +1359,7 @@ $$\xymatrix @R=4em @C=5em{
 and as $A$ is separated, $\pi_1\circ f = \pi_2 \circ g$.
 For the second components, let $x:E$. Notice that for any $x:E$,
 $\sum_{y:E} x = y$ has a dense subobject, $\sum_{y:\sum_{e:E} (\chi\,
-  e)} x=y_1$~:
+  e)} x=y_1$:
 
 $$\xymatrix@C=8em@R=4em{
   \sum_{y:\sum_{e:E} (\chi\,
@@ -1385,7 +1385,7 @@ that it is left exact, we will only do it for the sheafification modality.
 \nt{put the definition of $\modal_{n+1}$ upfront}
 
 If $T$ is already a separated type, the following lemma alllows us
-to build a sheaf~:
+to build a sheaf:
 \begin{lem}
   Let $T:\Type_{n+1}$ be separated, and $U$ be a sheaf. If $T$ embeds
   in $U$, and is closed in $U$, then $T$ is a sheaf.
@@ -1417,7 +1417,7 @@ $$\star T = \sum_{u:T \to \Type_n^\modal} \lnot\lnot\left\| \sum_{a:X}
 We already know that $\star$ defines a modality. It remains to show
 that this modality is left exact.
 
-The last thing to prove is the cumulativity of our sheafifications~:
+The last thing to prove is the cumulativity of our sheafifications:
 \begin{prop}
   If $T:\Type_n$, then $\modal T = \star \widehat T$ (where $\widehat
   T$ is $T$ seen as a $\Type_{n+1}$.
@@ -1528,64 +1528,100 @@ It will imply that $\star$ is compatible with $\HProp$ in the sense of propositi
 \label{sec:formalization}
 
 A Coq formalization is available at
-\url{https://github.com/KevinQuirin/sheafification/}.
+\url{https://github.com/KevinQuirin/sheafification}.
 %
 It is based on the homotopy type theory library available at
-\url{https://github.com/HoTT/HoTT}
+\url{https://github.com/HoTT/HoTT}.
 
-Formalisation of subobject classifiers has been done in
-\texttt{sub\_object\_classifier.v}, 284 lines.
-
-Colimits, $p$-pullbacks and \v{C}ech nerves has been formalized in
-\texttt{colimits.v, cech\_nerve.v}, 552 lines.
-
+We provide a more detailed insight of where properties have been
+formalized, and what is the size of the formalisation for each part:
+\begin{itemize} 
+\item  Homotopy fibers and subobject classifiers are formalized in
+\texttt{sub\_object\_classifier.v} (284 lines).
+%
+\item Colimits, $p$-pullbacks and \v{C}ech nerves are formalized in
+\texttt{colimits.v, cech\_nerve.v} (552 lines).
+\item
 Reflective subuniverses and modalities are formalized in
-\texttt{reflective\_subuniverse.v, modalities.v}, 1053 lines.
-
-Definition of th reflective subuniverse on $\HProp$ is given in
-\texttt{sheaf\_base\_case.v}, 186 lines.
-
+\texttt{reflective\_subuniverse.v, modalities.v} (1053 lines).
+\item 
+%
+  The definition of the dense topology as a left exact modality on
+  $\HProp$ is given in \texttt{sheaf\_base\_case.v} (186 lines).
+\item
 Section~\ref{sec:sheaves} is formalized in
-\texttt{sheaf\_def\_and\_thm.v}, 1029 lines.
-
+\texttt{sheaf\_def\_and\_thm.v} (1029 lines).
+\item
 Section~\ref{sec:sheafification} is formalized in
-\texttt{sheaf\_induction.v}, 2340 lines.
-
-At total, with other files containing technical lemmas, the project
-contains 6322 lines.
-%\nt{describe how many line for each, be clear about what has not been formalized}
-
-In our formalization, some things are admitted, either because they
-are just an adaptation of a proposition already formalized
-in~\cite{hottbook}, either because they are true, but very technical~:
-\begin{itemize}
-\item in \texttt{modalities.v}, an equality is admitted in the proof
-  of proposition~\ref{sec:defin-basic-prop}.
-\item in \texttt{nat\_lemmas.v}, the proof that $\IsHProp (n\leqslant
-  m)$ is admitted.
-\item in \texttt{sheaf\_induction.v}, in the proof that
-  $C(\mu_T)=(C\id)$ (see lemma~\ref{lem:sepiscolim}), we admit the proof
-  of equality of projections.
-\item in \texttt{sheaf\_induction.v}, we admit some very technical
-  proofs in proofs that $\square$ and $\star$ are modalities.
-\item in \texttt{sheaf\_induction.v}, cumulativity is an axiom,
-  because of universes issues.
+\texttt{sheaf\_induction.v} (2340 lines).
 \end{itemize}
 
-Some other lemmas are proved, then admitted. We do it so that Coq
-doesn't constrain too much universes, without having to explicitly
-annotate universes everywhere in the formalization.
+Overall, with other files containing technical lemmas, the project
+contains 6322 lines, and it could be reduced a bit by improving the
+way Coq tries to rewrite and apply lemmas automatically. 
+%
+This constitute a significant amount of work but the part dedicated to
+sheaves and sheafification is only 4000, which seems quite reasonable
+and is encouraging, because it suggests that homotopy type theory
+provides a convenient tool to formalize some part of the theory of
+higher topoi.
 
-The main issue in this formalization is the gestion of universes in
-Coq~\cite{sozeau2014universe}. If Coq can handle cumulativity on all
-$\Type$, it is not the case for the sigma type $\Type_n$. This issue
-can be solved by adding an axiom of cumulativity for $\Type_n$, but as
-it would not have any computational content, it would really
-complicates the proofs.
+% In our formalization, some things are admitted, either because they
+% are just an adaptation of a proposition already formalized
+% in~\cite{hottbook}, either because they are true, but very technical:
+% \begin{itemize}
+% \item in \texttt{modalities.v}, an equality is admitted in the proof
+%   of proposition~\ref{sec:defin-basic-prop}.
+% \item in \texttt{nat\_lemmas.v}, the proof that $\IsHProp (n\leqslant
+%   m)$ is admitted.
+% \item in \texttt{sheaf\_induction.v}, in the proof that
+%   $C(\mu_T)=(C\id)$ (see lemma~\ref{lem:sepiscolim}), we admit the proof
+%   of equality of projections.
+% \item in \texttt{sheaf\_induction.v}, we admit some very technical
+%   proofs in proofs that $\square$ and $\star$ are modalities.
+% \item in \texttt{sheaf\_induction.v}, cumulativity is an axiom,
+%   because of universes issues.
+% \end{itemize}
 
-Moreover, even the definition of successive sheafification types is
-not allowed~:
+In our formalization of sheafification defined
+Section~\ref{sec:sheafification} (done in 
+\texttt{sheaf\_induction.v}), five very technical facts required to
+show that $\square$ and $\modal_{n+1}$ are modalities have been
+admitted. Nevertheless, we are confident that they can be proven and
+have been admitted only by lack of time.
 
+More importantly, there are few axioms in the formalization that are
+due to an unsatisfactory management of polymorphic universe level in
+Coq~\cite{sozeau2014universe}.
+%
+\nt{Say a word about polymorphic universe level, consistency check,
+  and the fact that polymorphic universe level are nevertheless
+  mandatory for our formalization}
+
+
+%
+If Coq handles cumulativity on all $\Type$ natively, it is not
+the case for the $\Sigma$-type $\Type_n$, which require propositional
+resizing. 
+%
+This issue could be solved by adding an axiom of cumulativity
+for $\Type_n$ with an explicit management of universes. 
+%
+But as it would not have any computational content, it
+would really complicates the proofs as the axiom would appear
+everywhere cumulativity is needed and it would need explicitly
+annotation for universe levels everywhere in the formalization.
+
+We have chosen a more simple but less satisfactory solution. 
+%
+When the absence of cumulativity rises an universe issue for a lemma,
+we have proven the lemma and then admit the exact same lemma, just to
+let Coq infer less constrained universe levels.
+
+An other issue with universe polymorphism lies in their management for
+recursive definitions. Indeed, the definition of successive sheafification types is
+not allowed:
+%
 \[ \left\{
     \begin{array}{l}
       \modal_{-1} = \lambda T:\HProp,~ \lnot\lnot T \\
@@ -1595,14 +1631,20 @@ not allowed~:
       \sum_{a:T} u = (\lambda t,~\modal_n (a=t))
       \right\|}
     \end{array}
-  \right.,\]
+  \right.\]
+%
 because Coq asks for every $\modal_n$ to have the same universes
-levels. Thus, the induction presented in this paper cannot be
-formalized at the moment. We only present the induction step.
+levels in the recursive definition. 
+%
+Thus, the induction step presented in this paper has been formalized,
+but the complete induction can not be formalized at the moment. 
+%
+This restriction in our formalization can not be solved without
+generalizing universe polymorphism for recursive definition.
+%
+% In particular, compoatcumulativity is an axiom, because of
+% universes issues.
 
-Talk about issues in universe levels \cite{sozeau2014universe}. Lake of cumulativity for
-$\Type_n$ and impossibility to define by induction the sheafification 
-because universe levels must be the same for every $n$.
 
 \section{Conclusion and Future Works}
 \label{sec:future-works}

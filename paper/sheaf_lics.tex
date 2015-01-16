@@ -397,6 +397,9 @@ sheafification.
 Section~\ref{ssec:hott} introduces the notion of homotopy types and
 classifying objects as defined in~\cite{sets_in_hott}.
 %
+Section~\ref{sec:epi-mono-fact} presents the usual epi-mono
+factorization system in the light of homotopy type theory.
+%
 Section~\ref{sec:colim-homot-type} introduces the notion of colimits
 in homotopy type theory. 
 %
@@ -519,6 +522,12 @@ proposition that follows from $A$ already follows from $\squash{A}$.
 \end{lem}
 %
 We refer the reader to~\cite{hottbook} for more details on propositional truncation.
+
+\subsection{The epi-mono Factorization System}
+\label{sec:epi-mono-fact}
+
+\nt{define the image here, with (-1)-truncated and (-1)-connected
+  factorization system}
 
 \subsection{Colimits in Homotopy Type Theory }
 \label{sec:colim-homot-type}
@@ -1110,7 +1119,8 @@ sense of proposition~\ref{prop:hprop}.
 \subsection{From Type to Separated Type}
 \label{ssec:from-type-separated}
 
-Let $T : \Type_{n+1}$. We define $\square T$ as the image of
+Let $T : \Type_{n+1}$. We define $\square T$ as the image (see
+Section~\ref{sec:epi-mono-fact}) of
 $\modal^T \circ \{\cdot\}_T$, as in
 $$\xymatrix{
   T \ar[r]^{\{\cdot\}_T} \ar[d]_{\mu_T} & \Type_n^T \ar[d]^{\modal^T} \\

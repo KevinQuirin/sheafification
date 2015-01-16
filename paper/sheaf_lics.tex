@@ -397,6 +397,9 @@ sheafification.
 Section~\ref{ssec:hott} introduces the notion of homotopy types and
 classifying objects as defined in~\cite{sets_in_hott}.
 %
+Section~\ref{sec:epi-mono-fact} presents the usual epi-mono
+factorization system in the light of homotopy type theory.
+%
 Section~\ref{sec:colim-homot-type} introduces the notion of colimits
 in homotopy type theory. 
 %
@@ -519,6 +522,12 @@ proposition that follows from $A$ already follows from $\squash{A}$.
 \end{lem}
 %
 We refer the reader to~\cite{hottbook} for more details on propositional truncation.
+
+\subsection{The epi-mono Factorization System}
+\label{sec:epi-mono-fact}
+
+\nt{define the image here, with (-1)-truncated and (-1)-connected
+  factorization system}
 
 \subsection{Colimits in Homotopy Type Theory }
 \label{sec:colim-homot-type}
@@ -684,11 +693,11 @@ levels are preserved.
 
 Note that similar notion of modal operator have been already studied
 extensively in non-dependent type
-theory~\cite{benton1998computational}. In those works, they connect
+theory~(see \eg \cite{benton1998computational}). In those works, they connect
 modalities to computational monad in programming
 languages~\cite{moggi-monad}. However, in our setting, modalities
-correspond to idempotent monads, a property is rarely true 
-in functional programming, except for the identity monad.
+correspond to idempotent monads, a property that is rarely true 
+in functional programming, except for the identity monad of course.
 
 The notion of left exact modalities plays a central role in this paper
 because Lawvere-Tierney topologies corresponds exactly to left exact
@@ -767,7 +776,7 @@ stability properties
 \item
 $\modal \one =\one $
 \item
-Stability under dependent product (7.7.2 of \cite{hottbook})
+Stability under product and dependent product (7.7.2 of \cite{hottbook})
 \item
  In particular, if $X:\Type_p$ verifies
 $P(X)$, then for any $x,y:X$, $P(x=y)$.
@@ -1015,7 +1024,7 @@ toplogies for $(\infty,1)$-topoi, which is beyond the scope of this paper).
 %
 
 
-\nt{Il faut introduire c'est propriété, $\Type_n^\modal$ is a sheaf
+\nt{Il faut mieux introduire ces propriétés, $\Type_n^\modal$ is a sheaf
   est très importante en particulier. Il faut qu'on comprenne d'où ça
   vient et que tu fasses une preuve, même un peu idalisée. Je dirais
   que tu peux mettre des lemmes genres nj\_inter en disant que telle
@@ -1035,64 +1044,82 @@ toplogies for $(\infty,1)$-topoi, which is beyond the scope of this paper).
 \section{Construction of sheafification}
 \label{sec:sheafification}
 
-We mimic the construction in~\cite{maclanemoerdijk}. 
-From any left exact modality on $\HProp$, we extend the new principles
-it gives to every $\Type_n,\,n\geqslant 0$.
-Actually, if $n_0$ is a fixed truncation index, and $\modal$ a left
-exact modality on $\Type_{n_0}$, then we can in the same
-way extend the properties of the modality to any $\Type_n$, for
-$n > n_0$.
+% We mimic the construction in~\cite{maclanemoerdijk}. 
 
-Once the first modality is defined, the extension to all $\Type_n$ is
-automatic. It means that the new principles we want to add in the new
-theory must be introduced ine the first modality. 
-
-We have to be careful~: if we want to propagate the properties of the
-first modality $\modal_{-1}$, all the higher modalities $\modal_n$ must be compatible
-with $\modal_{-1}$, \ie we want the property
+From any left exact modality $\modal_{-1}$ on $\HProp$, we define by
+induction the truncation index $n$, a
+left exact modality $\modal_n$ at level $n$ that extends $\modal_{-1}$ in the
+sense that the following property holds.
+%
+% We have to be careful~: if we want to propagate the properties of the
+% first modality $\modal_{-1}$, all the higher modalities $\modal_n$ must be compatible
+% with $\modal_{-1}$, \ie we want the property
 \begin{prop}\label{prop:hprop}
-  If $P:\HProp$, and $\widehat P$ is $P$ seen as a $\Type_n$, then $\modal_n \widehat P = \modal_{-1} P$, and the
-  following coherence diagram commute 
+  For any mere proposition $P$ (with $\widehat P$ is $P$ seen as a
+  $\Type_n$),  $\modal_n \widehat P = \modal_{-1} P$ and the
+  following coherence diagram commutes
   $$\xymatrix{
-    \modal_{-1} P \ar@{=}[r] & \modal_n \widehat P \\
-    P \ar@{=}[r] \ar[u]^{\eta_{-1}} & \widehat P \ar[u]_{\eta_n}
+    P \ar@{=}[r] \ar[d]_{\eta_{-1}} & \widehat P \ar[d]^{\eta_n} \\
+    \modal_{-1} P \ar@{=}[r] & \modal_n \widehat P 
   }$$
 \end{prop}
 
-The sheafification process works exactly that way
-in~\cite{maclanemoerdijk}~: from a left exact modality on the internal
-logic (a Lawvere-Tierney topology), we define a new left exact
-modality on the whole topos. We view that as the induction step
-between $\HProp$ and $\Type_0$, and we want to extend it.
 
-\kq{Bof ; maybe rewrite this}
+Note that once the first modality is defined, the extension to all
+$\Type_n$ is automatic. This means that the new logical principles
+that can be added by the sheaf construction must be added in the
+first modality already. The sheafification is just a way to propagate
+those new principles to other types than just mere proposition. 
 
-As in most of sheafification process, it will be done in
-two steps~:
+
+%   extend the new principles it gives to
+% every $\Type_n,\,n\geqslant 0$.  Actually, if $n_0$ is a fixed
+% truncation index, and $\modal$ a left exact modality on $\Type_{n_0}$,
+% then we can in the same way extend the properties of the modality to
+% any $\Type_n$, for $n > n_0$.
+
+
+
+The sheafification in topos theory described in
+Section~\ref{sec:lawv-tiern-sheaf} works in the same way. 
+%
+From a left exact modality on the internal logic (a Lawvere-Tierney
+topology), a new left exact modality is defined on the whole topos.
+%
+This construction may be seen as the first induction step between
+$\HProp$ and $\Type_0$. 
+
+\nt{je ne comprends pas ce passage, c'est quoi sheafness ? }
+For a given induction step, the sheafification is defined in two
+steps:
 \begin{enumerate}[(i)]
 \item {\em separation~:} In this step, we {\em remove} the lack of
   sheafness from the type we are considering.
 \item {\em completion~:} In this step, we add what lacks now to the
   separated type to be a sheaf.
 \end{enumerate}
-\subsection{For mere propositions}
-\label{ssec:h-propositions}
 
-For the case $n=-1$, one can take any left exact modality on
-$\HProp$. Here we took the $\lnot\lnot$ modality~:
-$$\forall P:\HProp,~\modal_j P = \lnot\lnot P.$$
-One can easily show that it defines a left exact modality.
+% \subsection{For mere propositions}
+% \label{ssec:h-propositions}
 
-The $\lnot\lnot$-modality allows to work with a propositional law of
-excluded middle. 
+% For the case $n=-1$, one can take any left exact modality on
+% $\HProp$. Here we took the $\lnot\lnot$ modality~:
+% $$\forall P:\HProp,~\modal_j P = \lnot\lnot P.$$
+% One can easily show that it defines a left exact modality.
+
+% The $\lnot\lnot$-modality allows to work with a propositional law of
+% excluded middle. 
+
+In the rest of the section, we suppose given a truncation index
+$n\geqslant -1$, and a left exact modality $\modal_n$ on $\Type_n$,
+compatible with a left exact modality $\modal_{-1}$ on $\HProp$ in the
+sense of proposition~\ref{prop:hprop}.
 
 \subsection{From Type to Separated Type}
 \label{ssec:from-type-separated}
-In this section, we suppose given a truncation index $n\geqslant -1$,
-and a left exact modality $\modal$ on $\Type_n$, compatible with the
-modality on $\HProp$ in the sense of proposition~\ref{prop:hprop}.
 
-Let $T$ be in $\Type_{n+1}$. We define $\square T$ as the image of
+Let $T : \Type_{n+1}$. We define $\square T$ as the image (see
+Section~\ref{sec:epi-mono-fact}) of
 $\modal^T \circ \{\cdot\}_T$, as in
 $$\xymatrix{
   T \ar[r]^{\{\cdot\}_T} \ar[d]_{\mu_T} & \Type_n^T \ar[d]^{\modal^T} \\
@@ -1100,6 +1127,7 @@ $$\xymatrix{
 }, $$
 where $\{\cdot\}_T$ is the singleton map $\lambda (t:T),~\lambda
 (t':T),~t=t'$.
+\nt{parler du système de factorization}
 In type theory words, 
 \begin{align*}
 \square T &= \im (\lambda~t:T,~\lambda~ t',~ \modal (t = t')) \\
@@ -1145,7 +1173,9 @@ in~\cite{maclanemoerdijk}, where they consider only the kernel pair of
 $\mu_T$ instead of the \v{C}ech nerve.
 
 \begin{proof}
-  As $\mu_T$ is an surjection, we know by Giraud axiom that $\square T$ is the colimit
+  As $\mu_T$ is an surjection, using the particular case of the last
+  Giraud-Rezk-Lurie axiom introduced in Section~\ref{sec:giraud-ax},
+  we know that $\square T$ is the colimit
   of $C(\mu_T)$. If we can show that $C(\mu_T) = C(\id)$, the the
   result will follow. 
 
@@ -1215,10 +1245,12 @@ For the second components, let $x:E$. Notice that for any $x:E$,
 $\sum_{y:E} x = y$ has a dense subobject, $\sum_{y:\sum_{e:E} (\chi\,
   e)} x=y_1$~:
 
-$$\xymatrix{
+$$\xymatrix@C=8em@R=4em{
   \sum_{y:\sum_{e:E} (\chi\,
-  e)} x=y_1 \dar[rrr]{2pt}^{\pi_2\circ f\circ\pi_1\circ \pi_1}_{\pi_2\circ g\circ \pi_1\circ \pi_1} \ar[d]_{\mathrm{dense}}&&& B\,x \\
-  \sum_{y:E} x = y \dar[rrru]{2pt}^{\pi_2\circ f\circ \pi_1}_{\pi_2\circ g\circ \pi_1}&
+  e)} x=y_1 \ar@<2pt>[r]^{\qquad \pi_2\circ f\circ\pi_1\circ \pi_1}
+\ar@<-2pt>[r]_{\qquad \pi_2\circ g\circ \pi_1\circ \pi_1}
+\ar[d]_{\mathrm{dense}}& B\,x \\
+  \sum_{y:E} x = y \ar@<2pt>[ur]^{\pi_2\circ f\circ \pi_1} \ar@<-2pt>[ur]_{\pi_2\circ g\circ \pi_1}&
 }$$
 Using the sepatation property of $B\,x$, one can show that second
 components, transported correctly along the first components equality,
@@ -1233,6 +1265,8 @@ that it is left exact, we will do it only for the sheafification modality.
 
 \subsection{From Separated Type to Sheaf}
 \label{ssec:separated-to-sheaf}
+
+\nt{put the definition of $\modal_{n+1}$ upfront}
 
 If $T$ is already a separated type, the following lemma alllows us
 to build a sheaf~:
@@ -1260,9 +1294,6 @@ $\nu_T:T \to \star T$ is obvious.
 \end{proof}
 
 
-\subsection{Summary}
-\label{ssec:summary}
-
 If $T:\Type_{n+1}$, the sheafification of $T$ is
 $$\star T = \sum_{u:T \to \Type_n^\modal} \lnot\lnot\left\| \sum_{a:X} 
             (\lambda t,~\modal (a=t)) = u\right\|$$
@@ -1277,7 +1308,11 @@ The last thing to prove is the cumulativity of our sheafifications~:
 \end{prop}
 It will imply that $\star$ is compatible with $\HProp$ in the sense of proposition~\ref{prop:hprop}.
 
+\subsection{Summary}
+\label{ssec:summary}
 
+\nt{Recap what has been done, and give the final result about EM with
+  the dense topology as a corollary.}
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
@@ -1408,14 +1443,15 @@ contains 6322 lines.
 
 \nt{describe how many line for each, be clear about what has not been formalized}
 
-Talk about issues in universe levels. Lake of cumulativity for
+Talk about issues in universe levels \cite{sozeau2014universe}. Lake of cumulativity for
 $\Type_n$ and impossibility to define by induction the sheafification 
 because universe levels must be the same for every $n$.
 
 \section{Conclusion and Future Works}
 \label{sec:future-works}
 
-Prove that the Giraud axiom holds in homotopy type theory.
+Prove that the Giraud-Rezk-Lurie axiom holds in homotopy type theory,
+or at least the particular case we need.
 
 Extend the sheafification to all types, even if non truncated.
 

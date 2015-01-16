@@ -130,7 +130,6 @@ Section Reflective_Subuniverse.
     - exact (fun X => O_modal_equiv (T;X)).
   Defined.
 
-
 (* ○-lift of functions *)
   
   Definition function_lift (A B : Trunk n) (f : A.1 -> B.1) : (subU.(O) A).1.1 -> (subU.(O) B).1.1.
@@ -262,6 +261,12 @@ Section Reflective_Subuniverse.
       apply eissect.
   Defined.
 
+  Lemma function_lift_equiv' A B (H : A.1 <~> B.1)
+  : (O subU A).1.1 <~> (O subU B).1.1.
+    exists (function_lift A B H).
+    apply function_lift_equiv. exact (equiv_isequiv H).
+  Defined.
+  
   Lemma function_lift_transport A B (p:A=B)
   : ((ap (O subU) p)..1..1) = (@path_universe _ (O subU A).1.1 (O subU B).1.1 (function_lift A B (transport idmap p..1)) (function_lift_equiv A B (f := (equiv_path A.1 B.1 p..1)) _)) .
     destruct p. simpl.

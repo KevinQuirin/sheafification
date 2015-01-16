@@ -576,7 +576,7 @@ Section Definitions.
     - exact (transport (λ u, ∀ y : ((φ1 x) .1) .1, nTjTiseparated_eq_fun_univ (inverse p) x (nTjTiseparated_eq_fun_univ u x y) = y) (inv_V p) (nTjTiseparated_eq_fun_univ_invol (inverse p) x)).
   Defined.
 
-  Lemma nTjTiseparated_eq : separated (existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj)).
+  Lemma nTjTiseparated_eq : separated (existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj ua)).
     intros E χ φ1 φ2.
     apply isequiv_adjointify with (g := @nTjTiseparated_eq_inv E χ φ1 φ2).
     - intro p. 
@@ -616,7 +616,7 @@ Section Definitions.
                                        subuniverse_arrow ((φ1 x) .1) .1 (φ1 x)) idmap) (EnJ_is_nJ χ x)). 
   Defined.
 
-  Lemma nType_j_Type_is_SnType_j_Type : Snsheaf_struct (existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj)).
+  Lemma nType_j_Type_is_SnType_j_Type : Snsheaf_struct (existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj ua)).
   Proof.
     split.
     apply nTjTiseparated_eq.
@@ -625,7 +625,7 @@ Section Definitions.
   Defined.
 
   Definition nType_j_Type_sheaf : SnType_j_Type :=
-    ((existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj));nType_j_Type_is_SnType_j_Type).
+    ((existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj ua));nType_j_Type_is_SnType_j_Type).
 
   Instance dep_prod_SnType_j_Type_eq
            (A : Type)

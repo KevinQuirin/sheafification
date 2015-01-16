@@ -65,5 +65,15 @@ Lemma eta'_path_sigma:
   destruct pp.
   apply eta_path_sigma.
 Qed.
+
+
+  Lemma square_fiber_map {A B C D:Type} (f:A -> B) (g:C -> D) (h:A -> C) (k:B -> D) (s : forall a, k (f a) = g (h a)) (b:B)
+  : hfiber f b -> hfiber g (k b).
+  Proof.
+    intros X.
+    exists (h X.1).
+    path_via (k (f X.1)).
+    exact (ap k X.2).
+  Defined.
   
 End Lemmas.

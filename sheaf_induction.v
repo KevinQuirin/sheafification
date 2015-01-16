@@ -69,7 +69,7 @@ Section Type_to_separated_Type.
     destruct T as [T TrT]; simpl in *.
     apply (@trunc_sigma _ (fun P => _)). 
     apply (@trunc_forall _ _ (fun P => _)). intro. 
-    exact (@subuniverse_Type_is_TrunkSn _ nj).
+    exact (@subuniverse_Type_is_TrunkSn _ nj ua).
     intro φ. exact (IsHProp_IsTrunc (istrunc_truncation _ _) n). 
   Defined.
 
@@ -120,7 +120,7 @@ Section Type_to_separated_Type.
   Definition T_nType_j_Type_isSheaf : forall T, Snsheaf_struct (pr1 T -> subuniverse_Type nj;
                                                     T_nType_j_Type_trunc T).
     intro.
-    apply (dep_prod_SnType_j_Type (fun x:pr1 T => ((existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj));nType_j_Type_is_SnType_j_Type))).
+    apply (dep_prod_SnType_j_Type (fun x:pr1 T => ((existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj ua));nType_j_Type_is_SnType_j_Type))).
   Defined.
 
   Definition T_nType_j_Type_sheaf T : SnType_j_Type :=  ((pr1 T -> subuniverse_Type nj; T_nType_j_Type_trunc T); T_nType_j_Type_isSheaf _).
@@ -1833,6 +1833,11 @@ Section Type_to_separated_Type.
     apply cloture_is_closed'.
   Defined.
 
+  (* The following has exactly the same type as separated_to_sheaf, but doesn't create universes constraints *)
+  Definition separated_to_sheaf' (T:{T : Trunk (trunc_S n) & separated T}) (U:SnType_j_Type) m Monom :
+    Snsheaf_struct (@separated_to_sheaf_Type T.1.1 U.1.1 m Monom; @separated_to_sheaf_IsTrunc_Sn _ _ m Monom).
+  Admitted. (* Universes *)
+
   Definition sheafification_Type (T:Trunk (trunc_S n)) :=
     @separated_to_sheaf_Type (separated_Type T) 
                              (T.1 -> subuniverse_Type nj) (fromIm (f:=_)) 
@@ -1846,20 +1851,12 @@ Section Type_to_separated_Type.
 
   Definition sheafification_trunc (T:Trunk (trunc_S n)) : Trunk (trunc_S n) :=
     (sheafification_Type T ; sheafification_istrunc  (T:=T)).
-
-  Definition sheafification (T:Trunk (trunc_S n)) : SnType_j_Type.
-    refine (exist _ _ _).
-    exists (sheafification_Type T).
-    apply sheafification_istrunc.
-    (* Should be separated_to_sheaf (((existT (IsTrunc (trunc_S n)) (separated_Type T) (separated_Type_is_Trunk_Sn (T:=T)))); @separated_Type_is_separated T) (T_nType_j_Type_sheaf T) (IsMono_fromIm (f:=_)). *)
-    admit.
-  Defined.
   
-  (* Definition sheafification_ (T:Trunk (trunc_S n)) : Snsheaf_struct (sheafification_trunc T)   *)
-    (* := separated_to_sheaf (((existT (IsTrunc (trunc_S n)) (separated_Type T) (separated_Type_is_Trunk_Sn (T:=T)))); @separated_Type_is_separated T) (T_nType_j_Type_sheaf T) (IsMono_fromIm (f:=_)). *)
+  Definition sheafification_ (T:Trunk (trunc_S n)) : Snsheaf_struct (sheafification_trunc T)
+    := separated_to_sheaf' (((existT (IsTrunc (trunc_S n)) (separated_Type T) (separated_Type_is_Trunk_Sn (T:=T)))); @separated_Type_is_separated T) (T_nType_j_Type_sheaf T) (IsMono_fromIm (f:=_)).
 
-  (* Definition sheafification (T:Trunk (trunc_S n)) : SnType_j_Type := *)
-  (* ((sheafification_Type T ; sheafification_istrunc  (T:=T)); sheafification_ T). *)
+  Definition sheafification (T:Trunk (trunc_S n)) : SnType_j_Type :=
+  ((sheafification_Type T ; sheafification_istrunc  (T:=T)); sheafification_ T).
 
   Definition good_sheafification_Type (T:Trunk (n.+1))
     := {u : T.1 -> subuniverse_Type nj & (Oj (Trunc -1 ({a:T.1 & (λ t' : T.1,
@@ -1976,8 +1973,13 @@ Section Type_to_separated_Type.
       exists e.
       apply Oj_unit.
       exact he. exact he.
-    - admit.
-    - admit.
+    - intros [e he].
+      reflexivity.
+    - intros [e p].
+      refine (path_sigma' _ _ _).
+      apply path_sigma' with 1.
+      apply path_ishprop.
+      apply path_ishprop.
   Defined.
 
   Lemma equiv_arrow (A B C:Type) (H : A <~> B)
@@ -2292,10 +2294,10 @@ Section Type_to_separated_Type.
       
   Qed.
 
+  (* The following has exactly the same type as O_paths_is_paths_sheafification_unit, but doesn't collapse universes *)
   Lemma O_paths_is_paths_sheafification_unit' (T:Trunk (n.+1)) (a b:T.1)
   : ((good_sheafification_unit T a) = (good_sheafification_unit T b)) <~> (O nj (a = b; (istrunc_paths T.2 a b))).1.1.
-    (* For Universes *)
-  Admitted.
+  Admitted. (* Universes *)
 
     
   Definition sheafification_left_exact
@@ -2309,5 +2311,30 @@ Section Type_to_separated_Type.
     exact H.
   Defined.
     
-  
-  
+  Definition sheafification_hprop (T:Trunk n.+1) (HT : IsHProp T.1)
+  : (Oj (T.1;HT)).1.1 = (good_sheafification_Type T).
+    apply univalence_hprop.
+    exact _.2.
+    pose @hprop_stability.
+    (* specialize (i ua fs  (trunc_S n) (sheafification_modality)). *)
+    (* Should work. *) admit.
+    split.
+    - intros x.
+      unfold good_sheafification_Type.
+      (* We want here to give (λ x, x = Oj_unit (T.1;HP) t), then revert x, apply O_rec_dep, then tr and reflexivity. *)
+      (* refine (exist _ _ _). *)
+      (* intro t. *)
+      (* refine (exist _ _ _). *)
+      (* refine (exist _ _ _). *)
+      (* exact (x = Oj_unit (exist IsHProp T.1 HT) t). *)
+      (* apply istrunc_paths *)
+      (* Should work *) admit. 
+    - intros [u p]. 
+      revert p.
+      apply Oj_equiv.
+      apply Trunc_rec.
+      intros [a p]. destruct p.
+      apply Oj_unit.
+      exact a.
+  Qed.
+      

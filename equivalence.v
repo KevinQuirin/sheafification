@@ -159,7 +159,7 @@ Definition HTrue := (Unit; true_ishprop) : HProp.
 Theorem univalence_hprop' (A B: HProp) : (A.1 <-> B.1) -> A = B.
 Proof.
   destruct A, B. intro. apply eq_dep_subset. intro. apply hprop_trunc.
-sal  apply univalence_hprop; auto.
+  apply univalence_hprop; auto.
 Defined.
 
 

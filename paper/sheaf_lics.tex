@@ -1526,11 +1526,50 @@ Section~\ref{sec:sheafification} is formalized in
 
 At total, with other files containing technical lemmas, the project
 contains 6322 lines.
+%\nt{describe how many line for each, be clear about what has not been formalized}
 
+In our formalization, some things are admitted, either because they
+are just an adaptation of a proposition already formalized
+in~\cite{hottbook}, either because they are true, but very technical~:
+\begin{itemize}
+\item in \texttt{modalities.v}, an equality is admitted in the proof
+  of proposition~\ref{sec:defin-basic-prop}.
+\item in \texttt{nat\_lemmas.v}, the proof that $\IsHProp (n\leqslant
+  m)$ is admitted.
+\item in \texttt{sheaf\_induction.v}, in the proof that
+  $C(\mu_T)=(C\id)$ (see lemma~\ref{lem:sepiscolim}), we admit the proof
+  of equality of projections.
+\item in \texttt{sheaf\_induction.v}, we admit some very technical
+  proofs in proofs that $\square$ and $\star$ are modalities.
+\item in \texttt{sheaf\_induction.v}, cumulativity is an axiom,
+  because of universes issues.
+\end{itemize}
 
+Some other lemmas are proved, then admitted. We do it so that Coq
+doesn't constrain too much universes, without having to explicitly
+annotate universes everywhere in the formalization.
 
+The main issue in this formalization is the gestion of universes in
+Coq~\cite{sozeau2014universe}. If Coq can handle cumulativity on all
+$\Type$, it is not the case for the sigma type $\Type_n$. This issue
+can be solved by adding an axiom of cumulativity for $\Type_n$, but as
+it would not have any computational content, it would really
+complicates the proofs.
 
-\nt{describe how many line for each, be clear about what has not been formalized}
+Moreover, even the definition of successive sheafification types is
+not allowed~:
+
+\[ \left\{
+    \begin{array}{l}
+      \modal_{-1} = \lambda T:\HProp,~ \lnot\lnot T \\
+      \displaystyle{\modal_{n+1} = \lambda T:\Type_{n+1}},\\
+      \quad \displaystyle{\sum_{u:T \to \Type_n^\modal} \modal_{-1} 
+      \left\|
+      \sum_{a:T} u = (\lambda t,~\modal_n (a=t))
+      \right\|}
+    \end{array}
+  \right.,\]
+because Coq asks for every $\modal_n$ to have the same universes levels.
 
 Talk about issues in universe levels \cite{sozeau2014universe}. Lake of cumulativity for
 $\Type_n$ and impossibility to define by induction the sheafification 

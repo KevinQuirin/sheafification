@@ -784,8 +784,6 @@ formalization.
 \begin{prop}
 \vspace{1em}
 
-\nt{state precisely some properties here, at least the 4 below}
-
 \vspace{1em}
 
 \begin{itemize}
@@ -798,7 +796,7 @@ formalization.
   $\modal (A\times B) = (\modal A) \times (\modal B)$.
 \item Let $A:\Type_p\modal$. Then for any $x,y:X$, $P(x=y)$.
 \item (\cite{hottbook}, Theorem 7.7.4) 
-  {\it (iv} can be extended to dependent product. Precisely~:
+  {\it (iv)} can be extended to dependent product. Precisely~:
 
   Let $A:\Type_p$ and $B:\modal A \to \Type_p^\modal$. For any map
   $g:\prod_{a:A} B(\eta_A(a))$ there exists a map $f:\prod_{z:\modal
@@ -837,13 +835,28 @@ The central result used here is the following
 \end{lem}
 
 Here, $\sum_{x:\modal X} (\modal f x = \eta_Y y)$ is modal, thus we
-can define $$f:\modal \left(\sum_{x:X}  (f x = y)\right) \to
+can define $$\phi:\modal \left(\sum_{x:X}  (f x = y)\right) \to
 \sum_{x:\modal X} (\modal f x = \eta_Y y).$$
-We need to check that the image of its fibers by $\modal$ are
+We just need to check that the image of its fibers by $\modal$ are
 contractible.
+
+From definition of left exactness, one can deduce the following~:
+\begin{lem}
+  Let $A,B:\Type_p$. Let $f:A\to B$. If $\modal A$ and $\modal B$ are
+  contractible, then so is $\fib f b$ for any $b:B$.
+\end{lem}
+We can rewrite $\fib \phi {x;p}$ in terms of the fiber of a fonction
+$\fib {\eta_X} a \to \fib {\eta_Y} b$.
+
+But we have the lemma~:
+\begin{lem}
+  Let $A:\Type_p$. Then for any $y:\modal A$, $\modal(\fib {\eta_A}
+  y)$ is contractible.
+\end{lem}
+
+Finally, $\modal(\fib \phi {x;p})$ is contractible, and the result is proved.
 \kq{Finish that}
 \end{proof}
-
 
 In the same way, left exact modalities preserve homotopy types.
 \begin{prop}
@@ -1074,6 +1087,48 @@ toplogies for $(\infty,1)$-topoi, which is beyond the scope of this paper).
 \begin{prop}\label{prop:sheaf-is-sheaf}
   $\Type_n^\modal$ is a sheaf.
 \end{prop}
+\begin{proof}
+  Firstly, we prove that $\Type_n^\modal$ is separated. Let $E:\Type$
+  and $\chi:E \to \Type_n$, dense in $E$. Let $\phi_1,\phi_2:E \to
+  \Type_n^\modal$, such that $\phi_1 \circ \pi_1 = \phi_2 \circ
+  \pi_1$. Finally, let $x:E$. We show $\phi_1 x = \phi_2 x$ using
+  univalence.
+
+  As $\chi$ is dense, we have a term $m_x : \modal(\chi\, x)$.
+  But as $\phi_2 x$ is modal, thus we can obtain a term $h_x : \chi\,
+  x$. 
+  As $\phi_1$ and $\phi_2$ are equal on $\sum_{e:E}\chi\, e$, we
+  have an arrow $\phi_1 x \to \phi_2 x$.
+  The same method leads to an arrow $\phi_2 x \to \phi_1 x$, and we
+  prove they are each other inverse.
+
+  Now, we prove that $\Type_n^\modal$ is a sheaf. Let $E:\Type$ and
+  $\chi:E \to \HProp$, dense in $E$. Let $f:\sum_{e:E} \chi\, e \to
+  \Type_n^\modal$. We want to extend $f$ to $E \to \Type_n^\modal$.
+
+  We define $g$ as 
+  $$g(e) = \modal \left( \fib \phi e \right), $$
+  where
+  $$\phi : \left(\sum_{b:\left(\sum_{e:E} (\chi\, e)\right)} (f\,
+    b)\right) \to E$$
+  defined by $\phi(x) = (x_1)_1$.
+  Using the following properties on fibers, we can prove that it
+  defines an equivalence.
+  \begin{lem}
+    Let $A,B,C:\Type_n$, $f:A\to B$ and $g:B\to C$.
+    Then
+    \begin{itemize}
+    \item If $g$ is an embedding, then 
+      $$\forall b:B,~\fib f b = \fib {g\circ f} {g\, b}.$$
+    \item If all fibers of $f$ and $g$ are $n$-truncated, then
+      $$\forall c:C,~\modal(\fib {g \circ f} c) =
+      \modal \left(  
+        \sum_{w:\fib g c} \modal (\fib f {w_1})
+      \right).$$
+    \end{itemize}
+  \end{lem}
+
+\end{proof}
 
 \section{Construction of sheafification}
 \label{sec:sheafification}

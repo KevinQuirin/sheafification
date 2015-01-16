@@ -188,7 +188,7 @@ Unfortunately, all those works---although they provide very nice and
 sophisticated theoretical results---do not share the generality and
 simplicity of sheafification in topos theory and are not amenable to a
 direct integration into proof assistant based on type theory such as
-Coq or Agda.  
+Coq~\cite{coq:refman:8.4} or Agda~\cite{norell2007towards}.  
 %
 However, type theory is known to be quite closed to topos theory so
 one could wonder why similar techniques have not been developed in the
@@ -236,7 +236,7 @@ construction in higher topoi is restricted to the initial Grothendieck
 setting which is still very topologically oriented, and not very
 amenable to formalization in type theory. It seems more promising to
 use a generalized notion of sheafification, called Lawvere-Tierney
-sheafification~\cite{maclanemoerdijk}, but this construction has not
+sheafification~\cite{tierney1972sheaf,maclanemoerdijk}, but this construction has not
 been considered yet in the setting of higher topos theory. This rises
 two issues that this paper addresses: (i) how to lift the notion of
 Lawvere-Tierney sheafification to higher topos theory and (ii) is it
@@ -785,33 +785,38 @@ presented in~\cite[Chapter 7.7]{hottbook}.
 We now summarize the main properties that are used in our
 formalization. We do not recall the proofs as they are not specific to
 our presentation (also the setting using truncated types provides
-minor changes), but they can be found in our Coq form 
+minor changes), but they can be found in our Coq formalization. 
  
 \begin{prop}
 
+The following property holds for any left-exact modality $\modal$ at
+level $n$.
+ 
 \begin{itemize}
 
-\item $\one$ seen as a $\Type_p$ is modal, ie $\modal \one =\one$.
+\item $\one$ seen as an $n$-type is modal, ie $\modal \one =\one$.
 \item 
-  Let $A:\Type$ and $B:A \to \Type_n^\modal$. Then $P\left(\prod_{a:A} (B\,
-  a)\right)$ (from \cite[Lemma 7.7.2]{hottbook}). 
-\item For any $A,B:\Type_p$,
-  $\modal (A\times B) = (\modal A) \times (\modal B)$ \\
-(from \cite[Corollary 7.7.2]{hottbook}).
-\item Let $A:\Type_n \modal$. Then for any $x,y:X$, $P(x=y)$.
+  For any  $A:\Type$ and $B:A \to \Type_n^\modal$,  $P\left(\prod_{a:A} (B\,
+  a)\right)$. \\
+(from \cite[Lemma 7.7.2]{hottbook})
+\item For any $A,B:\Type_n$,
+  $\modal (A\times B) = (\modal A) \times (\modal B)$. \\
+(from \cite[Corollary 7.7.2]{hottbook})
+\item For any $A:\Type_n^\modal$ and $x,y:X$, $P(x=y)$.
 \item 
-  {\it (iv)} can be extended to dependent product, that is for any $A:\Type_p$, $B:\modal A \to
-  \Type_p^\modal$ and
+  {\it (iv)} can be extended to dependent product, that is for any $A:\Type_n$, $B:\modal A \to
+  \Type_n^\modal$ and
   $g:\prod_{a:A} B(\eta_A(a))$, there exists a map $f:\prod_{z:\modal
-    A} (B\, z)$ such that for all $a:A$, $f(\eta_A(a)) = g(a)$ \\
+    A} (B\, z)$ such that for all $a:A$, $f(\eta_A(a)) = g(a)$. \\
  (from \cite[Theorem
- 7.7.4]{hottbook}).
+ 7.7.4]{hottbook})
 \end{itemize}
 \end{prop}
 
 As the definition of sheafification is based on subobject classifiers
-and thus on homotopy fibers, we need to look at how left exact
-modalities preserves homotopy fibers.
+and thus on homotopy fibers, we need to take a closer look at the way left
+exact modalities preserve homotopy fibers.
+%
 \begin{prop}
 \label{sec:defin-basic-prop}
 For any $n$-truncated types $X$ and $Y$,

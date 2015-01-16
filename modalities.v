@@ -179,6 +179,36 @@ Section Preliminary.
                                                      (istrunc_paths (Y.1).2 (f x0) (O_rec X Y f (O_unit subU X x))))) (O subU X) (λ X0 : hfiber f (O_rec X Y f (O_unit subU X x)), O_unit subU X X0.1)) (x; (ap10 (O_rec_retr X Y f) x)^)).
   Defined.
 
+  Lemma O_unit_O_contr_fibers {n:trunc_index} (mod:Modality (trunc_S n)) (subU := underlying_subu (trunc_S n) mod) (X:Trunk n.+1) (Tr : forall x, IsTrunc n.+1 (hfiber (O_unit subU X) x))
+  : forall x, Contr (O subU (hfiber (O_unit subU X) x; Tr x)).1.1.
+    intros x.
+    refine (BuildContr _ _ _).
+    revert x.
+    apply O_rec_dep.
+    Opaque O_rec_dep.
+    intro a. apply O_unit. simpl. exists a. reflexivity.
+    intro y. simpl.
+    revert y.
+    transparent assert (shf : ((((O subU (hfiber (O_unit subU X) x; Tr x)).1).1 -> subuniverse_Type subU))).
+    { intro y. refine (exist _ _ _).
+      exists ((O_rec_dep X
+    (λ z : ((O (underlying_subu n.+1 mod) X).1).1,
+     O subU (hfiber (O_unit subU X) z; Tr z))
+    (λ a : X.1,
+     O_unit subU
+       (hfiber (O_unit subU X) (O_unit (underlying_subu n.+1 mod) X a);
+       Tr (O_unit (underlying_subu n.+1 mod) X a)) 
+       (a; 1))).1 x = y).
+      apply istrunc_paths. apply trunc_succ. exact _.2.
+      apply subuniverse_paths. exact ua. exact fs. }
+    refine (O_rec_dep (hfiber (O_unit subU X) x; Tr x) shf _).1.
+    unfold shf; clear shf; simpl.
+    intros [y p]. destruct p.
+    match goal with
+      |[|- ?XX.1 _ = _] => exact (XX.2 y)
+    end.
+  Defined.
+  
   Lemma is_modal_IsTrunc
         (n p: trunc_index)
         (mod : Modality (n.+1))
@@ -248,35 +278,54 @@ Section Preliminary.
       + exact fs.
   Defined.
 
-  Lemma O_unit_O_contr_fibers {n:trunc_index} (mod:Modality (trunc_S n)) (subU := underlying_subu (trunc_S n) mod) (X:Trunk n.+1) (Tr : forall x, IsTrunc n.+1 (hfiber (O_unit subU X) x))
-  : forall x, Contr (O subU (hfiber (O_unit subU X) x; Tr x)).1.1.
-    intros x.
-    refine (BuildContr _ _ _).
-    revert x.
-    apply O_rec_dep.
-    Opaque O_rec_dep.
-    intro a. apply O_unit. simpl. exists a. reflexivity.
-    intro y. simpl.
-    revert y.
-    transparent assert (shf : ((((O subU (hfiber (O_unit subU X) x; Tr x)).1).1 -> subuniverse_Type subU))).
-    { intro y. refine (exist _ _ _).
-      exists ((O_rec_dep X
-    (λ z : ((O (underlying_subu n.+1 mod) X).1).1,
-     O subU (hfiber (O_unit subU X) z; Tr z))
-    (λ a : X.1,
-     O_unit subU
-       (hfiber (O_unit subU X) (O_unit (underlying_subu n.+1 mod) X a);
-       Tr (O_unit (underlying_subu n.+1 mod) X a)) 
-       (a; 1))).1 x = y).
-      apply istrunc_paths. apply trunc_succ. exact _.2.
-      apply subuniverse_paths. exact ua. exact fs. }
-    refine (O_rec_dep (hfiber (O_unit subU X) x; Tr x) shf _).1.
-    unfold shf; clear shf; simpl.
-    intros [y p]. destruct p.
-    match goal with
-      |[|- ?XX.1 _ = _] => exact (XX.2 y)
-    end.
-  Defined.
+  Lemma is_modal_IsEquiv
+        (n p: trunc_index)
+        (mod : Modality (n.+1))
+        (subU := underlying_subu _ mod)
+        (trunc_prop : forall (A B : subuniverse_Type subU) (f:A.1.1 -> B.1.1), IsTrunc (n.+1) (IsEquiv f))
+  : forall (A B : subuniverse_Type subU) (f: A.1.1 -> B.1.1), (subuniverse_HProp subU (existT (IsTrunc n.+1) (IsEquiv f) (trunc_prop A B f))).1.
+    intros A B f.
+    rewrite <- subuniverse_iff_O.
+    refine (isequiv_adjointify _ _ _ _).
+    - intro H.
+      refine (isequiv_adjointify _ _ _ _).
+      + intro x. revert H.
+        apply O_rec. intro H. simpl in H.
+        exact (f^-1 x).
+      + intro X.
+        revert H. simpl.
+        transparent assert (shf : ((((O subU (IsEquiv f; trunc_prop A B f)).1).1) -> subuniverse_Type subU)).
+        { intro H. refine (exist _ _ _).
+          exists (f (O_rec (IsEquiv f; trunc_prop A B f) A (λ H0 : IsEquiv f, f^-1 X) H) = X).
+          apply istrunc_paths; apply trunc_succ; exact _.2.
+          apply subuniverse_paths; [exact ua | exact fs]. }
+        refine (O_rec_dep _ shf _).1.
+        unfold shf; clear shf; simpl.
+        intro H.
+        pose (rew := λ P Q f, ap10 (O_rec_retr (subU:=subU) P Q f)).
+        rewrite rew. rewrite eisretr. reflexivity.
+      + intro X.
+        revert H; simpl.
+        transparent assert (shf : (((O subU (IsEquiv f; trunc_prop A B f)).1).1 -> subuniverse_Type subU)).
+        { intros H. refine (exist _ _ _).
+          exists (O_rec (IsEquiv f; trunc_prop A B f) A (λ H0 : IsEquiv f, f^-1 (f X)) H = X).
+          apply istrunc_paths; apply trunc_succ; exact _.2.
+          apply subuniverse_paths; [exact ua | exact fs]. }
+        refine (O_rec_dep _ shf _).1.
+        unfold shf; clear shf; simpl.
+        intro H.
+        pose (rew := λ P Q f, ap10 (O_rec_retr (subU:=subU) P Q f)).
+        rewrite rew. rewrite eissect. reflexivity.
+    - intro X.
+      refine (path_ishprop _ _).
+      transparent assert (hp : HProp).
+      { exists (IsEquiv f). apply hprop_isequiv. }
+      exact (hprop_stability (mod := mod) hp (trunc_prop A B f)).
+    - intro X.
+      refine (path_ishprop _ _).
+    - exact ua. - exact fs.
+  Qed.
+  
   
 End Preliminary.
 

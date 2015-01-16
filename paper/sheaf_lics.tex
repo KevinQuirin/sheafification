@@ -342,18 +342,18 @@ a single object classifier but rather an $n$-object classifier for
 each $n\geq -2$ which classifies functions with $n$-truncated homotopy
 fibers~\cite{sets_in_hott}. This means that when monomorphisms are used in topos
 theoretic definition, the correct generalization may be $n$-truncated homotopy
-fibers or monomorphims (\ie $-1$-truncated homotopy
+fibers or embeddings (\ie $-1$-truncated homotopy
 fibers) depending on the purpose of the definition.
 
 For instance, the notion of separated objects (which is a technical
 notion used in the construction of the sheafification functor), \ie
 objects for which the morphism
-(\ref{equ:sheaf_def}) is just a monomorphism, is generalized in two
+(\ref{equ:sheaf_def}) is just an embedding, is generalized in two
 different ways.  
 %
 The subobjects to be considered are given by $n$-truncated homotopy fibers,
-while the morphism (\ref{equ:sheaf_def}) is still required to be a
-monomorphism.
+while the morphism (\ref{equ:sheaf_def}) is still required to be an
+embedding.
 
 In other technical difficulty is the fact that sheafification in topos
 theory uses the fact that epimorphisms are coequalizers of their
@@ -474,7 +474,7 @@ of $B$ with $n$-truncated homotopy fibers in the sense that there is
 an equivalence
 %
 $$\chi : \left(\sum_{A:\Type} \sum_{f:A \to B} \prod_{b\in B}
-\IsType \
+\IsType n\
 \fib{f}{b}\right) \xrightarrow{\sim} 
  (B \to \Type_n)$$
 %
@@ -490,7 +490,7 @@ with $\Type_n^\bullet \defeq \sum_{A:\Type_n} A$ the universe of pointed
 $n$-truncated types and 
 $$t_f = \lambda a,~(\fib{f}{f(a)},(a,\mathrm{idpath})).$$
 
-Finally, we need to use mere propositions has basic elements of a logic
+Finally, we need to use mere propositions as basic elements of a logic
 when characterizing properties of types or functions. 
 %
 But as some constructors do not preserve the level of homotopy type
@@ -524,14 +524,14 @@ proposition that follows from $A$ already follows from $\squash{A}$.
 %
 We refer the reader to~\cite{hottbook} for more details on propositional truncation.
 
-\subsection{The Epi-Mono Factorization System}
+\subsection{The Orthogonal Factorization System}
 \label{sec:epi-mono-fact}
 
 We now recall the presence of a factorization system in homotopy type
-theory, constituted by monomorphism and epimorphism.
+theory, constituted by embeddings and surjections.
 
-A map $f:A\to B$ is a \emph{monomorphism} when it is (-1)-truncated
-(see definition in Section~\ref{ssec:hott}), and an \emph{epimorphism}
+A map $f:A\to B$ is an \emph{embedding} when it is (-1)-truncated
+(see definition in Section~\ref{ssec:hott}), and a \emph{surjection}
 when it is (-1)-connected, that is when every fiber of $f$ is merely
 inhabited (\ie $\|\fib f y\|$ holds for all $y$).
 
@@ -641,7 +641,7 @@ the purpose of this paper to discuss those axioms, we only state here
 a particular case of the last axiom which says that every groupoid
 object is effective. 
 %
-This particular case connects an epimorphism (or a $-1$-connected
+This particular case connects a surjection (or a $-1$-connected
 function) to the colimit of its \v{C}ech nerve.
 %
 This is the $\infty$-generalization of the fact that, in a topos,
@@ -688,7 +688,7 @@ where the arrows are the canonical projections.
 \end{defi}
 
 \begin{ax}[Giraud-Rezk-Lurie]
-  For any epimorphism $f : X \to Y$, the colimit of its \v{C}ech nerve
+  For any surjection $f : X \to Y$, the colimit of its \v{C}ech nerve
   $C(f)$ is $Y$.
 \end{ax}
 
@@ -1051,7 +1051,7 @@ of separated types.
 \begin{defi}[Separated Type]
   A type $F$ in $\Type_{n+1}$ is {\em separated} if for any type $E$, and
   all dense $n$-subobject of $\iota : A \to E$,
-  $\Phi_E^\iota$ is a monomorphism. In other words, the dotted arrow,
+  $\Phi_E^\iota$ is an embedding. In other words, the dotted arrow,
   if exists, is unique.
 
   $$\xymatrix{
@@ -1553,11 +1553,52 @@ Section~\ref{sec:sheafification} is formalized in
 
 At total, with other files containing technical lemmas, the project
 contains 6322 lines.
+%\nt{describe how many line for each, be clear about what has not been formalized}
 
+In our formalization, some things are admitted, either because they
+are just an adaptation of a proposition already formalized
+in~\cite{hottbook}, either because they are true, but very technical~:
+\begin{itemize}
+\item in \texttt{modalities.v}, an equality is admitted in the proof
+  of proposition~\ref{sec:defin-basic-prop}.
+\item in \texttt{nat\_lemmas.v}, the proof that $\IsHProp (n\leqslant
+  m)$ is admitted.
+\item in \texttt{sheaf\_induction.v}, in the proof that
+  $C(\mu_T)=(C\id)$ (see lemma~\ref{lem:sepiscolim}), we admit the proof
+  of equality of projections.
+\item in \texttt{sheaf\_induction.v}, we admit some very technical
+  proofs in proofs that $\square$ and $\star$ are modalities.
+\item in \texttt{sheaf\_induction.v}, cumulativity is an axiom,
+  because of universes issues.
+\end{itemize}
 
+Some other lemmas are proved, then admitted. We do it so that Coq
+doesn't constrain too much universes, without having to explicitly
+annotate universes everywhere in the formalization.
 
+The main issue in this formalization is the gestion of universes in
+Coq~\cite{sozeau2014universe}. If Coq can handle cumulativity on all
+$\Type$, it is not the case for the sigma type $\Type_n$. This issue
+can be solved by adding an axiom of cumulativity for $\Type_n$, but as
+it would not have any computational content, it would really
+complicates the proofs.
 
-\nt{describe how many line for each, be clear about what has not been formalized}
+Moreover, even the definition of successive sheafification types is
+not allowed~:
+
+\[ \left\{
+    \begin{array}{l}
+      \modal_{-1} = \lambda T:\HProp,~ \lnot\lnot T \\
+      \displaystyle{\modal_{n+1} = \lambda T:\Type_{n+1}},\\
+      \quad \displaystyle{\sum_{u:T \to \Type_n^\modal} \modal_{-1} 
+      \left\|
+      \sum_{a:T} u = (\lambda t,~\modal_n (a=t))
+      \right\|}
+    \end{array}
+  \right.,\]
+because Coq asks for every $\modal_n$ to have the same universes
+levels. Thus, the induction presented in this paper cannot be
+formalized at the moment. We only present the induction step.
 
 Talk about issues in universe levels \cite{sozeau2014universe}. Lake of cumulativity for
 $\Type_n$ and impossibility to define by induction the sheafification 

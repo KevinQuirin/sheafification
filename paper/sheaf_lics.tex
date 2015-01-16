@@ -59,8 +59,8 @@
 
 \def\mymathhyphen{{\hbox{-}}}
 
-\newcommand{\IsType}[1]{\mathop{\mathrm{Is\mymathhyphen}#1\mathrm{\mymathhyphen
-      type}} }
+\newcommand{\IsType}[1]
+{\mathop{\mathrm{Is\mymathhyphen}#1\mathrm{\mymathhyphen type}} }
 
 \newcommand{\modal}{\ensuremath{\ocircle}}
 \newcommand \True {\mathrm{true}}
@@ -71,6 +71,7 @@
 \newcommand \Hom[1] {\mathrm{Hom}_{#1}}
 \newcommand \Sh[1] {\mathrm{Sh}_{#1}}
 \newcommand \squash[1] {\| #1 \| }
+\newcommand \separated {\mathop{\square} }
 \newcommand \fib[2] {\mathrm{fib}_{#1}(#2)}
 \newcommand \colim[1] {\mathrm{colim}(Q)}
 \newcommand \zero {\mathbf{0}}
@@ -838,13 +839,13 @@ where $\pi_1 \circ \gamma = \eta_X \circ \pi_1$, and $\pi_2 \circ
 %   la preuve de Shulman qui tu n'as pas faite. En tout cas, il faut
 %   clarifier.}
 
-The central result used here is the following
+The proof is based on the following central result.
 \begin{lem}
   Let $X:\Type_p$, $Y:\Type_p\modal$ and $f:X\to Y$. If for all $y:Y$,
   $\modal (\fib f y)$ is contractible, then $\modal X = Y$.
 \end{lem}
 %
-Here, $\sum_{x:\modal X} (\modal f x = \eta_Y y)$ is modal, thus we
+As $\sum_{x:\modal X} (\modal f x = \eta_Y y)$ is modal, we
 can define $$\phi:\modal \left(\sum_{x:X}  (f x = y)\right) \to
 \sum_{x:\modal X} (\modal f x = \eta_Y y).$$
 We just need to check that the image of its fibers by $\modal$ are
@@ -866,6 +867,8 @@ But we have the lemma~:
 
 Finally, $\modal(\fib \phi {x;p})$ is contractible, and the result is proved.
 \kq{Finish that}
+
+\nt{Indeed, I can't follow the proof for the moment}
 \end{proof}
 
 In the same way, left exact modalities preserve homotopy types.
@@ -1028,7 +1031,7 @@ sheaves are elements that can not distinguish between objects and
 their dense sub-objects. 
 
 \begin{defi}
-  For any type $A$ and $E$, $\iota : A -> E$ and $F:\Type_{n+1}$, we define
+  For any type $A$ and $E$, $\iota : A \to E$ and $F:\Type_{n+1}$, we define
     $$
     \Phi_E^\iota : (E \to F) \to (A \to F) 
     $$
@@ -1080,32 +1083,28 @@ Lawvere-Tierney topologies can still be shown to subsume Grothendieck
 toplogies for $(\infty,1)$-topoi, which is beyond the scope of this paper).
 %
 
+A fundamental property in the construction of the sheafification is
+the fact that the type of modal types at level $n$ defines a sheaf. 
+%
+This property initially holds in the topos theoretic construction, but
+it requires much work here, as we have to deal with equalities. In
+particular, this property uses in particular the specific definition
+of separated types and sheaves, which shows that we had actually no
+choice in their statement. 
 
-\nt{Il faut mieux introduire ces propriétés, $\Type_n^\modal$ is a sheaf
-  est très importante en particulier. Il faut qu'on comprenne d'où ça
-  vient et que tu fasses une preuve, même un peu idalisée. Je dirais
-  que tu peux mettre des lemmes genres nj\_inter en disant que telle
-  flèche est un iso, and co.
-  En tout cas, cette partie peut et doit être bien plus longue.
-}
-
-\begin{prop}\label{prop:sheaf-forall}
-  If $A:\Type_{n+1}$ and $B:A \to \Type_{n+1}$ such that for any
-  $a:A$, $(B~a)$ is a sheaf, then $\prod_{a:A}B~a$ is a sheaf.
-\end{prop}
 
 \begin{prop}\label{prop:sheaf-is-sheaf}
   $\Type_n^\modal$ is a sheaf.
 \end{prop}
 \begin{proof}
-  Firstly, we prove that $\Type_n^\modal$ is separated. Let $E:\Type$
+  First, we prove that $\Type_n^\modal$ is separated. Let $E:\Type$
   and $\chi:E \to \Type_n$, dense in $E$. Let $\phi_1,\phi_2:E \to
   \Type_n^\modal$, such that $\phi_1 \circ \pi_1 = \phi_2 \circ
-  \pi_1$. Finally, let $x:E$. We show $\phi_1 x = \phi_2 x$ using
+  \pi_1$ and let $x:E$. We show $\phi_1 x = \phi_2 x$ using
   univalence.
 
   As $\chi$ is dense, we have a term $m_x : \modal(\chi\, x)$.
-  But as $\phi_2 x$ is modal, thus we can obtain a term $h_x : \chi\,
+  But as $\phi_2 x$ is modal, we can obtain a term $h_x : \chi\,
   x$. 
   As $\phi_1$ and $\phi_2$ are equal on $\sum_{e:E}\chi\, e$, we
   have an arrow $\phi_1 x \to \phi_2 x$.
@@ -1140,13 +1139,24 @@ toplogies for $(\infty,1)$-topoi, which is beyond the scope of this paper).
 
 \end{proof}
 
+An other fundamental property on sheaves is that the type of (dependent)
+functions is a sheaf as soon as its codomain is a sheaf.
+
+\begin{prop}\label{prop:sheaf-forall}
+  If $A:\Type_{n+1}$ and $B:A \to \Type_{n+1}$ such that for any
+  $a:A$, $(B~a)$ is a sheaf, then $\prod_{a:A}B~a$ is a sheaf.
+\end{prop}
+\begin{proof}
+  \nt{add a short proof here}
+\end{proof}
+
 \section{Construction of sheafification}
 \label{sec:sheafification}
 
 % We mimic the construction in~\cite{maclanemoerdijk}. 
 
 From any left exact modality $\modal_{-1}$ on $\HProp$, we define by
-induction the truncation index $n$, a
+induction on the truncation index $n$, a
 left exact modality $\modal_n$ at level $n$ that extends $\modal_{-1}$ in the
 sense that the following property holds.
 %
@@ -1164,11 +1174,12 @@ sense that the following property holds.
 \end{prop}
 
 
-Note that once the first modality is defined, the extension to all
-$\Type_n$ is automatic. This means that the new logical principles
-that can be added by the sheaf construction must be added in the
-first modality already. The sheafification is just a way to propagate
-those new principles to other types than just mere proposition. 
+Note that once the first modality $\modal_{-1}$ is defined, its
+extension to all $\Type_n$ is automatic. This means that the new
+logical principles that can be added by the sheaf construction must be
+added in the first modality already. Sheafification is just a way
+to propagate those new principles to types than are not mere
+propositions.
 
 
 %   extend the new principles it gives to
@@ -1217,48 +1228,54 @@ sense of proposition~\ref{prop:hprop}.
 \subsection{From Type to Separated Type}
 \label{ssec:from-type-separated}
 
-Let $T : \Type_{n+1}$. We define $\square T$ as the image (see
+Let $T : \Type_{n+1}$. We define $\separated T$ as the image (see
 Section~\ref{sec:epi-mono-fact}) of
 $\modal^T \circ \{\cdot\}_T$, as in
 $$\xymatrix{
   T \ar[r]^{\{\cdot\}_T} \ar[d]_{\mu_T} & \Type_n^T \ar[d]^{\modal^T} \\
-  \square T \ar[r]& \left( \Type_n^\modal \right)^T
+  \separated T \ar[r]& \left( \Type_n^\modal \right)^T
 }, $$
 where $\{\cdot\}_T$ is the singleton map $\lambda (t:T),~\lambda
 (t':T),~t=t'$.
-\nt{parler du système de factorization}
-In type theory words, 
-\begin{align*}
-\square T &= \im (\lambda~t:T,~\lambda~ t',~ \modal (t = t')) \\
-          &= \sum_{u:T \to \Type_n^\modal} \left\| \sum_{a:X} 
-            (\lambda t,~\modal (a=t)) = u\right\|
-\end{align*}
-
-There again, the separation step has the same definition as
-in~\cite{maclanemoerdijk}, using $\Type_n^\modal$ instead of the
-$j$-subobject classifier.
-
+%
+$\separated T$ can be given explicitly by
+%
+$$
+\begin{array}{rcl}
+\separated T &\defeq & \im (\lambda~t:T,~\lambda~ t',~ \modal (t = t')) \\
+          & \defeq & \sum_{u:T \to \Type_n^\modal} \left\| \sum_{a:X} 
+            (\lambda t,~\modal (a=t)) = u\right\|.
+\end{array}
+$$
+%
+This corresponds to the free separated object used in the topos
+theoretic construction, but using $\Type_n^\modal$ instead of the
+$j$-subobject classifier $\Omega_j$.
+%
 \begin{prop}
-  For any $T:\Type_{n+1}$, $\square T$ is separated.  
+  For any $T:\Type_{n+1}$, $\separated T$ is separated.  
 \end{prop}
 
 \begin{proof}
-We will use the following lemma~:
+We use the following lemma:
 \begin{lem}
   A $(n+1)$-truncated type $T$ with an embedding $f : T \to U$
   into a separated $(n+1)$-truncated type $U$ is itself separated.
 \end{lem}
-As $\square T$ embeds in $\left( \Type_n^\modal \right)^T$, we only
+As $\separated T$ embeds in $\left( \Type_n^\modal \right)^T$, we only
 have to show that the latter is separated. But it is the case because
 $\Type_n^\modal$ is a sheaf (by Proposition~\ref{prop:sheaf-is-sheaf})
 and a function type is a sheaf as soon
 as its codomain is a sheaf (by Proposition~\ref{prop:sheaf-forall}).
 \end{proof}
 
-We now need to show that $\square$ is universal. The following
-lemma is central in the proof~:
+To show that $\separated$ is a modality, we need t show that $\separated T$
+is universal among separated type below $T$. This comes from the
+following central lemma which connects $\separated T$ to the colimit of
+the \v{C}ech nerve of $\mu_T$.
+
 \begin{lem}\label{lem:sepiscolim}
-  Let $T:\Type_{n+1}$. Then $\square T$ is the colimit of the closed
+  Let $T:\Type_{n+1}$. Then $\separated T$ is the colimit of the closed
   diagonal diagram
   $$\xymatrix @C=4em  { 
     \cdots \overline{\Delta_3} \tar[r]{4pt} & \overline{\Delta_2} \dar[r]{2pt} &
@@ -1267,18 +1284,19 @@ lemma is central in the proof~:
 where $\Delta_k$ is the $k$-pullback of $\id : T \to T$.
 \end{lem}
 
-This lemma is an adaptation of the sheafification process
-in~\cite{maclanemoerdijk}, where they consider only the kernel pair of
-$\mu_T$ instead of the \v{C}ech nerve.
+Again, this lemma is an adaptation of the sheafification process in
+topos theory, where the kernel pair of $\mu_T$
+is replaced by its \v{C}ech nerve.
 
 \begin{proof}
-  As $\mu_T$ is an surjection, using the particular case of the last
+  As $\mu_T$ is an surjection, using the particular case of 
   Giraud-Rezk-Lurie axiom introduced in Section~\ref{sec:giraud-ax},
-  we know that $\square T$ is the colimit
-  of $C(\mu_T)$. If we can show that $C(\mu_T) = C(\id)$, the the
-  result will follow. 
+  we know that $\separated T$ is the colimit of $C(\mu_T)$. 
+%
+  Thus the result follows from the fact that $C(\mu_T) = C(\id)$,
+  which we now show.
 
-  Let $k:\nat$, let's show that 
+  Let $k:\nat$, we will show that 
   \begin{align*}
     &\sum_{t:T^k} (\mu_T t_1 = \mu_T t_2 \land \cdots
       \land \mu_T t_{k-1} \mu_T t_k)\\
@@ -1296,7 +1314,7 @@ equivalence.
   Taking for example $t=b$, we deduce $\modal (a=b) = \modal(a=a)$,
   and the latter is inhabited by $\eta_{a=a} 1$.
 \item Suppose now $p : \modal(a=b)$. Let $\iota$ be the first
-  projection from $\square T \to (T \to \Type_n^\modal)$. $\iota$ is
+  projection from $\separated T \to (T \to \Type_n^\modal)$. $\iota$ is
   an embedding, thus it suffices to prove $\iota (\mu_T a) = \iota
   (\mu_T b)$, \ie $\prod_{t:T}\modal (a=t) = \modal (b=t)$. The latter
   remains true by univalence.
@@ -1313,17 +1331,16 @@ $$\xymatrix @C=4em{
     \overline{\Delta_1} = T \ar[ld]^{f\circ \pi_1}\\
     & Q &
   }$$
-But we know (lemma~\ref{lem:sepiscolim}) that $\square T$ is the
+But we know (lemma~\ref{lem:sepiscolim}) that $\separated T$ is the
 colimit of the closed diagonals diagram, thus there is an universal
-arrow $\square T \to Q$.
-
-This proves the following proposition
+arrow $\separated T \to Q$.
+%
+This is enough to state the following proposition.
 \begin{prop}
-  $(\square,\mu)$ defines a reflective subuniverse on $\Type_{n+1}$.
+  $(\separated,\mu)$ defines a reflective subuniverse on $\Type_{n+1}$.
 \end{prop}
 
-We now have to prove point {\it (v)} in the definition of
-modality. Let $A:\Type_{n+1}$ be a sheaf and $B:A \to \Type_{n+1}$ be
+To show that $\separated$ is a modality, it remains to show point {\it (v)}. Let $A:\Type_{n+1}$ be a sheaf and $B:A \to \Type_{n+1}$ be
 a sheaf family. We want to show that $\sum_{x:A} (Bx)$ is
 separated. Let $E$ be a type, and $\sum_{e:E} (\chi\,e)$ a dense
 subobject of E.
@@ -1356,11 +1373,11 @@ components, transported correctly along the first components equality,
 are equal. The complete proof can be found in the formalisation.
 This proves the following proposition
 \begin{prop}
-  $(\square,\mu)$ defines a modality on $\Type_{n+1}$.
+  $(\separated,\mu)$ defines a modality on $\Type_{n+1}$.
 \end{prop}
 
-As this modality is just a step in the construction, we will not show
-that it is left exact, we will do it only for the sheafification modality.
+As this modality is just a step in the construction, we do not show
+that it is left exact, we will only do it for the sheafification modality.
 
 \subsection{From Separated Type to Sheaf}
 \label{ssec:separated-to-sheaf}
@@ -1383,11 +1400,11 @@ $\nu_T:T \to \star T$ is obvious.
 \begin{proof}
   Let $T,Q:\Type_{n+1}$ such that $Q$ is a sheaf. Let $f:T\to Q$.
   Because $Q$ is a sheaf, it is in particular separated ; thus we can
-  extend $f$ to $\square f:\square T\to Q$.
+  extend $f$ to $\separated f:\separated T\to Q$.
 
-  But as $\star T$ is the closure of $\square T$, $\square T$ is dense
+  But as $\star T$ is the closure of $\separated T$, $\separated T$ is dense
   into $\star T$, so the sheaf property of $Q$ allows to extend
-  $\square f$ to $\star f:\star T \to Q$.
+  $\separated f$ to $\star f:\star T \to Q$.
 
   As all these steps are universal, the composition is.
 \end{proof}

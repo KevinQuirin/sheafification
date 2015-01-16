@@ -526,6 +526,24 @@ We refer the reader to~\cite{hottbook} for more details on propositional truncat
 \subsection{The epi-mono Factorization System}
 \label{sec:epi-mono-fact}
 
+Now, let a map $f:A\to B$ be called {\em (-1)-truncated} if
+every fibers of $f$ is an $\HProp$, and {\em
+  (-1)-connected} if every fibers $f$ is merely
+inhabited, \ie such that $\|\fib f y\|$ for all $y$.
+
+\begin{defi}
+  Let $f:A\to B$ be a function. The {\em image} of $f$ is
+  $$\im(f) = \sum_{y:B} \|\fib f y\|.$$
+\end{defi}
+
+It is then fairly obvious that the canonical function $\hat f : A \to
+\im(f)$ is (-1)-connected, thus the following proposition arise
+(\cite{hottbook}, Lemma 7.6.4)~:
+\begin{prop}
+  An map $f:A\to B$ factors as a (-1)-connected function followed by a
+  (-1)-truncated function.
+\end{prop}
+
 \nt{define the image here, with (-1)-truncated and (-1)-connected
   factorization system}
 
@@ -723,6 +741,7 @@ example, and in particular the modality for the dense topology.
   \label{sec:defin-basic-prop-1}
   Let $n\geq -1$ be a truncation index. A left exact modality at level
   $n$ is the data of
+  \kq{Do you prefer $n$ over $p$ ?}
   \begin{enumerate}[(i)]
   \item A predicate $P:\Type_p \to \HProp$
   \item For every $n$-truncated type $A$, a $n$-truncated type
@@ -763,8 +782,6 @@ We now summarize the main properties that are used in our
 formalization.
  
 \begin{prop}
-
-stability properties
 \vspace{1em}
 
 \nt{state precisely some properties here, at least the 4 below}
@@ -773,16 +790,19 @@ stability properties
 
 \begin{itemize}
 
-\item
-$\modal \one =\one $
-\item
-Stability under product and dependent product (7.7.2 of \cite{hottbook})
-\item
- In particular, if $X:\Type_p$ verifies
-$P(X)$, then for any $x,y:X$, $P(x=y)$.
-\item
-Another useful property is that we can extend property {\it (iii)} to
-dependent product.
+\item $\one$ seen as a $\Type_p$ is modal, ie $\modal \one =\one$.
+\item (\cite{hottbook}, Lemma 7.7.2)
+  Let $A:\Type$ and $B:A \to \Type_p^\modal$. Then $P\left(\prod_{a:A} (B\,
+  a)\right)$. 
+\item (\cite{hottbook}, Corollary 7.7.2) For any $A,B:\Type_p$,
+  $\modal (A\times B) = (\modal A) \times (\modal B)$.
+\item Let $A:\Type_p\modal$. Then for any $x,y:X$, $P(x=y)$.
+\item (\cite{hottbook}, Theorem 7.7.4) 
+  {\it (iv} can be extended to dependent product. Precisely~:
+
+  Let $A:\Type_p$ and $B:\modal A \to \Type_p^\modal$. For any map
+  $g:\prod_{a:A} B(\eta_A(a))$ there exists a map $f:\prod_{z:\modal
+    A} (B\, z)$ such that for all $a:A$, $f(\eta_A(a)) = g(a)$.
 \end{itemize}
 \end{prop}
 
@@ -807,7 +827,21 @@ where $\pi_1 \circ \gamma = \eta_X \circ \pi_1$, and $\pi_2 \circ
 \begin{proof}
 \nt{ça a du sens de mettre une preuve, non ? c'est non trivial et
   nouveau par rapport aux travaux sur les modalités. Ou alors c'est
-  la preuve de Shulman qui tu n'as pas faite. En tout cas, il faut clarifier.}
+  la preuve de Shulman qui tu n'as pas faite. En tout cas, il faut
+  clarifier.}
+
+The central result used here is the following
+\begin{lem}
+  Let $X:\Type_p$, $Y:\Type_p\modal$ and $f:X\to Y$. If for all $y:Y$,
+  $\modal (\fib f y)$ is contractible, then $\modal X = Y$.
+\end{lem}
+
+Here, $\sum_{x:\modal X} (\modal f x = \eta_Y y)$ is modal, thus we
+can define $$f:\modal \left(\sum_{x:X}  (f x = y)\right) \to
+\sum_{x:\modal X} (\modal f x = \eta_Y y).$$
+We need to check that the image of its fibers by $\modal$ are
+contractible.
+\kq{Finish that}
 \end{proof}
 
 

@@ -188,7 +188,7 @@ Unfortunately, all those works---although they provide very nice and
 sophisticated theoretical results---do not share the generality and
 simplicity of sheafification in topos theory and are not amenable to a
 direct integration into proof assistant based on type theory such as
-Coq or Agda.  
+Coq~\cite{coq:refman:8.4} or Agda~\cite{norell2007towards}.  
 %
 However, type theory is known to be quite closed to topos theory so
 one could wonder why similar techniques have not been developed in the
@@ -236,7 +236,7 @@ construction in higher topoi is restricted to the initial Grothendieck
 setting which is still very topologically oriented, and not very
 amenable to formalization in type theory. It seems more promising to
 use a generalized notion of sheafification, called Lawvere-Tierney
-sheafification~\cite{maclanemoerdijk}, but this construction has not
+sheafification~\cite{tierney1972sheaf,maclanemoerdijk}, but this construction has not
 been considered yet in the setting of higher topos theory. This rises
 two issues that this paper addresses: (i) how to lift the notion of
 Lawvere-Tierney sheafification to higher topos theory and (ii) is it
@@ -523,29 +523,34 @@ proposition that follows from $A$ already follows from $\squash{A}$.
 %
 We refer the reader to~\cite{hottbook} for more details on propositional truncation.
 
-\subsection{The epi-mono Factorization System}
+\subsection{The Epi-Mono Factorization System}
 \label{sec:epi-mono-fact}
 
-Now, let a map $f:A\to B$ be called {\em (-1)-truncated} if
-every fibers of $f$ is an $\HProp$, and {\em
-  (-1)-connected} if every fibers $f$ is merely
-inhabited, \ie such that $\|\fib f y\|$ for all $y$.
+We now recall the presence of a factorization system in homotopy type
+theory, constituted by monomorphism and epimorphism.
+
+A map $f:A\to B$ is a \emph{monomorphism} when it is (-1)-truncated
+(see definition in Section~\ref{ssec:hott}), and an \emph{epimorphism}
+when it is (-1)-connected, that is when every fiber of $f$ is merely
+inhabited (\ie $\|\fib f y\|$ holds for all $y$).
 
 \begin{defi}
-  Let $f:A\to B$ be a function. The {\em image} of $f$ is
-  $$\im(f) = \sum_{y:B} \|\fib f y\|.$$
+  Let $f:A\to B$ be a function. The {\em image} of $f$ is defined as 
+  $$\im(f) \defeq \sum_{y:B} \|\fib f y\|.$$
 \end{defi}
 
 It is then fairly obvious that the canonical function $\hat f : A \to
-\im(f)$ is (-1)-connected, thus the following proposition arise
+\im(f)$ is (-1)-connected, thus the following proposition holds
 (\cite{hottbook}, Lemma 7.6.4)~:
 \begin{prop}
-  An map $f:A\to B$ factors as a (-1)-connected function followed by a
-  (-1)-truncated function.
+  A map $f:A\to B$ factors through $\im(f)$ as a (-1)-connected
+  function followed by a (-1)-truncated function.
 \end{prop}
 
-\nt{define the image here, with (-1)-truncated and (-1)-connected
-  factorization system}
+Note that there are other factorization systems constituted by
+$n$-truncated morphism and $n$-connected morphisms, for every
+truncated level $n$, but they do not appear to be useful in the
+definition of sheafification.
 
 \subsection{Colimits in Homotopy Type Theory }
 \label{sec:colim-homot-type}
@@ -600,8 +605,8 @@ vertex $i:G_0$, \ie $$q : \prod_{i:G_0} D_0(i) \to P$$
 
 Then $P$ is the {\em colimit} of $D$ if for any other $X:\Type$, the
 map
-$$\lambda f:P \to X,~ \left( \lambda i,~f \circ q_i~;~ \lambda i\, j\,
-  \phi,~ \postcompose_f (p(i, j, g))) \right),$$
+$$\lambda f:P \to X, \left( \lambda i,~f \circ q_i~;~ \lambda i\, j\,
+  \phi,~ \postcompose_f (p(i, j, g)) \right)$$
 where $\postcompose_f : \phi = \psi \to \phi \circ f = \psi \circ f$,
 is an equivalence.
 \end{defi}
@@ -741,9 +746,8 @@ example, and in particular the modality for the dense topology.
   \label{sec:defin-basic-prop-1}
   Let $n\geq -1$ be a truncation index. A left exact modality at level
   $n$ is the data of
-  \kq{Do you prefer $n$ over $p$ ?}
   \begin{enumerate}[(i)]
-  \item A predicate $P:\Type_p \to \HProp$
+  \item A predicate $P:\Type_n \to \HProp$
   \item For every $n$-truncated type $A$, a $n$-truncated type
     $\modal A$ such that $P(\modal A)$
   \item For every $n$-truncated type $A$, a map $\eta_A:A \to
@@ -759,9 +763,9 @@ example, and in particular the modality for the dense topology.
         f & \mapsto & f \circ \eta_A
       \end{array} \right.$$
     is an equivalence.
-  \item for any $A:\Type_p$ and $B:A \to \Type_p$ such that $P(A)$
+  \item for any $A:\Type_n$ and $B:A \to \Type_n$ such that $P(A)$
     and $\prod_{x:A} P(B x)$, then $P\left( \sum_{x:A} B(x)\right)$
-  \item for any $A:\Type_p$ and $x,y:A$, if $\modal A$ is
+  \item for any $A:\Type_n$ and $x,y:A$, if $\modal A$ is
     contractible, then $\modal (x=y)$ is contractible.
   \end{enumerate}
   Conditions (i) to (iv) define a {\em reflective subuniverse}, (i) to
@@ -771,42 +775,48 @@ example, and in particular the modality for the dense topology.
 The type of all modal $n$-types, \ie types for which $P$ holds, is
 defined as %$\Type^\modal_p$, so 
 $$
-\Type^\modal_p \ \defeq \sum_{T : \Type_n} P (T).
+\Type^\modal_n \ \defeq \sum_{T : \Type_n} P (T).
 $$
 %
 Since basic type formers (dependent products, products, sigma types)
 preserves truncation levels, we can leverage all theorems on modalites
 presented in~\cite[Chapter 7.7]{hottbook}.
-
+%
 We now summarize the main properties that are used in our
-formalization.
+formalization. We do not recall the proofs as they are not specific to
+our presentation (also the setting using truncated types provides
+minor changes), but they can be found in our Coq formalization. 
  
 \begin{prop}
-\vspace{1em}
 
-\vspace{1em}
-
+The following property holds for any left-exact modality $\modal$ at
+level $n$.
+ 
 \begin{itemize}
 
-\item $\one$ seen as a $\Type_p$ is modal, ie $\modal \one =\one$.
-\item (\cite{hottbook}, Lemma 7.7.2)
-  Let $A:\Type$ and $B:A \to \Type_p^\modal$. Then $P\left(\prod_{a:A} (B\,
-  a)\right)$. 
-\item (\cite{hottbook}, Corollary 7.7.2) For any $A,B:\Type_p$,
-  $\modal (A\times B) = (\modal A) \times (\modal B)$.
-\item Let $A:\Type_p\modal$. Then for any $x,y:X$, $P(x=y)$.
-\item (\cite{hottbook}, Theorem 7.7.4) 
-  {\it (iv)} can be extended to dependent product. Precisely~:
-
-  Let $A:\Type_p$ and $B:\modal A \to \Type_p^\modal$. For any map
-  $g:\prod_{a:A} B(\eta_A(a))$ there exists a map $f:\prod_{z:\modal
-    A} (B\, z)$ such that for all $a:A$, $f(\eta_A(a)) = g(a)$.
+\item $\one$ seen as an $n$-type is modal, ie $\modal \one =\one$.
+\item 
+  For any  $A:\Type$ and $B:A \to \Type_n^\modal$,  $P\left(\prod_{a:A} (B\,
+  a)\right)$. \\
+(from \cite[Lemma 7.7.2]{hottbook})
+\item For any $A,B:\Type_n$,
+  $\modal (A\times B) = (\modal A) \times (\modal B)$. \\
+(from \cite[Corollary 7.7.2]{hottbook})
+\item For any $A:\Type_n^\modal$ and $x,y:X$, $P(x=y)$.
+\item 
+  {\it (iv)} can be extended to dependent product, that is for any $A:\Type_n$, $B:\modal A \to
+  \Type_n^\modal$ and
+  $g:\prod_{a:A} B(\eta_A(a))$, there exists a map $f:\prod_{z:\modal
+    A} (B\, z)$ such that for all $a:A$, $f(\eta_A(a)) = g(a)$. \\
+ (from \cite[Theorem
+ 7.7.4]{hottbook})
 \end{itemize}
 \end{prop}
 
 As the definition of sheafification is based on subobject classifiers
-and thus on homotopy fibers, we need to look at how left exact
-modalities preserves homotopy fibers.
+and thus on homotopy fibers, we need to take a closer look at the way left
+exact modalities preserve homotopy fibers.
+%
 \begin{prop}
 \label{sec:defin-basic-prop}
 For any $n$-truncated types $X$ and $Y$,
@@ -823,23 +833,23 @@ where $\pi_1 \circ \gamma = \eta_X \circ \pi_1$, and $\pi_2 \circ
 \gamma$ is given by the modalisation of paths.
 \end{prop}
 \begin{proof}
-\nt{ça a du sens de mettre une preuve, non ? c'est non trivial et
-  nouveau par rapport aux travaux sur les modalités. Ou alors c'est
-  la preuve de Shulman qui tu n'as pas faite. En tout cas, il faut
-  clarifier.}
+% \nt{ça a du sens de mettre une preuve, non ? c'est non trivial et
+%   nouveau par rapport aux travaux sur les modalités. Ou alors c'est
+%   la preuve de Shulman qui tu n'as pas faite. En tout cas, il faut
+%   clarifier.}
 
 The central result used here is the following
 \begin{lem}
   Let $X:\Type_p$, $Y:\Type_p\modal$ and $f:X\to Y$. If for all $y:Y$,
   $\modal (\fib f y)$ is contractible, then $\modal X = Y$.
 \end{lem}
-
+%
 Here, $\sum_{x:\modal X} (\modal f x = \eta_Y y)$ is modal, thus we
 can define $$\phi:\modal \left(\sum_{x:X}  (f x = y)\right) \to
 \sum_{x:\modal X} (\modal f x = \eta_Y y).$$
 We just need to check that the image of its fibers by $\modal$ are
 contractible.
-
+%
 From definition of left exactness, one can deduce the following~:
 \begin{lem}
   Let $A,B:\Type_p$. Let $f:A\to B$. If $\modal A$ and $\modal B$ are

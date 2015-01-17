@@ -283,12 +283,16 @@ Section Three_by_three.
   
 End Three_by_three.
 
-  Lemma three_by_three {A B C D:Type} (f:A -> B) (g:C -> D) (h:A -> C) (k:B -> D) (s : forall a, k (f a) = g (h a)) (b:B) (c:C) (p:k b = g c)
-        (fibf_to_fibg := square_fiber_map g h k s (b:=b))
-        (fibh_to_fibk := square_fiber_map k f g (λ a, (s a)^) (b:=c))
-  : hfiber fibf_to_fibg (c;p^) = hfiber fibh_to_fibk (b;p).
-    apply path_universe_uncurried.
-    apply three_by_three'.
-  Defined.
-    
+Lemma three_by_three {A B C D:Type} (f:A -> B) (g:C -> D) (h:A -> C) (k:B -> D) (s : forall a, k (f a) = g (h a)) (b:B) (c:C) (p:k b = g c)
+      (fibf_to_fibg := square_fiber_map g h k s (b:=b))
+      (fibh_to_fibk := square_fiber_map k f g (λ a, (s a)^) (b:=c))
+: hfiber fibf_to_fibg (c;p^) = hfiber fibh_to_fibk (b;p).
+  apply path_universe_uncurried.
+  apply three_by_three'.
+Defined.
+
+Lemma VpV (X:Type) (x y:X) (p q:x=y): p=q -> p^= q^.
+intro H. destruct H. auto.
+Defined.
+
 End Lemmas.

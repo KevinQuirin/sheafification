@@ -540,9 +540,9 @@ Section Type_to_separated_Type.
     simpl.
     induction k.
     - simpl. apply (equiv_adjointify idmap idmap (λ _, 1) (λ _,1)).
-    - simpl. destruct P as [a [b P]].
+    - simpl.
       apply equiv_functor_prod'. simpl.
-      refine (equiv_adjointify (@separated_unit_paths_are_nj_paths_fun T a b) (@separated_unit_paths_are_nj_paths_inv T a b) _ _).
+      refine (equiv_adjointify (@separated_unit_paths_are_nj_paths_fun T (fst P) (fst (snd P))) (@separated_unit_paths_are_nj_paths_inv T (fst P) (fst (snd P))) _ _).
       apply separated_unit_paths_are_nj_paths_retr.
       apply separated_unit_paths_are_nj_paths_sect.
       apply IHk.
@@ -570,47 +570,47 @@ Section Type_to_separated_Type.
 
   Lemma diagrams_are_equal (T:Trunk (trunc_S n))
   : (Cech_nerve_separated_unit T) = cl_diagonal_diagram T.
-    simpl.
-    unfold Cech_nerve_separated_unit, Cech_nerve_diagram, cl_diagonal_diagram.
+    (* unfold Cech_nerve_separated_unit, Cech_nerve_diagram, cl_diagonal_diagram. *)
     apply path_diagram.
-    transparent assert ( path_type : ((λ n0 : nat,
-                ∃ P : T.1 ∧ hProduct T.1 n0,
-                (char_hPullback n (separated_unit T) n0
-                   (separated_Type_is_Trunk_Sn (T:=T)) T.2 P).1) =
-               (λ k : nat,
-                ∃ y : T.1 ∧ hProduct T.1 k, (cl_char_hPullback' idmap k y).1))).
+    refine (exist _ _ _). 
     - apply path_forall; intro k.
       apply path_universe_uncurried.
       apply hPullback_separated_unit_is_cl_diag.
-    - exists path_type. simpl.
-      intros i j [p q] [P X]. simpl.
-      
-      unfold path_type. simpl.
+    - intros i j [p q] [P X]. simpl.
+      Opaque separated_unit_paths_are_nj_paths.
+      Opaque separated_unit_paths_are_nj_paths_fun.
+      Opaque separated_unit_paths_are_nj_paths_inv.
       unfold ap10, path_forall; rewrite eisretr.
+      destruct p.
+      rewrite transport_path_universe_uncurried.
       pose (rew := transport_path_universe_V_uncurried (hPullback_separated_unit_is_cl_diag T j) ).
-      (* rewrite rew; clear rew. *)
-      (* destruct p. *)
-      (* symmetry; apply moveL_equiv_V; symmetry. *)
-      (* destruct q as [q Hq]. *)
-
-      
-      
-      (* unfold hPullback_separated_unit_is_cl_diag. *)
-      (* unfold equiv_functor_sigma_id, equiv_functor_sigma, functor_sigma. *)
-      (* repeat rewrite transport_path_universe_uncurried. *)
-
-      (* apply path_sigma' with 1. *)
-      (* rewrite transport_1. *)
-      (* induction q; simpl. *)
-      (* { reflexivity. } *)
-      (* { unfold functor_prod. *)
-      (*   induction j. *)
-      (*   { simpl. *)
-      (*     unfold forget_char_hPullback, forget_cl_char_hPullback'. simpl. *)
-
-      
-      
-  Admitted.
+      rewrite rew; clear rew.
+      symmetry; apply moveR_EV; symmetry.
+      Opaque hPullback_separated_unit_is_cl_diag.
+      simpl.
+      apply path_sigma' with 1; simpl.
+      unfold equiv_functor_prod'. unfold functor_prod. simpl.
+      unfold forget_hPullback, forget_cl_char_hPullback', forget_char_hPullback. simpl.
+      destruct q as [q Hq]. simpl.
+      match goal with
+        |[|- _ = sum_rect _ _ _ ?d] => induction d as [| a]
+      end.
+      { destruct a. simpl. reflexivity. }
+      { simpl.
+        match goal with
+          |[|- _ = sum_rect _ _ _ ?d] => induction d as [| b]
+        end.
+        { destruct a0. simpl.
+          induction j.
+          { reflexivity. }
+          { simpl.
+            refine (path_prod _ _ _ _); simpl.
+            { reflexivity. }
+            { simpl. apply IHj. }
+          }
+        }
+        { simpl. 
+  Admitted. (* This lemma is obvious on paper, but really painful to formalize. Maybe we should represent hPullback another way... *)
 
   Definition separated_Type_is_colimit_Cech_nerve (T:Trunk (trunc_S n))
     := Giraud n (separated_unit T) (@separated_Type_is_Trunk_Sn T) T.2 (@IsSurjection_toIm _ _ (λ t t' : T.1, O nj (t = t'; istrunc_paths T.2 t t'))).
@@ -632,7 +632,7 @@ Section Type_to_separated_Type.
     unfold diagonal_commute. simpl.
     destruct q.
     - simpl. destruct x as [x p]. simpl in p.
-      symmetry.
+      symmetry. 
       apply separated_unit_paths_are_nj_paths_inv.
       exact (fst p).
     - reflexivity.
@@ -644,23 +644,24 @@ Section Type_to_separated_Type.
                (separated_Type T)
                (diagonal_commute T)
                (@diagonal_pp T).
-    intro X.
-    pose (i := separated_Type_is_colimit_Cech_nerve T X); destruct i as [inv retr sect _];
-    unfold Sect in *; simpl in *.
-    
-    unfold Cech_nerve_commute in *.
-    refine (isequiv_adjointify _ _ _ _).
-    - intros [q p]. simpl in q,p.
-      clear retr; clear sect; simpl in *.
-      apply inv. clear inv.
-      refine (exist _ _ _).
-      intros i u; apply (q i).
-      apply (hPullback_separated_unit_is_cl_diag T i).
-      exact u.
-      intros i j [a [b Hb]] x.
-      destruct a.
-
-  Admitted.
+    refine (transport_is_colimit
+              (Cech_nerve_graph)
+              (Cech_nerve_separated_unit T)
+              (cl_diagonal_diagram T)
+              (diagrams_are_equal T)
+              (separated_Type T)
+              (Cech_nerve_commute n (separated_unit T) (separated_Type_is_Trunk_Sn (T:=T)) T.2)
+              (@Cech_nerve_pp n (separated_Type T) T.1 (separated_unit T) (separated_Type_is_Trunk_Sn (T:=T)) T.2)
+              (diagonal_commute T)
+              (diagonal_pp (T:=T))
+              _ _ _).
+    - apply (separated_Type_is_colimit_Cech_nerve T).
+    - unfold Cech_nerve_commute, diagonal_commute. simpl.
+      apply path_forall; intro i.
+      apply path_forall; intro u.
+      admit. (* Definition of [Cech_nerve_commute] and [diagonal_commute] are exactly the same, there lacks [diagrams_are_equal] *)
+    - admit. (* Same as above *)
+  Admitted. (* Too much admits in here : Coq cannot handle universes *)
 
   Lemma sep_eq_inv_lemma (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T}) (f : P.1 -> Q.1.1)
   : ∀ (i j : Cech_nerve_graph) (f0 : Cech_nerve_graph i j)
@@ -682,11 +683,6 @@ Section Type_to_separated_Type.
     apply sep_eq_inv_lemma.
   Defined.
 
-  (* in Lemmas *)
-  Lemma VpV (X:Type) (x y:X) (p q:x=y): p=q -> p^= q^.
-  intro H. destruct H. auto.
-  Defined.
-      
   Definition separated_equiv : forall (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T}),
                                  IsEquiv (fun f : separated_Type P -> pr1 (pr1 Q) =>
                                             f o (separated_unit P)).
@@ -954,6 +950,7 @@ Section Type_to_separated_Type.
       apply isequiv_inverse.
       rewrite eissect. simpl.
       unfold pr1_path, pr2_path.
+      (* If I don't pose the following explicitly with [Set Printing All], Coq refuses to apply [path_sigma'] later *)
       pose (help := (@exist
         _
         (fun

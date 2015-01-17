@@ -1,6 +1,6 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness Types.Record.
-
+Require Import equivalence.
 
 Set Universe Polymorphism.
 Global Set Primitive Projections.
@@ -146,6 +146,47 @@ Section colimit_universal_property.
 
   Definition colimit_equiv (G:graph) (D:diagram G)
     := λ X, BuildEquiv _ _ _ (colimit_is_colimit G D X).
-    
+
+  Definition transport_is_colimit (G:graph) (D1 D2:diagram G)
+             (eq : D1 = D2)
+             (P:Type)
+             (q1:forall i, D1 i -> P)
+             (pp_q1 : forall (i j:G) (f: G i j) (x: D1 i), q1 _ (diagram1 D1 f x) = q1 _ x)
+             (q2:forall i, D2 i -> P)
+             (pp_q2 : forall (i j:G) (f: G i j) (x: D2 i), q2 _ (diagram1 D2 f x) = q2 _ x)
+             (H : is_colimit G D1 P q1 pp_q1)
+             (Hq : transport (λ U:diagram G, forall i, U i -> P) eq q1 = q2)
+             (Hpp : match
+           eq as p in (_ = y)
+           return
+             (∀ q0 : ∀ i : G, y i → P,
+              (∀ (i j : G) (f : G i j) (x : y i),
+               q0 j (diagram1 y f x) = q0 i x)
+              → transport (λ U : diagram G, ∀ i : G, U i → P) p q1 = q0
+                → ∀ (i j : G) (f : G i j) (x : y i),
+                  q0 j (diagram1 y f x) = q0 i x)
+         with
+         | 1 =>
+             λ (q0 : ∀ i : G, D1 i → P)
+             (pp_q0 : ∀ (i j : G) (f : G i j) (x : D1 i),
+                      q0 j (diagram1 D1 f x) = q0 i x) 
+             (Hq0 : q1 = q0),
+             match
+               Hq0 in (_ = y)
+               return
+                 ((∀ (i j : G) (f : G i j) (x : D1 i),
+                   y j (diagram1 D1 f x) = y i x)
+                  → ∀ (i j : G) (f : G i j) (x : D1 i),
+                    y j (diagram1 D1 f x) = y i x)
+             with
+             | 1 =>
+                 λ
+                 _ : ∀ (i j : G) (f : G i j) (x : D1 i),
+                     q1 j (diagram1 D1 f x) = q1 i x, pp_q1
+             end pp_q0
+         end q2 pp_q2 Hq = pp_q2)
+  : is_colimit G D2 P q2 pp_q2.
+    destruct eq. destruct Hq. destruct Hpp. exact H.
+  Defined.
 End colimit_universal_property.
 

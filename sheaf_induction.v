@@ -577,16 +577,16 @@ Section Type_to_separated_Type.
       apply path_universe_uncurried.
       apply hPullback_separated_unit_is_cl_diag.
     - intros i j [p q] [P X]. simpl.
-      Opaque separated_unit_paths_are_nj_paths.
-      Opaque separated_unit_paths_are_nj_paths_fun.
-      Opaque separated_unit_paths_are_nj_paths_inv.
+      (* Opaque separated_unit_paths_are_nj_paths. *)
+      (* Opaque separated_unit_paths_are_nj_paths_fun. *)
+      (* Opaque separated_unit_paths_are_nj_paths_inv. *)
       unfold ap10, path_forall; rewrite eisretr.
       destruct p.
       rewrite transport_path_universe_uncurried.
       pose (rew := transport_path_universe_V_uncurried (hPullback_separated_unit_is_cl_diag T j) ).
       rewrite rew; clear rew.
       symmetry; apply moveR_EV; symmetry.
-      Opaque hPullback_separated_unit_is_cl_diag.
+      (* Opaque hPullback_separated_unit_is_cl_diag. *)
       simpl.
       apply path_sigma' with 1; simpl.
       unfold equiv_functor_prod'. unfold functor_prod. simpl.
@@ -2007,7 +2007,13 @@ Section Type_to_separated_Type.
     rewrite X.
     refine (isequiv_compose).
     - exact (separated_equiv P (existT (separated) Q sepQ)).
-  Qed. 
+  Qed.
+
+  Lemma moveR_EV2 (A C:Type) (B:A -> Type) (D:C -> Type) (f : (forall x, B x) -> (forall x, D x)) (H : IsEquiv f) (g:forall x, B x) (h:forall x, D x) (a:A)
+  : (f g = h) -> (f^-1 h a = g a).
+    intro X. destruct X. rewrite eissect. reflexivity.
+  Qed.
+    
     
   Definition sheafification_subu_sigma (A:Trunk n.+1) (modA : Snsheaf_struct A) (B: A.1 -> Trunk n.+1) (modB : forall a, (Snsheaf_struct (B a))) 
   : Snsheaf_struct (({x:A.1 & (B x).1} ; trunc_sigma (A.2) (λ x, (B x).2)): Trunk n.+1).
@@ -2060,8 +2066,70 @@ Section Type_to_separated_Type.
         { exact (ap10 (eissect _ (IsEquiv := sheafA E χ) (pr1 o φ)) e). }
         {
           refine (moveR_transport_p (pr1 o B) _ _ _ _).
-          
-          admit. }
+          simpl.
+          match goal with
+            |[|- ?ff^-1 _ _ = _] => assert (IsEq : IsEquiv ff)
+          end. admit.
+          refine (@moveR_EV2 {e':E & e=e'}
+                             {b:{e':E & e=e'} & (χ b.1).1.1}
+                             _
+                             _
+                             ((E_to_χmono_map
+      (B
+         ((let (equiv_inv, eisretr, eissect, _) := sheafA E χ in equiv_inv)
+            (λ x : ∃ b : E, (let (proj1_sig, _) := χ b in proj1_sig).1,
+             let
+             (proj1_sig, _) :=
+             E_to_χmono_map (∃ x0 : A.1, (B x0).1; trunc_sigma A.2 (pr2 o B))
+               χ φ x in
+             proj1_sig) e)) (χ o pr1)))
+                             _
+                             _
+                             
+                             (λ
+                                 X : ∃ b : ∃ e' : E, e = e',
+                                       (let (proj1_sig, _) := χ b.1 in proj1_sig).1,
+                                 transport (pr1 o B)
+                                           (ap10
+                                              ((let
+                                                   (equiv_inv, eisretr, eissect, _) as IsEquiv
+                                                   return (Sect (E_to_χmono_map A χ)^-1 (E_to_χmono_map A χ)) :=
+                                                   sheafA E χ in
+                                                 eisretr)
+                                                 (λ x : ∃ b : E, (let (proj1_sig, _) := χ b in proj1_sig).1,
+                                                    let
+                                                      (proj1_sig, _) :=
+                                                      E_to_χmono_map
+                                                        (∃ x0 : A.1, (B x0).1; trunc_sigma A.2 (pr2 o B)) χ φ x in
+                                                    proj1_sig))
+                                              (e;
+                                               transport (λ b : E, (let (proj1_sig, _) := χ b in proj1_sig).1)
+                                                         ((X.1).2)^ X.2))^
+                                 (E_to_χmono_map (∃ x : A.1, (B x).1; trunc_sigma A.2 (pr2 o B)) χ φ
+                                                 (e;
+                                                  transport (λ b : E, (let (proj1_sig, _) := χ b in proj1_sig).1)
+                                                            ((X.1).2)^ X.2)).2)
+                             (e;1)
+                             _).
+
+          intros [X p].
+          destruct p.
+          apply ((transport (λ x : A.1, let (proj1_sig, _) := B x in proj1_sig)
+                            (ap10
+                               (eissect (IsEquiv := sheafA E χ) (E_to_χmono_map A χ)
+                                        (λ x0 : E, let (proj1_sig, _) := φ x0 in proj1_sig)) e)^)).
+
+          unfold E_to_χmono_map. simpl.
+          apply path_forall; intros [[X p] h]. destruct p. simpl in *.
+          apply (ap (λ u, transport (λ x : A.1, let (proj1_sig, _) := B x in proj1_sig) u (φ e).2)).
+          apply ap.
+          pose (eisadj (IsEquiv := sheafA E χ) _ (pr1 o φ)).
+          unfold eisretr, E_to_χmono_map in p. simpl in p.
+          rewrite p.
+          exact (ap10_ap_precompose (pr1 : (∃ x :E, (χ x).1.1) -> E)
+                                   (eissect (IsEquiv := sheafA E χ) (E_to_χmono_map A χ)
+                                            (λ x : E, let (proj1_sig, _) := φ x in proj1_sig))
+                                   (e;h))^. }
   Qed.
 
   Definition sheafification_subU : subuniverse_struct (n.+1).

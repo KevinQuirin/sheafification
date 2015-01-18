@@ -162,14 +162,4 @@ Section nat_interval.
     exact pr2.
   Qed.
 
-  Lemma ishset_nat_interval (n:nat) : IsHSet (nat_interval n).
-    refine (trunc_sigma).
-    exact ishset_nat.
-    intro a.
-    refine (@trunc_leq -1 0 _ _ _).
-    simpl. exact tt.
-    apply hprop_allpath. intros x y.
-    admit.
-  Qed.
-
 End nat_interval.

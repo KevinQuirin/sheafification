@@ -1308,9 +1308,7 @@ Section Type_to_separated_Type.
           { clear P4; clear P5; clear P6.
             unfold P1, P2, P3; clear P1; clear P2; clear P3.
             pose (IsEq := sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (f x0).1)).
-          
-
-
+            
             admit. }
           rewrite X123; clear X123.
           assert (X456 : P4 @ P5 @ P6 = 1).
@@ -2066,52 +2064,8 @@ Section Type_to_separated_Type.
         { exact (ap10 (eissect _ (IsEquiv := sheafA E χ) (pr1 o φ)) e). }
         {
           refine (moveR_transport_p (pr1 o B) _ _ _ _).
-          simpl.
-          match goal with
-            |[|- ?ff^-1 _ _ = _] => assert (IsEq : IsEquiv ff)
-          end. admit.
-          refine (@moveR_EV2 {e':E & e=e'}
-                             {b:{e':E & e=e'} & (χ b.1).1.1}
-                             _
-                             _
-                             ((E_to_χmono_map
-      (B
-         ((let (equiv_inv, eisretr, eissect, _) := sheafA E χ in equiv_inv)
-            (λ x : ∃ b : E, (let (proj1_sig, _) := χ b in proj1_sig).1,
-             let
-             (proj1_sig, _) :=
-             E_to_χmono_map (∃ x0 : A.1, (B x0).1; trunc_sigma A.2 (pr2 o B))
-               χ φ x in
-             proj1_sig) e)) (χ o pr1)))
-                             _
-                             _
-                             
-                             (λ
-                                 X : ∃ b : ∃ e' : E, e = e',
-                                       (let (proj1_sig, _) := χ b.1 in proj1_sig).1,
-                                 transport (pr1 o B)
-                                           (ap10
-                                              ((let
-                                                   (equiv_inv, eisretr, eissect, _) as IsEquiv
-                                                   return (Sect (E_to_χmono_map A χ)^-1 (E_to_χmono_map A χ)) :=
-                                                   sheafA E χ in
-                                                 eisretr)
-                                                 (λ x : ∃ b : E, (let (proj1_sig, _) := χ b in proj1_sig).1,
-                                                    let
-                                                      (proj1_sig, _) :=
-                                                      E_to_χmono_map
-                                                        (∃ x0 : A.1, (B x0).1; trunc_sigma A.2 (pr2 o B)) χ φ x in
-                                                    proj1_sig))
-                                              (e;
-                                               transport (λ b : E, (let (proj1_sig, _) := χ b in proj1_sig).1)
-                                                         ((X.1).2)^ X.2))^
-                                 (E_to_χmono_map (∃ x : A.1, (B x).1; trunc_sigma A.2 (pr2 o B)) χ φ
-                                                 (e;
-                                                  transport (λ b : E, (let (proj1_sig, _) := χ b in proj1_sig).1)
-                                                            ((X.1).2)^ X.2)).2)
-                             (e;1)
-                             _).
-
+          refine (@moveR_EV2 {e':E & e=e'} {b:{e':E & e=e'} & (χ b.1).1.1}
+                             _ _ _ _ _ _ (e;1) _).
           intros [X p].
           destruct p.
           apply ((transport (λ x : A.1, let (proj1_sig, _) := B x in proj1_sig)
@@ -2123,7 +2077,7 @@ Section Type_to_separated_Type.
           apply path_forall; intros [[X p] h]. destruct p. simpl in *.
           apply (ap (λ u, transport (λ x : A.1, let (proj1_sig, _) := B x in proj1_sig) u (φ e).2)).
           apply ap.
-          pose (eisadj (IsEquiv := sheafA E χ) _ (pr1 o φ)).
+          pose (p := eisadj (IsEquiv := sheafA E χ) _ (pr1 o φ)).
           unfold eisretr, E_to_χmono_map in p. simpl in p.
           rewrite p.
           exact (ap10_ap_precompose (pr1 : (∃ x :E, (χ x).1.1) -> E)

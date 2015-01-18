@@ -907,7 +907,7 @@ properties, that can make it inconsistent. We now provide a simple
 characterization of left exact modalities that give rise to a
 consistent theory.
 
-\begin{prop}
+\begin{prop}\label{prop:consistent}
   A left exact modality $\modal$ induces a consistent type theory if
   and only if $\modal \zero$ can not be inhabited in the initial type
   theory. In that case, the modality is said to be consistent.
@@ -1505,6 +1505,26 @@ contractible, in particular $(\nu_T a=\nu_T b)$.
 \subsection{Summary}
 \label{ssec:summary}
 
+Starting from any left-exact modality $\modal_{-1}$ on $\HProp$, we
+defined in this paper a new left-exact modality $\modal$ on
+$\sum_{T:\Type} \sum_{n} \IsType n T$, which is exactly $\modal_{-1}$
+when restricted to $\HProp$.
+
+If $\modal_{-1}$ is the double negation modality on $\HProp$, it is obvious
+that $\modal_{-1}\zero=\zero$, hence the homotopy type theory induced by
+$\modal$ is consistent by proposition~\ref{prop:consistent}.
+
+In topos theory, the topos of Lawvere-Tierney sheaves for the double
+negation topology is a boolean topos. In homotopy type theory, this
+result can be expressed as:
+
+\begin{prop}
+  If $\modal_{-1}=\modal_{\lnot\lnot}$, and $\modal$ is the modality
+  as defined above, then the propositional excluded middle is true in
+  the induced type theory.
+\end{prop}
+
+
 \nt{Recap what has been done, and give the final result about EM with
   the dense topology as a corollary.}
 
@@ -1663,10 +1683,16 @@ higher topoi.
 
 In our formalization of sheafification defined
 Section~\ref{sec:sheafification} (done in 
-\texttt{sheaf\_induction.v}), five very technical facts required to
+\texttt{sheaf\_induction.v}), three very technical facts required to
 show that $\square$ and $\modal_{n+1}$ are modalities have been
 admitted. Nevertheless, we are confident that they can be proven and
 have been admitted only by lack of time.
+In the proof that diagrams are equal in lemma~\ref{lem:sepiscolim},
+the equality of projections is admitted, because if this proof is
+obvious on paper, it becomes really technical when formalized.
+As a consequence, the fact that $P$ is a colimit of the diagonal
+closed diagram is admitted too, but again, this proof should be really
+short as it is on paper.
 
 More importantly, there are few axioms in the formalization that are
 due to an unsatisfactory management of polymorphic universe level in

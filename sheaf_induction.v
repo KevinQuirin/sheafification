@@ -41,7 +41,7 @@ Arguments isequiv_functor_sigma {A P B Q} f {H} g {H0}: simpl never.
 (*     specialize (On t). *)
 (*     exists ({u : T.1 -> Ω & On (existT (IsTrunc (n.+1)) (Trunc -1 {a:T.1 & pr1 o u = (λ t:T.1, On (a=t; istrunc_paths T.2 a t))}) (X u))}). *)
                         
-Section Type_to_separated_Type.
+Section Sheafification.
 
   Context `{ua: Univalence}.
   Context `{fs: Funext}.
@@ -104,10 +104,10 @@ Section Type_to_separated_Type.
     apply eissect.
   Defined.
 
-  Definition separated_mono_is_separated (T U:Trunk (trunc_S n)) (H:separated U) (f: pr1 T -> pr1 U)
-             (fMono : IsMonof f) : separated T
- :=
-    fun E χ x y => separated_mono_is_separated_ _ _ _ (H E χ (f o x) (f o y)) fMono.
+  Definition separated_mono_is_separated (T U:Trunk (trunc_S n)) (H:separated U) (f: pr1 T -> pr1 U) (fMono : IsMonof f) : separated T.
+    intros E χ x y.
+    refine (separated_mono_is_separated_ _ (H E χ (f o x) (f o y)) fMono).
+  Defined.
 
   Definition T_nType_j_Type_trunc (T:Trunk (trunc_S n)) : IsTrunc (trunc_S n) (pr1 T -> subuniverse_Type nj).
     apply (@trunc_forall _ _ (fun P => _)). intro. 
@@ -566,62 +566,77 @@ Section Type_to_separated_Type.
       destruct p. exact a.
   Defined.
 
+  Lemma diagrams_are_equal_types (T:Trunk (trunc_S n))
+  : diagram0 (Cech_nerve_separated_unit T) = diagram0 (cl_diagonal_diagram T).
+    apply path_forall; intros ?.
+    apply path_universe_uncurried.
+    apply hPullback_separated_unit_is_cl_diag.
+  Defined.
+
+  Lemma diagrams_are_equal_proj (T:Trunk (trunc_S n))
+  : ∀ (i j : Cech_nerve_graph) (x : Cech_nerve_graph i j),
+      diagram1 (Cech_nerve_separated_unit T) x ==
+      (λ x0 : (Cech_nerve_separated_unit T) i,
+              (equiv_path ((cl_diagonal_diagram T) j) ((Cech_nerve_separated_unit T) j)
+                          (ap10 (diagrams_are_equal_types T) j)^)
+                (diagram1 (cl_diagonal_diagram T) x
+                          ((equiv_path ((Cech_nerve_separated_unit T) i)
+                                       ((cl_diagonal_diagram T) i)
+                                       (ap10 (diagrams_are_equal_types T) i)) x0))).
+    intros i j [p [q Hq]] [P X]. simpl.
+    destruct p. unfold diagrams_are_equal_types. simpl.
+    unfold ap10, path_forall; rewrite eisretr.
+    rewrite transport_path_universe_uncurried.
+    pose (rew := transport_path_universe_V_uncurried (hPullback_separated_unit_is_cl_diag T j) ).
+    rewrite rew; clear rew.
+    symmetry; apply moveR_EV; symmetry.
+    Opaque hPullback_separated_unit_is_cl_diag.
+    (* unfold hPullback_separated_unit_is_cl_diag. simpl. *)
+    simpl.
+    apply path_sigma' with 1; simpl.
+    
+    unfold equiv_functor_prod'. unfold functor_prod. simpl.
+    unfold forget_hPullback, forget_cl_char_hPullback', forget_char_hPullback. simpl.
+    simpl.
+    match goal with
+      |[|- _ = sum_rect _ _ _ ?d] => induction d as [| a]
+    end.
+    { destruct a. simpl. reflexivity. }
+    { simpl.
+      match goal with
+        |[|- _ = sum_rect _ _ _ ?d] => induction d as [| b]
+      end.
+      { destruct a0. simpl.
+        induction j.
+        { reflexivity. }
+        { simpl.
+          refine (path_prod _ _ _ _); simpl.
+          { reflexivity. }
+          { simpl. apply IHj. }
+        }
+      }
+      { simpl.
+        symmetry.
+        match goal with
+          |[|- match ?foo in (_=y) return _ with |1 => _ end Hq b = _] => set (bar:=foo)
+        end.
+        clearbody bar. simpl in bar.
+  Admitted. (* This lemma is obvious on paper, but really painful to formalize. Maybe we should represent hPullback another way... *)
+
   Lemma diagrams_are_equal (T:Trunk (trunc_S n))
   : (Cech_nerve_separated_unit T) = cl_diagonal_diagram T.
     (* unfold Cech_nerve_separated_unit, Cech_nerve_diagram, cl_diagonal_diagram. *)
     apply path_diagram.
     refine (exist _ _ _). 
-    - apply path_forall; intro k.
-      apply path_universe_uncurried.
-      apply hPullback_separated_unit_is_cl_diag.
-    - intros i j [p [q Hq]] [P X]. simpl.
-      
-      (* Opaque separated_unit_paths_are_nj_paths. *)
-      (* Opaque separated_unit_paths_are_nj_paths_fun. *)
-      (* Opaque separated_unit_paths_are_nj_paths_inv. *)
-      unfold ap10, path_forall; rewrite eisretr.
-      destruct p.
-      rewrite transport_path_universe_uncurried.
-      pose (rew := transport_path_universe_V_uncurried (hPullback_separated_unit_is_cl_diag T j) ).
-      rewrite rew; clear rew.
-      symmetry; apply moveR_EV; symmetry.
-      Opaque hPullback_separated_unit_is_cl_diag.
-      (* unfold hPullback_separated_unit_is_cl_diag. simpl. *)
-      simpl.
-      apply path_sigma' with 1; simpl.
-
-      unfold equiv_functor_prod'. unfold functor_prod. simpl.
-      unfold forget_hPullback, forget_cl_char_hPullback', forget_char_hPullback. simpl.
-      simpl.
-      match goal with
-        |[|- _ = sum_rect _ _ _ ?d] => induction d as [| a]
-      end.
-      { destruct a. simpl. reflexivity. }
-      { simpl.
-        match goal with
-          |[|- _ = sum_rect _ _ _ ?d] => induction d as [| b]
-        end.
-        { destruct a0. simpl.
-          induction j.
-          { reflexivity. }
-          { simpl.
-            refine (path_prod _ _ _ _); simpl.
-            { reflexivity. }
-            { simpl. apply IHj. }
-          }
-        }
-        { simpl.
-          symmetry.
-          match goal with
-            |[|- match ?foo in (_=y) return _ with |1 => _ end Hq b = _] => set (bar:=foo)
-          end.
-          clearbody bar. simpl in bar.
-          
-          
-  Admitted. (* This lemma is obvious on paper, but really painful to formalize. Maybe we should represent hPullback another way... *)
-
+    - apply diagrams_are_equal_types.
+    - apply diagrams_are_equal_proj.
+  Defined.
+  
   Definition separated_Type_is_colimit_Cech_nerve (T:Trunk (trunc_S n))
     := Giraud n (separated_unit T) (@separated_Type_is_Trunk_Sn T) T.2 (@IsSurjection_toIm _ _ (λ t t' : T.1, O nj (t = t'; istrunc_paths T.2 t t'))).
+
+  Definition separated_Type_is_colimit_Cech_nerve' (T:Trunk (trunc_S n))
+  := GiraudAxiom n (separated_unit T) (@separated_Type_is_Trunk_Sn T) T.2 (@IsSurjection_toIm _ _ (λ t t' : T.1, O nj (t = t'; istrunc_paths T.2 t t'))).
 
   Definition diagonal_commute (T:Trunk (trunc_S n))
   : forall i, (cl_diagonal_diagram T) i -> (separated_Type T).
@@ -652,24 +667,8 @@ Section Type_to_separated_Type.
                (separated_Type T)
                (diagonal_commute T)
                (@diagonal_pp T).
-    refine (transport_is_colimit
-              (Cech_nerve_graph)
-              (Cech_nerve_separated_unit T)
-              (cl_diagonal_diagram T)
-              (diagrams_are_equal T)
-              (separated_Type T)
-              (Cech_nerve_commute n (separated_unit T) (separated_Type_is_Trunk_Sn (T:=T)) T.2)
-              (@Cech_nerve_pp n (separated_Type T) T.1 (separated_unit T) (separated_Type_is_Trunk_Sn (T:=T)) T.2)
-              (diagonal_commute T)
-              (diagonal_pp (T:=T))
-              _ _ _).
-    - apply (separated_Type_is_colimit_Cech_nerve T).
-    - unfold Cech_nerve_commute, diagonal_commute. simpl.
-      apply path_forall; intro i.
-      apply path_forall; intro u.
-      admit. (* Definition of [Cech_nerve_commute] and [diagonal_commute] are exactly the same, there lacks [diagrams_are_equal] *)
-    - admit. (* Same as above *)
-  Admitted. (* Too much admits in here : Coq cannot handle universes *)
+    (* Here, we would like to use the fact that [separated_Type T] is the colimit of [Cech_nerve_separated_unit], that [p: Cech_nerve_separated_unit = cl_diagonal_diagram], and that commutation in these diagrams are equal modulo [p] *)
+  Admitted. 
 
   Lemma sep_eq_inv_lemma (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T}) (f : P.1 -> Q.1.1)
   : ∀ (i j : Cech_nerve_graph) (f0 : Cech_nerve_graph i j)
@@ -710,7 +709,7 @@ Section Type_to_separated_Type.
       specialize (retr (λ (i : nat)
       (x0 : ∃ y : P.1 ∧ hProduct P.1 i, (cl_char_hPullback' idmap i y).1),
                         f (fst x0.1); sep_eq_inv_lemma Q f)).
-      exact (ap10 (apD10 (retr..1) 0) ((x,tt);tt)).
+      exact (ap10 (apD10 (retr..1) 0%nat) ((x,tt);tt)).
     - intros f. unfold sep_eq_inv; simpl.
       apply moveL_equiv_V.
       apply path_sigma' with 1. simpl.
@@ -1497,7 +1496,7 @@ Section Type_to_separated_Type.
                                (P:=λ b : HProp,
                                          pr1 ((pr1 (P:=λ P : HProp, pr1 (is_classical P)) o Oj) b))
                                o χ)) -> pr1 (pr1 B)) -> E -> pr1 (pr1 B))
-             (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ)))
+             (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ:=χ)))
              (Y := inv_B (m o X) : E -> pr1 (pr1 B))
     := (λ b, (pr1 b ; (X b ; (inverse (ap10 (retr_B (m o X)) b)))))  : {b : E & pr1 (pr1 (χ b))} -> {b : E & hfiber m (Y b)}.
 
@@ -1517,7 +1516,7 @@ Section Type_to_separated_Type.
                                (P:=λ b : HProp,
                                          pr1 ((pr1 (P:=λ P : HProp, pr1 (is_classical P)) o Oj) b))
                                o χ)) -> pr1 (pr1 B)) -> E -> pr1 (pr1 B))
-             (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ)))
+             (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ:=χ)))
              (Y := inv_B (m o X) : E -> pr1 (pr1 B))
 
     := cloture_fun χ (λ x, (hfiber m (Y x); X1 (Y x))) (λ e p, pr2 (E_to_Y'A _ _ closed0 _ X0 retr_B (e;p)))
@@ -1540,7 +1539,7 @@ Section Type_to_separated_Type.
                           (P:=λ b : HProp,
                                     pr1 ((pr1 (P:=λ P : HProp, pr1 (is_classical P)) o Oj) b))
                           o χ)) -> pr1 (pr1 B)) -> E -> pr1 (pr1 B))
-        (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ)))
+        (retr_B : Sect inv_B (E_to_χmono_map (pr1 B) (χ:=χ)))
         (Y := inv_B (m o X) : E -> pr1 (pr1 B))
   : forall (b : {e : E & pr1 (pr1 (χ e))}), 
       pr2 (clE_to_clY'A _ _ closed0 _ X0 retr_B (pr1 b ; nj.(O_unit) (pr1 (pr1 (χ (pr1 b))); IsHProp_IsTrunc (pr2 (pr1 (χ (pr1 b)))) n0) (pr2 b))) = O_unit nj ({x : pr1 A & m x = Y (pr1 b)}; X1 (Y (pr1 b))) (pr2 (E_to_Y'A _ _ closed0 _ X0 retr_B b)).
@@ -1582,7 +1581,7 @@ Section Type_to_separated_Type.
              (χ : E -> J)
              (eq := snd (pr2 B) E χ)
 
-  : Sect (@closed_to_sheaf_inv A B m closed E χ) (E_to_χmono_map A (χ)).
+  : Sect (@closed_to_sheaf_inv A B m closed E χ) (E_to_χmono_map A (χ:=χ)).
     intro X.
     destruct m as [m Trm].
     apply path_forall; intro b.
@@ -1643,7 +1642,7 @@ Section Type_to_separated_Type.
              (χ : E -> J)
              (eq := snd (pr2 B) E χ)
 
-  : Sect (E_to_χmono_map A (χ)) (@closed_to_sheaf_inv A B m closed E χ).
+  : Sect (E_to_χmono_map A (χ:=χ)) (@closed_to_sheaf_inv A B m closed E χ).
     destruct m as [m Trm].
     intro X; unfold closed_to_sheaf_inv; simpl in *.
     apply path_forall; intro b.
@@ -1804,7 +1803,7 @@ Section Type_to_separated_Type.
       destruct (center (px = py)). reflexivity.
     - intro p.
       unfold path_sigma'. simpl.
-      pose (IsMono_IsHProp_cloture _ Monom y).
+      pose (IsMono_IsHProp_cloture Monom y).
       apply eta'_path_sigma. apply path_ishprop.
   Qed.
 
@@ -2078,7 +2077,7 @@ Section Type_to_separated_Type.
           destruct p.
           apply ((transport (λ x : A.1, let (proj1_sig, _) := B x in proj1_sig)
                             (ap10
-                               (eissect (IsEquiv := sheafA E χ) (E_to_χmono_map A χ)
+                               (eissect (IsEquiv := sheafA E χ) (E_to_χmono_map A (χ:=χ))
                                         (λ x0 : E, let (proj1_sig, _) := φ x0 in proj1_sig)) e)^)).
 
           unfold E_to_χmono_map. simpl.
@@ -2089,7 +2088,7 @@ Section Type_to_separated_Type.
           unfold eisretr, E_to_χmono_map in p. simpl in p.
           rewrite p.
           exact (ap10_ap_precompose (pr1 : (∃ x :E, (χ x).1.1) -> E)
-                                   (eissect (IsEquiv := sheafA E χ) (E_to_χmono_map A χ)
+                                   (eissect (IsEquiv := sheafA E χ) (E_to_χmono_map A (χ:=χ))
                                             (λ x : E, let (proj1_sig, _) := φ x in proj1_sig))
                                    (e;h))^. }
   Qed.
@@ -2365,3 +2364,4 @@ Section Type_to_separated_Type.
       exact a.
   Qed.
       
+End Sheafification.

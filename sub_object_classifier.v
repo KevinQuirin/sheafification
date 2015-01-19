@@ -203,6 +203,8 @@ Defined.
 
 Definition fibers_composition_f A B C (f : A -> B) (g : B -> C) (c : C) : hfiber (g o f) c -> {w : hfiber g c & hfiber f (w.1)} := λ a, ( (f (a.1) ; a.2) ; (a.1 ; idpath )).
 
+Arguments fibers_composition_f {A B C} f g {c} _.
+
 Definition fibers_composition_g A B C (f : A -> B) (g : B -> C) (c : C) : {w : hfiber g c & hfiber f (w.1)} -> hfiber (g o f) c.
   destruct 1 as [X X0]. destruct X as [xg pxg]. destruct X0 as [xf pxf]; simpl in *.
   exists xf; destruct pxf. exact pxg.
@@ -220,6 +222,7 @@ Definition fibers_composition_sect A B C (f : A -> B) (g : B -> C) (c : C) :
   intro x. destruct x as [x p]. 
   reflexivity.
 Defined.
+Arguments fibers_composition_sect {A B C} f g {c} _.
 
 Instance fibers_composition_eq A B C (f : A -> B) (g : B -> C) (c : C) : IsEquiv (@fibers_composition_f A B C f g c).
 apply (BuildIsEquiv _ _ _ (fibers_composition_g (f:=f) (g:=g) (c:=c)) (fibers_composition_retr (f:=f) (g:=g) (c:=c)) (fibers_composition_sect (f) (g) (c:=c))).
@@ -239,7 +242,7 @@ Qed.
 Lemma function_trunc_compo n A B C : forall (f : A -> B) (g : B -> C), (forall (b:B), IsTrunc n (hfiber f b)) -> (forall (c:C), IsTrunc n (hfiber g c)) -> (forall (c:C), IsTrunc n (hfiber (g o f) c)).
 Proof.
   intros f g Hf Hg c.
-  rewrite (fibers_composition); apply trunc_sigma.
+  rewrite (fibers_composition f g). refine trunc_sigma.
 Defined.
 
 Definition hfiber_eq_L A B C (f : A -> B) (g : B -> C) b : hfiber f b -> hfiber (g o f) (g b).
@@ -249,7 +252,7 @@ Definition hfiber_eq_R A B C (f : A -> B) (g : B -> C) (H :IsMono g) b : hfiber 
   destruct 1 as [x p]. exists x. exact (@equiv_inv _ _ _ (H (f x) b) p).  Defined.
 
 Instance hfiber_mono_equiv A B C (f : A -> B) (g : B -> C) (H :IsMono g) b : IsEquiv (hfiber_eq_L (f:=f) g (b:=b)). 
-apply (isequiv_adjointify _ (hfiber_eq_R _ H b)).
+apply (isequiv_adjointify _ (hfiber_eq_R H b)).
 - intro e. destruct e. simpl. apply @path_sigma' with (p:=idpath).
   apply eisretr.
 - intro e. destruct e. simpl. apply @path_sigma' with (p :=idpath).

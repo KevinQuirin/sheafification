@@ -282,6 +282,7 @@ Section Reflective_Subuniverse.
 
   Definition equal_fun_modal (A:Trunk n) (B:subuniverse_Type) (f g:(O subU A).1.1 -> B.1.1) (η := O_unit subU A) : ((f o η = g o η) -> (f=g))
     := λ H, ((inverse (eissect _ (IsEquiv := (O_equiv subU A B)) f) @ (ap equiv_inv H) @ (eissect _ (IsEquiv := (O_equiv subU A B)) g))).
+  Arguments equal_fun_modal (A B) (f g) π : clear implicits.
     
   Lemma universality_unit_lemma_lemma (oA A B: Type) (η : A -> oA) (f g : A -> B) (inv : (A -> B) -> oA -> B) (π : f = g) (eisretr : forall x:A -> B, (inv x) o η = x) (eissect : forall x : oA -> B, inv (x o η) = x) a
   : apD10 (ap inv π) (η a) = ((apD10 (eisretr f) a @ apD10 π a) @ (apD10 (eisretr g) a) ^)%path.
@@ -310,7 +311,7 @@ Section Reflective_Subuniverse.
     fold η in eisadj; rewrite (eisadj f).
     apply (apD10_ap_precompose η (eissect f)).
     rewrite <- X. clear X.
-    apply (universality_unit_lemma η f g equiv_inv π eisretr eissect a).
+    apply (universality_unit_lemma equiv_inv π eisretr eissect a).
   Defined.
 
 (* Things *)

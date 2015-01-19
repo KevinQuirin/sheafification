@@ -108,6 +108,8 @@ Section Definitions.
   Definition E_to_χmono_map (T:Trunk (trunc_S n)) E (χ : E -> J) (f : E -> (pr1 T)) : 
     (nchar_to_sub (pr1 o χ)).1 -> T.1 := f o pr1.
 
+  Arguments E_to_χmono_map T {E} χ f _.
+
   Definition E_to_χ_map (T:Trunk (trunc_S n)) E (χ : EnJ E) (f : E -> (pr1 T)) : 
     (nchar_to_sub χ).1 -> T.1 := f o pr1.
 
@@ -425,7 +427,7 @@ Section Definitions.
            nj.(O) (nsub_to_char n ({b : _ &  pr1 (pr1 (α b))}; ((pr1 m) o (pr1 f); function_trunc_compo n (pr1 f) (pr1 m) (pr2 f) (fun e => IsHProp_IsTrunc (pr2 m e) n0))) e).
 
   Instance nTjTiSnTjT_eq E (χ : E -> J) : IsEquiv (λ (f : E -> subuniverse_Type nj) (t : {b : E & pr1 (pr1 (χ b))}), f (pr1 t)). 
-  apply (isequiv_adjointify _ (type_j_inv (E:=E) (χ))).
+  apply (isequiv_adjointify _ (type_j_inv (E:=E) (χ:=χ))).
   - intro φ.
     unfold type_j_inv. simpl. unfold nchar_to_sub, hfiber in φ; simpl in φ.
     apply path_forall; intro x.
@@ -930,7 +932,7 @@ Section Definitions.
   
   Definition dense_into_cloture (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
   : EnJ clA.
-    refine (Build_EnJ _ (dense_into_cloture_dense_eq φ) _).
+    refine (Build_EnJ (dense_into_cloture_dense_eq φ) _).
     apply dense_into_cloture_dense_diag.
   Defined.
 
@@ -939,7 +941,7 @@ Section Definitions.
     pose (e := dense_into_cloture φ); simpl in e.
     destruct e as [χ χeq χdiag].
     intros X p.
-    refine (Build_EnJ _ _ _).
+    refine (Build_EnJ _ _).
     - intro x. apply χ.
       apply (equiv_path _ _ p).
       exact x.
@@ -992,7 +994,7 @@ Section Definitions.
     }
     pose (e := dense_into_cloture φ); simpl in e.
     destruct e as [χ χeq χdiag].
-    refine (Build_EnJ _ _ _).
+    refine (Build_EnJ _ _).
     - intro x. apply χ.
       exists x.1.
       apply (equiv_path _ _ (p x.1)).

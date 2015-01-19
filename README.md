@@ -1,10 +1,18 @@
-sheafification
+Sheafification
 ==============
 
 Sheafification functor in type theory.
 
+# Usage #
 These files compile with the HoTT library https://github.com/HoTT/HoTT, commit 82f986cd7d4c17e70bba29e2f838dab07f8c2c85.
 
+One can use the library with
+```
+/path/to/coq_makefile -R . "" *.v -o Makefile COQC = /path/to/hoqc  COQDEP = /path/to/hoqdep
+```
+then simply compiling with `make` (this can take some time, in particular `sheaf_induction.v`).
+
+# Files #
 `Utf8_core.v` contains notations
 
 `cech_nerve.v` formalizes the notions of p-pullbacks, and Cech nerves

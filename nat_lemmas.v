@@ -90,6 +90,14 @@ Section Lemmas.
       - intro H. destruct (not_lt_0 n H).
     Qed.
 
+    Lemma le_1_is_01 (n:nat) : n <= 1 -> (n=0) + (n=1%nat).
+      induction n.
+      { intro H. apply inl; reflexivity. }
+      { intro H. apply le_pred in H. simpl in H.
+        apply inr.
+        apply ap. apply le_0_is_0. exact H. }
+    Qed.  
+
     Lemma le_0 (n:nat) : 0 <= n.
       induction n.
       - apply le_n.

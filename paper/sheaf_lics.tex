@@ -1730,37 +1730,46 @@ generalizing universe polymorphism for recursive definition.
 \section{Conclusion and Future Works}
 \label{sec:future-works}
 
-In this paper, we defined a way to extend type theory with new
-principles, using the already known method in topos theory,
-sheafification. Using this method, one an add some principles, like
-excluded middle, to type theory, but with computational content, while
-doing it with axiom break the extraction of proofs.
+In this paper, we have defined a way to extend homotopy type theory
+with new principles, leveraging Lawvere-Tierney sheafification to
+higher topos theory. 
+%
+Using sheafification, it is possible to add new logical principles,
+like the law of excluded middle, to homotopy type theory and this
+without axiom.
+%
+Beyond the result, our work is part of a more general line of works
+which aim to illustrate that homotopy type theory is a very promising
+theory for formalizing mathematics inside a proof assistant.
 
-
-
-Beyond the result, this work allows to illustrate some homotopy type theoritical
-techniques, as well as use of proof assistants.
-
-\kq{J'ai un peu copié sur la conclusion de Licata ``Eilenberg MacLane
-  spaces''. Si ça pose problème, je changerai.}
 
 In future works, we would like to improve this construction in two
 ways:
 \begin{itemize}
-\item At the moment, the sheafification process only works with
-  truncated types. But some classical types in homotopy type theory
-  are not truncated, like the circle $\mathbb S^1$. 
-  Thus, we plan to extend the sheafification to all types, even if non
-  truncated
-\item In this work, the Giraud-Rezk-Lurie axiom is admitted. The work
-  done in~\cite{lurie} suggests, if we see homotopy type theory as
-  higher topos theory, that this axiom could be provable. A
-  computer-checked proof of this fact would improve our developpement.
+\item 
+  At the moment, sheafification only works with truncated
+  types. Also this is fine from a programming point of view, 
+  many important types in homotopy theory are not
+  truncated, like the circle $\mathbb S^1$.  Thus, we plan to extend
+  the sheafification to all types, even if non truncated by using a
+  limit construction.
+\item 
+  In this work, a particular case of a Giraud-Rezk-Lurie axiom has
+  been admitted. The work done in~\cite[Chapter 6]{lurie} suggests,
+  considering that homotopy type theory is a language for higher topos
+  theory, that this axiom is provable. We plan to investigate if the
+  higher topos theoretic proof can be adapted to our setting. 
+  %
+  % A computer-checked proof of this fact would improve our
+  % developpement.
 \end{itemize}
-Moreover, in topos theory, we know that Lawvere-Tierney subsumes
-Grothendieck (\cite{maclanemoerdijk}, section~V.4). Higher Lawvere-Tierney sheaves are
-presented here, and higher Grothendieck sheaves in~\cite{lurie} ; we want to
-check if this remains true in higher topos theory.
+Moreover, in topos theory, Lawvere-Tierney subsumes Grothendieck
+(\cite{maclanemoerdijk}, section~V.4) in the sense that any
+Grothendieck topology gives rise to a Lawvere-Tierney topology with
+the same notion of sheaves. Higher Lawvere-Tierney sheaves are
+presented here, and higher Grothendieck sheaves have been defined
+in~\cite{lurie}. It should be interesting to check if the subsumption
+remains true in higher topos theory.
 
 
 
@@ -1773,8 +1782,8 @@ check if this remains true in higher topos theory.
 \section*{Acknowledgment}
 
 We would like to thank all maintainers of the Coq/HoTT library, who
-allowed us to base our formalization on something. We would also like
-to thank Bas Spitters for the helpful discussions on the subject.
+provide a very solid base for our formalization. We also would like
+to thank Bas Spitters for helpful discussions on the subject.
 
 % trigger a \newpage just before the given reference
 % number - used to balance the columns on the last page

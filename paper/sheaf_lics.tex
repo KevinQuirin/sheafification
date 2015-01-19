@@ -1684,16 +1684,16 @@ But as it would not have any computational content, such a solution
 would really complicate the proofs as the axiom would appear
 everywhere cumulativity is needed and it would need explicitly
 annotation for universe levels everywhere in the formalization.
-
+%
 We have chosen a more simple but maybe less satisfactory solution. 
 %
 When the absence of cumulativity on $\Type_n$ rises a universe issue
 for a lemma, we have proven the lemma and then admit the exact same
 lemma, just letting Coq infer less constrained universe levels.
 
-An other issue with universe polymorphism lies in their management for
+An other issue with universe polymorphism lies in the management of
 recursive definitions. Indeed, the following recursive definition of
-sheafification:
+sheafification
 %
 \[ \begin{array}{l}
    \modal : \forall \ (n : nat), \ \Type_n \to \Type_n 
@@ -1710,10 +1710,11 @@ sheafification:
 is not allowed. 
 %
 This is because Coq forces the universe of the first $\Type_n$
-occurring to be the same for every $n$, whereas the universe of the
-$\Type_{n+1}$ occurring in $\modal_{n+1}$ should be at least one level
-higher as the one of $\Type_n$ occurring in $\modal_{n+1}$ because of
-the use of $\Sigma$-type over $T \to \Type_n^\modal$.
+occurring in the definition to be the same for every $n$, whereas the
+universe of the first $\Type_{n+1}$ occurring in $\modal_{n+1}$ should be at
+least one level higher as the one of $\Type_n$ occurring in
+$\modal_{n}$ because of the use of $\Sigma$-type over
+$T \to \Type_n^\modal$.
 %
 % \nt{explain why it is an issue.}
 %

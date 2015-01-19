@@ -1577,13 +1577,15 @@ Section~\ref{sec:sheafification} is formalized in
 Overall, with other files containing technical lemmas, the project
 contains 6322 lines, and it could be reduced a bit by improving the
 way Coq tries to rewrite and apply lemmas automatically. 
+The \texttt{coqwc} tool counts 2000 lines of specifications
+(definitions, lemmas, theorems, propositions) and 3700 lines of proof overall.
 %
 This constitute a significant amount of work but the part dedicated to
 sheaves and sheafification is only 4000, which seems quite reasonable
 and is encouraging, because it suggests that homotopy type theory
 provides a convenient tool to formalize some part of the theory of
 higher topoi. As a matter of comparison, this \TeX\xspace file contains
-approximatively 1800 lines.
+approximatively 1800 lines. 
 
 % In our formalization, some things are admitted, either because they
 % are just an adaptation of a proposition already formalized
@@ -1672,9 +1674,7 @@ but the complete induction can not be formalized at the moment.
 %
 This restriction in our formalization can not be solved without
 generalizing universe polymorphism for recursive definition.
-%
-% In particular, compoatcumulativity is an axiom, because of
-% universes issues.
+
 
 
 \section{Conclusion and Future Works}

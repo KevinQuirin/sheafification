@@ -566,62 +566,77 @@ Section Type_to_separated_Type.
       destruct p. exact a.
   Defined.
 
+  Lemma diagrams_are_equal_types (T:Trunk (trunc_S n))
+  : diagram0 (Cech_nerve_separated_unit T) = diagram0 (cl_diagonal_diagram T).
+    apply path_forall; intros ?.
+    apply path_universe_uncurried.
+    apply hPullback_separated_unit_is_cl_diag.
+  Defined.
+
+  Lemma diagrams_are_equal_proj (T:Trunk (trunc_S n))
+  : ∀ (i j : Cech_nerve_graph) (x : Cech_nerve_graph i j),
+      diagram1 (Cech_nerve_separated_unit T) x ==
+      (λ x0 : (Cech_nerve_separated_unit T) i,
+              (equiv_path ((cl_diagonal_diagram T) j) ((Cech_nerve_separated_unit T) j)
+                          (ap10 (diagrams_are_equal_types T) j)^)
+                (diagram1 (cl_diagonal_diagram T) x
+                          ((equiv_path ((Cech_nerve_separated_unit T) i)
+                                       ((cl_diagonal_diagram T) i)
+                                       (ap10 (diagrams_are_equal_types T) i)) x0))).
+    intros i j [p [q Hq]] [P X]. simpl.
+    destruct p. unfold diagrams_are_equal_types. simpl.
+    unfold ap10, path_forall; rewrite eisretr.
+    rewrite transport_path_universe_uncurried.
+    pose (rew := transport_path_universe_V_uncurried (hPullback_separated_unit_is_cl_diag T j) ).
+    rewrite rew; clear rew.
+    symmetry; apply moveR_EV; symmetry.
+    Opaque hPullback_separated_unit_is_cl_diag.
+    (* unfold hPullback_separated_unit_is_cl_diag. simpl. *)
+    simpl.
+    apply path_sigma' with 1; simpl.
+    
+    unfold equiv_functor_prod'. unfold functor_prod. simpl.
+    unfold forget_hPullback, forget_cl_char_hPullback', forget_char_hPullback. simpl.
+    simpl.
+    match goal with
+      |[|- _ = sum_rect _ _ _ ?d] => induction d as [| a]
+    end.
+    { destruct a. simpl. reflexivity. }
+    { simpl.
+      match goal with
+        |[|- _ = sum_rect _ _ _ ?d] => induction d as [| b]
+      end.
+      { destruct a0. simpl.
+        induction j.
+        { reflexivity. }
+        { simpl.
+          refine (path_prod _ _ _ _); simpl.
+          { reflexivity. }
+          { simpl. apply IHj. }
+        }
+      }
+      { simpl.
+        symmetry.
+        match goal with
+          |[|- match ?foo in (_=y) return _ with |1 => _ end Hq b = _] => set (bar:=foo)
+        end.
+        clearbody bar. simpl in bar.
+  Admitted. (* This lemma is obvious on paper, but really painful to formalize. Maybe we should represent hPullback another way... *)
+
   Lemma diagrams_are_equal (T:Trunk (trunc_S n))
   : (Cech_nerve_separated_unit T) = cl_diagonal_diagram T.
     (* unfold Cech_nerve_separated_unit, Cech_nerve_diagram, cl_diagonal_diagram. *)
     apply path_diagram.
     refine (exist _ _ _). 
-    - apply path_forall; intro k.
-      apply path_universe_uncurried.
-      apply hPullback_separated_unit_is_cl_diag.
-    - intros i j [p [q Hq]] [P X]. simpl.
-      
-      (* Opaque separated_unit_paths_are_nj_paths. *)
-      (* Opaque separated_unit_paths_are_nj_paths_fun. *)
-      (* Opaque separated_unit_paths_are_nj_paths_inv. *)
-      unfold ap10, path_forall; rewrite eisretr.
-      destruct p.
-      rewrite transport_path_universe_uncurried.
-      pose (rew := transport_path_universe_V_uncurried (hPullback_separated_unit_is_cl_diag T j) ).
-      rewrite rew; clear rew.
-      symmetry; apply moveR_EV; symmetry.
-      Opaque hPullback_separated_unit_is_cl_diag.
-      (* unfold hPullback_separated_unit_is_cl_diag. simpl. *)
-      simpl.
-      apply path_sigma' with 1; simpl.
-
-      unfold equiv_functor_prod'. unfold functor_prod. simpl.
-      unfold forget_hPullback, forget_cl_char_hPullback', forget_char_hPullback. simpl.
-      simpl.
-      match goal with
-        |[|- _ = sum_rect _ _ _ ?d] => induction d as [| a]
-      end.
-      { destruct a. simpl. reflexivity. }
-      { simpl.
-        match goal with
-          |[|- _ = sum_rect _ _ _ ?d] => induction d as [| b]
-        end.
-        { destruct a0. simpl.
-          induction j.
-          { reflexivity. }
-          { simpl.
-            refine (path_prod _ _ _ _); simpl.
-            { reflexivity. }
-            { simpl. apply IHj. }
-          }
-        }
-        { simpl.
-          symmetry.
-          match goal with
-            |[|- match ?foo in (_=y) return _ with |1 => _ end Hq b = _] => set (bar:=foo)
-          end.
-          clearbody bar. simpl in bar.
-          
-          
-  Admitted. (* This lemma is obvious on paper, but really painful to formalize. Maybe we should represent hPullback another way... *)
-
+    - apply diagrams_are_equal_types.
+    - apply diagrams_are_equal_proj.
+  Defined.
+  
   Definition separated_Type_is_colimit_Cech_nerve (T:Trunk (trunc_S n))
     := Giraud n (separated_unit T) (@separated_Type_is_Trunk_Sn T) T.2 (@IsSurjection_toIm _ _ (λ t t' : T.1, O nj (t = t'; istrunc_paths T.2 t t'))).
+
+  Definition separated_Type_is_colimit_Cech_nerve' (T:Trunk (trunc_S n))
+  := GiraudAxiom n (separated_unit T) (@separated_Type_is_Trunk_Sn T) T.2 (@IsSurjection_toIm _ _ (λ t t' : T.1, O nj (t = t'; istrunc_paths T.2 t t'))).
 
   Definition diagonal_commute (T:Trunk (trunc_S n))
   : forall i, (cl_diagonal_diagram T) i -> (separated_Type T).
@@ -652,24 +667,8 @@ Section Type_to_separated_Type.
                (separated_Type T)
                (diagonal_commute T)
                (@diagonal_pp T).
-    refine (transport_is_colimit
-              (Cech_nerve_graph)
-              (Cech_nerve_separated_unit T)
-              (cl_diagonal_diagram T)
-              (diagrams_are_equal T)
-              (separated_Type T)
-              (Cech_nerve_commute n (separated_unit T) (separated_Type_is_Trunk_Sn (T:=T)) T.2)
-              (@Cech_nerve_pp n (separated_Type T) T.1 (separated_unit T) (separated_Type_is_Trunk_Sn (T:=T)) T.2)
-              (diagonal_commute T)
-              (diagonal_pp (T:=T))
-              _ _ _).
-    - apply (separated_Type_is_colimit_Cech_nerve T).
-    - unfold Cech_nerve_commute, diagonal_commute. simpl.
-      apply path_forall; intro i.
-      apply path_forall; intro u.
-      admit. (* Definition of [Cech_nerve_commute] and [diagonal_commute] are exactly the same, there lacks [diagrams_are_equal] *)
-    - admit. (* Same as above *)
-  Admitted. (* Too much admits in here : Coq cannot handle universes *)
+    (* Here, we would like to use the fact that [separated_Type T] is the colimit of [Cech_nerve_separated_unit], that [p: Cech_nerve_separated_unit = cl_diagonal_diagram], and that commutation in these diagrams are equal modulo [p] *)
+  Admitted. 
 
   Lemma sep_eq_inv_lemma (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T}) (f : P.1 -> Q.1.1)
   : ∀ (i j : Cech_nerve_graph) (f0 : Cech_nerve_graph i j)

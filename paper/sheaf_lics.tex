@@ -417,12 +417,18 @@ The definition of Section~\ref{ssec:hott} are part of the Coq library
 available at \url{https://github.com/HoTT/HoTT}, while other definitions
 and theorems are specific to our formalization. 
 
-As a prerequisite, we encourage the reader be familiar with type theory and
+As a prerequisite, we encourage the reader to be familiar with type theory and
 in particular the point of view developed
 in~\cite{hottbook}. Nevertheless, we recall most of the central definitions 
 that we use so that the paper is sufficiently self-contained.
 %
-
+We note $\prod_{x:T} U$ for the dependent product, $\sum_{x:T} U$ for
+the dependent sum, and $\pi_1, \pi_2$ for the first and second
+projection of a dependent pair. We use informal mathematical language
+instead of type theory whenever it is possible to ease the
+reading, without making our statement imprecise. In particular,
+(higher) inductive types are defined using itemization to avoid an
+overhead of notation.
  
  \subsection{Homotopy Types and Classifying Objects}
 \label{ssec:hott}
@@ -508,9 +514,9 @@ P(x)'' can be defined as $ \squash{\sum_{x:A} P(x)}.  $
 
 Also proposition truncation could be seen as a primitive type former
 in homotopy type theory, it can be defined using higher inductive
-types. We adopt this point of view as it allows to maintain the slogan
-that homotopy type theory is type theory plus univalence and higher
-inductive types.
+types~\cite{lumsdaine2011higher,lumsdaine2013higher}. We adopt this
+point of view as it allows to maintain the slogan that homotopy type
+theory is type theory plus univalence and higher inductive types.
 %
 
 Given any type $X$, its propositional truncation 
@@ -1635,16 +1641,16 @@ part of the theory of higher topoi. As a matter of comparison, this
 
 \subsection{Limitations of the formalization}
 
-In our formalization of sheafification defined
+In our formalization of sheafification defined in
 Section~\ref{sec:sheafification} (done in 
 \texttt{sheaf\_induction.v}), two very technical facts required to
 show that $\separated$ is a modality have been
 admitted. 
 %
-It is due to a lack of important lemmas on paths between paths in
+It is due to a lack of technical lemmas on paths between paths in
 the Coq/HoTT library.
 %
-Nevertheless, we are confident that with enrichment of the Coq/HoTT
+Nevertheless, we are confident that with an enrichment of the Coq/HoTT
 library, they can be proven and have been admitted only by lack of
 time.
 %
@@ -1728,7 +1734,6 @@ generalizing universe polymorphism for recursive definition.
 %
 
 
-
 \section{Conclusion and Future Works}
 \label{sec:future-works}
 
@@ -1736,37 +1741,36 @@ In this paper, we have defined a way to extend homotopy type theory
 with new principles, leveraging Lawvere-Tierney sheafification to
 higher topos theory. 
 %
-Using sheafification, it is possible to add new logical principles,
-like the law of excluded middle, to homotopy type theory and this
+Using sheafification, it is possible to add new logical principles to
+homotopy type theory, like the law of excluded middle, and this
 without axiom.
 %
-Beyond the result, our work is part of a more general line of works
+Beyond this result, our work is part of a more general line of works
 which aim to illustrate that homotopy type theory is a very promising
 theory for formalizing mathematics inside a proof assistant.
 
 
-In future works, we would like to improve this construction in two
+As a future work, we would like to improve this construction in two
 ways:
 \begin{itemize}
 \item 
   At the moment, sheafification only works with truncated
-  types. Also this is fine from a programming point of view, 
-  many important types in homotopy theory are not
-  truncated, like the circle $\mathbb S^1$.  Thus, we plan to extend
-  the sheafification to all types, even if non truncated by using a
+  types. This is fine from a programming point of view, 
+  but many important types in homotopy theory are not
+  truncated, \eg the circle $\mathbb S^1$.  Thus, we plan to extend
+  the sheafification to all types by using a
   limit construction.
 \item 
   In this work, a particular case of a Giraud-Rezk-Lurie axiom has
   been admitted. The work done in~\cite[Chapter 6]{lurie} suggests,
   considering that homotopy type theory is a language for higher topos
-  theory, that this axiom is provable. We plan to investigate if the
-  higher topos theoretic proof can be adapted to our setting. 
+  theory, that this axiom is provable. We plan to investigate whether the
+  higher topos theoretic proof can be adapted to our setting.
   %
   % A computer-checked proof of this fact would improve our
   % developpement.
 \end{itemize}
-Moreover, in topos theory, Lawvere-Tierney subsumes Grothendieck
-(\cite[Section~V.4]{maclanemoerdijk}) in the sense that any
+Moreover, in topos theory, Lawvere-Tierney subsumes Grothendieck~\cite[Section~V.4]{maclanemoerdijk} in the sense that any
 Grothendieck topology gives rise to a Lawvere-Tierney topology with
 the same notion of sheaves. Higher Lawvere-Tierney sheaves are
 presented here, and higher Grothendieck sheaves have been defined

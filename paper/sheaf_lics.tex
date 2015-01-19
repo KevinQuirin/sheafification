@@ -828,10 +828,12 @@ $$\modal \left(\sum_{x:X}  (f x = y)\right) = \sum_{x:\modal X} (\modal f x = \e
 Moreover the following diagram commute
 $$\xymatrix{
   \sum_{x:X} (f x = y) \ar[r]^\eta \ar[d]_\gamma & \modal \left(\sum_{x:X}  (f x = y)\right) \ar@{=}[dl]\\
-  \sum_{x:\modal X} (\modal f x = \eta_Y y) &
-}$$
-where $\pi_1 \circ \gamma = \eta_X \circ \pi_1$, and $\pi_2 \circ
-\gamma$ is given by the modalisation of paths.
+  \sum_{x:\modal X} (\modal f x = \eta_Y y) & }$$
+where $\pi_1 \circ \gamma = \eta_X \circ \pi_1$, and
+$\pi_2 \circ \gamma$ is given by the modalisation of
+paths.\footnote{This proposition comes from on old version of the
+  formalization of left exact modalities in the HoTT library, but is
+  not present anymore in the library.}
 \end{prop}
 \begin{proof}
 % \nt{ça a du sens de mettre une preuve, non ? c'est non trivial et
@@ -942,10 +944,13 @@ Another example of left exact modality for every level $p$ is the
 double negation modality,
 $\modal_{\lnot\lnot} T = (T \to \zero) \to \zero$.
 %
-This modality enables to use
-classical reasonings in the corresponding reflective subuniverse, but
-every type in the new universe is collapsed to an $\HProp$, ending up
-with propositional classical logic. 
+This modality is consistent as $\modal_{\lnot\lnot} \zero = \zero$ can
+not be inhabited.
+%
+Using the double negation modality enables to use classical reasonings
+in the corresponding reflective subuniverse, but every type in the new
+universe is collapsed to an $\HProp$, ending up with propositional
+classical logic.
 
 In this paper, we use the double negation modality at level $-1$ only,
 and then extend it to higher homotopy types using sheafification. This
@@ -1092,7 +1097,7 @@ the fact that the type of modal types at level $n$ defines a sheaf.
 %
 This property initially holds in the topos theoretic construction, but
 it requires much work here, as we have to deal with equalities. In
-particular, this property uses in particular the specific definition
+particular, this property uses the specific definition
 of separated types and sheaves, which shows that we had actually no
 choice in their statement. 
 
@@ -1433,27 +1438,33 @@ on lower homotopy types.
     $$\phi t = (\lambda t',\, \modal_{-1}(t=t') ; \eta
     (t;\mathrm{idpath}))$$
     and $\psi : \modal_0T\to \modal_{-1} T$ by obtaining the
-    witness $a:T$, and letting
+    witness $a:T$ (which is possible because we are trying to inhabit
+    a modal proposition), and letting
     $$\psi (u;x) = \eta_T a.$$
-    These two maps form an equivalence.
+    These two maps form an equivalence (the section and retraction are
+    trivial because the equivalence is between mere propositions).
   \item Suppose now that $\modal_{n+1}$ is compatible with all $\modal_k$ on
     lower homotopy types. Let $\modal_{n+2}$ be as above, and let
     $T:\Type_{n+1}$. Then
     \begin{align*}
-      \modal_{n+2} T &= \sum_{u:T \to \Type_{n+1}^\modal} \modal_{-1}\left\| \sum_{a:T} 
+      \modal_{n+2} T &= \hspace{-1em} \sum_{u:T \to \Type_{n+1}^\modal}
+                       \hspace{-1em} \modal_{-1}\left\| \sum_{a:T} 
             (\lambda t,~\modal_{n+1} (a=t)) = u\right\| \\
-                     &= \sum_{u:T \to \Type_{n+1}^\modal} \modal_{-1}\left\| \sum_{a:T} 
+                     &= \hspace{-1em} \sum_{u:T \to
+                       \Type_{n+1}^\modal} 
+\hspace{-1em} \modal_{-1}\left\| \sum_{a:T} 
             (\lambda t,~\modal_{n} (a=t)) = u\right\|
     \end{align*}
     because $\modal_{n+1}$ is compatible with $\modal_{n}$, and
     $(a=t):\Type_n$.
     
-    It lefts to prove that $u:T\to\Type_n^\modal$, \ie that for all
-    $t:T$, $\IsType n (u\, t)$.
-    But for any truncation index $p$, the predicate $\IsType p:\HProp$
-    is a a sheaf, so we can get rid of $\modal_{-1}$, and pick up what
-    is inside the truncation. Thus, we know that for all $t:T$, $u\, t
-    = \modal_n(a=t) : \Type_n$.
+    It remains to prove that for every $(u,x)$ inhabited the
+    $\Sigma$-type above, $u$ is in $T\to\Type_n^\modal$, \ie that for
+    every $t:T$, $\IsType n (u\, t)$.  But for any truncation index $p$,
+    the predicate $\IsType p:\HProp$ is a a sheaf, so we can get rid
+    of $\modal_{-1}$ and of the truncation, which tells us that for
+    every 
+    $t:T$, $u\, t = \modal_n(a=t) : \Type_n$.
   \end{itemize}
 \end{proof}
 
@@ -1493,7 +1504,7 @@ Using the same idea of proof as in proposition~\ref{prop:sep-mod}, we have
 The last step is the left-exactness of $\modal_{n+1}$. Let
 $T:\Type_{n+1}$, and $x,y:T$. Suppose that $\Contr(\modal_{n+1} T)$.
 Thanks to compatibility between $\modal_{n+1}$ and $\modal_n$ for
-$n-\Type$, it suffices to show that $\modal_n(x=y)$ is contractible.
+$\Type_n$, it suffices to show that $\modal_n(x=y)$ is contractible.
 
 The same proof as in proposition~\ref{prop:sep-subu} leads to
 \begin{prop}
@@ -1568,7 +1579,7 @@ This constitute a significant amount of work but the part dedicated to
 sheaves and sheafification is only 4000, which seems quite reasonable
 and is encouraging, because it suggests that homotopy type theory
 provides a convenient tool to formalize some part of the theory of
-higher topoi. As a comparison, this \TeX\xspace file contains
+higher topoi. As a matter of comparison, this \TeX\xspace file contains
 approximatively 1800 lines.
 
 % In our formalization, some things are admitted, either because they
@@ -1592,7 +1603,11 @@ In our formalization of sheafification defined
 Section~\ref{sec:sheafification} (done in 
 \texttt{sheaf\_induction.v}), two very technical facts required to
 show that $\square$ is a modality have been
-admitted. Nevertheless, we are confident that they can be proven and
+admitted. 
+\nt{say that it comes from a lack of lemmas on paths between paths in
+  the HoTT library}
+%
+Nevertheless, we are confident that they can be proven and
 have been admitted only by lack of time.
 In the proof that diagrams are equal in lemma~\ref{lem:sepiscolim},
 the equality of projections is admitted, because if this proof is
@@ -1625,7 +1640,7 @@ annotation for universe levels everywhere in the formalization.
 
 We have chosen a more simple but less satisfactory solution. 
 %
-When the absence of cumulativity rises an universe issue for a lemma,
+When the absence of cumulativity rises a universe issue for a lemma,
 we have proven the lemma and then admit the exact same lemma, just to
 let Coq infer less constrained universe levels.
 
@@ -1646,6 +1661,8 @@ not allowed:
 %
 because Coq asks for every $\modal_n$ to have the same universes
 levels in the recursive definition. 
+%
+\nt{explain why it is an issue.}
 %
 Thus, the induction step presented in this paper has been formalized,
 but the complete induction can not be formalized at the moment. 

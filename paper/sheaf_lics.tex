@@ -529,7 +529,7 @@ proposition that follows from $A$ already follows from $\squash{A}$.
 %
 We refer the reader to~\cite{hottbook} for more details on propositional truncation.
 
-\subsection{The Orthogonal Factorization System}
+\subsection{The (n-Connected,n-Truncated) Factorization System}
 \label{sec:epi-mono-fact}
 
 We now recall the presence of a factorization system in homotopy type
@@ -545,18 +545,19 @@ inhabited (\ie $\|\fib f y\|$ holds for all $y$).
   $$\im(f) \defeq \sum_{y:B} \|\fib f y\|.$$
 \end{defi}
 
-It is then fairly obvious that the canonical function $\hat f : A \to
-\im(f)$ is (-1)-connected, thus the following proposition holds
-(\cite{hottbook}, Lemma 7.6.4):
+The canonical function $\hat f : A \to \im(f)$ is (-1)-connected,
+being the left component of an orthogonal factorization system which
+satisfies~\cite[Lemma 7.6.4]{hottbook}:
 \begin{prop}
-  A map $f:A\to B$ factors through $\im(f)$ as a (-1)-connected
-  function followed by a (-1)-truncated function.
+  A map $f:A\to B$ factors uniquely (up-to homotopy) through
+  $\im(f)$ as a (-1)-connected function followed by a (-1)-truncated
+  function.
 \end{prop}
 
-Note that there are other factorization systems constituted by
-$n$-truncated morphism and $n$-connected morphisms, for every
-truncated level $n$, but they do not appear to be useful in the
-definition of sheafification.
+Note that this generalizes to orthogonal factorization systems
+constituted by $n$-truncated morphism and $n$-connected morphisms, for
+every truncated level $n$. We will only use the factorization system
+at level  $-1$ in the definition of sheafification.
 
 \subsection{Colimits in Homotopy Type Theory }
 \label{sec:colim-homot-type}

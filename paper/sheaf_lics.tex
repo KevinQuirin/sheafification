@@ -71,7 +71,7 @@
 \newcommand \Hom[1] {\mathrm{Hom}_{#1}}
 \newcommand \Sh[1] {\mathrm{Sh}_{#1}}
 \newcommand \squash[1] {\| #1 \| }
-\newcommand \separated {\mathop{\square} }
+\newcommand \separated {\mathop{\square_{n+1}} }
 \newcommand \fib[2] {\mathrm{fib}_{#1}(#2)}
 \newcommand \colim[1] {\mathrm{colim}(Q)}
 \newcommand \zero {\mathbf{0}}
@@ -382,9 +382,13 @@ type theory.
 Section~\ref{sec:sheafification} explains the construction of the
 sheafification functor.
 %
+The presentation of this paper uses an informal presentation of
+homotopy type theory, working entirely inside of Univalent
+Foundations. 
+ %
 Section~\ref{sec:formalization} discusses the details of the
-formalization in Coq, in particular issues concerning universe
-polymorphism.
+formalization in Coq using formal type theory, in particular issues
+concerning universe polymorphism.
 %
 Finally, Section~\ref{sec:future-works} concludes on future works.
 
@@ -900,7 +904,8 @@ In the same way, left exact modalities preserve homotopy types.
 As noticed in \cite{hottbook}, left exact modalities corresponds 
 to sub-$(\infty,1)$-topoi. Indeed, modal types defines a new type
 theory as modality preserves all type former, such as dependent
-products, dependent sums or inductive types (\nt{double check that}). 
+products or dependent sums.
+% or inductive types (\nt{double check that}). 
 
 Furthermore, when $A$ and $B$ are modal and $f : A \to B$, the mere
 proposition of $f$ being an equivalence is also modal. This means that
@@ -966,16 +971,16 @@ collapsing the theory to mere propositions.
 \section{Sheaves}
 \label{sec:sheaves}
 
-As explained in the introduction, a Lawvere-Tierney topology for an
+As explained in the introduction, a Lawvere-Tierney topology for a
 topos $\E$, as defined in Section~\ref{sec:lawv-tiern-sheaf},
-corresponds to a left exact modality at level $-1$.
+corresponds to a left exact modality at level $-1$
 %
-And sheafification corresponds to lifting this modality to a left
+and sheafification corresponds to lifting this modality to a left
 exact modality at level $0$.
 %
 In homotopy type theory, it is possible to use similar ideas to lift
-any left exact modality at level $n$ to a left exact modality at level
-$n+1$ using sheafification.
+any left exact modality at level $-1$ to a left exact modality at level
+$n$ using sheafification, by induction on $n$.
 
 In this section, we suppose given a truncation index $n\geqslant -1$,
 and a left exact modality $\modal$ on $\Type_n$ and we introduce the
@@ -1007,7 +1012,7 @@ Section~\ref{ssec:hott}.
 
 The definition of a dense $n$-subobject requires more work as the
 characteristic function $\chi_E$ of $E$ seen as an $n$-subobject of
-itself is not the constant function equal to $\one$ as it is the case
+itself is not the constant function equal to $\one$, as it is the case
 for topoi, but rather the map 
 %
 $$\chi_E  = \lambda e . \ \sum_{e':E} e=e'.$$
@@ -1095,8 +1100,9 @@ Lawvere-Tierney topologies can still be shown to subsume Grothendieck
 toplogies for $(\infty,1)$-topoi, which is beyond the scope of this paper).
 %
 
-A fundamental property in the construction of the sheafification is
-the fact that the type of modal types at level $n$ defines a sheaf. 
+A fundamental property in the construction of the sheafification
+functor is the fact that the type of modal types at level $n$ defines
+a sheaf.
 %
 This property initially holds in the topos theoretic construction, but
 it requires much work here, as we have to deal with equalities. In
@@ -1177,7 +1183,7 @@ functions is a sheaf as soon as its codomain is a sheaf.
 %  \nt{add a short proof here}
 \end{proof}
 
-\section{Construction of sheafification}
+\section{Sheafification of Left Exact Modalities}
 \label{sec:sheafification}
 
 % We mimic the construction in~\cite{maclanemoerdijk}. 
@@ -1226,20 +1232,20 @@ topology), a new left exact modality is defined on the whole topos.
 This construction may be seen as the first induction step between
 $\HProp$ and $\Type_0$. 
 
-\nt{je ne comprends pas ce passage, c'est quoi sheafness ? }
-
-\kq{c'est une vision plutôt grothendieck en fait. La separation ``enlève''
-  ce qui empêche à $T$ d'être un faisceau, et la sheafification
-  rajoute ce qui manque pour être un faisceau. Mais c'était plutôt mal
-  dit, effectivement}
+% \kq{c'est une vision plutôt grothendieck en fait. La separation ``enlève''
+%   ce qui empêche à $T$ d'être un faisceau, et la sheafification
+%   rajoute ce qui manque pour être un faisceau. Mais c'était plutôt mal
+%   dit, effectivement}
 
 For a given induction step, the sheafification is defined in two
 steps:
+%
 \begin{enumerate}[(i)]
-\item {\em separation:} In this step, we construct a {\em free}
-  separated object.
-\item {\em completion:} In this step, we add what lacks now to the
-  separated type to be a sheaf.
+\item {\em separation:} From any $T$ in $\Type_{n+1}$, we construct
+  its {\em free} separated object $\separated T$ by ``removing'' what
+  prevents $T$ from being a sheaf.
+\item {\em completion:} We add what is missing for the free 
+  separated type to be a sheaf by using closure in a sheaf.
 \end{enumerate}
 
 % \subsection{For mere propositions}
@@ -1416,18 +1422,57 @@ that it is left exact, we will only do it for the sheafification modality.
 \label{ssec:separated-to-sheaf}
 
 %\nt{put the definition of $\modal_{n+1}$ upfront}
-If $T:\Type_{n+1}$, let  $\modal_{n+1}T$ be the cloture of $\square T$
-seen as a subobject of $T \to \Type_n^\modal$. Explicitly
-$$\modal_{n+1} T \defeq \sum_{u:T \to \Type_n^\modal} \modal_{-1}\left\| \sum_{a:T} 
-            (\lambda t,~\modal_n (a=t)) = u\right\|$$
+For any $T$ in $\Type_{n+1}$, 
+$\modal_{n+1}T$ is defined as the closure of $\separated T$,
+seen as a subobject of $T \to \Type_n^\modal$. 
+%
+Explicitly
+$$
+\modal_{n+1} T \ \defeq \sum_{u:T \to \Type_n^\modal} \modal_{-1}\left\| \sum_{a:T} 
+            (\lambda t,~\modal_n (a=t)) = u\right\|.
+$$
 
-We begin by proving that $\modal_{n+1}$ is compatible with $\modal_n$
-on lower homotopy types.
+To prove that $\modal_{n+1} T$ is a sheaf for any $T:\Type_{n+1}$, we
+use the following lemma.
+\begin{lem}
+  Let $X:\Type_{n+1}$ and $U$ be a sheaf. If $X$ embeds
+  in $U$, and is closed in $U$, then $X$ is a sheaf.
+\end{lem}
+
+As $T\to \Type_n^\modal$ is a sheaf, and $\modal_{n+1}T$ is closed in
+$T\to \Type_n^\modal$, $\modal_{n+1}T$ is a sheaf. We now prove that
+it forms a reflective subuniverse.
+
 \begin{prop}
-  If $T:\Type_n$, then $\modal_{n+1}T = \modal_n T$.
+  $(\modal_{n+1},\nu)$ defines a reflective subuniverse.
 \end{prop}
 \begin{proof}
-  We prove it by induction on $n$~:
+  Let $T,Q:\Type_{n+1}$ such that $Q$ is a sheaf. Let $f:T\to Q$.
+  Because $Q$ is a sheaf, it is in particular separated;
+  % 
+  thus we can extend $f$ to $\separated f:\separated T\to Q$.
+
+  But as $\modal_{n+1} T$ is the closure of $\separated T$, $\separated T$ is dense
+  into $\modal_{n+1} T$, so the sheaf property of $Q$ allows to extend
+  $\separated f$ to $\modal_{n+1} f:\modal_{n+1} T \to Q$.
+
+  As all these steps are universal, the composition is.
+\end{proof}
+
+Using the same technique as in proposition~\ref{prop:sep-mod}, we have
+\begin{prop}
+  $(\modal_{n+1},\nu)$ defines a modality.
+\end{prop}
+
+It remains to show that $\modal_{n+1}$ is left exact and is compatible
+with $\modal_{-1}$. To do that, we need to extend the notion of
+compatibility and that actually every modality $\modal_{n+1}$ is
+compatible with $\modal_n$ on lower homotopy types.
+\begin{prop}
+  If $T:\Type_n$, then $\modal_{n+1} \widehat T = \modal_n T$.
+\end{prop}
+\begin{proof}
+  We prove it by induction on $n$:
   \begin{itemize}
   \item For $n=-1$: Let $T:\HProp$. Then
     \begin{align*}
@@ -1471,76 +1516,54 @@ on lower homotopy types.
   \end{itemize}
 \end{proof}
 
-This also proves that $\modal_{n+1}$ is compatible with $\modal_{-1}$
-in the sense of proposition~\ref{prop:hprop}.
-
-To prove that $\modal_{n+1} T$ is a sheaf for any $T:\Type_{n+1}$, we
-use the following:
-\begin{lem}
-  Let $X:\Type_{n+1}$ be separated, and $U$ be a sheaf. If $X$ embeds
-  in $U$, and is closed in $U$, then $X$ is a sheaf.
-\end{lem}
-
-As $T\to \Type_n^\modal$ is a sheaf, and any object is closed into its
-cloture, $\modal_{n+1}T$ is indeed a sheaf.
-
-\begin{prop}
-  $(\modal_{n+1},\nu)$ defines a reflective subuniverse.
-\end{prop}
-\begin{proof}
-  Let $T,Q:\Type_{n+1}$ such that $Q$ is a sheaf. Let $f:T\to Q$.
-  Because $Q$ is a sheaf, it is in particular separated ; thus we can
-  extend $f$ to $\separated f:\separated T\to Q$.
-
-  But as $\modal_{n+1} T$ is the closure of $\separated T$, $\separated T$ is dense
-  into $\modal_{n+1} T$, so the sheaf property of $Q$ allows to extend
-  $\separated f$ to $\modal_{n+1} f:\modal_{n+1} T \to Q$.
-
-  As all these steps are universal, the composition is.
-\end{proof}
-
-Using the same idea of proof as in proposition~\ref{prop:sep-mod}, we have
-\begin{prop}
-  $(\modal_{n+1},\nu)$ defines a modality.
-\end{prop}
+This proves in particular that $\modal_{n+1}$ is compatible with
+$\modal_{-1}$ in the sense of proposition~\ref{prop:hprop}.
 
 The last step is the left-exactness of $\modal_{n+1}$. Let
-$T:\Type_{n+1}$, and $x,y:T$. Suppose that $\Contr(\modal_{n+1} T)$.
+$T$ be in $\Type_{n+1}$ such that $\Contr(\modal_{n+1} T)$.
 Thanks to compatibility between $\modal_{n+1}$ and $\modal_n$ for
-$\Type_n$, it suffices to show that $\modal_n(x=y)$ is contractible.
+$\Type_n$, left exactness means that for any $x,y : T$, $\modal_n(x=y)$ is contractible.
 
-The same proof as in proposition~\ref{prop:sep-subu} leads to
+Using a proof by univalence as we have done for proving $\modal_n (a=b) = (\mu_T a =
+\mu_T b)$ in Proposition~\ref{prop:sep-subu}, we can show that:
 \begin{prop}
   For all $a,b:T$, $\modal_n(a=b) = (\nu_T a = \nu_T b)$.
 \end{prop}
-As $\modal_{n+1} T$ is contractible, any path space of $\modal T$ is
-contractible, in particular $(\nu_T a=\nu_T b)$.
+
+As $\modal_{n+1} T$ is contractible, any path space of $\modal_{n+1} T$ is
+contractible, in particular $(\nu_T a=\nu_T b)$, which proves left
+exactness. 
 
 \subsection{Summary}
 \label{ssec:summary}
 
 Starting from any left-exact modality $\modal_{-1}$ on $\HProp$, we
-defined in this paper a new left-exact modality $\modal$ on
-$\sum_{T:\Type} \sum_{n} \IsType n T$, which is exactly $\modal_{-1}$
-when restricted to $\HProp$.
+have defined for any truncation level $n$, a new left-exact modality
+$\modal_n$ on $\Type_n$, which is exactly $\modal_{-1}$ when
+restricted to $\HProp$.
 
-If $\modal_{-1}$ is the double negation modality on $\HProp$, it is obvious
-that $\modal_{-1}\zero=\zero$, hence the homotopy type theory induced by
-$\modal$ is consistent by proposition~\ref{prop:consistent}.
+
+When $\modal_{-1}$ is consistent (in the sense of
+proposition~\ref{prop:consistent}), 
+$\modal_{n}\zero=\modal_{-1}\zero$ is also not inhabited, hence the homotopy type theory induced by
+$\modal_n$ is consistent. 
+%
+In particular, the modality induced by the double negation modality on
+$\HProp$ is consistent.
 
 In topos theory, the topos of Lawvere-Tierney sheaves for the double
 negation topology is a boolean topos. In homotopy type theory, this
 result can be expressed as:
 
 \begin{prop}
-  If $\modal_{-1}=\modal_{\lnot\lnot}$, and $\modal$ is the modality
-  as defined above, then the propositional excluded middle is true in
-  the induced type theory.
+  $(\modal_{\lnot\lnot})_n$, the modality obtained by sheafification
+  of the double negation modality,
+  %
+  induces a type theory where the propositional excluded middle holds.
 \end{prop}
 
-
-\nt{Recap what has been done, and give the final result about EM with
-  the dense topology as a corollary.}
+% \nt{Recap what has been done, and give the final result about EM with
+%   the dense topology as a corollary.}
 
 \section{Formalization} 
 \label{sec:formalization}
@@ -1607,7 +1630,7 @@ approximatively 1800 lines.
 In our formalization of sheafification defined
 Section~\ref{sec:sheafification} (done in 
 \texttt{sheaf\_induction.v}), two very technical facts required to
-show that $\square$ is a modality have been
+show that $\separated$ is a modality have been
 admitted. 
 \nt{say that it comes from a lack of lemmas on paths between paths in
   the HoTT library}

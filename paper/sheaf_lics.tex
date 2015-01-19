@@ -122,7 +122,7 @@
   mismatched has been fixed recently by considering homotopy type
   theory, an extension of Martin-Löf type theory with new
   principles inspired by category theory and homotopy theory, and
-  which corresponds closely to higher topoi.
+  which corresponds closely to higher toposes.
   % 
   In this paper, we give a computer-checked construction of
   Lawvere-Tierney sheafification in homotopy type theory, which allows
@@ -141,7 +141,7 @@ Sheafification~\cite{maclanemoerdijk} is a very powerful geometric
 construction that has been initially stated in topology and has
 quickly been lifted to mathematical logic.
 %
-In the field of topos theory, it provides a way to construct new topoi
+In the field of topos theory, it provides a way to construct new toposes
 from already existing ones, allowing logical principles---that can not
 be proven to be true or false in the old topos---to be valid (or
 invalid) in the new topos.
@@ -188,7 +188,7 @@ evaluation~\cite{herbelin2012constructive}.
 Unfortunately, all those works---although they provide very nice and
 sophisticated theoretical results---do not share the generality and
 simplicity of sheafification in topos theory and are not amenable to a
-direct integration into proof assistant based on type theory such as
+direct integration into a proof assistant based on type theory such as
 Coq~\cite{coq:refman:8.4} or Agda~\cite{norell2007towards}.  
 %
 However, type theory is known to be quite closed to topos theory so
@@ -222,18 +222,18 @@ Fortunately, a higher version of topos theory has been developed
 recently by mathematicians, synthesized in the monograph of Lurie on
 higher topos theory~\cite{lurie}. 
 %
-Lurie has developed all the tools that have been defined in
+Lurie has presented all the tools that have been defined in
 topos theory, but in a higher setting. In particular, the theory of
 sheaves has been lifted to higher topos theory.
 %
-As the notion of higher topoi appears to correspond very closely to
+As the notion of higher toposes appears to correspond very closely to
 homotopy type theory, this provides a new hope that tackling the
 problem of extending the power of homotopy type theory using
 sheafification is actually possible.
 
 Nevertheless, the adaptation of the sheafification in higher topos
 theory to homotopy type theory is not straightforward because the
-construction in higher topoi is restricted to the initial Grothendieck
+construction in higher toposes is restricted to the initial Grothendieck
 setting which is still very topologically oriented, and not very
 amenable to formalization in type theory. It seems more promising to
 use a generalized notion of sheafification, called Lawvere-Tierney
@@ -247,7 +247,7 @@ possible to formalize this new definition in homotopy type theory.
 \label{sec:lawv-tiern-sheaf}
 
 Lawvere-Tierney sheafification in a topos $\E$ is based on an abstract
-point of view on the topology to be considered, being simply an
+point of view on the topology to be considered, being simply defined by an
 endomorphism on the classifying object $\Omega$ of $\E$  
 %
 $$
@@ -316,11 +316,11 @@ forcing in type theory~\cite{jaber2012extending}, it allows to reuse
 results derived for topos theory, such as independence results.
 
 To extend Lawvere-Tierney sheafification to homotopy type theory, the
-first thing to realize is that the construction can not be done in one
+first thing to understand is that the construction can not be done in one
 single step anymore. It must rather be performed by induction on the
 level of homotopy types. More precisely, the first layer of
 sheafification is defined for $\Type_{0}$, given a topology on
-$\Type_{-1}$. This part corresponds to sheafification for topoi. Then,
+$\Type_{-1}$. This part corresponds to sheafification for toposes. Then,
 assuming that the sheafification has been constructed up to level $n$,
 one can defined the sheafification for $\Type_{n+1}$.
 %
@@ -341,8 +341,7 @@ Compare to the definition of sheafification in topos theory, the main
 change comes from the fact that in homotopy type theory, there is not
 a single object classifier but rather an $n$-object classifier for
 each $n\geq -2$ which classifies functions with $n$-truncated homotopy
-fibers~\cite{sets_in_hott}. This means that when monomorphisms are used in topos
-theoretic definition, the correct generalization may be $n$-truncated homotopy
+fibers~\cite{sets_in_hott}. This means that when monomorphisms are used in topos-theoretic definition, the correct generalization may be $n$-truncated homotopy
 fibers or embeddings (\ie $-1$-truncated homotopy
 fibers) depending on the purpose of the definition.
 
@@ -356,22 +355,22 @@ The subobjects to be considered are given by $n$-truncated homotopy fibers,
 while the morphism (\ref{equ:sheaf_def}) is still required to be an
 embedding.
 
-In other technical difficulty is the fact that sheafification in topos
-theory uses the fact that epimorphisms are coequalizers of their
-kernel pairs. This properties does not holds in higher topoi, but
-using Giraud-Rezk-Lurie axioms of $\infty$-topoi, the same property
+Another technical difficulty is the fact that sheafification in topos
+theory uses the property that epimorphisms are coequalizers of their
+kernel pairs. This properties does not hold anymore in higher toposes, but
+using Giraud-Rezk-Lurie axioms of $\infty$-toposes, the same property
 holds by replacing kernel pairs by \v{C}ech nerves in the statement.
 
 Finally, one of the main difficulty in our formalization is that many
-equalities which are trival (by proof irrelevance) in the topos theoretic
+equalities which are trival (by proof irrelevance) in the topos-theoretic
 setting becomes relevant and requires a carreful use of univalence
 with appropriate isomorphisms and a lot of reasoning on equalities
 between paths.
 
 \subsection{Plan of the Paper}
 
-Section~\ref{sec:hott} defines the foundations of homotopy type theory
-and presents a particular case of Giraud-Rezk-Lurie axioms. 
+Section~\ref{sec:hott} presents the foundations of homotopy type theory
+and defines a particular case of Giraud-Rezk-Lurie axioms. 
 %
 Section~\ref{sec:lexmod} introduces the notion of left-exact stratified
 modalities, on which this paper is based.
@@ -382,7 +381,7 @@ type theory.
 Section~\ref{sec:sheafification} explains the construction of the
 sheafification functor.
 %
-The presentation of this paper uses an informal presentation of
+The definitions of this paper uses an informal presentation of
 homotopy type theory, working entirely inside of Univalent
 Foundations. 
  %
@@ -410,10 +409,11 @@ Section~\ref{sec:colim-homot-type} introduces the notion of colimits
 in homotopy type theory. 
 %
 And Section~\ref{sec:giraud-ax} defines a particular case of
-Giraud-Rezk-Lurie axioms on higher topoi that we need in the
+Giraud-Rezk-Lurie axioms on higher toposes that we need in the
 definition of sheafification.
 %
-The definition of Section~\ref{ssec:hott} are part of the Coq library
+The definition of Section~\ref{ssec:hott} and \ref{sec:epi-mono-fact}
+are part of the Coq library
 available at \url{https://github.com/HoTT/HoTT}, while other definitions
 and theorems are specific to our formalization. 
 
@@ -422,11 +422,11 @@ in particular the point of view developed
 in~\cite{hottbook}. Nevertheless, we recall most of the central definitions 
 that we use so that the paper is sufficiently self-contained.
 %
-We note $\prod_{x:T} U$ for the dependent product, $\sum_{x:T} U$ for
-the dependent sum, and $\pi_1, \pi_2$ for the first and second
+We note $\prod_{x:T} U$ for dependent products, $\sum_{x:T} U$ for
+dependent sums, and $\pi_1, \pi_2$ for the first and second
 projection of a dependent pair. We use informal mathematical language
-instead of type theory whenever it is possible to ease the
-reading, without making our statement imprecise. In particular,
+instead of type theory whenever it is possible, to ease the
+reading without making our statement imprecise. In particular,
 (higher) inductive types are defined using itemization to avoid an
 overhead of notation.
  
@@ -909,7 +909,7 @@ In the same way, left exact modalities preserve homotopy types.
 \label{sec:new-type-theory}
 
 As noticed in \cite{hottbook}, left exact modalities corresponds 
-to sub-$(\infty,1)$-topoi. Indeed, modal types defines a new type
+to sub-$(\infty,1)$-toposes. Indeed, modal types defines a new type
 theory as modality preserves all type former, such as dependent
 products or dependent sums.
 % or inductive types (\nt{double check that}). 
@@ -1020,7 +1020,7 @@ Section~\ref{ssec:hott}.
 The definition of a dense $n$-subobject requires more work as the
 characteristic function $\chi_E$ of $E$ seen as an $n$-subobject of
 itself is not the constant function equal to $\one$, as it is the case
-for topoi, but rather the map 
+for toposes, but rather the map 
 %
 $$\chi_E  = \lambda e . \ \sum_{e':E} e=e'.$$
 %
@@ -1104,14 +1104,14 @@ $(-1)$-subobjects.
 For higher topos theory, in the Grotehndieck setting, sheaves seems
 to correspond to the second part of our definition only (assuming that
 Lawvere-Tierney topologies can still be shown to subsume Grothendieck
-toplogies for $(\infty,1)$-topoi, which is beyond the scope of this paper).
+toplogies for $(\infty,1)$-toposes, which is beyond the scope of this paper).
 %
 
 A fundamental property in the construction of the sheafification
 functor is the fact that the type of modal types at level $n$ defines
 a sheaf.
 %
-This property initially holds in the topos theoretic construction, but
+This property initially holds in the topos-theoretic construction, but
 it requires much work here, as we have to deal with equalities. In
 particular, this property uses the specific definition
 of separated types and sheaves, which shows that we had actually no
@@ -1294,8 +1294,7 @@ $$
 \end{array}
 $$
 %
-This corresponds to the free separated object used in the topos
-theoretic construction, but using $\Type_n^\modal$ instead of the
+This corresponds to the free separated object used in the topos-theoretic construction, but using $\Type_n^\modal$ instead of the
 $j$-subobject classifier $\Omega_j$.
 %
 \begin{prop}
@@ -1619,7 +1618,7 @@ This constitutes a significant amount of work but the part dedicated
 to sheaves and sheafification is only 2200 lines of proof script,
 which seems quite reasonable and encouraging, because it suggests
 that homotopy type theory provides a convenient tool to formalize some
-part of the theory of higher topoi. As a matter of comparison, this
+part of the theory of higher toposes. As a matter of comparison, this
 \TeX\xspace file contains approximatively 1800 lines.
 
 % In our formalization, some things are admitted, either because they
@@ -1765,7 +1764,7 @@ ways:
   been admitted. The work done in~\cite[Chapter 6]{lurie} suggests,
   considering that homotopy type theory is a language for higher topos
   theory, that this axiom is provable. We plan to investigate whether the
-  higher topos theoretic proof can be adapted to our setting.
+  higher-topos-theoretic proof can be adapted to our setting.
   %
   % A computer-checked proof of this fact would improve our
   % developpement.

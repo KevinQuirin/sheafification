@@ -1469,14 +1469,15 @@ with $\modal_{-1}$. To do that, we need to extend the notion of
 compatibility and that actually every modality $\modal_{n+1}$ is
 compatible with $\modal_n$ on lower homotopy types.
 \begin{prop}
-  If $T:\Type_n$, then $\modal_{n+1} \widehat T = \modal_n T$.
+  If $T:\Type_n$, then $\modal_{n+1} \widehat T = \modal_n T$, where $\widehat T$ is $T$ seen as a
+  $\Type_{n+1}$.
 \end{prop}
 \begin{proof}
   We prove it by induction on $n$:
   \begin{itemize}
   \item For $n=-1$: Let $T:\HProp$. Then
     \begin{align*}
-      \modal_{0} T &= \sum_{u:T \to \Type_n^\modal} \modal_{-1}\left\| \sum_{a:T} 
+      \modal_{0} \widehat T &= \sum_{u:T \to \Type_n^\modal} \modal_{-1}\left\| \sum_{a:T} 
       (\lambda t,~\modal_{-1} (a=t)) = u\right\| \\
       &= \sum_{u:T \to \Type_n^\modal} \modal_{-1}\left( \sum_{a:T} 
       (\lambda t,~\modal_{-1} (a=t)) = u\right)
@@ -1495,7 +1496,7 @@ compatible with $\modal_n$ on lower homotopy types.
     lower homotopy types. Let $\modal_{n+2}$ be as above, and let
     $T:\Type_{n+1}$. Then
     \begin{align*}
-      \modal_{n+2} T &= \hspace{-1em} \sum_{u:T \to \Type_{n+1}^\modal}
+      \modal_{n+2} \widehat  T &= \hspace{-1em} \sum_{u:T \to \Type_{n+1}^\modal}
                        \hspace{-1em} \modal_{-1}\left\| \sum_{a:T} 
             (\lambda t,~\modal_{n+1} (a=t)) = u\right\| \\
                      &= \hspace{-1em} \sum_{u:T \to
@@ -1504,7 +1505,7 @@ compatible with $\modal_n$ on lower homotopy types.
             (\lambda t,~\modal_{n} (a=t)) = u\right\|
     \end{align*}
     because $\modal_{n+1}$ is compatible with $\modal_{n}$, and
-    $(a=t):\Type_n$.
+    $(a=t)$ is in $\Type_n$.
 
     It remains to prove that for every $(u,x)$ inhabiting the
     $\Sigma$-type above, $u$ is in $T\to\Type_n^\modal$, \ie that for
@@ -1571,44 +1572,48 @@ result can be expressed as:
 A Coq formalization is available at
 \url{https://github.com/KevinQuirin/sheafification}.
 %
-It is based on the homotopy type theory library available at
-\url{https://github.com/HoTT/HoTT}.
+It is based on the Coq/HoTT library available at
+\url{https://github.com/HoTT/HoTT} and uses the version of Coq
+designed for that library.
+%
 
-We provide a more detailed insight of where properties have been
-formalized, and what is the size of the formalisation for each part:
+\subsection{Content of the formalization}
+
+We provide a more detailed insight of the structure of our formalization:
 \begin{itemize} 
 \item  Homotopy fibers and subobject classifiers are formalized in
-\texttt{sub\_object\_classifier.v} (284 lines).
+\texttt{sub\_object\_classifier.v}.% (284 lines).
 %
 \item Colimits, $p$-pullbacks and \v{C}ech nerves are formalized in
-\texttt{colimits.v, cech\_nerve.v} (552 lines).
+\texttt{colimits.v, cech\_nerve.v}.% (552 lines).
 \item
 Reflective subuniverses and modalities are formalized in
-\texttt{reflective\_subuniverse.v, modalities.v} (1053 lines).
+\texttt{reflective\_subuniverse.v, modalities.v}. % (1053 lines).
 \item 
 %
   The definition of the dense topology as a left exact modality on
-  $\HProp$ is given in \texttt{sheaf\_base\_case.v} (186 lines).
+  $\HProp$ is given in \texttt{sheaf\_base\_case.v}. % (186 lines).
 \item
 Section~\ref{sec:sheaves} is formalized in
-\texttt{sheaf\_def\_and\_thm.v} (1029 lines).
+\texttt{sheaf\_def\_and\_thm.v}. % (1029 lines).
 \item
 Section~\ref{sec:sheafification} is formalized in
-\texttt{sheaf\_induction.v} (2340 lines).
+\texttt{sheaf\_induction.v}. % (2340 lines).
 \end{itemize}
 
 Overall, with other files containing technical lemmas, the project
 contains 6322 lines, and it could be reduced a bit by improving the
 way Coq tries to rewrite and apply lemmas automatically. 
 The \texttt{coqwc} tool counts 2000 lines of specifications
-(definitions, lemmas, theorems, propositions) and 3700 lines of proof overall.
+(definitions, lemmas, theorems, propositions) and 3700 lines of proof
+script.
 %
-This constitute a significant amount of work but the part dedicated to
-sheaves and sheafification is only 4000, which seems quite reasonable
-and is encouraging, because it suggests that homotopy type theory
-provides a convenient tool to formalize some part of the theory of
-higher topoi. As a matter of comparison, this \TeX\xspace file contains
-approximatively 1800 lines. 
+This constitutes a significant amount of work but the part dedicated
+to sheaves and sheafification is only 2200 lines of proof script,
+which seems quite reasonable and encouraging, because it suggests
+that homotopy type theory provides a convenient tool to formalize some
+part of the theory of higher topoi. As a matter of comparison, this
+\TeX\xspace file contains approximatively 1800 lines.
 
 % In our formalization, some things are admitted, either because they
 % are just an adaptation of a proposition already formalized
@@ -1627,31 +1632,45 @@ approximatively 1800 lines.
 %   because of universes issues.
 % \end{itemize}
 
+\subsection{Limitations of the formalization}
+
 In our formalization of sheafification defined
 Section~\ref{sec:sheafification} (done in 
 \texttt{sheaf\_induction.v}), two very technical facts required to
 show that $\separated$ is a modality have been
 admitted. 
-\nt{say that it comes from a lack of lemmas on paths between paths in
-  the HoTT library}
 %
-Nevertheless, we are confident that they can be proven and
-have been admitted only by lack of time.
+It is due to a lack of important lemmas on paths between paths in
+the Coq/HoTT library.
+%
+Nevertheless, we are confident that with enrichment of the Coq/HoTT
+library, they can be proven and have been admitted only by lack of
+time.
+%
 In the proof that diagrams are equal in lemma~\ref{lem:sepiscolim},
 the equality of projections is admitted, because if this proof is
 obvious on paper, it becomes really technical when formalized.
+%
+This suggest that we should try to fine a better way to encode
+projections, with a better computational content.
+%
 As a consequence, the fact that $P$ is a colimit of the diagonal
 closed diagram is admitted too, but again, this proof should be really
 short as it is on paper.
 
 More importantly, there are few axioms in the formalization that are
 due to an unsatisfactory management of polymorphic universe level in
-Coq~\cite{sozeau2014universe}.
+Coq.
 %
-\nt{Say a word about polymorphic universe level, consistency check,
-  and the fact that polymorphic universe level are nevertheless
-  mandatory for our formalization}
-
+Universes are used in type theory to ensure consistency by checking
+that definitions are well-stratified according to a certain hierarchy.
+%
+Universe polymorphism~\cite{sozeau2014universe} supports generic
+definitions over universes, reusable at different levels.
+%
+Although the presence of universe polymorphism is mandatory for our
+formalization, its implementation is still to rigid to allow a
+complete formalization of our work.
 
 %
 If Coq handles cumulativity on all $\Type$ natively, it is not
@@ -1661,42 +1680,50 @@ resizing.
 This issue could be solved by adding an axiom of cumulativity
 for $\Type_n$ with an explicit management of universes. 
 %
-But as it would not have any computational content, it
-would really complicates the proofs as the axiom would appear
+But as it would not have any computational content, such a solution
+would really complicate the proofs as the axiom would appear
 everywhere cumulativity is needed and it would need explicitly
 annotation for universe levels everywhere in the formalization.
 
-We have chosen a more simple but less satisfactory solution. 
+We have chosen a more simple but maybe less satisfactory solution. 
 %
-When the absence of cumulativity rises a universe issue for a lemma,
-we have proven the lemma and then admit the exact same lemma, just to
-let Coq infer less constrained universe levels.
+When the absence of cumulativity on $\Type_n$ rises a universe issue
+for a lemma, we have proven the lemma and then admit the exact same
+lemma, just letting Coq infer less constrained universe levels.
 
 An other issue with universe polymorphism lies in their management for
-recursive definitions. Indeed, the definition of successive sheafification types is
-not allowed:
+recursive definitions. Indeed, the following recursive definition of
+sheafification:
 %
-\[ \left\{
-    \begin{array}{l}
-      \modal_{-1} = \lambda T:\HProp,~ \lnot\lnot T \\
-      \displaystyle{\modal_{n+1} = \lambda T:\Type_{n+1}},\\
-      \quad \displaystyle{\sum_{u:T \to \Type_n^\modal} \modal_{-1} 
+\[ \begin{array}{l}
+   \modal : \forall \ (n : nat), \ \Type_n \to \Type_n 
+   \\
+    \modal_{-1\phantom{n}} \defeq \lambda T:\HProp,~ \lnot\lnot T \\
+      \displaystyle{\modal_{n+1} \defeq  \lambda T:\Type_{n+1}},\\
+      \hspace{5em} \displaystyle{\sum_{u:T \to \Type_n^\modal} \modal_{-1} 
       \left\|
-      \sum_{a:T} u = (\lambda t,~\modal_n (a=t))
+      \sum_{a:T} u= (\lambda t,~\modal_n (a=t))
       \right\|}
     \end{array}
-  \right.\]
+\]
 %
-because Coq asks for every $\modal_n$ to have the same universes
-levels in the recursive definition. 
+is not allowed. 
 %
-\nt{explain why it is an issue.}
+This is because Coq forces the universe of the first $\Type_n$
+occurring to be the same for every $n$, whereas the universe of the
+$\Type_{n+1}$ occurring in $\modal_{n+1}$ should be at least one level
+higher as the one of $\Type_n$ occurring in $\modal_{n+1}$ because of
+the use of $\Sigma$-type over $T \to \Type_n^\modal$.
+%
+% \nt{explain why it is an issue.}
 %
 Thus, the induction step presented in this paper has been formalized,
-but the complete induction can not be formalized at the moment. 
+but the complete recursive sheafification can not be defined for the
+moment.
 %
 This restriction in our formalization can not be solved without
 generalizing universe polymorphism for recursive definition.
+%
 
 
 

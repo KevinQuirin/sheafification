@@ -188,5 +188,6 @@ Section colimit_universal_property.
   : is_colimit G D2 P q2 pp_q2.
     destruct eq. destruct Hq. destruct Hpp. exact H.
   Defined.
+  
 End colimit_universal_property.
 

@@ -3,7 +3,7 @@ sheafification
 
 Sheafification functor in type theory.
 
-These files compile with the HoTT library https://github.com/HoTT/HoTT, commit d6fa3c3b76c22785960e3eed56425a528afd6d00.
+These files compile with the HoTT library https://github.com/HoTT/HoTT, commit 82f986cd7d4c17e70bba29e2f838dab07f8c2c85.
 
 Utf8_core.v contains notations
 cech_nerve.v formalizes the notions of p-pullbacks, and Cech nerves

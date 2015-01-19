@@ -57,8 +57,6 @@ Section Type_to_separated_Type.
   Local Definition islex_nj := sheaf_def_and_thm.islex_nj.
   Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
 
-
-        
   Definition separated_Type (T:Trunk (trunc_S n)) : Type :=
     Im (λ t : pr1 T, λ t', nj.(O) (t = t'; istrunc_paths T.2 t t')).
 
@@ -576,7 +574,8 @@ Section Type_to_separated_Type.
     - apply path_forall; intro k.
       apply path_universe_uncurried.
       apply hPullback_separated_unit_is_cl_diag.
-    - intros i j [p q] [P X]. simpl.
+    - intros i j [p [q Hq]] [P X]. simpl.
+      
       (* Opaque separated_unit_paths_are_nj_paths. *)
       (* Opaque separated_unit_paths_are_nj_paths_fun. *)
       (* Opaque separated_unit_paths_are_nj_paths_inv. *)
@@ -586,12 +585,14 @@ Section Type_to_separated_Type.
       pose (rew := transport_path_universe_V_uncurried (hPullback_separated_unit_is_cl_diag T j) ).
       rewrite rew; clear rew.
       symmetry; apply moveR_EV; symmetry.
-      (* Opaque hPullback_separated_unit_is_cl_diag. *)
+      Opaque hPullback_separated_unit_is_cl_diag.
+      (* unfold hPullback_separated_unit_is_cl_diag. simpl. *)
       simpl.
       apply path_sigma' with 1; simpl.
+
       unfold equiv_functor_prod'. unfold functor_prod. simpl.
       unfold forget_hPullback, forget_cl_char_hPullback', forget_char_hPullback. simpl.
-      destruct q as [q Hq]. simpl.
+      simpl.
       match goal with
         |[|- _ = sum_rect _ _ _ ?d] => induction d as [| a]
       end.
@@ -609,7 +610,14 @@ Section Type_to_separated_Type.
             { simpl. apply IHj. }
           }
         }
-        { simpl. 
+        { simpl.
+          symmetry.
+          match goal with
+            |[|- match ?foo in (_=y) return _ with |1 => _ end Hq b = _] => set (bar:=foo)
+          end.
+          clearbody bar. simpl in bar.
+          
+          
   Admitted. (* This lemma is obvious on paper, but really painful to formalize. Maybe we should represent hPullback another way... *)
 
   Definition separated_Type_is_colimit_Cech_nerve (T:Trunk (trunc_S n))

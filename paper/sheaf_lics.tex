@@ -200,9 +200,14 @@ homotopy type theory~\cite{hottbook}, which is an extension of
 Martin-Löf type theory with principles inspired by (higher) category
 theory and homotopy theory, such as higher inductive
 types~\cite{lumsdaine2011higher,lumsdaine2013higher} and
-Voevodsky's univalence principle~\cite{kapulkin2012simplicial}. 
+Voevodsky's univalence principle~\cite{kapulkin2012simplicial}, which
+says that for any types $T$ and $U$, the canonical map 
+$$
+(T = U) \to (T \simeq U)
+$$ 
 %
-
+which transports equalities to equivalences is an equivalence.
+%
 This new point of view on type theory has revealed the homotopy
 structure of types where for instance mere propositions (or
 $\Type_{-1}$) are just types with an
@@ -848,7 +853,7 @@ $$\xymatrix{
 where $\pi_1 \circ \gamma = \eta_X \circ \pi_1$, and
 $\pi_2 \circ \gamma$ is given by the modalisation of
 paths.\footnote{This proposition comes from on old version of the
-  formalization of left exact modalities in the HoTT library, but is
+  formalization of left exact modalities in the Coq/HoTT library, but is
   not present anymore in the library.}
 \end{prop}
 \begin{proof}
@@ -1748,18 +1753,25 @@ occurring in the definition to be the same for every $n$, whereas the
 universe of the first $\Type_{n+1}$ occurring in $\modal_{n+1}$ should be at
 least one level higher as the one of $\Type_n$ occurring in
 $\modal_{n}$ because of the use of $\Sigma$-type over
-$T \to \Type_n^\modal$.
+$T \to \Type_n^\modal$ and equality on the return type of $\modal_n$.
 %
 % \nt{explain why it is an issue.}
 %
 Thus, the induction step presented in this paper has been formalized,
 but the complete recursive sheafification can not be defined for the
 moment.
+
+Note that the same increasing in the universe levels occurs in the
+Resk completion for categories~\cite{resk}. In the definition of the
+completion, they use the Yoneda embedding and representable functors,
+which is similar to our use of characteristic functions.
+ 
 %
 This restriction in our formalization may be solved by
-generalizing universe polymorphism for recursive definition
+generalizing the management of universe polymorphism for recursive definition
 %
-or with the use of general resizing rules.
+or by the use of general ``resizing axiom'' which is still under
+discussion in the community.
 
 \section{Conclusion and Future Works}
 \label{sec:future-works}

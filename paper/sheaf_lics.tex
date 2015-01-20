@@ -297,7 +297,7 @@ $$
 Thus, in case of the double negation, the resulting topos is boolean  
 and admits classical reasoning.
 
-But furthermore, one can defined a left adjoint to the inclusion, the
+Furthermore, one can define a left adjoint to the inclusion, the
 sheafification functor
 %
 $$
@@ -327,7 +327,7 @@ level of homotopy types. More precisely, the first layer of
 sheafification is defined for $\Type_{0}$, given a topology on
 $\Type_{-1}$. This part corresponds to sheafification for toposes. Then,
 assuming that the sheafification has been constructed up to level $n$,
-one can defined the sheafification for $\Type_{n+1}$.
+one can define the sheafification for $\Type_{n+1}$.
 %
 This inductive process in the definition of sheafification is similar
 to construction in the Grothendieck setting, where the
@@ -337,7 +337,7 @@ $n$-types~\cite[Chapter~6]{lurie}.
 
 This inductive step requires to formalize the notion of left-exact
 reflective subuniverse, which corresponds to a stratified version of
-left-exact modalities introduced in~\cite[Chapter~7]{hottbook}. A
+left-exact modality introduced in~\cite[Chapter~7]{hottbook}. A
 Lawvere-Tierney topology can thus be seen as a left-exact modality on
 $\Type_{-1}$ and sheafification as an inductive process that extends
 it as a left-exact modality on $\Type_{n}$ for any $n$.
@@ -347,7 +347,7 @@ change comes from the fact that in homotopy type theory, there is not
 a single object classifier but rather an $n$-object classifier for
 each $n\geq -2$ which classifies functions with $n$-truncated homotopy
 fibers~\cite{sets_in_hott}. This means that when monomorphisms are used in topos-theoretic definition, the correct generalization may be $n$-truncated homotopy
-fibers or embeddings (\ie $-1$-truncated homotopy
+fibers or embeddings (\ie $(-1)$-truncated homotopy
 fibers) depending on the purpose of the definition.
 
 For instance, the notion of separated objects (which is a technical
@@ -417,7 +417,7 @@ And Section~\ref{sec:giraud-ax} defines a particular case of
 Giraud-Rezk-Lurie axioms on higher toposes that we need in the
 definition of sheafification.
 %
-The definition of Section~\ref{ssec:hott} and \ref{sec:epi-mono-fact}
+The definitions of Section~\ref{ssec:hott} and \ref{sec:epi-mono-fact}
 are part of the Coq library
 available at \url{https://github.com/HoTT/HoTT}, while other definitions
 and theorems are specific to our formalization. 
@@ -467,8 +467,8 @@ internal to type theory, given by
 We also define some syntactic sugar for contractible types and mere propositions.
 
 \begin{itemize}
-\item $\IsContr := \IsType {(-2)}$ and $\Contr := \Type_{-2}$
-\item $\IsHProp := \IsType {(-1)}$ and $\HProp := \Type_{-1}$
+\item $\IsContr \defeq \IsType {(-2)}$ and $\Contr \defeq \Type_{-2}$
+\item $\IsHProp \defeq \IsType {(-1)}$ and $\HProp \defeq \Type_{-1}$
 \end{itemize}
 
 Using $\Type_n$ instead of just $\Type$ is the first step to connect
@@ -548,9 +548,9 @@ We refer the reader to~\cite{hottbook} for more details on propositional truncat
 We now recall the presence of a factorization system in homotopy type
 theory, constituted by embeddings and surjections.
 
-A map $f:A\to B$ is an \emph{embedding} when it is (-1)-truncated
+A map $f:A\to B$ is an \emph{embedding} when it is $(-1)$-truncated
 (see definition in Section~\ref{ssec:hott}), and a \emph{surjection}
-when it is (-1)-connected, that is when every fiber of $f$ is merely
+when it is $(-1)$-connected, that is when every fiber of $f$ is merely
 inhabited (\ie $\|\fib f y\|$ holds for all $y$).
 
 \begin{defi}
@@ -568,7 +568,7 @@ satisfies~\cite[Lemma 7.6.4]{hottbook}:
 \end{prop}
 
 Note that this generalizes to orthogonal factorization systems
-constituted by $n$-truncated morphism and $n$-connected morphisms, for
+constituted by $n$-truncated morphisms and $n$-connected morphisms, for
 every truncated level $n$. We will only use the factorization system
 at level  $-1$ in the definition of sheafification.
 
@@ -584,7 +584,7 @@ has been defined in homotopy type theory~\cite{lumsdaine}, we present
 here a definition of colimits of diagrams overs graphs. 
 %
 The main difference between limits and colimits is that limits are
-simply given by $\Sigma$-types, and thus exists already in traditional
+simply given by $\Sigma$-types, and thus exist already in traditional
 type theory, whereas the situation is more complicated for colimits as
 it requires the use of higher inductive types.
 
@@ -608,9 +608,9 @@ diagram over a graph.
 \end{defi}
 
 A colimit of a diagram $D$ over a graph $G$ is given by a type $P$
-that defines a cone of $D$, plus the universal property that for any
+that defines a cocone of $D$, plus the universal property that for any
 type $X$, the canonical map that transforms a function $f : P
-\rightarrow X$ to a cone of $D$ on $X$ is an isomorphism.
+\rightarrow X$ to a cocone of $D$ on $X$ is an isomorphism.
 % 
 \begin{defi}
 Let $G$ be a graph, and $D$ be a diagram on $G$. 
@@ -634,8 +634,8 @@ is an equivalence.
 % Essentially, being a colimit means making the diagram commutes, and
 % being universal for this property.
 
-Using higer inductive types, every diagram $D$ on a graph $G$ admits a
-colimit in homotopy type thoery. This colimit $\colim D$ is given by
+Using higher inductive types, every diagram $D$ on a graph $G$ admits a
+colimit in homotopy type theory. This colimit $\colim D$ is given by
 %
 \begin{itemize}
 \item a function $q:\prod_{i:G_0} D_0(i) \to \colim D$
@@ -676,7 +676,7 @@ central part in the definition of sheafification.
     X \ar[rd]^f & \cdots & X \ar[ld]_f \\
       &    Y   &
   }$$
-  with $p$ copies of $X$. The $0$-pullback of $f$ is $\Unit$.
+  with $p$ copies of $X$. The $0$-pullback of $f$ is $\one$.
 \end{defi}
 
 As explained in Section~\ref{sec:colim-homot-type}, every limit exists
@@ -743,7 +743,7 @@ correspond to idempotent monads, a property that is rarely true
 in functional programming, except for the identity monad of course.
 
 The notion of left exact modalities plays a central role in this paper
-because Lawvere-Tierney topologies corresponds exactly to left exact
+because Lawvere-Tierney topologies correspond exactly to left exact
 modalities at level $-1$ and sheafification is described as an inductive
 process that produces a left exact modality at level $n+1$ from a
 level exact modality at level $n$. 
@@ -756,7 +756,7 @@ induces a new homotopy theory, and in which case this theory is
 consistent.
 %
 Finally, Section~\ref{sec:examples-left-exact} introduces some
-example, and in particular the modality for the dense topology.
+examples, and in particular the modality for the dense topology.
 
 \subsection{Definition and Basic Properties}
 \label{sec:definition}
@@ -915,7 +915,7 @@ In the same way, left exact modalities preserve homotopy types.
 \subsection{The new type theory arising from a left exact modality}
 \label{sec:new-type-theory}
 
-As noticed in \cite{hottbook}, left exact modalities corresponds 
+As noticed in \cite{hottbook}, left exact modalities correspond
 to sub-$(\infty,1)$-toposes. Indeed, modal types defines a new type
 theory as modality preserves all type former, such as dependent
 products or dependent sums.
@@ -959,7 +959,7 @@ type $T$ amounts to give an inhabitant of $P \to T$.
 %
 Thus, working in this subuniverse amounts to add the axiom $P$ to the
 theory. Of course, adding an axiom this way does not add any computational
-content to $P$, and the consistency of the modallity corresponds to
+content to $P$, and the consistency of the modality corresponds to
 the fact that $P \to \zero$ (or $\lnot P$) is not inhabited.
 
 Another example of a left exact modality for every level $p$ is the
@@ -1032,7 +1032,7 @@ for toposes, but rather the map
 $$\chi_E  = \lambda e . \ \sum_{e':E} e=e'.$$
 %
 This means that we need to take more care of the homotopy structure of
-this charactestic function, and in particular, the definition of a
+this characteristic function, and in particular, the definition of a
 dense $n$-subobject comes with an additional coherence condition
 (which is trivial when $n=-1$).
 
@@ -1040,7 +1040,7 @@ dense $n$-subobject comes with an additional coherence condition
   Let $E$ be a type, and $\chi:E \to \Type_n$. The subobject $\iota :
   A \to E$ of $E$
   classified by $\chi$ is {\em dense} in $E$ when its $\modal_n$-closure
-  is equvialent to $\chi_E$, \ie
+  is equivalent to $\chi_E$, \ie
   %
   $$\forall e:E,~ \left(\sum_{e':E} e=e'\right) \simeq \modal_n
   (\chi~e).$$
@@ -1526,8 +1526,9 @@ compatible with $\modal_n$ on lower homotopy types.
 
     It remains to prove that for every $(u,x)$ inhabiting the
     $\Sigma$-type above, $u$ is in $T\to\Type_n^\modal$, \ie that for
-    every $t:T$, $\IsType n (u\, t)$.  But for any truncation index $p$,
-    the predicate $\IsType p:\HProp$ is a sheaf, so we can get rid
+    every $t:T$, $\IsType n (u\, t)$.  But for any truncation index
+    $p$,
+    the type $\IsType p X:\HProp$ is a sheaf as soon as $X$ is, so we can get rid
     of $\modal_{-1}$ and of the truncation, which tells us that for
     every 
     $t:T$, $u\, t = \modal_n(a=t) : \Type_n$.
@@ -1707,7 +1708,7 @@ Universe polymorphism~\cite{sozeau2014universe} supports generic
 definitions over universes, reusable at different levels.
 %
 Although the presence of universe polymorphism is mandatory for our
-formalization, its implementation is still to rigid to allow a
+formalization, its implementation is still too rigid to allow a
 complete formalization of our work for the following reasons.
 
 %

@@ -422,13 +422,14 @@ in particular the point of view developed
 in~\cite{hottbook}. Nevertheless, we recall most of the central definitions 
 that we use so that the paper is sufficiently self-contained.
 %
-We note $\prod_{x:T} U$ for dependent products, $\sum_{x:T} U$ for
-dependent sums, and $\pi_1, \pi_2$ for the first and second
-projection of a dependent pair. We use informal mathematical language
-instead of type theory whenever it is possible, to ease the
-reading without making our statement imprecise. In particular,
-(higher) inductive types are defined using itemization to avoid an
-overhead of notation.
+Given a type $T$ and a type family $U : T \to \Type$, we note
+$\prod_{x:T} U x$ for the dependent product, $\sum_{x:T} U x$ for the dependent
+sum, and $\pi_1, \pi_2$ for the first and second projection of a
+dependent pair (noted $(a;b)$). We use informal mathematical language
+instead of type theory whenever it is possible, to ease the reading
+without making our statement imprecise. In particular, (higher)
+inductive types are defined using itemization to avoid an overhead of
+notation.
  
  \subsection{Homotopy Types and Classifying Objects}
 \label{ssec:hott}
@@ -979,9 +980,9 @@ collapsing the theory to mere propositions.
 \section{Sheaves}
 \label{sec:sheaves}
 
-As explained in the introduction, a Lawvere-Tierney topology for a
-topos $\E$, as defined in Section~\ref{sec:lawv-tiern-sheaf},
-corresponds to a left exact modality at level $-1$
+As explained in in Section~\ref{sec:lawv-tiern-sheaf}, a
+Lawvere-Tierney topology for a topos $\E$ corresponds to a left exact
+modality at level $-1$
 %
 and sheafification corresponds to lifting this modality to a left
 exact modality at level $0$.
@@ -1042,8 +1043,9 @@ dense $n$-subobject comes with an additional coherence condition
   and moreover, for any $x:A$, the following diagram 
   commutes, 
   $$\xymatrix{
-    \sum_{e':A} x = e' \ar@{=}[r] \ar[d]_{\iota'} & (\chi~x) \ar[d]^{\eta_{(\chi~x)}}\\
-    \sum_{e':E} x = e' \ar@{=}[r] & \modal_n (\chi~x)
+    \sum_{e':A} x = e' \ar@{=}[r] \ar[d]_{\iota'} & (\chi \ x)
+    \ar[d]^{\eta_{(\chi \ x)}}\\
+    \sum_{e':E} x = e' \ar@{=}[r] & \modal_n (\chi \ x)
   }$$
   where $\iota': x \mapsto (\iota (\pi_1 x) ; \pi_2 x)$.
 \end{defi}
@@ -1062,7 +1064,7 @@ their dense sub-objects.
     $$
     %
     as the map sending an
-    arrow $f:E\to F$ to its restriction the restriction of $f \circ m$.
+    arrow $f:E\to F$ to its restriction $f \circ m$.
   % \item if $A \to E$ with $n$-truncated homotopy fibers, $\Phi_E^\chi$ is the
   %   map sending $f:~E \to f$ to $\restriction f A$.
   % \end{itemize}
@@ -1114,13 +1116,13 @@ a sheaf.
 %
 This property initially holds in the topos-theoretic construction, but
 it requires much work here, as we have to deal with equalities. In
-particular, this property uses the specific definition
-of separated types and sheaves, which shows that we had actually no
-choice in their statement. 
-
+particular, this property uses the specific definitions
+of separated types and sheaves, which has constituted a guide in the
+choice of their precise statements. 
 
 \begin{prop}\label{prop:sheaf-is-sheaf}
-  $\Type_n^\modal$ is a sheaf.
+  $\Type_n^\modal$ is a sheaf.\footnote{Note that we omit the $n$
+on $\modal_n$ in $\Type_n^\modal$ to ease the reading.}
 \end{prop}
 \begin{proof}
   First, we prove that $\Type_n^\modal$ is separated. Let $E:\Type$
@@ -1219,7 +1221,7 @@ Note that once the first modality $\modal_{-1}$ is defined, its
 extension to all $\Type_n$ is automatic. This means that the new
 logical principles that can be added by the sheaf construction must be
 added in the first modality already. Sheafification is just a way
-to propagate those new principles to types than are not mere
+to propagate those new principles to types that are not mere
 propositions.
 
 
@@ -1342,7 +1344,7 @@ is replaced by its \v{C}ech nerve.
   Thus the result follows from the fact that $C(\mu_T) = C(\id)$,
   which we now show.
 
-  Let $k:\nat$, we will show that 
+  Let $k:\nat$, we have to show that 
   \begin{align*}
     &\sum_{t:T^k} (\mu_T t_1 = \mu_T t_2 \land \cdots
       \land \mu_T t_{k-1} \mu_T t_k)\\
@@ -1386,10 +1388,12 @@ This is enough to state the following proposition.
   $(\separated,\mu)$ defines a reflective subuniverse on $\Type_{n+1}$.
 \end{prop}
 
-To show that $\separated$ is a modality, it remains to show point {\it (v)}. Let $A:\Type_{n+1}$ be a sheaf and $B:A \to \Type_{n+1}$ be
-a sheaf family. We want to show that $\sum_{x:A} (Bx)$ is
-separated. Let $E$ be a type, and $\sum_{e:E} (\chi\,e)$ a dense
-subobject of E.
+To show that $\separated$ is a modality, it remains to show point
+{\it (v)} of the definition.
+%
+Let $A:\Type_{n+1}$ be a sheaf and $B:A \to \Type_{n+1}$ be a sheaf
+family. We want to show that $\sum_{x:A} (Bx)$ is separated. Let $E$
+be a type, and $\sum_{e:E} (\chi\,e)$ a dense subobject of E.
 
 Let $f,g$ be two maps from $\sum_{e:E} (\chi\,e)$ to $\sum_{x:A}
 (Bx)$, equal when precomposed with $\pi_1$.
@@ -1422,8 +1426,9 @@ This proves the following proposition
   $(\separated,\mu)$ defines a modality on $\Type_{n+1}$.
 \end{prop}
 
-As this modality is just a step in the construction, we do not show
-that it is left exact, we will only do it for the sheafification modality.
+As this modality is just a step in the construction, we do not need to
+show that it is left exact, we will only do it for the sheafification
+modality.
 
 \subsection{From Separated Type to Sheaf}
 \label{ssec:separated-to-sheaf}
@@ -1433,7 +1438,7 @@ For any $T$ in $\Type_{n+1}$,
 $\modal_{n+1}T$ is defined as the closure of $\separated T$,
 seen as a subobject of $T \to \Type_n^\modal$. 
 %
-Explicitly
+$\modal_{n+1}T$ can be given explicitly by
 $$
 \modal_{n+1} T \ \defeq \sum_{u:T \to \Type_n^\modal} \modal_{-1}\left\| \sum_{a:T} 
             (\lambda t,~\modal_n (a=t)) = u\right\|.
@@ -1473,7 +1478,7 @@ Using the same technique as in proposition~\ref{prop:sep-mod}, we have
 
 It remains to show that $\modal_{n+1}$ is left exact and is compatible
 with $\modal_{-1}$. To do that, we need to extend the notion of
-compatibility and that actually every modality $\modal_{n+1}$ is
+compatibility and show that actually every modality $\modal_{n+1}$ is
 compatible with $\modal_n$ on lower homotopy types.
 \begin{prop}
   If $T:\Type_n$, then $\modal_{n+1} \widehat T = \modal_n T$, where $\widehat T$ is $T$ seen as a
@@ -1517,7 +1522,7 @@ compatible with $\modal_n$ on lower homotopy types.
     It remains to prove that for every $(u,x)$ inhabiting the
     $\Sigma$-type above, $u$ is in $T\to\Type_n^\modal$, \ie that for
     every $t:T$, $\IsType n (u\, t)$.  But for any truncation index $p$,
-    the predicate $\IsType p:\HProp$ is a a sheaf, so we can get rid
+    the predicate $\IsType p:\HProp$ is a sheaf, so we can get rid
     of $\modal_{-1}$ and of the truncation, which tells us that for
     every 
     $t:T$, $u\, t = \modal_n(a=t) : \Type_n$.
@@ -1527,10 +1532,11 @@ compatible with $\modal_n$ on lower homotopy types.
 This proves in particular that $\modal_{n+1}$ is compatible with
 $\modal_{-1}$ in the sense of proposition~\ref{prop:hprop}.
 
-The last step is the left-exactness of $\modal_{n+1}$. Let
-$T$ be in $\Type_{n+1}$ such that $\Contr(\modal_{n+1} T)$.
-Thanks to compatibility between $\modal_{n+1}$ and $\modal_n$ for
-$\Type_n$, left exactness means that for any $x,y : T$, $\modal_n(x=y)$ is contractible.
+The last step is the left-exactness of $\modal_{n+1}$. Let $T$ be in
+$\Type_{n+1}$ such that $\Contr(\modal_{n+1} T)$.  Thanks to the just
+shown compatibility between $\modal_{n+1}$ and $\modal_n$ for
+$\Type_n$, left exactness means that for any $x,y : T$,
+$\modal_n(x=y)$ is contractible.
 
 Using a proof by univalence as we have done for proving $\modal_n (a=b) = (\mu_T a =
 \mu_T b)$ in Proposition~\ref{prop:sep-subu}, we can show that:
@@ -1547,7 +1553,7 @@ exactness.
 
 Starting from any left-exact modality $\modal_{-1}$ on $\HProp$, we
 have defined for any truncation level $n$, a new left-exact modality
-$\modal_n$ on $\Type_n$, which is exactly $\modal_{-1}$ when
+$\modal_n$ on $\Type_n$, which corresponds to $\modal_{-1}$ when
 restricted to $\HProp$.
 
 
@@ -1567,8 +1573,14 @@ result can be expressed as:
   $(\modal_{\lnot\lnot})_n$, the modality obtained by sheafification
   of the double negation modality,
   %
-  induces a type theory where the propositional excluded middle holds.
+  induces a type theory where the propositional excluded middle law holds.
 \end{prop}
+
+Combined with forcing in type theory~\cite{jaber2012extending}, it
+should be possible to lift the proof of independence of the continuum
+hypothesis to a classical setting, which is where the continuum hypothesis is
+really meaningful.  However, we haven't work out the details and left
+this for future work.
 
 % \nt{Recap what has been done, and give the final result about EM with
 %   the dense topology as a corollary.}
@@ -1581,10 +1593,15 @@ A Coq formalization is available at
 %
 It is based on the Coq/HoTT library available at
 \url{https://github.com/HoTT/HoTT} and uses the version of Coq
-designed for that library.
+tailored for that library.
 %
+After reviewing the content and some statistics about the
+formalization in Section~\ref{sec:cont-form}, we present the
+limitations of our formalization in Section~\ref{sec:limit-form}, in
+particular the issues relative to universe polymorphism. 
 
 \subsection{Content of the formalization}
+\label{sec:cont-form}
 
 We provide a more detailed insight of the structure of our formalization:
 \begin{itemize} 
@@ -1640,6 +1657,7 @@ part of the theory of higher toposes. As a matter of comparison, this
 % \end{itemize}
 
 \subsection{Limitations of the formalization}
+\label{sec:limit-form}
 
 In our formalization of sheafification defined in
 Section~\ref{sec:sheafification} (done in 
@@ -1649,6 +1667,14 @@ admitted.
 %
 It is due to a lack of technical lemmas on paths between paths in
 the Coq/HoTT library.
+%
+This is not surprising because those lemmas are defined in a
+call-by-need approach and there is no notion of a complete set of
+lemmas on paths for the moment. 
+%
+This is the subject of ongoing work, in particular those trying to
+define a syntax based on the cubical set model~\cite{bezem2013model}
+of Coquand et al.  
 %
 Nevertheless, we are confident that with an enrichment of the Coq/HoTT
 library, they can be proved and have been admitted only by lack of
@@ -1663,10 +1689,10 @@ projections, with a better computational content.
 %
 As a consequence, the fact that $P$ is a colimit of the diagonal
 closed diagram is admitted too, but again, this proof should be really
-short as it is on paper.
+as short as it is on paper.
 
 More importantly, there are few axioms in the formalization that are
-due to an unsatisfactory management of polymorphic universe level in
+due to an unsatisfactory management of polymorphic universe levels in
 Coq.
 %
 Universes are used in type theory to ensure consistency by checking
@@ -1677,10 +1703,10 @@ definitions over universes, reusable at different levels.
 %
 Although the presence of universe polymorphism is mandatory for our
 formalization, its implementation is still to rigid to allow a
-complete formalization of our work.
+complete formalization of our work for the following reasons.
 
 %
-If Coq handles cumulativity on all $\Type$ natively, it is not
+If Coq handles cumulativity on $\Type$ natively, it is not
 the case for the $\Sigma$-type $\Type_n$, which require propositional
 resizing. 
 %
@@ -1695,8 +1721,9 @@ annotation for universe levels everywhere in the formalization.
 We have chosen a more simple but maybe less satisfactory solution. 
 %
 When the absence of cumulativity on $\Type_n$ rises a universe issue
-for a lemma, we have proved the lemma and then admit the exact same
-lemma, just letting Coq infer less constrained universe levels.
+for a lemma (it occurs twice in the formalization), we have proved the
+lemma and then admit the exact same lemma, just letting Coq infer less
+constrained universe levels.
 
 An other issue with universe polymorphism lies in the management of
 recursive definitions. Indeed, the following recursive definition of
@@ -1729,10 +1756,10 @@ Thus, the induction step presented in this paper has been formalized,
 but the complete recursive sheafification can not be defined for the
 moment.
 %
-This restriction in our formalization can not be solved without
-generalizing universe polymorphism for recursive definition.
+This restriction in our formalization may be solved by
+generalizing universe polymorphism for recursive definition
 %
-
+or with the use of general resizing rules.
 
 \section{Conclusion and Future Works}
 \label{sec:future-works}
@@ -1742,10 +1769,10 @@ with new principles, leveraging Lawvere-Tierney sheafification to
 higher topos theory. 
 %
 Using sheafification, it is possible to add new logical principles to
-homotopy type theory, like the law of excluded middle, and this
+homotopy type theory, such as the law of excluded middle, and this
 without axiom.
 %
-Beyond this result, our work is part of a more general line of works
+Beyond this result, our work is part of a more general line of work
 which aim to illustrate that homotopy type theory is a very promising
 theory for formalizing mathematics inside a proof assistant.
 
@@ -1788,7 +1815,7 @@ remains true in higher topos theory.
 \section*{Acknowledgment}
 
 We would like to thank all maintainers of the Coq/HoTT library, who
-provide a very solid base for our formalization. We also would like
+have provided a very solid base for our formalization. We also would like
 to thank Bas Spitters for helpful discussions on the subject.
 
 % trigger a \newpage just before the given reference

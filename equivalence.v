@@ -209,5 +209,20 @@ Lemma moveL_equiv_V  : forall (X Y:Type), forall (f: X -> Y), forall (H:IsEquiv 
   rewrite eisretr. exact HH.
 Qed.
 
+Lemma equiv_arrow (A B C:Type) (H : A <~> B)
+: (A -> C) <~> (B -> C).
+  refine (equiv_adjointify _ _ _ _).
+  - intros f b; apply f. apply H; exact b.
+  - intros f a; apply f. apply H; exact a.
+  - intros f. apply path_forall; intro b. rewrite eisretr. reflexivity.
+  - intros f. apply path_forall; intro a. rewrite eissect. reflexivity.
+Defined.
+
+Lemma moveR_EV2 (A C:Type) (B:A -> Type) (D:C -> Type) (f : (forall x, B x) -> (forall x, D x)) (H : IsEquiv f) (g:forall x, B x) (h:forall x, D x) (a:A)
+: (f g = h) -> (f^-1 h a = g a).
+  intro X. destruct X. rewrite eissect. reflexivity.
+Qed.
+
+
 
 End Things.

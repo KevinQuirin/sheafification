@@ -31,6 +31,7 @@ Section Definitions.
 
   Definition nj := underlying_subu n mod_nj.
 
+  (* The following two parameters are the hypothesis 26 *)
   Parameter j_is_nj : forall P, (j P).1 = (nj.(O) (P.1; IsHProp_IsTrunc P.2 n0)).1.1.
 
   Parameter j_is_nj_unit : forall P x ,
@@ -53,6 +54,28 @@ Section Definitions.
   
   Definition nJ := {T : Trunk n & (nj.(O) T).1.1}.
 
+  (* Definition 18, for subobjects seen as a characteristic function [χ : E -> Trunk n], or as n-fibered functions *)
+  Definition closed E (χ : E -> Trunk n) := forall e, IsEquiv (nj.(O_unit) (χ e)).
+  
+  Definition closed' E A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) := closed (nsub_to_char n (A;m)).
+
+  Definition cloture E (χ : E -> Trunk n) : E -> Trunk n := pr1 o nj.(O) o χ.
+  
+  Definition cloture' E A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) :=
+    nchar_to_sub (cloture (nsub_to_char n (A;m))).
+
+  Definition cloture_is_closed (E :Type) (χ : E -> Trunk n) : closed (cloture χ).
+    intro. apply O_modal_equiv. exact fs.
+  Defined.
+
+  Lemma cloture_is_closed' (A:Type) (E:Type) (m : {f : A -> E & forall e:E, IsTrunc n (hfiber f e)}) : closed' (pr2 (cloture' m)).
+    unfold closed', cloture'. 
+    rewrite (eta_sigma (nchar_to_sub (cloture (nsub_to_char n (A; m))))).
+    pose (f := cloture_is_closed (nsub_to_char n (A; m))). 
+    rewrite <- (@nsub_eq_char_retr ua fs n _ (cloture (nsub_to_char n (A; m)))) in f.
+    exact f.
+  Defined.
+
   Definition incl_Aeq_Eeq (E:Type) (χ:E -> Trunk n) (x:{e:E & (χ e).1})
   : {e':{e:E & (χ e).1} & x.1 = e'.1} -> {e':E & x.1 = e'}
     := λ X, (X.1.1;X.2).
@@ -70,6 +93,7 @@ Section Definitions.
   Definition is_dense_diag (E:Type) (char : E -> Trunk n) (dense_eq : is_dense_eq char)
     := forall x:{e:E & (char e).1}, forall u:{e':{e:E & (char e).1} & x.1 = e'.1}, (equiv_path _ _ (dense_eq x.1)) o (incl_Aeq_Eeq char x) = (O_unit nj _) o ((eq_dense_1 char x)).
 
+  (* Definition 19 *)
   Record EnJ (E:Type) :=
     {
       char :> E -> Trunk n ;
@@ -105,16 +129,20 @@ Section Definitions.
     rewrite (dense_eq χ) in X; apply X.
   Defined.
 
+  (* Definition 20, for (-1)-subobjects *)
   Definition E_to_χmono_map (T:Trunk (trunc_S n)) E (χ : E -> J) (f : E -> (pr1 T)) : 
     (nchar_to_sub (pr1 o χ)).1 -> T.1 := f o pr1.
 
   Arguments E_to_χmono_map T {E} χ f _.
-
+  
+  (* Definition 20, for n-subobjects *)
   Definition E_to_χ_map (T:Trunk (trunc_S n)) E (χ : EnJ E) (f : E -> (pr1 T)) : 
     (nchar_to_sub χ).1 -> T.1 := f o pr1.
 
+  (* Definition 21 *)
   Definition separated T :=  ∀ E (χ : EnJ E), IsMono (E_to_χ_map T (E:=E) χ).
-  
+
+  (* Definition 22 *)
   Definition Snsheaf_struct T := (separated T) /\ (∀ E (χ : E -> J), IsEquiv (E_to_χmono_map T (E:=E) (χ))). 
 
   Definition SnType_j_Type := {T : Trunk (trunc_S n) & Snsheaf_struct T}.
@@ -136,7 +164,6 @@ Section Definitions.
       refine (isequiv_adjointify _ _ _ _).
       - unfold E_to_χ_map; simpl; intro p.
         apply path_forall; intro x.
-        (* apply (@equiv_inj _ _ _ (O_modal_equiv ((T.1;Trn);nsheaf))). simpl. *)
         destruct χ as [χ χeq χdiag]. simpl in *.
         pose proof (transport idmap (χeq x) (x;1)). simpl in X.
         revert X.
@@ -404,6 +431,7 @@ Section Definitions.
     apply path_universe_uncurried. exact (BuildEquiv _ _ _ (nj_inter_equiv _ _)).
   Defined.
 
+  (* Lemma 24 *)
   Definition nj_fibers_compose A B C (f : A -> B) (g : B -> C) (c : C)
              (HB : ∀ b : B, IsTrunc n (hfiber f b)) (HC : ∀ c : C, IsTrunc n (hfiber g c))
   :
@@ -426,6 +454,7 @@ Section Definitions.
            let m := (pr2 (nchar_to_sub (pr1  o χ))) in
            nj.(O) (nsub_to_char n ({b : _ &  pr1 (pr1 (α b))}; ((pr1 m) o (pr1 f); function_trunc_compo n (pr1 f) (pr1 m) (pr2 f) (fun e => IsHProp_IsTrunc (pr2 m e) n0))) e).
 
+  (* Proposition 23, sheaf part *)
   Instance nTjTiSnTjT_eq E (χ : E -> J) : IsEquiv (λ (f : E -> subuniverse_Type nj) (t : {b : E & pr1 (pr1 (χ b))}), f (pr1 t)). 
   apply (isequiv_adjointify _ (type_j_inv (E:=E) (χ:=χ))).
   - intro φ.
@@ -578,6 +607,7 @@ Section Definitions.
     - exact (transport (λ u, ∀ y : ((φ1 x) .1) .1, nTjTiseparated_eq_fun_univ (inverse p) x (nTjTiseparated_eq_fun_univ u x y) = y) (inv_V p) (nTjTiseparated_eq_fun_univ_invol (inverse p) x)).
   Defined.
 
+  (* Proposition 23, separation part *)
   Lemma nTjTiseparated_eq : separated (existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj ua)).
     intros E χ φ1 φ2.
     apply isequiv_adjointify with (g := @nTjTiseparated_eq_inv E χ φ1 φ2).
@@ -618,6 +648,7 @@ Section Definitions.
                                        subuniverse_arrow ((φ1 x) .1) .1 (φ1 x)) idmap) (EnJ_is_nJ χ x)). 
   Defined.
 
+  (* Proposition 23 *)
   Lemma nType_j_Type_is_SnType_j_Type : Snsheaf_struct (existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj ua)).
   Proof.
     split.
@@ -629,6 +660,7 @@ Section Definitions.
   Definition nType_j_Type_sheaf : SnType_j_Type :=
     ((existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj ua));nType_j_Type_is_SnType_j_Type).
 
+  (* Proposition 25, sheaf part *)
   Instance dep_prod_SnType_j_Type_eq
            (A : Type)
            (B : A -> SnType_j_Type)
@@ -675,15 +707,7 @@ Section Definitions.
     exact (equiv_inv (IsEquiv := i) (path_forall _ _ (λ t, apD10 ((apD10 H) t) a))).
   Defined.
 
-  Lemma ap_path_forall (A B C:Type) (f:A -> B) (g h:B -> C) (eq:forall x, g x = h x)              
-  : ap (λ u, u o f) (path_forall g h eq) = path_forall (g o f) (h o f) (λ x, (eq (f x))).
-    apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
-    unfold ap10 at 2, path_forall at 2; rewrite eisretr.
-    apply path_forall; intro a.
-    rewrite ap10_ap_precompose.
-    unfold ap10, path_forall; rewrite eisretr. reflexivity.
-  Qed.
-
+  (* Proposition 25, separated part *)
   Lemma dep_prod_SnType_j_Type_sep
         (A : Type)
         (B : A -> SnType_j_Type)
@@ -698,7 +722,7 @@ Section Definitions.
       unfold dep_prod_SnType_j_Type_sep_inv. 
       unfold E_to_χ_map. simpl.
       unfold equiv_inv.
-      pose (foo := @ap_path_forall (∃ b : E, (χ b) .1)
+      pose (foo := @ap_path_forall fs (∃ b : E, (χ b) .1)
                                    E
                                    (∀ a : A, ((B a) .1) .1)
                                    pr1
@@ -765,7 +789,8 @@ Section Definitions.
       unfold ap10; rewrite eisretr. reflexivity.
       exact (apD10 X x).
   Defined.
-  
+
+  (* Proposition 25 *)
   Definition dep_prod_SnType_j_Type : forall A (B : A -> SnType_j_Type) ,
                                         Snsheaf_struct (forall a, pr1 (pr1 (B a)); 
                                                         @trunc_forall _ A (fun a => pr1 (pr1 (B a))) (trunc_S n) (fun a => pr2 (pr1 (B a)))).
@@ -774,27 +799,7 @@ Section Definitions.
     exact (dep_prod_SnType_j_Type_eq _).
   Defined.
 
-  Definition closed E (χ : E -> Trunk n) := forall e, IsEquiv (nj.(O_unit) (χ e)).
-  
-  Definition closed' E A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) := closed (nsub_to_char n (A;m)).
-
-  Definition cloture E (χ : E -> Trunk n) : E -> Trunk n := pr1 o nj.(O) o χ.
-  
-  Definition cloture' E A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) :=
-    nchar_to_sub (cloture (nsub_to_char n (A;m))).
-
-  Definition cloture_is_closed (E :Type) (χ : E -> Trunk n) : closed (cloture χ).
-    intro. apply O_modal_equiv. exact fs.
-  Defined.
-
-  Lemma cloture_is_closed' (A:Type) (E:Type) (m : {f : A -> E & forall e:E, IsTrunc n (hfiber f e)}) : closed' (pr2 (cloture' m)).
-    unfold closed', cloture'. 
-    rewrite (eta_sigma (nchar_to_sub (cloture (nsub_to_char n (A; m))))).
-    pose (f := cloture_is_closed (nsub_to_char n (A; m))). 
-    rewrite <- (@nsub_eq_char_retr ua fs n _ (cloture (nsub_to_char n (A; m)))) in f.
-    exact f.
-  Defined.
-  
+  (* Definition of diagonals *)
   Definition δ (T:Trunk (trunc_S n)) : T.1 * T.1-> Trunk n.
     intros x. exists (fst x = snd x). apply istrunc_paths.
     exact T.2.
@@ -865,11 +870,6 @@ Section Definitions.
     unfold islex_compat_func. simpl.
     apply ap10_O_retr_sect.
   Defined.
-    
-  Lemma path_sigma_eta (A : Type) (P : A → Type) (u : ∃ x, P x)
-  : path_sigma P u (u.1;u.2) 1 1 = (eta_sigma u)^.
-  destruct u. simpl. reflexivity.
-  Defined.
 
   Lemma dense_into_cloture_dense_eq (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
   : is_dense_eq (λ e:clA, ({π : (φ e.1).1 & O_unit nj _ π = e.2} ; trunc_sigma (φ e .1) .2
@@ -912,16 +912,13 @@ Section Definitions.
     unfold incl_Aeq_Eeq. simpl.
     rewrite <- transport_pp.
     rewrite transport_equiv. simpl.
-    rewrite ap_idmap.
-    (* rewrite ap_const. *)
-    (* unfold compose. *)
     simpl.
+    rewrite ap_idmap.
     rewrite transport_pp.
 
     pose (foo := lex_compat (φ a .1) (O nj (φ a .1)).1 (O_unit nj (φ a .1))). unfold equiv_path in foo; simpl in foo.
     specialize (foo a.2 π'). simpl in foo.
     unfold hfiber in foo. simpl in foo.
-    (* assert (bar := foo..1); simpl in bar. *)
 
     apply (moveR_transport_V idmap (islex_nj (φ a .1) (O nj (φ a .1)) .1 (O_unit nj (φ a .1)) a .2) (transport idmap (dicde_l φ a)  (a .2; 1))).
 
@@ -929,7 +926,8 @@ Section Definitions.
     clear foo.
     apply dicde_ll. exact π. exact π'.
   Qed.
-  
+
+  (* Any object seen as a subobject of its closure is closed *)
   Definition dense_into_cloture (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
   : EnJ clA.
     refine (Build_EnJ (dense_into_cloture_dense_eq φ) _).

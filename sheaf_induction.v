@@ -23,23 +23,6 @@ Arguments trunc_forall {H} {A} {P} {n} H0: simpl never.
 Arguments istrunc_paths {A} {n} H x y: simpl never.
 Arguments truncn_unique _ {n} A B H: simpl never.
 Arguments isequiv_functor_sigma {A P B Q} f {H} g {H0}: simpl never.
-
-(* Fixpoint reflectors `{ua: Univalence} `{fs: Funext} (n:trunc_index) {struct n} : forall (_:Type(T : Trunk@{i' i} n.+1), Trunk@{j' j} (n.+1). *)
-(*   destruct n. *)
-(*   - intro T. exact (Oj T).1. *)
-(*   - intros T. *)
-(*     Set Printing Universes. *)
-(*     pose (Ω := {T : Trunk n.+1 & T = On T} : Type). *)
-(*     pose ({u : T.1 -> Ω & On (existT (IsTrunc (n.+1)) (Trunc -1 {a:T.1 & pr1 o u = (λ t:T.1, On (a=t; istrunc_paths T.2 a t))}) (IsHProp_IsTrunc (istrunc_truncation -1 _) n ))}). *)
-(*     assert (forall u : T.1 -> Ω, IsTrunc (n.+1) (Trunc -1 {a:T.1 & pr1 o u = (λ t:T.1, On (a=t; istrunc_paths T.2 a t))})). *)
-(*     { intro u. *)
-(*       apply IsHProp_IsTrunc. *)
-(*       apply istrunc_truncation. } *)
-(*     assert (forall u : T.1 -> Ω, Type). *)
-(*     intro u. *)
-(*     pose ((existT (λ T:Type, IsTrunc (n.+1) T) (Trunc -1 {a:T.1 & pr1 o u = (λ t:T.1, On (a=t; istrunc_paths T.2 a t))}) (X u)) : Trunk n.+1). simpl in t. *)
-(*     specialize (On t). *)
-(*     exists ({u : T.1 -> Ω & On (existT (IsTrunc (n.+1)) (Trunc -1 {a:T.1 & pr1 o u = (λ t:T.1, On (a=t; istrunc_paths T.2 a t))}) (X u))}). *)
                         
 Section Sheafification.
 
@@ -57,6 +40,7 @@ Section Sheafification.
   Local Definition islex_nj := sheaf_def_and_thm.islex_nj.
   Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
 
+  (* Definition of □T *)
   Definition separated_Type (T:Trunk (trunc_S n)) : Type :=
     Im (λ t : pr1 T, λ t', nj.(O) (t = t'; istrunc_paths T.2 t t')).
 
@@ -75,13 +59,6 @@ Section Sheafification.
              (g : pr1 T -> pr1 U) x y (e : x = y) : 
     ap (fun u => g o u) (ap (E_to_χ_map T χ) e) = ap (E_to_χ_map U χ) (ap (fun u => g o u) e).
     destruct e; reflexivity.
-  Defined.
-
-  Definition apf_Mono (T U:Type) (f: T -> U) (fMono : IsMonof f) X (x y : X -> T) (e e' : x = y) : 
-    ap (fun u => f o u) e = ap (fun u => f o u) e' -> e = e'.
-    intro. 
-    rewrite <- (@eissect _ _ _ (fMono _ _ _) e). 
-    rewrite <- (@eissect _ _ _ (fMono _ _ _) e'). exact (ap _ X0). 
   Defined.
 
   Instance separated_mono_is_separated_ (T U:Trunk (trunc_S n)) E χ g h (f: pr1 T -> pr1 U)
@@ -104,6 +81,7 @@ Section Sheafification.
     apply eissect.
   Defined.
 
+  (* Lemma 28 *)
   Definition separated_mono_is_separated (T U:Trunk (trunc_S n)) (H:separated U) (f: pr1 T -> pr1 U) (fMono : IsMonof f) : separated T.
     intros E χ x y.
     refine (separated_mono_is_separated_ _ (H E χ (f o x) (f o y)) fMono).
@@ -121,8 +99,10 @@ Section Sheafification.
     apply (dep_prod_SnType_j_Type (fun x:pr1 T => ((existT (IsTrunc (n.+1)) (subuniverse_Type nj) (@subuniverse_Type_is_TrunkSn _ nj ua));nType_j_Type_is_SnType_j_Type))).
   Defined.
 
+  (* For any type [T], [T -> subuniverse_Type] is modal *)
   Definition T_nType_j_Type_sheaf T : SnType_j_Type :=  ((pr1 T -> subuniverse_Type nj; T_nType_j_Type_trunc T); T_nType_j_Type_isSheaf _).
 
+  (* Proposition 27 *)
   Definition separated_Type_is_separated (T:Trunk (trunc_S n)) : separated (separated_Type T; separated_Type_is_Trunk_Sn (T:=T)).
     apply (@separated_mono_is_separated
               (separated_Type T;separated_Type_is_Trunk_Sn (T:=T))
@@ -151,15 +131,11 @@ Section Sheafification.
 
   Definition separated_unit T :  pr1 T -> separated_Type T := toIm _.
 
-  Definition kpsic_func_univ_func
+  Definition mu_modal_paths_func_univ_func
              (T : Trunk (trunc_S n))
              (a : T .1)
              (b : T .1)
              (p : ((clδ T) (a, b)) .1)
-             (* (Ωj := (T .1 → subuniverse_Type nj; T_nType_j_Type_trunc T) *)
-                    (* : ∃ x, IsTrunc (trunc_S n) x) *)
-             (* (inj := (pr1:separated_Type T → Ωj .1) : separated_Type T → Ωj .1) *)
-             (* (X : IsMono inj) *)
              (t : T .1)
   : ((O nj (a = t; istrunc_paths T.2 a t)) .1) .1 ->
     ((O nj (b = t; istrunc_paths T.2 b t)) .1) .1.
@@ -168,15 +144,11 @@ Section Sheafification.
     exact (v^@u).
   Defined.
 
-  Definition kpsic_func_univ_inv
+  Definition mu_modal_paths_func_univ_inv
              (T : Trunk (trunc_S n))
              (a : T .1)
              (b : T .1)
              (p : ((clδ T) (a, b)) .1)
-             (* (Ωj := (T .1 → subuniverse_Type nj; T_nType_j_Type_trunc T) *)
-                    (* : ∃ x, IsTrunc (trunc_S n) x) *)
-             (* (inj := (pr1:separated_Type T → Ωj .1) : separated_Type T → Ωj .1) *)
-             (* (X : IsMono inj) *)
              (t : T .1)
   : ((O nj (b = t; istrunc_paths T.2 b t)) .1) .1 ->
     ((O nj (a = t; istrunc_paths T.2 a t)) .1) .1 .
@@ -185,21 +157,17 @@ Section Sheafification.
     exact (v@u).
   Defined.
 
-  Lemma kpsic_func_univ_eq
+  Lemma mu_modal_paths_func_univ_eq
         (T : Trunk (trunc_S n))
         (a : T .1)
         (b : T .1)
         (p : (clδ T (a, b)) .1)
-        (* (Ωj := (T .1 → subuniverse_Type nj; T_nType_j_Type_trunc T) *)
-               (* : ∃ x, IsTrunc (trunc_S n) x) *)
-        (* (inj := (pr1:separated_Type T → Ωj .1) : separated_Type T → Ωj .1) *)
-        (* (X : IsMono inj) *)
         (t : T .1)
-  : (Sect (kpsic_func_univ_inv T a b p t) (kpsic_func_univ_func T a b p t))
-    /\ (Sect (kpsic_func_univ_func T a b p t) (kpsic_func_univ_inv T a b p t)).
+  : (Sect (mu_modal_paths_func_univ_inv T a b p t) (mu_modal_paths_func_univ_func T a b p t))
+    /\ (Sect (mu_modal_paths_func_univ_func T a b p t) (mu_modal_paths_func_univ_inv T a b p t)).
     split.
     - intro x.
-      unfold kpsic_func_univ_inv, kpsic_func_univ_func, δ; simpl. unfold clδ, δ in p; simpl in p.
+      unfold mu_modal_paths_func_univ_inv, mu_modal_paths_func_univ_func, δ; simpl. unfold clδ, δ in p; simpl in p.
       pose (foo := O_rec_O_rec nj
                      (a = t; istrunc_paths T.2 a t)
                      (b = t; istrunc_paths T.2 b t)
@@ -228,7 +196,7 @@ Section Sheafification.
       intros q q'. destruct q.
       rewrite concat_p1.
       apply concat_Vp.
-    - intro x. unfold kpsic_func_univ_inv, kpsic_func_univ_func, δ. simpl.
+    - intro x. unfold mu_modal_paths_func_univ_inv, mu_modal_paths_func_univ_func, δ. simpl.
       pose (foo := O_rec_O_rec nj
                      (b = t; istrunc_paths T.2 b t)
                      (a = t; istrunc_paths T.2 a t)
@@ -258,9 +226,9 @@ Section Sheafification.
       apply concat_1p.
   Qed.
 
-  Arguments kpsic_func_univ_eq : default implicits, simpl never.
+  Arguments mu_modal_paths_func_univ_eq : default implicits, simpl never.
 
-    Lemma kpsic_aux (A B:Trunk n) (v:A.1) (eq : A.1 = B.1)
+    Lemma mu_modal_paths_aux (A B:Trunk n) (v:A.1) (eq : A.1 = B.1)
   : O_unit nj B (transport idmap eq v)
     = transport idmap
                 (ap pr1
@@ -284,7 +252,7 @@ Section Sheafification.
                                      (O_unit nj (A; TrA) v)) X^).
     simpl. reflexivity.
     Defined.
-    
+
   Definition separated_unit_paths_are_nj_paths_fun T (a b:T.1) : (separated_unit T a = separated_unit T b) -> (O nj (a=b; istrunc_paths T.2 a b)).1.1.
     intro p.
     unfold separated_unit, toIm in p. simpl in p.
@@ -311,9 +279,9 @@ Section Sheafification.
     apply unique_subuniverse; apply truncn_unique. exact fs.
     unfold Oj; simpl. 
     apply path_universe_uncurried.
-    exists (kpsic_func_univ_func T a b p t).
-    apply isequiv_adjointify with (g := kpsic_func_univ_inv T a b p t);
-      [exact (fst (kpsic_func_univ_eq T a b p t)) | exact (snd (kpsic_func_univ_eq T a b p t))].
+    exists (mu_modal_paths_func_univ_func T a b p t).
+    apply isequiv_adjointify with (g := mu_modal_paths_func_univ_inv T a b p t);
+      [exact (fst (mu_modal_paths_func_univ_eq T a b p t)) | exact (snd (mu_modal_paths_func_univ_eq T a b p t))].
     exact (@equiv_inv _ _ _ (X (separated_unit T a) (separated_unit T b)) X0).
   Defined.
 
@@ -350,18 +318,18 @@ Section Sheafification.
       assert (rew := equal_equiv_inv (eisretr _ (IsEquiv := isequiv_equiv_path ((O nj (a = a; istrunc_paths T .2 a a)) .1) .1 ((O nj (b = a; istrunc_paths T .2 b a)) .1) .1)
 
                                               {|
-                                                equiv_fun := kpsic_func_univ_func T a b x
+                                                equiv_fun := mu_modal_paths_func_univ_func T a b x
                                                                                    a;
                                                 equiv_isequiv := isequiv_adjointify
-                                                                   (kpsic_func_univ_func T a b x
+                                                                   (mu_modal_paths_func_univ_func T a b x
                                                                                           a)
-                                                                   (kpsic_func_univ_inv T a b x
+                                                                   (mu_modal_paths_func_univ_inv T a b x
                                                                                          a)
                                                                    (fst
-                                                                      (kpsic_func_univ_eq T a b x
+                                                                      (mu_modal_paths_func_univ_eq T a b x
                                                                                            a))
                                                                    (snd
-                                                                      (kpsic_func_univ_eq T a b x
+                                                                      (mu_modal_paths_func_univ_eq T a b x
                                                                                            a)) |}
                                      )
              ). unfold Sect in rew. simpl in rew.
@@ -374,7 +342,7 @@ Section Sheafification.
                                                                                                                        (b = a; istrunc_paths T .2 b a) (equal_inverse a b))))) x)) rew^); clear rew.
 
       
-      unfold kpsic_func_univ_func, δ. simpl.
+      unfold mu_modal_paths_func_univ_func, δ. simpl.
 
       pose (foo := ap10 (O_rec_retr (a = a; istrunc_paths T .2 a a) (O nj (b = a; istrunc_paths T .2 b a)) (λ u : a = a,
                                                                                                                   O_rec (a = b; istrunc_paths T .2 a b)
@@ -392,7 +360,7 @@ Section Sheafification.
       apply ap. apply concat_p1.
 
 
-      pose (foo := kpsic_aux).
+      pose (foo := mu_modal_paths_aux).
       specialize (foo (a = b; istrunc_paths T .2 a b) (b = a; istrunc_paths T .2 b a) v (equal_inverse a b)).
       transitivity (O_unit nj (b = a; istrunc_paths T .2 b a)
                            (transport idmap (equal_inverse a b) v)); try exact foo.
@@ -442,7 +410,7 @@ Section Sheafification.
       apply (@equiv_inj _ _ _ (isequiv_equiv_path _ _)); unfold path_universe_uncurried; rewrite eisretr.
 
       apply equal_equiv.
-      unfold kpsic_func_univ_func, δ. simpl.
+      unfold mu_modal_paths_func_univ_func, δ. simpl.
 
       apply (@equiv_inj _ _ _ (O_equiv nj (a = t; istrunc_paths T.2 a t) (O nj (b = t; istrunc_paths T.2 b t)))).
       rewrite (O_rec_retr).
@@ -520,6 +488,7 @@ Section Sheafification.
       rewrite transport_pV. reflexivity.
   Qed.
 
+  (* For any [x,y:T], [(μ x = μ y) = ○ (x = y)] : in proof of Lemma 29 *)
   Theorem separated_unit_paths_are_nj_paths T (a b:T.1) : (separated_unit T a = separated_unit T b) <~> (O nj (a=b; istrunc_paths T.2 a b)).1.1.
   Proof.
     refine (equiv_adjointify _ _ _ _).
@@ -566,6 +535,7 @@ Section Sheafification.
       destruct p. exact a.
   Defined.
 
+  (* Lemma 29 *)
   Lemma diagrams_are_equal_types (T:Trunk (trunc_S n))
   : diagram0 (Cech_nerve_separated_unit T) = diagram0 (cl_diagonal_diagram T).
     apply path_forall; intros ?.
@@ -573,6 +543,7 @@ Section Sheafification.
     apply hPullback_separated_unit_is_cl_diag.
   Defined.
 
+  (* Lemma 29 *)
   Lemma diagrams_are_equal_proj (T:Trunk (trunc_S n))
   : ∀ (i j : Cech_nerve_graph) (x : Cech_nerve_graph i j),
       diagram1 (Cech_nerve_separated_unit T) x ==
@@ -623,6 +594,7 @@ Section Sheafification.
         clearbody bar. simpl in bar.
   Admitted. (* This lemma is obvious on paper, but really painful to formalize. Maybe we should represent hPullback another way... *)
 
+  (* Lemma 29 *)
   Lemma diagrams_are_equal (T:Trunk (trunc_S n))
   : (Cech_nerve_separated_unit T) = cl_diagonal_diagram T.
     (* unfold Cech_nerve_separated_unit, Cech_nerve_diagram, cl_diagonal_diagram. *)
@@ -690,6 +662,7 @@ Section Sheafification.
     apply sep_eq_inv_lemma.
   Defined.
 
+  (* Proposition 30 *)
   Definition separated_equiv : forall (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T}),
                                  IsEquiv (fun f : separated_Type P -> pr1 (pr1 Q) =>
                                             f o (separated_unit P)).
@@ -821,7 +794,7 @@ Section Sheafification.
 
         unfold equiv_path; simpl.
         apply equal_equiv.
-        unfold kpsic_func_univ_func. simpl. 
+        unfold mu_modal_paths_func_univ_func. simpl. 
         apply (@equiv_inj  _ _ _ (O_equiv nj _ _)).
         rewrite O_rec_retr.
         apply path_forall; intro y.
@@ -837,7 +810,7 @@ Section Sheafification.
       { reflexivity. }
   Qed.
       
-
+  (* Proposition 30 *)
   Definition separation_reflective_subuniverse
   : subuniverse_struct (trunc_S n)
     := Build_subuniverse_struct
@@ -853,7 +826,6 @@ Section Sheafification.
     - intros e0.
       pose (dense_eq χ e0.1).
       etransitivity; try exact p.
-      (* rewrite <- p. *)
       apply path_universe_uncurried.
       refine (equiv_adjointify _ _ _ _).
       + intros [e' q]. destruct q. exists e0.1. reflexivity.
@@ -887,6 +859,7 @@ Section Sheafification.
       simpl in p. exact p.
   Defined.
 
+  (* Proposition 31 *)
   Definition separated_modality : Modality (trunc_S n).
     refine (Build_Modality _ separation_reflective_subuniverse _).
     intros A B. simpl in *.
@@ -942,7 +915,6 @@ Section Sheafification.
       unfold Sect, equiv_inv, E_to_χ_map in p0.
       pose (p1 := ap (λ u, ap10 u (a;c)) p0). simpl in p1.
       etransitivity; [exact p1 |
-      (* apply (transport (λ u, ap10 u _ = _) p0^). *)
       exact (apD10 (eisretr (apD10 (f:=(λ x0 : ∃ b : E, (χ b).1, (f x0.1).1)) (g:=(λ x0 : ∃ b : E, (χ b).1, (g x0.1).1))) (IsEquiv := isequiv_apD10 _ _ (λ x0 : ∃ b : E, (χ b).1, (f x0.1).1) (λ x0 : ∃ b : E, (χ b).1, (g x0.1).1)) (λ y : ∃ b : E, (χ b).1, ap pr1 (ap10 H y))) (a;c))].
       
     - intro p. unfold E_to_χ_map in *; simpl in *.
@@ -1131,11 +1103,8 @@ Section Sheafification.
         apply ap.
         rewrite concat_p_pp.
         apply whiskerR. simpl.
-        (* apply whiskerL. simpl. *)
         rewrite inv_V.
-        (* rewrite ap_V. *)
-        reflexivity.
-      }
+        reflexivity. }
     - intro p.
       apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_forall f g))). apply isequiv_inverse.
       rewrite eissect. simpl.
@@ -1332,17 +1301,6 @@ Section Sheafification.
           unfold moveR_equiv_V. simpl. hott_simpl. }
       }
   Defined.
-
-  Lemma IsTrunc_n_paths_IsTrunc_Sn (X:Type) (m:trunc_index)
-  : (forall x y:X, IsTrunc m (x=y)) -> IsTrunc m.+1 X.
-    revert X.
-    induction m.
-    intros X H.
-    apply hprop_allpath.
-    intros x y. exact (center _ (H x y)).
-    intros X H.
-    intros x y. simpl. unfold IsTrunc in *.
-  Abort.
 
   (**** From separated to sheaf ****)
 
@@ -1551,10 +1509,6 @@ Section Sheafification.
     apply foo.
   Defined.
 
-  Lemma ap_equalf (A B C:Type) (x y : C -> B) (a : A) eq (φ : A -> C): (ap10 (ap (x:=x) (y:=y) (λ (f : C -> B), λ (t:A), f (φ t)) eq)) a = ap10 eq (φ a).
-    destruct eq; simpl. reflexivity.
-  Qed.
-  
   Definition closed_to_sheaf_inv
              (A : Trunk (trunc_S n))
              (B : SnType_j_Type)
@@ -1683,7 +1637,8 @@ Section Sheafification.
          (inv_B (λ t : {b0 : E | ((χ b0) .1) .1}, m (X t .1))) =
        (λ t : {b0 : E | ((χ b0) .1) .1}, m (X t .1))), ((ap10  x (e; X0)) = (ap10  (sect_B (λ t : E, m (X t))) e))) (inverse adj_B)).
       clear adj_B.
-      exact (@ap_equalf {b0 : E | ((χ b0) .1) .1} ((B .1) .1) E (inv_B (λ t : {b : E | ((χ b) .1) .1}, (λ t0 : E, m (X t0)) t .1)) (λ t : E, m (X t)) (e;X0) (sect_B (λ t : E, m (X t))) pr1).
+
+      exact (@ap10_ap_precompose {b0 : E | ((χ b0) .1) .1} E ((B .1) .1) pr1 (inv_B (λ t : {b : E | ((χ b) .1) .1}, (λ t0 : E, m (X t0)) t .1)) (λ t : E, m (X t)) (sect_B (λ t : E, m (X t))) (e;X0)).
 
     exact (inverse (@cloture_fun_ E χ (λ x, (hfiber m (Y x); Trm (Y x))) (λ e p, pr2 (E_to_Y'A _ _ closed _ b retr_B (e;p))) (λ b, match j_is_nj (χ b) .1 in (_ = y) return y with | 1%path => (χ b) .2 end) h X0 b)).
 
@@ -1713,7 +1668,7 @@ Section Sheafification.
     destruct X. exact (@isequiv_compose _ _ _ (@isequiv_compose _ _ _ e1 _ _ e2) _ _ e3).
   Qed.
 
-      
+  (* Lemma 32 *)      
   Definition closed_to_sheaf (A:Trunk (trunc_S n)) (B:SnType_j_Type) (m : {f : (pr1 A) -> (pr1 (pr1 B)) & forall b, IsTrunc n (hfiber f b)}) (Monom : IsMono m.1)
   : closed' m  -> Snsheaf_struct A.
     intro cl_m.
@@ -1857,13 +1812,16 @@ Section Sheafification.
   Definition sheafification_ (T:Trunk (trunc_S n)) : Snsheaf_struct (sheafification_trunc T)
     := separated_to_sheaf' (((existT (IsTrunc (trunc_S n)) (separated_Type T) (separated_Type_is_Trunk_Sn (T:=T)))); @separated_Type_is_separated T) (T_nType_j_Type_sheaf T) (IsMono_fromIm (f:=_)).
 
+  (* Definition of ○_{n+1} *)
   Definition sheafification (T:Trunk (trunc_S n)) : SnType_j_Type :=
   ((sheafification_Type T ; sheafification_istrunc  (T:=T)); sheafification_ T).
 
+  (* Definition of ○_{n+1} matching the one in the paper *)
   Definition good_sheafification_Type (T:Trunk (n.+1))
     := {u : T.1 -> subuniverse_Type nj & (Oj (Trunc -1 ({a:T.1 & (λ t' : T.1,
                                                                          (O nj (a = t'; istrunc_paths T.2 a t'))) = u}); istrunc_truncation -1 _)).1.1}.
 
+  (* The above definitions are equal *)
   Lemma good_sheafification_Type_is_sheafification_Type (T:Trunk (trunc_S n))
   : (sheafification T).1.1 = good_sheafification_Type T.
     unfold sheafification, sheafification_Type, separated_to_sheaf, separated_to_sheaf_Type, cloture; simpl.
@@ -1984,16 +1942,6 @@ Section Sheafification.
       apply path_ishprop.
   Defined.
 
-  Lemma equiv_arrow (A B C:Type) (H : A <~> B)
-  : (A -> C) <~> (B -> C).
-    refine (equiv_adjointify _ _ _ _).
-    - intros f b; apply f. apply H; exact b.
-    - intros f a; apply f. apply H; exact a.
-    - intros f. apply path_forall; intro b. rewrite eisretr. reflexivity.
-    - intros f. apply path_forall; intro a. rewrite eissect. reflexivity.
-  Defined.
-                                          
-
   Definition sheafification_equiv (P:Trunk (n.+1)) (Q : Trunk (n.+1)) (modQ : (Snsheaf_struct Q))
   : IsEquiv (fun f : (good_sheafification P).1.1 -> Q.1 => f o (good_sheafification_unit P)).
     destruct modQ as [sepQ sheafQ].
@@ -2014,12 +1962,7 @@ Section Sheafification.
     - exact (separated_equiv P (existT (separated) Q sepQ)).
   Qed.
 
-  Lemma moveR_EV2 (A C:Type) (B:A -> Type) (D:C -> Type) (f : (forall x, B x) -> (forall x, D x)) (H : IsEquiv f) (g:forall x, B x) (h:forall x, D x) (a:A)
-  : (f g = h) -> (f^-1 h a = g a).
-    intro X. destruct X. rewrite eissect. reflexivity.
-  Qed.
-    
-    
+  (* Proposition 33 *)
   Definition sheafification_subu_sigma (A:Trunk n.+1) (modA : Snsheaf_struct A) (B: A.1 -> Trunk n.+1) (modB : forall a, (Snsheaf_struct (B a))) 
   : Snsheaf_struct (({x:A.1 & (B x).1} ; trunc_sigma (A.2) (λ x, (B x).2)): Trunk n.+1).
     destruct modA as [sepA sheafA].
@@ -2093,6 +2036,7 @@ Section Sheafification.
                                    (e;h))^. }
   Qed.
 
+  (* Proposition 33 *)
   Definition sheafification_subU : subuniverse_struct (n.+1).
     refine (Build_subuniverse_struct _ _ _ _).
     - intro T. exists (Snsheaf_struct T). apply Snsheaf_struct_is_HProp.
@@ -2100,14 +2044,15 @@ Section Sheafification.
     - intros T. apply good_sheafification_unit.
     - exact (λ P Q, sheafification_equiv P Q.2).
   Defined.
-      
+
+  (* Proposition 34 *)
   Definition sheafification_modality : Modality (n.+1).
     refine (Build_Modality _ _ _).
     - exact sheafification_subU.
     - exact (λ A B, sheafification_subu_sigma A.2 (pr1 o B) (λ a, (B a).2)).
   Defined.
       
-    
+  (* Proposition 35 as an axiom because of universes issues *)
   Axiom cumulativity : forall (T:Trunk n) (SnT : IsTrunc (n.+1) T.1), (O nj T).1.1 = (good_sheafification_Type (T.1;SnT)).
 
 
@@ -2137,12 +2082,13 @@ Section Sheafification.
     apply unique_subuniverse; apply truncn_unique. exact fs.
     unfold Oj; simpl. 
     apply path_universe_uncurried.
-    exists (kpsic_func_univ_func T a b p t).
-    apply isequiv_adjointify with (g := kpsic_func_univ_inv T a b p t);
-      [exact (fst (kpsic_func_univ_eq T a b p t)) | exact (snd (kpsic_func_univ_eq T a b p t))].
+    exists (mu_modal_paths_func_univ_func T a b p t).
+    apply isequiv_adjointify with (g := mu_modal_paths_func_univ_inv T a b p t);
+      [exact (fst (mu_modal_paths_func_univ_eq T a b p t)) | exact (snd (mu_modal_paths_func_univ_eq T a b p t))].
     exact (@equiv_inv _ _ _ (X _ _) X0).
   Defined.
-  
+
+  (* Proposition 36 *)
   Lemma O_paths_is_paths_sheafification_unit (T:Trunk (n.+1)) (a b:T.1)
   : ((good_sheafification_unit T a) = (good_sheafification_unit T b)) <~> (O nj (a = b; (istrunc_paths T.2 a b))).1.1.
     refine (equiv_adjointify _ _ _ _).
@@ -2195,7 +2141,7 @@ Section Sheafification.
       assert (rew := eissect _ (IsEquiv := isequiv_truncn_unique (O nj (a = a; istrunc_paths T.2 a a)).1 (O nj (b = a; istrunc_paths T.2 b a)).1)). unfold Sect in rew; simpl in rew; unfold pr1_path in rew.
       rewrite rew; clear rew.
       rewrite transport_path_universe_uncurried.
-      unfold kpsic_func_univ_func, δ. simpl.
+      unfold mu_modal_paths_func_univ_func, δ. simpl.
       pose (foo := ap10 (O_rec_retr (a = a; istrunc_paths T .2 a a) (O nj (b = a; istrunc_paths T.2 b a))
                                     (λ u : a = a,
       O_rec (a = b; istrunc_paths T.2 a b)
@@ -2209,7 +2155,7 @@ Section Sheafification.
       rewrite O_rec_retr.
       apply path_forall; intro v. simpl in v.
       rewrite concat_p1.
-      pose (foo := kpsic_aux (a = b; istrunc_paths T.2 a b) (b = a; istrunc_paths T.2 b a) v (equal_inverse a b)).
+      pose (foo := mu_modal_paths_aux (a = b; istrunc_paths T.2 a b) (b = a; istrunc_paths T.2 b a) v (equal_inverse a b)).
       transitivity (O_unit nj (b = a; istrunc_paths T .2 b a)
                            (transport idmap (equal_inverse a b) v)); try exact foo.
       apply ap. unfold equal_inverse.
@@ -2261,7 +2207,7 @@ Section Sheafification.
       simpl in *.
       apply (@equiv_inj _ _ _ (isequiv_equiv_path _ _)); unfold path_universe_uncurried; rewrite eisretr.
       apply equal_equiv.
-      unfold kpsic_func_univ_func, δ. simpl.
+      unfold mu_modal_paths_func_univ_func, δ. simpl.
 
       apply path_forall; intro x.
       refine (ap10 (moveR_EV _ _ _) x).
@@ -2325,7 +2271,8 @@ Section Sheafification.
   : ((good_sheafification_unit T a) = (good_sheafification_unit T b)) <~> (O nj (a = b; (istrunc_paths T.2 a b))).1.1.
   Admitted. (* Universes *)
 
-    
+
+  (* Left-exactness of sheafification *)
   Definition sheafification_left_exact
   : IsLex sheafification_modality.
     intros A x y H. simpl.

@@ -150,21 +150,15 @@ Definition nsub_eq_char_retr n B : Sect (nchar_to_sub (n:=n) (B:=B)) (nsub_to_ch
   apply nhfiber_pi1.
 Defined.
 
-(* Lemma eq_dep_sumT : forall A (B:A->Type) (P P':A) (H:B P) (H':B P')  (prf: P = P'),  H = prf^ # H'  -> existT _ P H = existT _ P' H'. *)
-(* intros A B P P' H H' prf X; destruct prf. rewrite X. reflexivity. *)
-(*  Qed. *)
-
 Definition nsub_eq_char_sect n B : Sect (nsub_to_char n (B:=B))(nchar_to_sub (n:=n) (B:=B)).
   intro t; destruct t as [A f]; simpl.
   apply (path_sigma) with (p := (hfiber_eq (f.1))).
-  (* apply (eq_dep_sumT (λ T, ∃ f : T → B, ∀ b : B, IsTrunc n (hfiber f b)) _ (hfiber_eq (f.1))). *)
   simpl.
   apply (moveR_transport_p (λ A0 : Type, ∃ f0 : A0 → B, ∀ b : B, IsTrunc n (hfiber f0 b)) (hfiber_eq f .1) (pr1; nchar_to_sub_compat (nsub_to_char n (A; f))) f).
   rewrite <- (eta_sigma).
 
   assert (pr1 = (transport (λ A0 : Type, ∃ f0 : A0 → B, ∀ b : B, IsTrunc n (hfiber f0 b))
      (hfiber_eq f .1) ^ f).1).
-  (* equalT_pi1. *)
   apply path_forall; intro t.
   destruct t as [b [a eq]]; simpl.
   destruct f as [f Tr_f]. simpl in *.
@@ -174,7 +168,6 @@ Definition nsub_eq_char_sect n B : Sect (nsub_to_char n (B:=B))(nchar_to_sub (n:
              (transport (λ x : Type, x) (((hfiber_eq f)^^))
                 (f a; (a; idpath))))).
   hott_simpl.
-  (* rewrite (id_sym_invol). *)
   unfold hfiber_eq. rewrite transport_path_universe_uncurried, transport_const.
   simpl. exact (eq^).
   symmetry. simpl in *.
@@ -187,6 +180,7 @@ Defined.
 Instance nsub_eq_char_eq n B : IsEquiv (nsub_to_char n (B:=B)) := 
   isequiv_adjointify _ (nchar_to_sub (B:=B)) (nsub_eq_char_retr (n:=n) (B:=B)) (nsub_eq_char_sect n (B:=B)).
 
+(* Section II.A, hierarchy of subobject classifiers *)
 Definition nsub_eq_char n B : {A : Type & {f : A -> B & forall b, IsTrunc n (hfiber f b)}} = (B -> Trunk n).
   apply path_universe_uncurried.
   exists (nsub_to_char n (B:=B)).
@@ -196,6 +190,7 @@ Defined.
 Definition nterminal n A B (f : {f : A -> B & forall b, IsTrunc n (hfiber f b)}) : A -> {A' : Trunk n & (A'.1)} :=
   λ a, (((hfiber (f.1) ((f.1) a)) ; (f.2) ((f.1) a)); (a; idpath)).
 
+(* Commutative diagram of subobject classifier *)
 Definition nsubobject_diagram n A B (f : {f : A -> B & forall b, IsTrunc n (hfiber f b)}) : 
   @pr1 _ _ o nterminal n f = nsub_to_char n (A;f) o (f.1).
   apply path_forall; intro a. unfold nsub_to_char; simpl. reflexivity.

@@ -92,6 +92,14 @@ Section Embeddings.
       apply path_forall_1.
   Qed.
 
+  
+  Definition apf_Mono (T U:Type) (f: T -> U) (fMono : IsMonof f) X (x y : X -> T) (e e' : x = y) : 
+    ap (fun u => f o u) e = ap (fun u => f o u) e' -> e = e'.
+    intro. 
+    rewrite <- (@eissect _ _ _ (fMono _ _ _) e). 
+    rewrite <- (@eissect _ _ _ (fMono _ _ _) e'). exact (ap _ X0). 
+  Defined.
+  
 End Embeddings.
 
 Section Surjections.

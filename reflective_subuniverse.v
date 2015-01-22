@@ -11,7 +11,7 @@ Section Preliminary .
 Context `{ua: Univalence}.
 Context `{fs: Funext}.
 
-(* Definition 7.7.1 *)
+(* Definition 10, (i) to (iv) *)
 Record subuniverse_struct n := Build_subuniverse_struct { 
   
   subuniverse_HProp : forall (T:Trunk n), HProp  ;
@@ -203,12 +203,6 @@ Section Reflective_Subuniverse.
     (function_lift A C (g o f)) = (function_lift B C g) o (function_lift A B f).
     apply path_forall; intro x; simpl.
     unfold function_lift.
-    (* fold ( (O_unit subU C) o g). *)
-    (* fold ( (O_unit subU B) o f). *)
-    (* assert ((λ x : A .1, O_unit subU C ((g o f) x)) = ((((O_unit subU C) o g) o f))). *)
-      (* reflexivity. *)
-    (* rewrite X; clear X. *)
-    
     assert (O_rec A (O subU C) (((O_unit subU C o g) o f)) = O_rec A (O subU C) (((O_rec B (O subU C) (O_unit subU C o g) o O_unit subU B) o f))).
       pose (foo := O_rec_retr B (O subU C) (O_unit subU C o g)).
       apply (transport (λ U, _ = O_rec _ _ (λ x0, U (f x0))) foo^). reflexivity.
@@ -406,7 +400,7 @@ Section Reflective_Subuniverse.
     exact (equal_inverse a b).
   Defined.
 
-(* Dependent product and arrows *)
+(* Dependent product and arrows, Proposition 11 *)
   Definition subuniverse_forall (A:Type) (B:A -> Trunk n) : (* Theorem 7.7.2 *)
     (forall x, (subU.(subuniverse_HProp) (B x)).1) -> ((subU.(subuniverse_HProp)) (forall x:A, (B x).1 ; trunc_forall (H0 := λ x, (B x).2))).1.
     intro H.
@@ -430,7 +424,7 @@ Section Reflective_Subuniverse.
     intro a. exact B.2.
   Defined.
 
-(* Product *)
+(* Product, Proposition 11 *)
   Definition subuniverse_product (A B : subuniverse_Type) :
     (subuniverse_HProp subU (A.1.1*B.1.1 ; trunc_prod (H:=A.1.2) (H0 := B.1.2))).1.
     rewrite <- subuniverse_iff_O.
@@ -494,7 +488,8 @@ Section Reflective_Subuniverse.
     (A.1 * B.1 -> C.1.1) = ((O subU A).1.1*(O subU B).1.1 -> C.1.1).
     apply path_universe_uncurried; exact (product_universal A B C).
   Defined.
-
+  
+  (* Proposition 11 *)
   Definition subuniverse_product' (A B : Trunk n) (TrP : IsTrunc n (A.1*B.1)) : (O subU (A.1*B.1 ; TrP)).1.1 = ((O subU A).1.1*(O subU B).1.1).
     apply path_universe_uncurried.
     refine (equiv_adjointify _ _ _ _).
@@ -546,7 +541,7 @@ Section Reflective_Subuniverse.
       apply O_rec_retr.
   Defined.
   
-  (* Theorem 7.7.4 *)
+  (* Proposition 11 *)
   Definition subuniverse_sigma :
     (forall (A:subuniverse_Type) (B:A.1.1 -> subuniverse_Type), (subuniverse_HProp subU ({x:A.1.1 & (B x).1.1} ; trunc_sigma (H:=A.1.2) (H0 := λ x, (B x).1.2))).1) <->
     (forall (A:Trunk n) (B: (O subU A).1.1 -> subuniverse_Type) (g : forall (a:A.1), (B (O_unit subU A a)).1.1), {f : forall (z:(O subU A).1.1), (B z).1.1 & forall a:A.1, f (O_unit subU A a) = g a}).
@@ -610,10 +605,12 @@ Section Reflective_Subuniverse.
     destruct u; reflexivity.
   Defined.
 
+  (* Proposition 11 *)
   Definition OUnit_is_Unit : (((O subU (Unit; trunc_unit n)).1).1 = Unit)
     := ((O_modal ((((Unit; trunc_unit n) : Trunk n); subuniverse_unit) : subuniverse_Type))..1..1)^.
 
   (** Paths *)
+  (* Proposition 11 *)
   Definition subuniverse_paths (A : subuniverse_Type)
   : forall x y:A.1.1, (subuniverse_HProp subU (x = y ; istrunc_paths _ n (H:= (trunc_succ (H := A.1.2))) _ _)).1.
     intros x y.

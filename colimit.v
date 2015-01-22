@@ -7,7 +7,8 @@ Global Set Primitive Projections.
 
 Section Diagram.
 
-  (* From Peter Lumsdaine *)
+  (* From https://github.com/peterlefanulumsdaine/hott-limits *)
+  (* Definition 5 *)
   Record graph :=
     { graph0 :> Type;
       graph1 :> graph0 -> graph0 -> Type }.
@@ -19,11 +20,9 @@ Section Diagram.
   Global Arguments diagram0 [G] D i : rename.
   Global Arguments diagram1 [G] D [i j] f x : rename.
   
-  (* Notation "D .1" := (@diagram1 _ D _ _) (at level 3). *)
-
   Context `{fs : Funext}.
   Context `{ua : Univalence}.
-
+  
   Lemma path_diagram (G:graph) (D1 D2: diagram G)
   : {path_type : (diagram0 D1) = (diagram0 D2) 
     & forall (i j:G), forall x:G i j, diagram1 D1 x == (equiv_path _ _ (ap10 path_type j)^) o (diagram1 D2 x) o (equiv_path _ _ (ap10 path_type i)) }
@@ -45,6 +44,7 @@ Section Diagram.
   
 End Diagram.
 
+(* In this module is the higher inductive definition of colimits *)
 Module Export colimit_HIT.
 
   Private Inductive colimit {G:graph} (D : diagram G) : Type:=
@@ -114,6 +114,7 @@ Section colimit_universal_property.
 
   Context `{fs : Funext}.
 
+  (* Definition 6*)
   Definition is_colimit (G:graph) (D:diagram G) (P:Type)
              (q:forall i, D i -> P)
              (pp_q : forall (i j:G) (f: G i j) (x: D i), q _ (diagram1 D f x) = q _ x)

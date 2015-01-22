@@ -295,4 +295,18 @@ Lemma VpV (X:Type) (x y:X) (p q:x=y): p=q -> p^= q^.
 intro H. destruct H. auto.
 Defined.
 
+Lemma ap_path_forall (A B C:Type) (f:A -> B) (g h:B -> C) (eq:forall x, g x = h x)              
+: ap (λ u, u o f) (path_forall g h eq) = path_forall (g o f) (h o f) (λ x, (eq (f x))).
+  apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+  unfold ap10 at 2, path_forall at 2; rewrite eisretr.
+  apply path_forall; intro a.
+  rewrite ap10_ap_precompose.
+  unfold ap10, path_forall; rewrite eisretr. reflexivity.
+Qed.
+    
+Lemma path_sigma_eta (A : Type) (P : A → Type) (u : ∃ x, P x)
+: path_sigma P u (u.1;u.2) 1 1 = (eta_sigma u)^.
+destruct u. simpl. reflexivity.
+Defined.
+
 End Lemmas.

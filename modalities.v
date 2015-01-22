@@ -14,7 +14,7 @@ Arguments trunc_succ {n} {A} H _ _: simpl never.
           
 
 Section Preliminary.
-
+  (* Defiinition 10, (v) *)
   Record Modality n := Build_Modality {
                                
                                underlying_subu : subuniverse_struct n ;
@@ -27,7 +27,7 @@ Section Preliminary.
   Context `{ua: Univalence}.
   Context `{fs: Funext}.
 
-
+  (* Proposition 11 *)
   Definition O_rec_dep {n} {mod : Modality n} (subU := underlying_subu n mod)
              (A:Trunk n) (B: (O subU A).1.1 -> subuniverse_Type subU) (g : forall (a:A.1), (B (O_unit subU A a)).1.1)
   : {f : forall (z:(O subU A).1.1), (B z).1.1 & forall a:A.1, f (O_unit subU A a) = g a}.
@@ -35,6 +35,7 @@ Section Preliminary.
     apply subu_sigma.
   Defined.
 
+  (* Proposition 16, for HProps *)
   Definition hprop_stability {n} {mod : Modality n} (subU := underlying_subu n mod) (P:HProp) (t : IsTrunc n P.1)
   : IsHProp (O subU (P.1;t)).1.1.
     apply hprop_allpath.
@@ -61,6 +62,7 @@ Section Preliminary.
     apply ap. refine (path_ishprop x y). exact P.2.
   Defined.
   
+  (* Lemma 13 *)
   Definition modal_contr_modal_is_equiv n (mod : Modality n.+1) (subU := underlying_subu n.+1 mod) (X:Trunk n.+1) (Y : subuniverse_Type subU) (f : X.1 -> Y.1.1) (mod_contr_f : forall y, Contr (O subU (hfiber f y ; trunc_sigma (X.2) (λ x, trunc_succ (istrunc_paths (Y.1.2) (f x) y)))).1.1)
   : (O subU X).1.1 <~> Y.1.1.
     refine (equiv_adjointify _ _ _ _).
@@ -179,6 +181,7 @@ Section Preliminary.
                                                      (istrunc_paths (Y.1).2 (f x0) (O_rec X Y f (O_unit subU X x))))) (O subU X) (λ X0 : hfiber f (O_rec X Y f (O_unit subU X x)), O_unit subU X X0.1)) (x; (ap10 (O_rec_retr X Y f) x)^)).
   Defined.
 
+  (* Lemma 15 *)
   Lemma O_unit_O_contr_fibers {n:trunc_index} (mod:Modality (trunc_S n)) (subU := underlying_subu (trunc_S n) mod) (X:Trunk n.+1) (Tr : forall x, IsTrunc n.+1 (hfiber (O_unit subU X) x))
   : forall x, Contr (O subU (hfiber (O_unit subU X) x; Tr x)).1.1.
     intros x.
@@ -278,6 +281,7 @@ Section Preliminary.
       + exact fs.
   Defined.
 
+  (* Section III.B : if [A] and [B] are modal and [f:A -> B], then [IsEquiv f] is modal *)
   Lemma is_modal_IsEquiv
         (n p: trunc_index)
         (mod : Modality (n.+1))
@@ -377,7 +381,8 @@ Section LexModality.
       rewrite rew.
       reflexivity.
   Qed.
-                                                                     
+
+  (* Lemma 14 *)
   Definition IsLex_contr_fibers {n:trunc_index} (mod:Modality (trunc_S n)) (subU := underlying_subu (trunc_S n) mod) (islex : IsLex mod) {A B:Trunk n.+1} (f : A.1 -> B.1) (contrA : Contr (O subU A).1.1) (contrB : Contr (O subU B).1.1)
   : forall y:B.1, Contr (O subU (existT (λ T, IsTrunc n.+1 T) (hfiber f y) (trunc_sigma A.2 (λ a, istrunc_paths (trunc_succ (B.2)) _ _)))).1.1.
   Proof.
@@ -397,6 +402,7 @@ Section LexModality.
     exact (transport (λ U, O_rec X (O subU Y) (λ x : X .1, O_unit subU Y (f x)) (O_unit subU X a.1) = O_unit subU Y U) a.2 foo).
   Defined.
 
+  (* Proposition 12 *)
   Lemma islex_to_hfibers_preservation {n:trunc_index} (mod:Modality (trunc_S n)) (subU := underlying_subu (trunc_S n) mod) (islex : IsLex mod)
   : forall (X Y:Trunk n.+1) (f : X.1 -> Y.1) (y:Y.1), (O subU (existT (λ T, IsTrunc n.+1 T) (hfiber f y) (trunc_sigma X.2 (λ a, istrunc_paths (trunc_succ (Y.2)) _ _)))).1.1 = {rx : (O subU X).1.1 & function_lift subU X Y f rx = O_unit subU Y y}.
     intros X Y f y.
@@ -522,7 +528,7 @@ Section LexModality.
       exact i.      
   Defined.
 
- 
+  (* Proposition 12 *) 
   Lemma islex_to_hfibers_preservation_compat {n:trunc_index} (mod:Modality (trunc_S n)) (subU := underlying_subu (trunc_S n) mod) (islex : IsLex mod)
   : forall (X Y:Trunk n.+1) (f: X.1 -> Y.1) (y:Y.1) (a:{a:X.1 & f a = y}),
       ((equiv_path _ _ (islex_to_hfibers_preservation mod islex X Y f y)) o (O_unit subU _)) a = (O_unit subU _ a.1; islex_compat_func mod X Y f y a).

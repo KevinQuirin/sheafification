@@ -20,8 +20,7 @@ Lemma path_sigma_1 (A : Type) (P : A → Type) (u : ∃ x, P x)
 Defined.
 
 Lemma L425 A B (f:A -> B) (y:B) (x x': hfiber f y)
-: (x=x') = {Ɣ:x.1=x'.1 & (ap f Ɣ) @ x'.2 = x.2}.
-  apply path_universe_uncurried.
+: (x=x') <~> {Ɣ:x.1=x'.1 & (ap f Ɣ) @ x'.2 = x.2}.
   refine (equiv_adjointify _ _ _ _).
   - intro p. destruct p.
     exists 1. apply concat_1p.
@@ -76,9 +75,9 @@ Proof.
   exact (ap k X.2).
 Defined.
 
-Section Opposite2.
+Section Inverse2.
   
-Definition unopposite2 {A} {x y : A} (p q : x = y) : (p^ = q^) -> (p = q).
+Definition uninverse2 {A} {x y : A} (p q : x = y) : (p^ = q^) -> (p = q).
 Proof.
   intros r.
   path_via (p^^).
@@ -87,67 +86,64 @@ Proof.
   auto with path_hints.
 Defined.
 
-Lemma opposite2_functor {A} (x y : A) (p q r : x = y) (s : p = q) (t : q = r) :
+Lemma inverse2_functor {A} (x y : A) (p q r : x = y) (s : p = q) (t : q = r) :
   inverse2 (s @ t) = inverse2 s @ inverse2 t.
 Proof.
   path_induction. auto with path_hints.
 Defined.
 
-Lemma opposite2_opposite {A} (x y : A) (p q : x = y) (s : p = q) :
+Lemma inverse2_inverse {A} (x y : A) (p q : x = y) (s : p = q) :
   inverse2 (s^) = (inverse2 s)^.
 Proof.
   path_induction. auto with path_hints.
 Defined.
 
-Lemma opposite_opposite_opposite {A} (x y : A) (p : x = y) :
+Lemma inverse_inverse_inverse {A} (x y : A) (p : x = y) :
   inverse2 (inv_V p) =
   inv_V (p^).
 Proof.
   path_induction. auto with path_hints.
 Defined.
 
-Lemma opposite_opposite_natural {A} (x y : A) (p q : x = y) (r : p = q) :
+Lemma inverse_inverse_natural {A} (x y : A) (p q : x = y) (r : p = q) :
   inverse2 (inverse2 r) @ inv_V q =
   inv_V p @ r.
 Proof.
   path_induction. auto with path_hints.
 Defined.
 
-Definition opposite2_equiv {A} (x y : A) (p q : x = y) : (p = q) <~> (p^ = q^).
+Definition inverse2_equiv {A} (x y : A) (p q : x = y) : (p = q) <~> (p^ = q^).
 Proof.
   refine (equiv_adjointify _ _ _ _).
   - apply inverse2.
-  - apply unopposite2.
-  - 
-    intros r.
-    unfold unopposite2.
-    path_via (inverse2 (inv_V p)^ @ inverse2 (inverse2 r @ inv_V q)).
-    apply opposite2_functor.
-    path_via ((inverse2 (inv_V p))^ @
-                inverse2 (inverse2 r @ inv_V q)).
-  apply whiskerR.
-  apply opposite2_opposite.
-  path_via ((inv_V (p^))^ @ inverse2 (inverse2 r @ inv_V q)).
-  apply whiskerR.
-  apply ap.
-  apply opposite_opposite_opposite.
-  apply moveR_Mp.
-  (* moveright_onleft. *)
-  path_via (inverse2 (inverse2 r) @ inverse2 (inv_V q)).
-  apply opposite2_functor.
-  path_via (inverse2 (inverse2 r) @ inv_V (q^)).
-  apply whiskerL.
-  apply opposite_opposite_opposite.
-  eapply (concat (opposite_opposite_natural r)).
-  apply whiskerR. auto with path_hints.
+  - apply uninverse2.
   - intros r.
-    unfold unopposite2.
+    unfold uninverse2.
+    path_via (inverse2 (inv_V p)^ @ inverse2 (inverse2 r @ inv_V q)).
+    apply inverse2_functor.
+    path_via ((inverse2 (inv_V p))^ @ inverse2 (inverse2 r @ inv_V q)).
+    apply whiskerR.
+    apply inverse2_inverse.
+    path_via ((inv_V (p^))^ @ inverse2 (inverse2 r @ inv_V q)).
+    apply whiskerR.
+    apply ap.
+    apply inverse_inverse_inverse.
     apply moveR_Mp.
-    rewrite opposite_opposite_natural.
+    path_via (inverse2 (inverse2 r) @ inverse2 (inv_V q)).
+    apply inverse2_functor.
+    path_via (inverse2 (inverse2 r) @ inv_V (q^)).
+    apply whiskerL.
+    apply inverse_inverse_inverse.
+    eapply (concat (inverse_inverse_natural r)).
+    apply whiskerR. auto with path_hints.
+  - intros r.
+    unfold uninverse2.
+    apply moveR_Mp.
+    rewrite inverse_inverse_natural.
     apply whiskerR. auto with path_hints.
 Defined.
 
-End Opposite2.
+End Inverse2.
     
 Section Three_by_three.
 
@@ -221,7 +217,7 @@ Section Three_by_three.
     apply equiv_inverse.
     equiv_via
       ((transport (fun b' => k b' = g c) p ((s x)^^ @ ap g q))^ = d^).
-    apply opposite2_equiv.
+    apply inverse2_equiv.
     assert ((transport (λ b' : B, k b' = g c) p (((s x)^)^ @ ap g q))^
             = transport (λ c' : C, g c' = k b) q ((s x)^ @ ap k p)).
     { repeat rewrite transport_paths_FlFr.

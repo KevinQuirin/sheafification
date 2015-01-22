@@ -21,7 +21,6 @@ End Images.
 
 Section Embeddings.
 
-  Context `{ua: Univalence}.
   Context `{fs: Funext}.
 
   Definition IsMono (A B : Type) (f : A -> B) := forall x y, IsEquiv (ap f (x:=x) (y:=y)).
@@ -32,10 +31,9 @@ Section Embeddings.
   Lemma IsEmbedding_IsMono (A B : Type) (f : A -> B)
   : IsEmbedding f <-> IsMono f.
     
-    assert (forall b:B, forall x y:hfiber f b, (x=y) = (hfiber (ap f) (x.2 @ y.2^))).
+    assert (forall b:B, forall x y:hfiber f b, (x=y) <~> (hfiber (ap f) (x.2 @ y.2^))).
     { intros u [x p] [y q]. simpl.
       etransitivity; try exact (L425 (x;p) (y;q)).
-      apply path_universe_uncurried. unfold hfiber.
       refine (equiv_adjointify _ _ _ _).
       - intro r.
         exists r.1.
@@ -48,9 +46,10 @@ Section Embeddings.
     split.
     - intros H x y.
       apply isequiv_fcontr. intro q.
-      pose (Y := X (f x) (x;1) (y;q^)). simpl in Y. hott_simpl. unfold hfiber in Y. rewrite <- Y.
-      exact (H (f x) (x;1) (y;q^)).
-    - intros H b x y; simpl. specialize (X b x y). rewrite X.
+      pose (Y := X (f x) (x;1) (y;q^)). simpl in Y. hott_simpl. unfold hfiber in Y.
+      refine (contr_equiv' ((x; 1) = (y; q^)) Y).
+    - intros H b x y; simpl. specialize (X b x y).
+      refine (contr_equiv' _ (equiv_inverse X)).
       exact (fcontr_isequiv (ap f) (H x.1 y.1) (x.2@y.2^)). 
   Qed.
   

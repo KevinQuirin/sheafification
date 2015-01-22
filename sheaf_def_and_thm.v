@@ -64,6 +64,7 @@ Section Definitions.
   Definition cloture' E A (m : {f : A -> E & forall b:E, IsTrunc n (hfiber f b)}) :=
     nchar_to_sub (cloture (nsub_to_char n (A;m))).
 
+  (* Proofs that the the closure of a subobject is closed *)
   Definition cloture_is_closed (E :Type) (χ : E -> Trunk n) : closed (cloture χ).
     intro. apply O_modal_equiv. exact fs.
   Defined.
@@ -99,15 +100,15 @@ Section Definitions.
       char :> E -> Trunk n ;
       dense_eq : forall e:E, ({e':E & e=e'}) = (O nj (char e)).1.1 ;
       dense_diag : forall x:{e:E & (char e).1}, forall u:{e':{e:E & (char e).1} & x.1 = e'.1}, (equiv_path _ _ (dense_eq x.1)) o (incl_Aeq_Eeq char x) = (O_unit nj _) o ((eq_dense_1 char x))
-                                                                                                                                                                       (* For A a subobject of E, and x:A, this diagram commute : *)
-                                                                                                                                                                       (*                                                         *)   
-                                                                                                                                                                       (*   {e':A & x.1 = e'.1} === (χ x.1).1                     *)
-                                                                                                                                                                       (*          |                    |                         *)
-                                                                                                                                                                       (*        ι |                    | η                       *)
-                                                                                                                                                                       (*          |                    |                         *)
-                                                                                                                                                                       (*          v                    v                         *)
-                                                                                                                                                                       (*    {e':E & x.1 = e'}  === (O nj (χ x.1)).1.1            *)
-                                                                                                                                                                       
+
+(* For A a subobject of E, and x:A, this diagram commute : *)
+(*                                                         *)   
+(*   {e':A & x.1 = e'.1} === (χ x.1).1                     *)
+(*          |                    |                         *)
+(*        ι |                    | η                       *)
+(*          |                    |                         *)
+(*          v                    v                         *)
+(*    {e':E & x.1 = e'}  === (O nj (χ x.1)).1.1            *)                                                                                                                                                                       
     }.
 
 
@@ -265,8 +266,7 @@ Section Definitions.
              (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0) xx)).
         apply ap; exact p.
         exact (ap10 (O_rec_retr (((χ x).1).1; IsHProp_IsTrunc ((χ x).1).2 n0) ((T.1; Trn); nsheaf) (λ xx0 : ((χ x).1).1, E_to_χmono_map T _ f (x; xx0))) xx). }
-  Defined.
-
+  Defined.                                         
 
   Definition nj_inter_f (A : Trunk n) (φ : A.1 -> Trunk n) : 
     (nj.(O) ({a:A.1 & (φ a).1}; trunc_sigma (A.2) (fun a => (φ a).2))).1.1 ->
@@ -445,9 +445,9 @@ Section Definitions.
     apply (nj_inter (hfiber g c; HC c) (fun w => (hfiber f w .1; HB w.1))).
   Defined.
   
-  Definition type_j_f E (χ: E -> J) :
-    (E -> subuniverse_Type nj) -> pr1 (nchar_to_sub (pr1  o χ))
-    -> subuniverse_Type nj := λ α e, α (pr1 e).
+  Definition type_j_f E (χ: E -> J) 
+  : (E -> subuniverse_Type nj) -> pr1 (nchar_to_sub (pr1  o χ)) -> subuniverse_Type nj
+    := λ α e, α (pr1 e).
 
   Definition type_j_inv E (χ: E -> J) : (pr1 (nchar_to_sub (pr1  o χ)) -> subuniverse_Type nj) -> E -> subuniverse_Type nj :=
     λ α e, let f := (pr2 (nchar_to_sub (pr1  o α))) in

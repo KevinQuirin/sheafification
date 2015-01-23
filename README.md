@@ -4,7 +4,7 @@ Sheafification
 Sheafification functor in type theory.
 
 # Usage #
-These files compile with the HoTT library https://github.com/HoTT/HoTT, commit 82f986cd7d4c17e70bba29e2f838dab07f8c2c85.
+These files compile with the HoTT library https://github.com/HoTT/HoTT, commit 45c94e6ef30e9bf4b65cafcd9f7925c0928649bc.
 
 One can use the library with
 ```

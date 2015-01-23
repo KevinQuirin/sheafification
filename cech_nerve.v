@@ -98,9 +98,29 @@ Section hPullback.
       apply IHn. exact (snd P).
       apply succ_not_0. }
     
+
     apply neq_symm in a.
     apply neq_0_succ in a.
     destruct a as [p' Hp'].
+    (* destruct Hp'. *)
+    assert (l := le_neq_lt _ _ (neq_symm _ _ b) Hp).
+    assert (l0 := le_pred _ _ l). simpl in l0. clear b l. simpl in *. 
+    generalize dependent n. generalize dependent p. generalize dependent p'. induction p'; intros.
+    - simpl in *.
+      destruct Hp'.   
+      assert (k := gt_0_succ n l0); destruct k as [k Hk]. destruct Hk. simpl in *.
+      split.
+      exact (fst P @ (fst (snd P))).
+      exact (snd (snd P)).
+    - simpl in *.
+      destruct Hp'.
+      assert (n' := ge_succ_succ (S p') _ l0).
+      destruct n' as [n' Hn']. destruct Hn'.  
+      specialize (IHp' (p'.+1) 1 n' (snd x) (snd P)). simpl. split.
+      exact (fst P).
+      apply IHp'.
+      exact (le_pred _ _ l0).
+    (*destruct a as [p' Hp'].
     destruct Hp'. 
     assert (l := le_neq_lt _ _ (neq_symm _ _ b) Hp).
     assert (l0 := le_pred _ _ l). simpl in l0. clear b l. simpl in *. destruct P as [P PP].
@@ -116,7 +136,7 @@ Section hPullback.
       specialize (IHp' n' (snd x) PP PPP). simpl. split.
       exact P.
       apply IHp'.
-      exact (le_pred _ _ l0).
+      exact (le_pred _ _ l0).*)
   Defined.
 
   (* Definition 7*)

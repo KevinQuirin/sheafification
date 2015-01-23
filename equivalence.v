@@ -162,8 +162,6 @@ Proof.
   apply univalence_hprop; auto.
 Defined.
 
-
-
 Lemma equal_equiv (A B:Type) (f g : A -> B) (eq_f : IsEquiv f) (eq_g : IsEquiv g)
 : f = g -> (BuildEquiv _ _ f eq_f) = (BuildEquiv _ _ g eq_g).
   intro H. destruct H. assert (eq_f = eq_g).

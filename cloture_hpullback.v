@@ -170,12 +170,14 @@ Definition forget_cl_char_hPullback' {X Y:Trunk (trunc_S n)} (f:Y.1 -> X.1) (k:n
   apply neq_symm in a.
   apply neq_0_succ in a.
   destruct a as [p' Hp'].
-  destruct Hp'.
+  (* destruct Hp'. *)
   assert (l := le_neq_lt _ _ (neq_symm _ _ b) Hp).
-  assert (l0 := le_pred _ _ l). simpl in l0. clear b l. simpl in *. destruct P as [P PP].
-  generalize dependent k. generalize dependent p'. induction p'; intros.
+  assert (l0 := le_pred _ _ l). simpl in l0. clear b l. simpl in *. 
+  generalize dependent k. generalize dependent p. generalize dependent p'. induction p'; intros.
   - simpl in *.
+    destruct Hp'.
     assert (k' := gt_0_succ k l0); destruct k' as [k' Hk]. destruct Hk. simpl in *.
+    destruct P as [P PP].
     split.
     generalize dependent P; apply O_rec; intro P.
     generalize dependent (fst PP); apply O_rec; intro PPP.
@@ -183,9 +185,11 @@ Definition forget_cl_char_hPullback' {X Y:Trunk (trunc_S n)} (f:Y.1 -> X.1) (k:n
     exact (P @ PPP).
     exact (snd PP).
   - simpl in *.
+    destruct Hp'.
+    destruct P as [P PP].
     assert (n' := ge_succ_succ (S p') _ l0).
-    destruct n' as [n' Hn']. destruct Hn'. simpl in PP. destruct PP as [PP PPP].
-    specialize (IHp' n' (snd x) PP PPP). simpl. split.
+    destruct n' as [n' Hn']. destruct Hn'. simpl in PP. 
+    specialize (IHp' (p'.+1) 1 n' (snd x) PP). simpl. split.
     exact P.
     apply IHp'.
     exact (le_pred _ _ l0).

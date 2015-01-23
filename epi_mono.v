@@ -10,7 +10,8 @@ Local Open Scope path_scope.
 Local Open Scope equiv_scope.
 
 Section Images.
-  
+
+  (* Definition 3 *)
   Definition Im {A B} (f : A -> B) := {b : B & Trunc (-1) (hfiber f b)}.
 
   Definition toIm {A B} (f : A -> B) : A -> Im f := fun a => (f a; tr (a;idpath)).
@@ -21,6 +22,7 @@ End Images.
 
 Section Embeddings.
 
+  (* In this section, we define IsEmbedding two other way, then prove that they are all three equivalent *)
   Context `{fs: Funext}.
 
   Definition IsMono (A B : Type) (f : A -> B) := forall x y, IsEquiv (ap f (x:=x) (y:=y)).
@@ -103,6 +105,7 @@ End Embeddings.
 
 Section Surjections.
 
+  (* Some lemmas about surjections *)
   Context `{ua: Univalence}.
   Context `{fs: Funext}.
 

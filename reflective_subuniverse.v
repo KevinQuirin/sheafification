@@ -490,8 +490,8 @@ Section Reflective_Subuniverse.
   Defined.
   
   (* Proposition 11 *)
-  Definition subuniverse_product' (A B : Trunk n) (TrP : IsTrunc n (A.1*B.1)) : (O subU (A.1*B.1 ; TrP)).1.1 = ((O subU A).1.1*(O subU B).1.1).
-    apply path_universe_uncurried.
+
+  Definition subuniverse_product_equiv' (A B : Trunk n) (TrP : IsTrunc n (A.1*B.1)) : (O subU (A.1*B.1 ; TrP)).1.1 <~> ((O subU A).1.1*(O subU B).1.1).
     refine (equiv_adjointify _ _ _ _).
     - intros x.
       econstructor.
@@ -520,6 +520,10 @@ Section Reflective_Subuniverse.
       assert (rew := λ P Q f, ap10 (O_rec_retr P Q f)).
 
       repeat rewrite rew. reflexivity.
+  Defined.
+    
+  Definition subuniverse_product' (A B : Trunk n) (TrP : IsTrunc n (A.1*B.1)) : (O subU (A.1*B.1 ; TrP)).1.1 = ((O subU A).1.1*(O subU B).1.1).
+    apply path_universe_uncurried. apply subuniverse_product_equiv'.
   Defined.
   
   Lemma subuniverse_product_unit (A B : Trunk n) (TrP : IsTrunc n (A.1*B.1))

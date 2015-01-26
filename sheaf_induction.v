@@ -393,38 +393,58 @@ Section Sheafification.
     - apply separated_unit_paths_are_nj_paths_sect.
   Qed.
 
-  Lemma O_rec_paths (T:Trunk (trunc_S n)) (a b c :T.1)
-  : (O nj (a=b; istrunc_paths T.2 _ _)).1.1 -> (O nj (b=c; istrunc_paths T.2 _ _)).1.1
-    -> (O nj (a=c; istrunc_paths T.2 _ _)).1.1.
-    intros p q.
-    revert p; apply O_rec; intro p.
-    revert q; apply O_rec; intro q.
-    apply O_unit.
-    exact (p@q).
-  Defined.
+  Lemma separated_unit_paths_are_nj_paths_idpath T (a:T.1) (p : (separated_unit T a = separated_unit T a)) (eq : 1 = p)
+   : separated_unit_paths_are_nj_paths_fun p = O_unit nj (a = a; istrunc_paths T.2 a a) idpath.
+     destruct eq. reflexivity.
+  Qed.
 
-  Lemma separated_unit_paths_are_nj_paths_concat T (a b c:T.1) (p : (separated_unit T a = separated_unit T b)) (q : (separated_unit T b = separated_unit T c))
+  Lemma separated_unit_paths_are_nj_paths_concat (T:Trunk n.+1) (a b c:T.1) (p : (separated_unit T a = separated_unit T b)) (q : (separated_unit T b = separated_unit T c))
   : separated_unit_paths_are_nj_paths_fun (p@q)
-    = O_rec_paths T a b c (separated_unit_paths_are_nj_paths_fun p) (separated_unit_paths_are_nj_paths_fun q).
+    = O_rec_paths nj T a b c (separated_unit_paths_are_nj_paths_fun p) (separated_unit_paths_are_nj_paths_fun q).
     simpl.
     unfold O_rec_paths.
-    unfold separated_unit_paths_are_nj_paths_fun. simpl.
+    unfold separated_unit_paths_are_nj_paths_fun, separated_unit_paths_are_nj_paths_inv. simpl.
     unfold pr1_path.
-    path_via (transport idmap (ap pr1 (ap pr1 (ap10 (ap pr1 p) c)) @ ap pr1 (ap pr1 (ap10 (ap pr1 q) c)))^ (O_unit nj (c = c; istrunc_paths T.2 c c) 1)).
-    apply (ap (λ u, transport idmap u (O_unit nj (c = c; istrunc_paths T.2 c c) 1))).
-    apply ap; repeat (try rewrite ap_pp; try rewrite ap10_pp). reflexivity.
+    apply (ap10 (f:= transport idmap (ap pr1 (ap pr1 (ap10 (ap pr1 (p @ q)) c)))^)
+                (g := (O_rec (b = c; istrunc_paths T.2 b c) (O nj (a = c; istrunc_paths T.2 a c))
+     (λ q0 : b = c,
+      O_rec (a = b; istrunc_paths T.2 a b)
+        (O nj (a = c; istrunc_paths T.2 a c))
+        (λ p0 : a = b, O_unit nj (a = c; istrunc_paths T.2 a c) (p0 @ q0))
+        (transport idmap (ap pr1 (ap pr1 (ap10 (ap pr1 p) b)))^
+         (O_unit nj (b = b; istrunc_paths T.2 b b) 1)))) o (transport idmap (ap pr1 (ap pr1 (ap10 (ap pr1 q) c)))^))).
+    symmetry.
+    refine (moveR_E_compose _ _).
+    apply (@equiv_inj _ _ _ (O_equiv nj (b = c; istrunc_paths T.2 b c) (O nj (a = c; istrunc_paths T.2 a c)))).
+    rewrite (O_rec_retr).
+    apply path_forall; intro u. simpl in *.
+    destruct u.
 
-    rewrite inv_pp.
-    rewrite transport_pp.
-
-    pose (O_rec_O_rec).
-    specialize (p0 n nj fs (a = b; istrunc_paths T.2 a b) (a = c; istrunc_paths T.2 a c) (b = c; istrunc_paths T.2 b c)).
-    simpl in p0.    
-    specialize (p0 (λ u v, u@v) (λ u v, u@v^)).
-
-
-  Admitted.
-    
+    apply (ap10 (f := (O_rec (a = b; istrunc_paths T.2 a b) (O nj (a = b; istrunc_paths T.2 a b))
+                             (λ p0 : a = b, O_unit nj (a = b; istrunc_paths T.2 a b) (p0 @ 1)))
+                        o (transport idmap (ap pr1 (ap pr1 (ap10 (ap pr1 p) b)))^))
+                (g := transport idmap (ap pr1 (ap pr1 (ap10 (ap pr1 (p @ q)) b)))^ o
+                                                                                     (transport idmap ((ap pr1 (ap pr1 (ap10 (ap pr1 q) b)))^)^))).
+    refine (moveR_E_compose _ _).
+    apply (@equiv_inj _ _ _ (O_equiv nj (a = b; istrunc_paths T.2 a b) (O nj (a = b; istrunc_paths T.2 a b)))).
+    rewrite (O_rec_retr).
+    apply path_forall; intro u. simpl in *.
+    destruct u.
+    simpl.
+    hott_simpl.
+    repeat rewrite <- transport_pp.
+    assert ((ap pr1 (ap pr1 (ap10 (ap pr1 p) a)) @
+      (ap pr1 (ap pr1 (ap10 (ap pr1 q) a)) @
+          (ap pr1 (ap pr1 (ap10 (ap pr1 (p @ q)) a)))^)) = 1).
+    hott_simpl.
+    rewrite <- ap_pp. rewrite <- ap_pp.
+    rewrite <- ap_pp. rewrite <- ap_pp.
+    rewrite <- ap10_pp. rewrite <- ap_pp.
+    hott_simpl.
+    rewrite X. simpl.
+    reflexivity.
+  Qed.
+  
   Lemma hPullback_separated_unit_is_cl_diag (T:Trunk (n.+1)) (k:nat)
   : (hPullback n (separated_unit T) (S k) (@separated_Type_is_Trunk_Sn T) T.2)
       <~> {y : hProduct T.1 (S k) & (@cl_char_hPullback' T T idmap k y).1}.
@@ -470,6 +490,7 @@ Section Sheafification.
     apply hPullback_separated_unit_is_cl_diag.
   Defined.
 
+  Opaque O_rec_paths.
   (* Lemma 29 *)
   Lemma diagrams_are_equal_proj (T:Trunk (trunc_S n))
   : ∀ (i j : Cech_nerve_graph) (x : Cech_nerve_graph i j),
@@ -489,24 +510,30 @@ Section Sheafification.
     rewrite rew; clear rew.
     symmetry; apply moveR_EV; symmetry.
     simpl.
-    apply path_sigma' with 1; simpl.
+    apply path_sigma' with 1.
+    (* simpl. *)
     
-    unfold equiv_functor_prod'. unfold functor_prod. simpl.
-    unfold forget_hPullback, forget_cl_char_hPullback', forget_char_hPullback. simpl.
+    unfold equiv_functor_prod'. unfold functor_prod.
+    (* simpl. *)
+    unfold forget_hPullback, forget_cl_char_hPullback', forget_char_hPullback.
     simpl.
     match goal with
       |[|- _ = sum_rect _ _ _ ?d] => induction d as [| a]
     end.
-    { destruct a. simpl. reflexivity. }
-    { simpl.
+    { destruct a. reflexivity. }
+    {
+      simpl.
       match goal with
         |[|- _ = sum_rect _ _ _ ?d] => induction d as [| b]
       end.
-      { destruct a0. simpl.
+      { destruct a0.
+        simpl.
         induction j.
         { reflexivity. }
-        { simpl.
-          refine (path_prod _ _ _ _); simpl.
+        {
+          simpl.
+          refine (path_prod _ _ _ _);
+            simpl.
           { reflexivity. }
           { simpl. apply IHj. }
         }
@@ -554,8 +581,6 @@ Section Sheafification.
       }
     }
   Defined.
-  (* This lemma is obvious on paper, but really painful to formalize. Maybe we should represent hPullback another way... *)
-
   (* Lemma 29 *)
   Lemma diagrams_are_equal (T:Trunk (trunc_S n))
   : (Cech_nerve_separated_unit T) = cl_diagonal_diagram T.

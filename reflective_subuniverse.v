@@ -645,6 +645,17 @@ Section Reflective_Subuniverse.
                 u)^) | unfold path_forall, ap10; repeat rewrite eisretr; reflexivity].
   Qed.
 
+  
+  Lemma O_rec_paths (T:Trunk (trunc_S n)) (a b c :T.1)
+  : (O subU (a=b; istrunc_paths T.1 n (H:=T.2) _ _)).1.1 -> (O subU (b=c; istrunc_paths T.1 n (H:=T.2) _ _)).1.1
+    -> (O subU (a=c; istrunc_paths T.1 n (H:=T.2) _ _)).1.1.
+    intros p q.
+    revert q; apply O_rec; intro q.
+    revert p; apply O_rec; intro p.
+    apply O_unit.
+    exact (p@q).
+  Defined.
+
   (** Things' *)
   
   

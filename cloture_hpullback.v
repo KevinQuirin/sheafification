@@ -179,10 +179,7 @@ Definition forget_cl_char_hPullback' {X Y:Trunk (trunc_S n)} (f:Y.1 -> X.1) (k:n
     assert (k' := gt_0_succ k l0); destruct k' as [k' Hk]. destruct Hk. simpl in *.
     destruct P as [P PP].
     split.
-    generalize dependent P; apply O_rec; intro P.
-    generalize dependent (fst PP); apply O_rec; intro PPP.
-    apply O_unit.
-    exact (P @ PPP).
+    exact (O_rec_paths nj X (f (fst x)) (f (fst (snd x))) (f (fst (snd (snd x)))) P (fst PP)). 
     exact (snd PP).
   - simpl in *.
     destruct Hp'.

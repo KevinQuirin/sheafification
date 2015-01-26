@@ -257,12 +257,6 @@ Section Sheafification.
     intro p.
     unfold separated_unit, toIm in p. simpl in p.
     pose (p' := (ap10 p..1 b)..1..1). simpl in p'.
-    (* transparent assert (X: (((O nj (a = b; istrunc_paths T.2 a b)) .1) .1 = *)
-                            (* ((O nj (b = a; istrunc_paths T.2 b a)) .1) .1)). *)
-    (* repeat apply (ap pr1); apply ap. *)
-    (* apply truncn_unique. exact fs. *)
-    (* apply equal_inverse. *)
-    (* apply (transport  idmap X^). *)
     apply (transport idmap p'^). apply O_unit. reflexivity.
   Defined.
 
@@ -415,6 +409,18 @@ Section Sheafification.
     simpl.
     unfold O_rec_paths.
     unfold separated_unit_paths_are_nj_paths_fun. simpl.
+    unfold pr1_path.
+    path_via (transport idmap (ap pr1 (ap pr1 (ap10 (ap pr1 p) c)) @ ap pr1 (ap pr1 (ap10 (ap pr1 q) c)))^ (O_unit nj (c = c; istrunc_paths T.2 c c) 1)).
+    apply (ap (λ u, transport idmap u (O_unit nj (c = c; istrunc_paths T.2 c c) 1))).
+    apply ap; repeat (try rewrite ap_pp; try rewrite ap10_pp). reflexivity.
+
+    rewrite inv_pp.
+    rewrite transport_pp.
+
+    pose (O_rec_O_rec).
+    specialize (p0 n nj fs (a = b; istrunc_paths T.2 a b) (a = c; istrunc_paths T.2 a c) (b = c; istrunc_paths T.2 b c)).
+    simpl in p0.    
+    specialize (p0 (λ u v, u@v) (λ u v, u@v^)).
 
   Admitted.
     

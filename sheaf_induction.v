@@ -422,6 +422,7 @@ Section Sheafification.
     simpl in p0.    
     specialize (p0 (λ u v, u@v) (λ u v, u@v^)).
 
+
   Admitted.
     
   Lemma hPullback_separated_unit_is_cl_diag (T:Trunk (n.+1)) (k:nat)

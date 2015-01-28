@@ -1,6 +1,6 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness Types.Record.
-Require Import equivalence.
+Require Import equivalence lemmas.
 
 Set Universe Polymorphism.
 Global Set Primitive Projections.
@@ -148,135 +148,245 @@ Section colimit_universal_property.
   Definition colimit_equiv (G:graph) (D:diagram G)
     := λ X, BuildEquiv _ _ _ (colimit_is_colimit G D X).
 
-  Definition transport_is_colimit' G (D1 D2:diagram G)
-             (path_type : forall i, (diagram0 D1 i) <~> (diagram0 D2 i))
-             (path_comm : forall (i j:G), forall f:G i j, (diagram1 D1 f) o (path_type i)^-1 = (path_type j)^-1 o (diagram1 D2 f) )
-             (P : Type)
-             (q1:forall i, D1 i -> P)
-             (pp_q1 : forall (i j:G) (f: G i j), (q1 j) o (diagram1 D1 f) == q1 i)
-             (q2:forall i, D2 i -> P)
-             (pp_q2 : forall (i j:G) (f: G i j), (q2 j) o (diagram1 D2 f) == q2 i)
-             (Hq : forall i, (q1 i) o (path_type i)^-1 = q2 i)
-             (Hpp_q : forall (i j:G) (f:G i j),
-                        (Hq i)^ @
-                                  ((ap (λ (u : D1 i → P) (x : D2 i), u ((path_type i)^-1 x))
-                                       (path_forall _ _ (pp_q1 i j f)))^ @
-                                                         ap (λ (u : D2 i → D1 j) (x : D2 i), q1 j (u x)) (path_comm i j f))
-                        =
-                        (path_forall _ _ (pp_q2 i j f))^ @
-                                         (ap (λ (u : D2 j → P) (x : D2 i), u (diagram1 D2 f x)) (Hq j))^)
-                            
-             
-  : is_colimit G D1 P q1 pp_q1 -> is_colimit G D2 P q2 pp_q2.
-    intros H X. specialize (H X). destruct H as [inv retr sect _].
-    refine (isequiv_adjointify _ _ _ _).
-    - intros [f pp] p.
-      apply inv.
-      refine (exist _ _ _).
-      intros i d1.
-      apply (f i).
-      apply (path_type i).
-      exact d1.
-      intros i j g x. simpl.
-      etransitivity; try exact (pp i j g ((path_type i) x)).
-      apply ap.
-      apply (@equiv_inj _ _ (path_type j)^-1 _).
-      etransitivity; [idtac | exact (ap10 (ap (λ u:D2 i → D1 j, u o (path_type i)) (path_comm i j g)) x)].
-      etransitivity; try exact (eissect (path_type j) (diagram1 D1 g x)).
-      apply ap.
-      symmetry. apply eissect.
-      exact p.
-    - intros [f pp].
-      refine (path_sigma' _ _ _). simpl.
-      apply path_forall; intro i.
-      apply path_forall; intro x. simpl.
-      unfold Sect in *; simpl in *.
-Abort.
-
-  Definition transport_colimit (G:graph) (D1 D2:diagram G) (eq : D1=D2)
-  : colimit D1 = colimit D2.
-    destruct eq. reflexivity.
-  Qed.
-
-  Lemma path_colimit_is_colimit (G:graph) (D:diagram G) 
-          (q : forall i, D i -> colimit D)
-          (pp_q : forall (i j:G) (f: G i j) (x: D i), q _ (diagram1 D f x) = q _ x)
-          (p_q : (@colim G D) = q)
-          (p_pp : transport (λ U, forall (i j:G) (f: G i j) (x: D i), U _ (diagram1 D f x) = U _ x) p_q (@pp G D) =  pp_q)
-  : is_colimit G D (colimit D) q pp_q.
-    destruct p_q.
-    simpl.
-    destruct p_pp.
-    simpl.
-    apply colimit_is_colimit.
-  Qed.
-
-  Lemma path_path_colimit_is_colimit (G:graph) (D:diagram G) (P:Type)
-        (eq : colimit D = P)
-        (μ := equiv_path _ _ eq^)
-        (ν := equiv_path _ _ eq)
-        (q : forall i, D i -> P)
-        (pp_q : forall (i j:G) (f: G i j) (x: D i), q _ (diagram1 D f x) = q _ x)
-        (p_q : (λ i, (equiv_path _ _ eq) o (@colim G D i)) = q)
-        (p_pp : transport
-                  (λ U : ∀ x : G, D x → P,
-                     ∀ (i j : G) (f : G i j) (x : D i), U j (diagram1 D f x) = U i x)
-                  p_q
-                  (λ (i j : G) (f : G i j) (x : D i),
-                   ap (transport idmap eq) (pp G D i j f x)) = pp_q)
-  : is_colimit G D P q pp_q.
-    destruct eq. simpl in *.
-    destruct p_q. simpl in *.
-    destruct p_pp. simpl in *.
-    refine (path_colimit_is_colimit _ _ _ _ _ _).
-    reflexivity.
-    simpl.
-    apply path_forall; intro i. apply path_forall; intro j. apply path_forall; intro f.     apply path_forall; intro x.
-    unfold transport.
-    symmetry; apply ap_idmap.
-  Qed.
-                   
   Definition transport_is_colimit (G:graph) (D1 D2:diagram G)
-             (eq : D1 = D2)
+             (path_type :diagram0 D1 = diagram0 D2)
+             (path_comm : forall (i j:G), forall x:G i j, diagram1 D1 x == (equiv_path _ _ (ap10 path_type j)^) o (diagram1 D2 x) o (equiv_path _ _ (ap10 path_type i)))
              (P:Type)
              (q1:forall i, D1 i -> P)
              (pp_q1 : forall (i j:G) (f: G i j) (x: D1 i), q1 _ (diagram1 D1 f x) = q1 _ x)
              (q2:forall i, D2 i -> P)
              (pp_q2 : forall (i j:G) (f: G i j) (x: D2 i), q2 _ (diagram1 D2 f x) = q2 _ x)
+             (Hq : (λ i, (q1 i) o (transport idmap (ap10 path_type i)^)) = q2)
+             (Hpp : (λ (i j : G) (f : G i j) (x : D1 i),
+                     ap (q1 j) (path_comm i j f x) @
+                        (apD10 (apD10 Hq j)
+                               (diagram1 D2 f (transport idmap (ap10 path_type i) x)) @
+                               (pp_q2 i j f (transport idmap (ap10 path_type i) x) @
+                                      ((apD10 (apD10 Hq i) (transport idmap (ap10 path_type i) x))^ @
+                                                                                                      ap (q1 i) (transport_Vp idmap (ap10 path_type i) x))))) = pp_q1)
              (H : is_colimit G D1 P q1 pp_q1)
-             (Hq : transport (λ U:diagram G, forall i, U i -> P) eq q1 = q2)
-             (Hpp : match
-           eq as p in (_ = y)
-           return
-             (∀ q0 : ∀ i : G, y i → P,
-              (∀ (i j : G) (f : G i j) (x : y i),
-               q0 j (diagram1 y f x) = q0 i x)
-              → transport (λ U : diagram G, ∀ i : G, U i → P) p q1 = q0
-                → ∀ (i j : G) (f : G i j) (x : y i),
-                  q0 j (diagram1 y f x) = q0 i x)
-         with
-         | 1 =>
-             λ (q0 : ∀ i : G, D1 i → P)
-             (pp_q0 : ∀ (i j : G) (f : G i j) (x : D1 i),
-                      q0 j (diagram1 D1 f x) = q0 i x) 
-             (Hq0 : q1 = q0),
-             match
-               Hq0 in (_ = y)
-               return
-                 ((∀ (i j : G) (f : G i j) (x : D1 i),
-                   y j (diagram1 D1 f x) = y i x)
-                  → ∀ (i j : G) (f : G i j) (x : D1 i),
-                    y j (diagram1 D1 f x) = y i x)
-             with
-             | 1 =>
-                 λ
-                 _ : ∀ (i j : G) (f : G i j) (x : D1 i),
-                     q1 j (diagram1 D1 f x) = q1 i x, pp_q1
-             end pp_q0
-         end q2 pp_q2 Hq = pp_q2)
   : is_colimit G D2 P q2 pp_q2.
-    destruct eq. destruct Hq. destruct Hpp. exact H.
+    destruct Hq.
+    destruct Hpp.
+    simpl in *.    
+    intros X. specialize (H X); destruct H as [inv retr sect _].
+    unfold Sect in *; simpl in *.
+    refine (isequiv_adjointify _ _ _ _).
+    - intros [x1 x2]. apply inv.
+      refine (exist _ _ _).
+      intros i y. apply (x1 i).
+      apply (transport idmap (ap10 path_type i)). exact y.
+      intros i j f x.
+      simpl.
+      specialize (x2 i j f (transport idmap (ap10 path_type i) x)).
+      etransitivity; [idtac | exact x2].
+      apply ap.
+      pose (path_comm i j f x). simpl in p.
+      path_via (transport idmap (ap10 path_type j) (transport idmap (ap10 path_type j)^
+                                                    (diagram1 D2 f (transport idmap (ap10 path_type i) x)))).
+      apply ap. exact p.
+      simpl.
+      apply (transport_pV idmap (ap10 path_type j) _).
+    - intros [x1 x2].
+      simpl.
+      transparent assert (foo : ( ∃ qq : ∀ i : G, D1 i → X,
+                                    ∀ (i j : G) (f : G i j) (x : D1 i),
+                                      qq j (diagram1 D1 f x) = qq i x)).
+      { refine (exist _ _ _).
+        exact (λ (i0 : G) (y : D1 i0), x1 i0 (transport idmap (ap10 path_type i0) y)).
+        exact (λ (i0 j : G) (f : G i0 j) (x0 : D1 i0),
+               ap (x1 j)
+                  (ap (transport idmap (ap10 path_type j)) (path_comm i0 j f x0) @
+                      transport_pV idmap (ap10 path_type j)
+                      (diagram1 D2 f (transport idmap (ap10 path_type i0) x0))) @
+                  x2 i0 j f (transport idmap (ap10 path_type i0) x0)). }
+      specialize (retr foo).
+      unfold foo in *; clear foo. simpl in *.
+      refine (path_sigma' _ _ _).
+      { apply path_forall; intro i. apply path_forall; intro x.
+        apply pr1_path in retr. simpl in retr.
+        
+        pose (apD10 (apD10 retr i) (transport idmap (ap10 path_type i)^ x)). simpl in p.
+        etransitivity; try exact p.
+        apply ap.
+        apply (transport_pV idmap (ap10 path_type i)). }
+      simpl.
+      apply path_forall; intro i.
+      apply path_forall; intro j.
+      apply path_forall; intro f.
+      apply path_forall; intro x.
+      repeat rewrite transport_forall_constant.
+      rewrite transport_paths_FlFr. simpl.
+      assert (r:= retr..2). simpl in r.
+      apply apD10 in r; specialize (r i).
+      apply apD10 in r; specialize (r j).
+      apply apD10 in r; specialize (r f). 
+      apply apD10 in r; specialize (r (transport idmap (ap10 path_type i)^ x)).
+      repeat rewrite transport_forall_constant in r.
+      rewrite transport_paths_FlFr in r.
+      apply moveR_Vp in r. simpl in r.
+      repeat rewrite concat_pp_p.
+      match goal with
+        |[|- (ap _ (path_forall ?ff ?gg _))^ @ _ = _] => set (u := ff); set (v := gg)
+      end.
+      pose (@ap_ap2_path_forall fs
+                                G
+                                (λ x, D2 x)
+                                (λ u v, X)
+                                u v
+                                (λ i0, λ x0 : D2 i0,
+                                        apD10 (apD10 retr ..1 i0)
+                                              (transport idmap (ap10 path_type i0)^ x0) @
+                                              ap (v i0) (transport_pV idmap (ap10 path_type i0) x0))
+                                ). simpl in p.
+      unfold u, v in *; clear u; clear v.
+      rewrite p. rewrite p. clear p.
+      etransitivity; [idtac | exact (apD (x2 i j f) (transport_pV idmap (ap10 path_type i) x))].
+      apply (@equiv_inj _ _ (transport (λ x0 : D2 i, x1 j (diagram1 D2 f x0) = x1 i x0)
+                                       (transport_pV idmap (ap10 path_type i) x)^) (isequiv_transport (λ x0 : D2 i, x1 j (diagram1 D2 f x0) = x1 i x0) _ _ (transport_pV idmap (ap10 path_type i) x)^)).
+      rewrite transport_Vp.
+      etransitivity; [idtac | exact r].
+      clear r.
+      rewrite transport_paths_FlFr.
+      rewrite ap_V. rewrite inv_V. hott_simpl.
+      simpl.
+      rewrite ap_V; apply moveR_pV; apply whiskerR.
+      match goal with
+        |[|- _ @ ?xx = _ @ ?yy] => set (foo := xx); set (bar := yy)
+      end.
+      simpl in foo, bar.
+      assert (rew : foo = bar).
+      { unfold foo, bar. simpl.
+        rewrite (ap_compose (λ f, f i) (λ f, f (transport idmap (ap10 path_type i)^ x)) (retr..1)).
+        reflexivity. }
+      destruct rew; apply whiskerR; clear foo.
+      
+      match goal with
+        |[|- _ @ ap ?ff _ = _] => set (foo := ff) in *
+      end.
+
+      apply moveR_pM. repeat rewrite concat_pp_p. rewrite ap_V.
+      apply moveL_Vp. apply moveL_Vp.
+      rewrite <- ap_V.
+      rewrite <- ap_pp.
+      rewrite inv_pp. simpl.
+      assert (X0 : ((ap (q1 j) (path_comm i j f (transport idmap (ap10 path_type i)^ x)) @
+       (pp_q2 i j f
+          (transport idmap (ap10 path_type i)
+             (transport idmap (ap10 path_type i)^ x)) @
+        ap (q1 i)
+          (transport_Vp idmap (ap10 path_type i)
+             (transport idmap (ap10 path_type i)^ x)))) @ 
+      (pp_q2 i j f x)^) = (ap (q1 j)
+          (path_comm i j f (transport idmap (ap10 path_type i)^ x) @
+           ap (transport idmap (ap10 path_type j)^)
+           (ap (diagram1 D2 f) (transport_pV idmap (ap10 path_type i) x))))).
+      { rewrite ap_pp. rewrite concat_pp_p. apply whiskerL.
+        apply moveR_pV.
+        simpl.
+        pose (apD (λ U, pp_q2 i j f U) (transport_pV idmap (ap10 path_type i) x)^). simpl in p.
+        rewrite <- p; clear p.
+        rewrite transport_paths_FlFr. simpl.
+        rewrite ap_V. rewrite inv_V. simpl.
+        assert (X0 : (ap (λ x0 : D2 i, q1 i (transport idmap (ap10 path_type i)^ x0))
+       (transport_pV idmap (ap10 path_type i) x)^ @
+     ap (q1 i)
+       (transport_Vp idmap (ap10 path_type i)
+                     (transport idmap (ap10 path_type i)^ x))) = 1).
+        { rewrite ap_compose. rewrite <- ap_pp.
+          assert (X0 : (ap (transport idmap (ap10 path_type i)^)
+        (transport_pV idmap (ap10 path_type i) x)^ @
+      transport_Vp idmap (ap10 path_type i)
+      (transport idmap (ap10 path_type i)^ x)) = 1).
+          { rewrite ap_V. apply moveR_Vp. hott_simpl.
+            exact (transport_VpV idmap (ap10 path_type i) x). }
+          rewrite X0; clear X0. reflexivity. }
+        repeat rewrite concat_pp_p. 
+        apply moveR_Mp. 
+        rewrite X0; clear X0. rewrite concat_p1.
+        path_via (1 @ pp_q2 i j f x).
+        rewrite concat_p_pp. apply whiskerR.
+        apply moveL_Vp. rewrite concat_p1.
+        rewrite ap_compose. apply ap.
+        rewrite ap_compose. reflexivity. }
+      rewrite X0; clear X0.
+      rewrite <- ap_compose.
+      etransitivity; try exact (apD (λ u, ap u
+     (path_comm i j f (transport idmap (ap10 path_type i)^ x) @
+      ap (transport idmap (ap10 path_type j)^)
+      (ap (diagram1 D2 f) (transport_pV idmap (ap10 path_type i) x)))) (apD10 retr..1 j)^).
+      rewrite transport_paths_FlFr. simpl.
+      
+      assert (X0 : (apD10 (apD10 retr ..1 j)
+                   (transport idmap (ap10 path_type j)^ (diagram1 D2 f x)))^ = (ap
+     (λ x0 : D1 j → X,
+      x0 (transport idmap (ap10 path_type j)^ (diagram1 D2 f x)))
+     (apD10 retr ..1 j)^)).
+      { destruct retr..1. reflexivity. }
+      rewrite X0; clear X0. repeat rewrite concat_p_pp. apply whiskerR.
+      simpl.
+
+      rewrite ap_V. rewrite inv_V.
+      assert (X0 : (ap
+     (λ x0 : D1 j → X,
+      x0 (diagram1 D1 f (transport idmap (ap10 path_type i)^ x)))
+     (apD10 retr ..1 j)) = (ap
+       (λ x0 : ∀ i0 : G, D1 i0 → X,
+        x0 j (diagram1 D1 f (transport idmap (ap10 path_type i)^ x)))
+       retr ..1)).
+      { destruct retr..1. reflexivity. }
+      rewrite X0; clear X0.
+      repeat rewrite concat_pp_p. apply whiskerL.
+      repeat rewrite ap_pp.
+      assert (X0 : (ap (x1 j)
+      (ap (transport idmap (ap10 path_type j))
+          (path_comm i j f (transport idmap (ap10 path_type i)^ x)))) = (ap (λ y : D1 j, x1 j (transport idmap (ap10 path_type j) y))
+                                                                            (path_comm i j f (transport idmap (ap10 path_type i)^ x)))).
+      { destruct (path_comm i j f (transport idmap (ap10 path_type i)^ x)). reflexivity. }
+      rewrite X0; clear X0. repeat rewrite concat_pp_p. apply whiskerL.
+      destruct (transport_pV idmap (ap10 path_type i) x). hott_simpl.
+      rewrite ap_V. apply concat_pV.
+    - intros φ.
+      specialize (sect φ).
+      etransitivity; try exact sect.
+      apply ap.
+      simpl.
+      refine (path_sigma' _ _ _).
+      { simpl.
+        apply path_forall; intro i. apply path_forall; intro y.
+        repeat apply ap. apply (transport_Vp idmap). }
+      apply path_forall; intro i.
+      apply path_forall; intro j.
+      apply path_forall; intro f.
+      apply path_forall; intro x.
+      repeat rewrite transport_forall_constant.
+      rewrite transport_paths_FlFr. simpl.
+      hott_simpl.
+      repeat rewrite ap_pp. simpl.
+      clear retr; clear sect. clear inv.
+      repeat rewrite (@ap_ap2_path_forall fs G
+                                (λ x, D1 x)
+                                (λ u v, X)
+                                (λ (i0 : G) (y : D1 i0), φ
+                                                           (q1 i0
+                                                               (transport idmap (ap10 path_type i0)^
+                                                                (transport idmap (ap10 path_type i0) y))))
+                                (λ (i0 : G) (x0 : D1 i0), φ (q1 i0 x0))
+                                (λ i0, λ y : D1 i0, ap φ (ap (q1 i0) (transport_Vp idmap (ap10 path_type i0) y)))). 
+      repeat apply whiskerR.
+      apply moveR_Vp.
+      rewrite <- ap_pp. rewrite <- ap_pp. rewrite <- (ap_pp (λ x0 : D2 j, φ (q1 j (transport idmap (ap10 path_type j)^ x0)))).
+      simpl.
+      rewrite ap_compose; apply ap.
+      rewrite ap_compose. apply ap.
+      rewrite ap_pp.
+      rewrite (ap_transport_Vp idmap (ap10 path_type j) (path_comm i j f x)).
+      repeat rewrite concat_pp_p. apply whiskerL. path_via ((path_comm i j f x) @ 1). apply whiskerL.
+      apply moveR_Vp.
+      rewrite transport_VpV.
+      hott_simpl.
   Defined.
+  
   
 End colimit_universal_property.
 

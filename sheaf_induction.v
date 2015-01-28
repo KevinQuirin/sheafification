@@ -626,8 +626,38 @@ Section Sheafification.
                (separated_Type T)
                (diagonal_commute T)
                (@diagonal_pp T).
+    refine (transport_is_colimit _ _ _ _ _ _ _ _ _ _ _ _ (separated_Type_is_colimit_Cech_nerve T)).
+    - exact (diagrams_are_equal_types T).
+    - exact (diagrams_are_equal_proj (T:=T)).
+    - apply path_forall; intro i. apply path_forall; intro x.
+      simpl in *.
+      unfold diagonal_commute, Cech_nerve_commute.
+      apply ap.
+      unfold diagrams_are_equal_types.
+      unfold ap10, path_forall.
+      apply ap. rewrite eisretr.
+      rewrite (transport_path_universe_V_uncurried). reflexivity.
+    - admit.
+      (* simpl. *)
+      (* apply path_forall; intro i. *)
+      (* apply path_forall; intro j. *)
+      (* apply path_forall; intros [pp q]. *)
+      (* apply path_forall; intro x. *)
+      (* unfold path_forall. rewrite eisretr. *)
+      (* rewrite eisretr. *)
+      (* destruct pp; simpl. *)
+      (* rewrite eisretr. *)
+    
     (* Here, we would like to use the fact that [separated_Type T] is the colimit of [Cech_nerve_separated_unit], that [p: Cech_nerve_separated_unit = cl_diagonal_diagram], and that commutation in these diagrams are equal modulo [p] *)
-  Admitted. 
+  Defined.
+
+  Definition separated_Type_is_colimit_cl_diagonal_diagram' (T:Trunk (trunc_S n))
+  : is_colimit (Cech_nerve_graph)
+               (cl_diagonal_diagram T)
+               (separated_Type T)
+               (diagonal_commute T)
+               (@diagonal_pp T).
+    Admitted. (* Universes *)
 
   Lemma sep_eq_inv_lemma (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T}) (f : P.1 -> Q.1.1)
   : ∀ (i j : Cech_nerve_graph) (f0 : Cech_nerve_graph i j)
@@ -644,7 +674,7 @@ Section Sheafification.
   Definition sep_eq_inv (P : Trunk (trunc_S n)) (Q :{T : Trunk (trunc_S n) & separated T})
   : (P .1 → (Q .1) .1) -> ((separated_Type P) → (Q .1) .1).
     intro f.
-    apply (equiv_inv (IsEquiv := (separated_Type_is_colimit_cl_diagonal_diagram P Q.1.1))).
+    apply (equiv_inv (IsEquiv := (separated_Type_is_colimit_cl_diagonal_diagram' P Q.1.1))).
     exists (λ i, λ x, f (fst x.1)).
     apply sep_eq_inv_lemma.
   Defined.
@@ -662,7 +692,7 @@ Section Sheafification.
 
       unfold sep_eq_inv.
       unfold equiv_inv.
-      destruct (separated_Type_is_colimit_cl_diagonal_diagram P (Q.1).1) as [inv retr _ _].
+      destruct (separated_Type_is_colimit_cl_diagonal_diagram' P (Q.1).1) as [inv retr _ _].
       unfold Sect in retr; simpl in retr.
       simpl.
       unfold diagonal_commute in retr.

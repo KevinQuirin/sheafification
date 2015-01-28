@@ -305,4 +305,40 @@ Lemma path_sigma_eta (A : Type) (P : A → Type) (u : ∃ x, P x)
 destruct u. simpl. reflexivity.
 Defined.
 
+Lemma moveR_E_compose (A B C:Type) (f:B -> C) (g : A -> B) (h : A -> C) (IsEq_g : IsEquiv g)
+: (f = h o g^-1) -> (f o g = h).
+  intro H.
+  symmetry in H.
+  destruct H. apply path_forall; intro x. rewrite eissect. reflexivity.
+Qed.
+
+Lemma ap_ap_path_forall (X:Type) (Y:X -> Type) (g h:forall x:X, Y x) eq x
+: ap (λ f:forall x:X, Y x, f x)
+     (path_forall g h eq)
+  = eq x.
+  apply (apD10 (f := ((ap (x:=g) (y:=h) (λ f : ∀ x0 : X, Y x0, f x)) o apD10^-1)) (g:= λ eq, eq x)).
+  refine (moveR_E_compose _ _).
+  simpl. apply path_forall; intro u.
+  destruct u; reflexivity.
+Qed.
+
+Lemma ap_ap2_path_forall (X:Type) (Y : X -> Type) (Z:forall x:X, Y x -> Type) (g h : forall x:X, forall y:Y x, Z x y) eq x y
+: ap (λ f:forall x:X, forall y:Y x, Z x y, f x y) (path_forall g h (λ x, path_forall (g x) (h x) (eq x)))
+  = eq x y.
+  rewrite (ap_compose (λ f : ∀ (x0 : X) (y0 : Y x0), Z x0 y0, f x) (λ f, f y) (path_forall g h (λ x0 : X, path_forall (g x0) (h x0) (eq x0)))).
+  rewrite (ap_ap_path_forall (λ x0 : X, path_forall (g x0) (h x0) (eq x0))).
+  apply ap_ap_path_forall.
+Qed.
+
+Lemma ap_transport_Vp {X} (Y:X -> Type) {x1 x2:X} (p:x1 = x2) {y1 y2 : Y x1} (q:y1 = y2)
+: ap (transport Y p^) (ap (transport Y p) q) = transport_Vp Y p y1 @ q @ (transport_Vp Y p y2)^.
+destruct p, q; reflexivity.
+Qed.
+
+Lemma transport_VpV {A} (P : A -> Type) {x y:A} (p:x=y) (z:P y)
+: transport_Vp P p (transport P p^ z)
+  = ap (transport P p^) (transport_pV P p z).
+  destruct p; reflexivity.
+Qed.
+
 End Lemmas.

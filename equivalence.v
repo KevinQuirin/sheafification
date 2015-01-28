@@ -222,11 +222,4 @@ Lemma moveR_EV2 (A C:Type) (B:A -> Type) (D:C -> Type) (f : (forall x, B x) -> (
 Qed.
 
 
-Lemma moveR_E_compose (A B C:Type) (f:B -> C) (g : A -> B) (h : A -> C) (IsEq_g : IsEquiv g)
-: (f = h o g^-1) -> (f o g = h).
-  intro H.
-  symmetry in H.
-  destruct H. apply path_forall; intro x. rewrite eissect. reflexivity.
-Qed.
-
 End Things.

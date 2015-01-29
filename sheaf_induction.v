@@ -1307,20 +1307,87 @@ Section Sheafification.
             unfold P1, P2, P3; clear P1; clear P2; clear P3.
             pose (IsEq := sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (f x0).1)).
             rewrite concat_pp_p.
-            apply moveR_Vp.
+            apply moveR_Vp. rewrite concat_p1.
+           
+            pose (apD (λ U, (eisretr (IsEquiv := IsEq) (ap (E_to_χ_map A χ))
+                                     U)) (path_forall_1 (λ x0 : ∃ b0 : E, (χ b0).1, (f x0.1).1))^).
+            simpl in p.
+            rewrite <- p; clear p.
+            rewrite transport_paths_FlFr. unfold path_forall_1, eta_path_forall.
+            rewrite ap_idmap.
+            rewrite ap_V; rewrite inv_V.
 
+            repeat rewrite ap_pp.
+            repeat rewrite <- ap_compose.
+            pose (ap_compose (λ x : E_to_χ_map A χ (λ x0 : E, (f x0).1) =
+                E_to_χ_map A χ (λ x0 : E, (f x0).1),
+          ap (E_to_χ_map A χ) ((ap (E_to_χ_map A χ))^-1 x)) (λ x : (λ x : ∃ b0 : E, (χ b0).1, (f x.1).1) =
+            (λ x : ∃ b0 : E, (χ b0).1, (f x.1).1), 
+                                                                   ap10 x u) (eissect apD10 1)). rewrite <- p.  clear p.
+            unfold E_to_χ_map.
+            repeat rewrite concat_pp_p. apply whiskerL.
+
+            pose (p := ap_compose (ap (λ (h : E → A.1) (x0 : ∃ e : E, (χ e).1), h (let (proj1_sig, _) := x0 in proj1_sig)))
+                             (λ x, ap10 x u)
+                             (eissect (IsEquiv:=IsEq) (ap (E_to_χ_map A χ)) 1)). simpl in p.
+            rewrite p; clear p.
+            rewrite concat_p_pp. rewrite <- (ap_pp (λ x : (λ x : ∃ b0 : E, (χ b0).1, (f x.1).1) =
+             (λ x : ∃ b0 : E, (χ b0).1, (f x.1).1), 
+                                                          ap10 x u)).
+            apply moveR_Mp.
+            rewrite <- (ap_V (λ x : (λ x : ∃ b0 : E, (χ b0).1, (f x.1).1) =
+             (λ x : ∃ b0 : E, (χ b0).1, (f x.1).1), 
+                                    ap10 x u)).
             match goal with
-              |[|- ?XX = _] => set (foo := XX)
-            end. simpl in foo.
+              |[|- _ = ap ?ff ?pp @ ap ?gg ?qq] => rewrite <- (ap_pp ff pp qq); set (foo := pp@qq)
+            end.
+            simpl in foo.
+            assert (X : foo = path_forall_1 (λ x0 : ∃ b0 : E, (χ b0).1, (f x0.1).1)).
+            { unfold foo, path_forall_1, eta_path_forall.
+              rewrite inv_pp. rewrite inv_V.
+              pose (eisadj _ (IsEquiv := IsEq) 1). simpl in p. rewrite <- p.
+              rewrite concat_pp_p. rewrite concat_Vp. rewrite concat_p1. reflexivity. }
+            rewrite X; clear X; clear foo.
+            unfold path_forall_1, eta_path_forall. simpl.
+            unfold ap10.
+
+            pose (p := ap_compose (λ p:(λ x : ∃ b0 : E, (χ b0).1, (f x.1).1) =
+            (λ x : ∃ b0 : E, (χ b0).1, (f x.1).1), apD10 p) (λ f:(λ x : ∃ b0 : E, (χ b0).1, (f x.1).1) ==
+                                                                 (λ x : ∃ b0 : E, (χ b0).1, (f x.1).1), f u) (eissect apD10 1)). simpl in p.
+            rewrite p; clear p.
             
-            admit. }
+            rewrite <- (eisadj _ (IsEquiv := isequiv_apD10 (∃ b0 : E, (χ b0).1) (λ _ : ∃ b0 : E, (χ b0).1, A.1)
+         (λ x0 : ∃ b0 : E, (χ b0).1, (f x0.1).1)
+         (λ x0 : ∃ b0 : E, (χ b0).1, (f x0.1).1))). 
+            reflexivity. }
+          
           rewrite X123; clear X123.
           assert (X456 : P4 @ P5 @ P6 = 1).
           { unfold P4, P5, P6; clear P6; clear P5; clear P4; clear P3; clear P2; clear P1.
-            
-
-
-            admit. }
+            rewrite apD10_V.
+            rewrite concat_pp_p. apply moveR_Vp; rewrite concat_p1.
+            repeat rewrite <- (ap_pp (λ h : ∀ x : E, (f x).1 = (f x).1, h oD pr1)).
+            match goal with
+              |[|- _ = apD10 (ap (λ h : ∀ x : E, (f x).1 = (f x).1, h oD ?ff) ?pp) ?aa] => rewrite (apD10_ap_precompose (C := λ x:E, (f x).1 = (f x).1) ff pp aa)
+            end.
+            rewrite concat_pp_p.
+            rewrite (eisadj (apD10 (f := λ x : E, let (proj1_sig, _) := f x in proj1_sig)
+                                   (g := λ x : E, let (proj1_sig, _) := f x in proj1_sig)) 1).
+            rewrite ap_V. rewrite concat_Vp. rewrite concat_p1.
+            match goal with
+              |[|- ap ?ff ?pp @ ap ?gg ?qq = _ ] => rewrite <- (ap_pp ff pp qq)
+            end.
+            pose (ap_compose
+                    (λ x : (λ x0 : E, (f x0).1) = (λ x0 : E, (f x0).1), ap10 x)
+                    (λ x : (λ x0 : E, (f x0).1) == (λ x0 : E, (f x0).1), x u.1)
+                    (ap
+                       (let
+                           (equiv_inv, eisretr, eissect, _) :=
+                           sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (f x0).1) in
+                         equiv_inv) (eissect apD10 1) @ eissect (ap (E_to_χ_map A χ)) 1)).
+            simpl in p; rewrite p; clear p.
+            rewrite <- ap_pp.
+            reflexivity. }
           rewrite concat_1p.
           exact X456. }
         

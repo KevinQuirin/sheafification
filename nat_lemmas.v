@@ -109,7 +109,7 @@ Section Lemmas.
       - intro H. destruct (not_lt_0 0 H).
       - intro H. apply IHn. apply le_pred in H; exact H.
     Qed.
-      
+        
 End Lemmas.
 
 Section HSet_nat.
@@ -151,6 +151,33 @@ Section HSet_nat.
         * destruct p. left. apply le_n.
         * right. intro H. apply n0.
           apply le_S. apply le_pred in H; exact H.
+  Qed.
+
+  (* Adapted from https://coq.inria.fr/files/interval_discr.v *)
+  Lemma IsHProp_le : forall (n m : nat), IsHProp (n <= m).
+    intros n m.
+    apply hprop_allpath.
+    induction x; intro q.
+    - path_via (transport (fun n0 => n <= n0) 1 (le_n n)). 
+      generalize (idpath n).
+      case q.
+      { intro p.
+        assert (1=p) by apply path_ishprop. destruct X. reflexivity. }
+      { intros m l e.
+        destruct e^.
+        destruct (not_le_S _ l). }
+    - path_via (transport (fun n0 => n <= n0) 1 (le_S n m x)).
+      generalize (idpath (S m)).
+      case q.
+      { intros Heq.
+        destruct Heq. destruct (not_le_S _ x). }
+      { intros m0 l HeqS.
+        assert (X:{Heq : m = m0 & ap S Heq = HeqS}).
+        exists (ap pred HeqS). apply path_ishprop.
+        destruct X as [Heq pp].
+        destruct pp. destruct Heq.
+        simpl.
+        apply ap. apply IHx. }
   Qed.
 
 End HSet_nat.

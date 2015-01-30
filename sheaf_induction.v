@@ -573,14 +573,14 @@ Section Sheafification.
             set ((le_pred p'.+3 k.+2 (le_neq_lt p'.+2 k.+2 (neq_symm k.+2 p'.+2 b) Hq))) in *.
             set ((le_neq_lt p'.+1 k.+1 (neq_symm k.+1 p'.+1 (λ x:(k.+1 = p'.+1)%nat, b (ap S x))) (le_pred p'.+2 k.+2 Hq))) in *.
             simpl in l, l0.
-            assert (rew : l = l0) by admit (* Here should be a proof of IsHProp (n <= m) *).
-            destruct rew.
+            destruct (path_ishprop (H := IsHProp_le p'.+2 k.+1) l l0).
             exact IHp'.
           }
         }
       }
     }
   Defined.
+  
   (* Lemma 29 *)
   Lemma diagrams_are_equal (T:Trunk (trunc_S n))
   : (Cech_nerve_separated_unit T) = cl_diagonal_diagram T.

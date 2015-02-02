@@ -491,6 +491,7 @@ Section Sheafification.
   Defined.
 
   Opaque O_rec_paths.
+
   (* Lemma 29 *)
   Lemma diagrams_are_equal_proj (T:Trunk (trunc_S n))
   : ∀ (i j : Cech_nerve_graph) (x : Cech_nerve_graph i j),
@@ -504,17 +505,49 @@ Section Sheafification.
                                        (ap10 (diagrams_are_equal_types T) i)) x0))).
     intros i j [p [q Hq]] [P X]. simpl.
     destruct p. unfold diagrams_are_equal_types. simpl.
-    unfold ap10, path_forall; rewrite eisretr.
-    rewrite transport_path_universe_uncurried.
-    pose (rew := transport_path_universe_V_uncurried (hPullback_separated_unit_is_cl_diag T j) ).
-    rewrite rew; clear rew.
+    match goal with
+      |[|- _ = transport idmap ?XX^ (cl_diagonal_projections _ (transport idmap ?YY _)) ]
+       => path_via (transport idmap
+                     XX^
+     (cl_diagonal_projections (q; Hq)
+        (transport idmap
+           (path_universe_uncurried
+              (hPullback_separated_unit_is_cl_diag T j.+1)) 
+           (P; X))))
+    end. Focus 2.
+    repeat apply ap.
+    refine (transport2 idmap _ _). symmetry. unfold ap10, path_forall.
+    refine (apD10 (eisretr apD10 (λ x : nat, path_universe_uncurried (hPullback_separated_unit_is_cl_diag T x))) _).
+    
+    path_via (transport idmap
+     (path_universe_uncurried (hPullback_separated_unit_is_cl_diag T j))^
+     (cl_diagonal_projections (q; Hq)
+        (transport idmap
+           (path_universe_uncurried
+              (hPullback_separated_unit_is_cl_diag T j.+1)) 
+           (P; X)))). Focus 2.
+    refine (transport2 idmap _ _).
+    symmetry. unfold ap10, path_forall.
+    apply ap.
+    refine (apD10 (eisretr apD10 (λ x : nat, path_universe_uncurried (hPullback_separated_unit_is_cl_diag T x))) _).
+
+    path_via (transport idmap
+     (path_universe_uncurried (hPullback_separated_unit_is_cl_diag T j))^
+     (cl_diagonal_projections (q; Hq)
+                              ((hPullback_separated_unit_is_cl_diag T j.+1) (P; X)))). Focus 2.
+    apply ap. apply ap. symmetry.
+    refine (apD10 (transport_path_universe_uncurried _) _).
+
+    path_via ((hPullback_separated_unit_is_cl_diag T j)^-1
+     (cl_diagonal_projections (q; Hq)
+                              ((hPullback_separated_unit_is_cl_diag T j.+1) (P; X)))). Focus 2.
+    symmetry.
+    refine (transport_path_universe_V_uncurried (hPullback_separated_unit_is_cl_diag T j) _).
+    
     symmetry; apply moveR_EV; symmetry.
     simpl.
     apply path_sigma' with 1.
-    (* simpl. *)
-    
     unfold equiv_functor_prod'. unfold functor_prod.
-    (* simpl. *)
     unfold forget_hPullback, forget_cl_char_hPullback', forget_char_hPullback.
     simpl.
     match goal with
@@ -632,19 +665,228 @@ Section Sheafification.
     - apply path_forall; intro i. apply path_forall; intro x.
       simpl in *.
       unfold diagonal_commute, Cech_nerve_commute.
-      apply ap.
+      apply ap. apply ap.
       unfold diagrams_are_equal_types.
       unfold ap10, path_forall.
-      apply ap. rewrite eisretr.
-      rewrite (transport_path_universe_V_uncurried). reflexivity.
-    - admit.
-      (* simpl. *)
-      (* apply path_forall; intro i. *)
-      (* apply path_forall; intro j. *)
-      (* apply path_forall; intros [pp q]. *)
-      (* apply path_forall; intro x. *)
-      (* unfold path_forall. rewrite eisretr. *)
+      path_via ((transport idmap
+                           (path_universe_uncurried (hPullback_separated_unit_is_cl_diag T i))^ x).1).
+      apply ap. refine (transport2 idmap _ _).
+      apply ap.
+      refine (apD10 (eisretr apD10 _) _).
       (* rewrite eisretr. *)
+      path_via (((hPullback_separated_unit_is_cl_diag T i)^-1 x).1).
+      apply ap.
+      apply transport_path_universe_V_uncurried.
+    - simpl.
+      apply path_forall; intro i.
+      apply path_forall; intro j.
+      apply path_forall; intros [pp q].
+      apply path_forall; intros [x xp]. 
+      unfold path_forall. rewrite eisretr.
+      rewrite eisretr.
+      destruct pp.
+      unfold diagonal_pp, Cech_nerve_pp.
+      destruct q as [q Hq].
+      Opaque diagrams_are_equal_proj.
+      unfold Cech_nerve_commute.
+      repeat rewrite <- ap_compose.
+      rewrite concat_p1.
+      match goal with
+        |[|- _ @ (ap _ (ap ?XX ?pp @ (ap ?YY ?qq)) @ _) = _ ] => rewrite <- (ap_pp XX pp qq)
+      end.
+      match goal with
+        |[|- _ @ (ap ?gg (ap ?ff ?pp) @ _) = _ ] => rewrite <- (ap_compose ff gg pp)
+      end.
+      rewrite concat_p_pp. 
+      match goal with
+        |[|- (ap ?ff ?pp @ ap _ ?qq) @ _ = _] => rewrite <- (ap_pp ff pp qq)
+      end.
+      induction q.
+      { simpl. simpl in xp.
+        match goal with
+          |[|- ?pp @ _ = _] => set (bar := pp)
+        end.
+        simpl in bar.
+        
+        match goal with
+          |[|- _ @ (?PP1^ @ (?PP2^ @ ?PP3)) = _] =>
+           set (p1 := PP1); set (p2 := PP2); set (p3 := PP3)
+        end. simpl in p1, p2, p3.
+        apply moveR_Mp. rewrite <- inv_pp.
+        rewrite concat_p_pp. rewrite <- inv_pp. apply moveR_pM.
+        rewrite <- inv_pp. apply ap.
+        unfold diagonal_commute in p2. simpl in p2.
+
+        assert (X : (λ x : ∃ y : T.1 ∧ T.1 ∧ hProduct T.1 j,
+                    ((O cloture_hpullback.nj
+                        (fst y = fst (snd y);
+                        istrunc_paths T.2 (fst y) (fst (snd y)))).1).1
+                    ∧ (cl_char_hPullback' idmap j (snd y)).1,
+              ap (separated_unit T)
+                (ap fst
+                   (ap pr1
+                      (transport2 idmap
+                         (ap inverse
+                            (apD10
+                               (eisretr apD10
+                                  (λ x0 : nat,
+                                   path_universe_uncurried
+                                     (hPullback_separated_unit_is_cl_diag T
+                                        x0))) (j.+1)%nat)) x) @
+                    (ap pr1
+                       (transport_path_universe_V_uncurried
+                          (hPullback_separated_unit_is_cl_diag T j.+1) x) @ 1)))) (transport idmap (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
+                                                                                             (x; xp)) = p2).
+        { unfold p2.
+          match goal with
+            |[|- _ = apD10 (f := ?ff) (g:= ?gg) _ _ ] => rewrite (eisretr (apD10 (f:=ff) (g:=gg)))
+          end. reflexivity. }
+        destruct X. simpl.
+        match goal with |[|- ?PP2 @ _ = _] => set (p2 := PP2) end. simpl in p2.
+
+        assert (X : (ap (λ P : ∃ P : T.1 ∧ T.1 ∧ hProduct T.1 j,
+            separated_unit T (fst P) = separated_unit T (fst (snd P))
+            ∧ (char_hPullback n (separated_unit T) j
+                 (separated_Type_is_Trunk_Sn (T:=T)) T.2 
+                 (snd P)).1, separated_unit T (fst P.1))
+                        ((transport2 idmap
+                   (ap inverse
+                      (apD10
+                         (eisretr apD10
+                            (λ x0 : nat,
+                             path_universe_uncurried
+                               (hPullback_separated_unit_is_cl_diag T x0)))
+                         (j.+1)%nat))
+                   (transport idmap
+                      (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
+                      (x; xp))) @ (transport_path_universe_V_uncurried
+                    (hPullback_separated_unit_is_cl_diag T j.+1)
+                    (transport idmap
+                       (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
+                       (x; xp))))^)^ = p2).
+        { unfold p2.
+          rewrite <- (ap_compose fst (separated_unit T)).
+          rewrite concat_p1.
+          rewrite <- (ap_pp pr1 (transport2 idmap
+           (ap inverse
+              (apD10
+                 (eisretr apD10
+                    (λ x0 : nat,
+                     path_universe_uncurried
+                       (hPullback_separated_unit_is_cl_diag T x0)))
+                 (j.+1)%nat))
+           (transport idmap (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
+                      (x; xp)))
+                     (transport_path_universe_V_uncurried
+           (hPullback_separated_unit_is_cl_diag T j.+1)
+           (transport idmap (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
+                      (x; xp)))).
+          rewrite <- (ap_compose pr1 (λ x0 : T.1 ∧ T.1 ∧ hProduct T.1 j, separated_unit T (fst x0)) (transport2 idmap
+           (ap inverse
+              (apD10
+                 (eisretr apD10
+                    (λ x0 : nat,
+                     path_universe_uncurried
+                       (hPullback_separated_unit_is_cl_diag T x0)))
+                 (j.+1)%nat))
+           (transport idmap (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
+              (x; xp)) @
+         transport_path_universe_V_uncurried
+           (hPullback_separated_unit_is_cl_diag T j.+1)
+           (transport idmap (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
+                      (x; xp)))).
+          rewrite ap_V. rewrite inv_V.
+          reflexivity. }
+        destruct X.
+        apply moveR_Vp.
+        rewrite concat_p_pp.
+        match goal with
+          |[|- _ = ?PP2 @ _] => set (p2 := PP2)
+        end.
+        assert (X : ap (λ P : ∃ P : T.1 ∧ T.1 ∧ hProduct T.1 j,
+                 separated_unit T (fst P) = separated_unit T (fst (snd P))
+                 ∧ (char_hPullback n (separated_unit T) j
+                      (separated_Type_is_Trunk_Sn (T:=T)) T.2 
+                      (snd P)).1, separated_unit T (fst P.1))
+                       ((transport2 idmap
+             (ap inverse
+                (apD10
+                   (eisretr apD10
+                      (λ x0 : nat,
+                       path_universe_uncurried
+                         (hPullback_separated_unit_is_cl_diag T x0)))
+                   (j.+1)%nat))
+             (transport idmap (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
+                (x; xp)) @
+           transport_path_universe_V_uncurried
+             (hPullback_separated_unit_is_cl_diag T j.+1)
+             (transport idmap (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
+                (x; xp)))^ @ (transport_Vp idmap (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
+                                           (x; xp))) = p2).
+        { admit. }
+        destruct X.
+        
+        unfold p1, p3, bar. clear bar; clear p3; clear p1.
+        unfold separated_unit_paths_are_nj_paths_inv.
+        apply moveR_EV.
+        apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
+        unfold ap10 at 3, path_forall at 1.
+        match goal with
+          |[|- apD10 (apD10^-1 ?pp) = _] => set (p1 := pp)
+        end.
+        (* match goal with *)
+        (*   |[|- ?pp = _ ] => set (pp1 := pp) *)
+        (* end. *)
+        (* assert (X : p1 = pp1). *)
+        (* { admit. } *)
+        (* unfold p1 in pp1. *)
+        path_via p1.
+        rewrite eisretr. reflexivity.
+        unfold p1; clear p1.
+        apply path_forall; intro u.
+        apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_unique_subuniverse _ _))).
+        apply isequiv_inverse.
+        match goal with
+          |[|- ?ff^-1 (?gg ?pp) = _] => path_via pp
+        end.
+        apply eissect.
+        apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_truncn_unique _ _))).
+        apply isequiv_inverse.
+        match goal with
+          |[|- ?ff^-1 (?gg ?pp) = _] => path_via pp
+        end.
+        apply eissect.
+        simpl.
+        match goal with
+          |[|- _ = ?pp] => path_via (pp^^)
+        end.
+        apply ap.
+        apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_universe))).
+        apply isequiv_inverse.
+        match goal with
+          |[|- ?ff^-1 (?gg ?pp) = _] => path_via pp
+        end.
+        apply eissect.
+        simpl.
+        apply equal_equiv. unfold mu_modal_paths_func_univ_inv. simpl.
+        apply (@equiv_inj _ _ _ (O_equiv _ _ _)).
+        simpl. apply path_forall; intro v.
+        match goal with
+          |[|- O_rec _ _ ?ff _ = _] => path_via (ff v)
+        end.
+        refine (apD10 (O_rec_retr _ _ _) _).
+        apply (moveL_transport_V idmap).
+        destruct v.
+        
+      }
+      { simpl. clear IHq.
+      
+
+
+
+      --admit.
+      (* simpl. *)
+
       (* destruct pp; simpl. *)
       (* rewrite eisretr. *)
     

@@ -45,9 +45,9 @@ Lemma isequiv_eq_dep_subset {A:Type} {B:A -> Type} (X : ∀ a : A, IsHProp (B a)
   apply @isequiv_adjointify with (g := λ p, ap pr1 p).
   - intro p. destruct p. simpl. unfold eq_dep_subset.
     destruct u as [a H]; simpl in *.
-    assert (center (H=H) = 1).
+    assert (center (H=H) = idpath).
     apply contr.
-    apply (transport (λ u, path_sigma B (a;H) (a;H) 1 u = 1) X0^).
+    apply (transport (λ u, path_sigma B (a;H) (a;H) 1 u = idpath) X0^).
     reflexivity.
   - intro p.
     destruct u as [u G], v as [v H].

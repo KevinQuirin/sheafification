@@ -5,6 +5,8 @@ Require Import equivalence lemmas.
 Set Universe Polymorphism.
 Global Set Primitive Projections.
 
+Local Open Scope path_scope.
+
 Section Diagram.
 
   (* From https://github.com/peterlefanulumsdaine/hott-limits *)

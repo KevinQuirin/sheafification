@@ -7,7 +7,7 @@ Set Universe Polymorphism.
 Set Implicit Arguments.
 
 Local Open Scope path_scope.
-Local Open Scope equiv_scope.
+(* Local Open Scope equiv_scope. *)
 
 Section Images.
 

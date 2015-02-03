@@ -6,7 +6,7 @@ Sheafification functor in type theory.
 Compared with the version described in the paper, the problem concerning the equality of the projections map of the Cech nerve and the closed diagonal diagram (raised section VI.B) has been fixed. The "path between paths" part in the proof that separation is a modality has also been fixed.
 
 # Usage #
-These files compile with the HoTT library https://github.com/HoTT/HoTT, commit 44bc1164ec8e159577f7d9fc98396bead8fa0d7e.
+These files compile with the HoTT library https://github.com/HoTT/HoTT, commit 247016b019c48e761b58751bafa71ef22ee4edaf.
 
 One can use the library with
 ```

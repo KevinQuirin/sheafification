@@ -9,6 +9,8 @@ Set Universe Polymorphism.
 Global Set Primitive Projections.
 Set Implicit Arguments.
 
+Local Open Scope path_scope.
+
 Section SubObject_CLassifier.
 
 Context `{ua: Univalence}.
@@ -16,10 +18,10 @@ Context `{fs: Funext}.
 
 Definition hfiber {A B : Type} (f : A -> B) (y : B) := { x : A & f x = y }.
 
-Definition hfiber_eqL A B (f : A -> B) : {b : B & {a : A & f a = b}} -> A.
+Definition hfiber_eqL A B (f : A -> B) : {b : B & {a : A & f a = b } } -> A.
   intro b. destruct b as [b [a eq]]. exact a. Defined.
 
-Definition hfiber_eqR A B (f : A -> B) : A -> {b : B & {a : A & f a = b}}.
+Definition hfiber_eqR A B (f : A -> B) : A -> {b : B & {a : A & f a = b } }.
   intro a. exists (f a). exists a. reflexivity. Defined.
 
 Definition hfiber_eq_eissect A B (f : A -> B) : Sect (hfiber_eqL f) (hfiber_eqR f).
@@ -101,7 +103,7 @@ Definition subobject_diagram A B (f : A -> B) :
   apply path_forall; intro a. unfold sub_to_char; simpl. reflexivity.
 Defined.
 
-Definition nsub_to_char n B : {A : Type & {f : A -> B & forall b, IsTrunc n (hfiber f b)}} -> B -> Trunk n :=
+Definition nsub_to_char n B : {A : Type & {f : A -> B & forall b, IsTrunc n (hfiber f b) } } -> B -> Trunk n :=
   λ f b, (hfiber (f.2.1) b; (f.2.2) b).
  
 Instance projContr B (P : B -> {T : Type & Contr_internal T}) (b:B) : Contr_internal ((P b).1)
@@ -133,12 +135,12 @@ Definition nchar_to_sub_compat n B (P : B -> Trunk n) :
   exact (nchar_to_sub_eq _ _).
 Defined.
 
-Definition nchar_to_sub n B : (B -> Trunk n) -> {A : Type & {f : A -> B & forall b, IsTrunc n (hfiber f b)}} :=
+Definition nchar_to_sub n B : (B -> Trunk n) -> {A : Type & {f : A -> B & forall b, IsTrunc n (hfiber f b) } } :=
   λ P, ({b : B & (P b).1} ; (@pr1 _ _; nchar_to_sub_compat _)).
 
 Definition ntransport_arrow n {A : Type} {B C : A -> Type}
   {x1 x2 : A} (p : x1 = x2) (f : B x1 -> C x1) (y : B x2) (Tr_f : ∀ b : C x1 , IsTrunc n (hfiber f b))
-  : pr1 (transport (fun x => {f0 : B x -> C x & forall (b:C x), IsTrunc n {x : B x & f0 x = b}}) p (f; Tr_f)) y  =  p # (f (p^ # y)).
+  : pr1 (transport (fun x => {f0 : B x -> C x & forall (b:C x), IsTrunc n {x : B x & f0 x = b } }) p (f; Tr_f)) y  =  p # (f (p^ # y)).
 Proof.
   destruct p; simpl. reflexivity.
 Defined.
@@ -181,7 +183,7 @@ Instance nsub_eq_char_eq n B : IsEquiv (nsub_to_char n (B:=B)) :=
   isequiv_adjointify _ (nchar_to_sub (B:=B)) (nsub_eq_char_retr (n:=n) (B:=B)) (nsub_eq_char_sect n (B:=B)).
 
 (* Section II.A, hierarchy of subobject classifiers *)
-Definition nsub_eq_char n B : {A : Type & {f : A -> B & forall b, IsTrunc n (hfiber f b)}} = (B -> Trunk n).
+Definition nsub_eq_char n B : {A : Type & {f : A -> B & forall b, IsTrunc n (hfiber f b) } } = (B -> Trunk n).
   apply path_universe_uncurried.
   exists (nsub_to_char n (B:=B)).
   exact (nsub_eq_char_eq _ _).

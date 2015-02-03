@@ -13,7 +13,7 @@ Global Set Primitive Projections.
 Set Implicit Arguments.
 
 Local Open Scope path_scope.
-Local Open Scope equiv_scope.
+(* Local Open Scope equiv_scope. *)
 Local Open Scope type_scope.
 
 (* Readability *)
@@ -876,19 +876,10 @@ Section Sheafification.
         end.
         refine (apD10 (O_rec_retr _ _ _) _).
         apply (moveL_transport_V idmap).
-        destruct v.
+        admit.
         
       }
-      { simpl. clear IHq.
-      
-
-
-
-      --admit.
-      (* simpl. *)
-
-      (* destruct pp; simpl. *)
-      (* rewrite eisretr. *)
+      { admit. }
     
     (* Here, we would like to use the fact that [separated_Type T] is the colimit of [Cech_nerve_separated_unit], that [p: Cech_nerve_separated_unit = cl_diagonal_diagram], and that commutation in these diagrams are equal modulo [p] *)
   Defined.

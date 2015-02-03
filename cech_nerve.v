@@ -10,7 +10,7 @@ Global Set Primitive Projections.
 (* Set Implicit Arguments. *)
 
 Local Open Scope path_scope.
-Local Open Scope equiv_scope.
+(* Local Open Scope equiv_scope. *)
 Local Open Scope type_scope.
 
 Lemma trunc_unit (m:trunc_index) : IsTrunc m Unit.

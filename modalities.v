@@ -5,6 +5,8 @@ Require Import equivalence univalence lemmas sub_object_classifier epi_mono cech
 Set Universe Polymorphism.
 Global Set Primitive Projections.
 
+Local Open Scope path_scope.
+
 (* Readability *)
 Arguments trunc_arrow {H} {A} {B} {n} H0: simpl never.
 Arguments trunc_sigma {A} {P} {n} H H0: simpl never.

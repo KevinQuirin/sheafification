@@ -6,6 +6,8 @@ Set Universe Polymorphism.
 Global Set Primitive Projections.
 Set Implicit Arguments.
 
+Local Open Scope path_scope.
+
 Section Preliminary .
 
 Context `{ua: Univalence}.

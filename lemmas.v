@@ -7,7 +7,7 @@ Set Universe Polymorphism.
 Set Implicit Arguments.
 
 Local Open Scope path_scope.
-Local Open Scope equiv_scope.
+(* Local Open Scope equiv_scope. *)
 
 Section Lemmas.
 
@@ -15,7 +15,7 @@ Context `{ua: Univalence}.
 Context `{fs: Funext}.
 
 Lemma path_sigma_1 (A : Type) (P : A → Type) (u : ∃ x, P x)
-: path_sigma P u u 1 1 = 1.
+: path_sigma P u u 1 1 = idpath.
   destruct u. reflexivity.
 Defined.
 
@@ -23,7 +23,7 @@ Lemma L425 A B (f:A -> B) (y:B) (x x': hfiber f y)
 : (x=x') <~> {Ɣ:x.1=x'.1 & (ap f Ɣ) @ x'.2 = x.2}.
   refine (equiv_adjointify _ _ _ _).
   - intro p. destruct p.
-    exists 1. apply concat_1p.
+    exists idpath. apply concat_1p.
   - intros [r q]. destruct x as [x p], x' as [x' p']; simpl in *.
     destruct r. apply @path_sigma' with (p:=1). hott_simpl. 
   - intros [Ɣ q].
@@ -245,15 +245,15 @@ Section Three_by_three.
   Proof.
     equiv_via
       ({p : f x = b & {q : h x = c &
-                           transport (fun c' => g c' = k b) q ((s x)^ @ ap k p) = d^}}).
+                           transport (fun c' => g c' = k b) q ((s x)^ @ ap k p) = d^ } }).
     apply equiv_functor_sigma_id.
     intros; apply fibfibmapf.
     equiv_via
       ({q : h x = c & {p : f x = b &
-        transport (fun b' => k b' = g c) p ((s x)^^ @ ap g q) = d}}).
+        transport (fun b' => k b' = g c) p ((s x)^^ @ ap g q) = d } }).
     equiv_via
       ({p : f x = b & {q : h x = c&
-                           transport (fun b' => k b' = g c) p ((s x)^^ @ ap g q) = d}}).
+                           transport (fun b' => k b' = g c) p ((s x)^^ @ ap g q) = d } }).
     apply equiv_functor_sigma_id. intros.
     apply fibfibmap.
     apply equiv_sigma_symm.
@@ -265,13 +265,13 @@ Section Three_by_three.
   Definition three_by_three' : fibfg <~> fibhk.
   Proof.
     equiv_via
-      ({x : A & {p : f x = b & fibf_to_fibg (x;p) = (c;d^)}}).
+      ({x : A & {p : f x = b & fibf_to_fibg (x;p) = (c;d^) } } ).
     apply equiv_inverse.
     unfold fibfg, fibf_to_fibg, square_fiber_map, hfiber, fibf, hfiber. simpl.
     exact (@equiv_sigma_assoc A (λ x, f x = b) (λ X, (h X.1; (s X.1)^ @ ap k X.2) = (existT (λ c, g c = k b) c (d^)))).
     unfold fibhk, fibh_to_fibk, fibf_to_fibg, square_fiber_map, hfiber. simpl.
     equiv_via
-      ({x : A & {p : h x = c & fibh_to_fibk (x;p) = (b;d)}}).
+      ({x : A & {p : h x = c & fibh_to_fibk (x;p) = (b;d) } }).
     apply equiv_functor_sigma_id. intros.
     apply fibmap.
     exact (@equiv_sigma_assoc A (λ x, h x = c) (λ X, fibh_to_fibk X = (b; d))).

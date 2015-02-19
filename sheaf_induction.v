@@ -492,96 +492,51 @@ Section Sheafification.
 
   Opaque O_rec_paths.
 
+   
   (* Lemma 29 *)
   Lemma diagrams_are_equal_proj (T:Trunk (trunc_S n))
   : ∀ (i j : Cech_nerve_graph) (x : Cech_nerve_graph i j),
-      diagram1 (Cech_nerve_separated_unit T) x ==
-      (λ x0 : (Cech_nerve_separated_unit T) i,
-              (equiv_path ((cl_diagonal_diagram T) j) ((Cech_nerve_separated_unit T) j)
-                          (ap10 (diagrams_are_equal_types T) j)^)
-                (diagram1 (cl_diagonal_diagram T) x
-                          ((equiv_path ((Cech_nerve_separated_unit T) i)
-                                       ((cl_diagonal_diagram T) i)
-                                       (ap10 (diagrams_are_equal_types T) i)) x0))).
-    intros i j [p [q Hq]] [P X]. simpl.
-    destruct p. unfold diagrams_are_equal_types. simpl.
-    match goal with
-      |[|- _ = transport idmap ?XX^ (cl_diagonal_projections _ (transport idmap ?YY _)) ]
-       => path_via (transport idmap
-                     XX^
-     (cl_diagonal_projections (q; Hq)
-        (transport idmap
-           (path_universe_uncurried
-              (hPullback_separated_unit_is_cl_diag T j.+1)) 
-           (P; X))))
-    end. Focus 2.
-    repeat apply ap.
-    refine (transport2 idmap _ _). symmetry. unfold ap10, path_forall.
-    refine (apD10 (eisretr apD10 (λ x : nat, path_universe_uncurried (hPullback_separated_unit_is_cl_diag T x))) _).
-    
-    path_via (transport idmap
-     (path_universe_uncurried (hPullback_separated_unit_is_cl_diag T j))^
-     (cl_diagonal_projections (q; Hq)
-        (transport idmap
-           (path_universe_uncurried
-              (hPullback_separated_unit_is_cl_diag T j.+1)) 
-           (P; X)))). Focus 2.
-    refine (transport2 idmap _ _).
-    symmetry. unfold ap10, path_forall.
-    apply ap.
-    refine (apD10 (eisretr apD10 (λ x : nat, path_universe_uncurried (hPullback_separated_unit_is_cl_diag T x))) _).
-
-    path_via (transport idmap
-     (path_universe_uncurried (hPullback_separated_unit_is_cl_diag T j))^
-     (cl_diagonal_projections (q; Hq)
-                              ((hPullback_separated_unit_is_cl_diag T j.+1) (P; X)))). Focus 2.
-    apply ap. apply ap. symmetry.
-    refine (apD10 (transport_path_universe_uncurried _) _).
-
-    path_via ((hPullback_separated_unit_is_cl_diag T j)^-1
-     (cl_diagonal_projections (q; Hq)
-                              ((hPullback_separated_unit_is_cl_diag T j.+1) (P; X)))). Focus 2.
-    symmetry.
-    refine (transport_path_universe_V_uncurried (hPullback_separated_unit_is_cl_diag T j) _).
-    
-    symmetry; apply moveR_EV; symmetry.
-    simpl.
+   diagram1
+     (Cech_nerve_diagram n (separated_unit T)
+        (separated_Type_is_Trunk_Sn (T:=T)) T.2) x ==
+   (λ x0 : (Cech_nerve_diagram n (separated_unit T)
+              (separated_Type_is_Trunk_Sn (T:=T)) T.2) i,
+    (hPullback_separated_unit_is_cl_diag T j)^-1
+      (diagram1 (cl_diagonal_diagram T) x
+                ((hPullback_separated_unit_is_cl_diag T i) x0))).
+    intros i j [p [q Hq]] [P X].
+    destruct p.
     apply path_sigma' with 1.
-    unfold equiv_functor_prod'. unfold functor_prod.
+    unfold equiv_functor_prod'. unfold functor_prod. unfold functor_sigma.
     unfold forget_hPullback, forget_cl_char_hPullback', forget_char_hPullback.
     simpl.
+    unfold forget_cl_char_hPullback'. simpl.
+    unfold functor_prod.
     match goal with
-      |[|- _ = sum_rect _ _ _ ?d] => induction d as [| a]
+      |[|- sum_rect _ _ _ ?d = _] => induction d as [| a]
     end.
-    { destruct a. reflexivity. }
-    {
-      simpl.
+    { destruct a. simpl. symmetry. apply eissect. }
+    { simpl.
       match goal with
-        |[|- _ = sum_rect _ _ _ ?d] => induction d as [| b]
+        |[|- sum_rect _ _ _ ?d = _] => induction d as [| b]
       end.
       { destruct a0.
         simpl.
         induction j.
         { reflexivity. }
-        {
-          simpl.
-          refine (path_prod _ _ _ _);
-            simpl.
-          { reflexivity. }
-          { simpl. apply IHj. }
-        }
+        { simpl.
+          refine (path_prod _ _ _ _); simpl.
+          symmetry. apply separated_unit_paths_are_nj_paths_sect.
+          simpl. apply IHj. }
       }
       { simpl.
-        symmetry.
         set (p' := neq_0_succ q (neq_symm 0 q a)).
         destruct p' as [p' Hp']. simpl.
-        destruct Hp'.
-        clear a. 
+        destruct Hp'. clear a.
         generalize dependent j. 
         generalize dependent p'.
         induction p'; simpl.
-        {
-          intros j Hq P X b.
+        { intros j Hq P X b.
           set (k := gt_0_succ j (le_pred 2 j.+1 (le_neq_lt 1 j.+1 (neq_symm j.+1 1 b) Hq))).
           destruct k as [k Hk].
           destruct Hk. simpl.
@@ -589,16 +544,18 @@ Section Sheafification.
           { simpl.
             destruct P as [P1 [P2 [P3 P]]]. 
             destruct X as [X1 [X2 X]]. simpl in *.
-            exact (separated_unit_paths_are_nj_paths_concat X1 X2)^. }
-          { simpl. reflexivity. }
+            refine (@equiv_inj _ _ (@separated_unit_paths_are_nj_paths_fun T P1 P3) _ _ _ _).
+            exact (isequiv_adjointify _ (@separated_unit_paths_are_nj_paths_inv T P1 P3) (@separated_unit_paths_are_nj_paths_retr T P1 P3) (@separated_unit_paths_are_nj_paths_sect T P1 P3)).
+            rewrite separated_unit_paths_are_nj_paths_retr.
+            exact (separated_unit_paths_are_nj_paths_concat X1 X2). }
+          { simpl. symmetry. apply eissect. }
         }
-        {
-          intros j Hq P X b.
+        { intros j Hq P X b.
           set (k := ge_succ_succ p'.+1 j (le_pred p'.+3 j.+1 (le_neq_lt p'.+2 j.+1 (neq_symm j.+1 p'.+2 b) Hq))).
           destruct k as [k Hk]. simpl.
           destruct Hk. simpl.
           refine (path_prod _ _ _ _).
-          { reflexivity. }
+          { simpl. symmetry. apply separated_unit_paths_are_nj_paths_sect. }
           { simpl.
             specialize (IHp' k%nat (le_pred p'.+2 k.+2 Hq) (snd P) (snd X) (λ x:(k.+1 = p'.+1)%nat, b (ap S x))).
 
@@ -613,22 +570,20 @@ Section Sheafification.
       }
     }
   Defined.
+  Opaque diagrams_are_equal_proj.
   
   (* Lemma 29 *)
-  Lemma diagrams_are_equal (T:Trunk (trunc_S n))
-  : (Cech_nerve_separated_unit T) = cl_diagonal_diagram T.
-    (* unfold Cech_nerve_separated_unit, Cech_nerve_diagram, cl_diagonal_diagram. *)
-    apply path_diagram.
-    refine (exist _ _ _). 
-    - apply diagrams_are_equal_types.
-    - apply diagrams_are_equal_proj.
-  Defined.
+  (* Lemma diagrams_are_equal (T:Trunk (trunc_S n)) *)
+  (* : (Cech_nerve_separated_unit T) = cl_diagonal_diagram T. *)
+  (*   (* unfold Cech_nerve_separated_unit, Cech_nerve_diagram, cl_diagonal_diagram. *) *)
+  (*   apply path_diagram. *)
+  (*   refine (exist _ _ _).  *)
+  (*   - apply diagrams_are_equal_types. *)
+  (*   - apply diagrams_are_equal_proj. *)
+  (* Defined. *)
   
   Definition separated_Type_is_colimit_Cech_nerve (T:Trunk (trunc_S n))
     := Giraud n (separated_unit T) (@separated_Type_is_Trunk_Sn T) T.2 (@IsSurjection_toIm _ _ (λ t t' : T.1, O nj (t = t'; istrunc_paths T.2 t t'))).
-
-  Definition separated_Type_is_colimit_Cech_nerve' (T:Trunk (trunc_S n))
-  := GiraudAxiom n (separated_unit T) (@separated_Type_is_Trunk_Sn T) T.2 (@IsSurjection_toIm _ _ (λ t t' : T.1, O nj (t = t'; istrunc_paths T.2 t t'))).
 
   Definition diagonal_commute (T:Trunk (trunc_S n))
   : forall i, (cl_diagonal_diagram T) i -> (separated_Type T).
@@ -653,6 +608,33 @@ Section Sheafification.
     - reflexivity.
   Defined.
 
+  Lemma transport_diagrams_are_equal_types (T:Trunk n.+1) (i:nat) x
+  : (transport idmap (ap10 (diagrams_are_equal_types T) i)^ x).1 = x.1.
+    unfold diagrams_are_equal_types.
+    unfold ap10, path_forall.
+    path_via ((transport idmap
+                         (path_universe_uncurried (hPullback_separated_unit_is_cl_diag T i))^ x).1).
+    apply ap. refine (transport2 idmap _ _).
+    apply ap.
+    refine (apD10 (eisretr apD10 _) _).
+    (* rewrite eisretr. *)
+    path_via (((hPullback_separated_unit_is_cl_diag T i)^-1 x).1).
+    apply ap.
+    apply transport_path_universe_V_uncurried.
+  Defined.
+  (* Opaque transport_diagrams_are_equal_types. *)
+
+  Lemma Cech_nerve_diagonal_pp (T:Trunk (trunc_S n))
+  : forall j, forall (q:nat_interval j.+1), forall (x : Cech_nerve_separated_unit T (j.+1)),
+      Cech_nerve_pp n (separated_unit T) (separated_Type_is_Trunk_Sn (T:=T)) T.2 (j.+1) j (1,q) x
+      = diagonal_pp (1,q) (hPullback_separated_unit_is_cl_diag T _ x).
+    intros j [q Hq] x.
+    unfold Cech_nerve_pp, diagonal_pp. simpl.
+    induction q.
+    { apply ap. exact (@separated_unit_paths_are_nj_paths_sect T (fst x.1) (fst (snd x.1)) (fst x.2))^. }
+    { reflexivity. }
+  Defined.
+
   Definition separated_Type_is_colimit_cl_diagonal_diagram (T:Trunk (trunc_S n))
   : is_colimit (Cech_nerve_graph)
                (cl_diagonal_diagram T)
@@ -660,230 +642,125 @@ Section Sheafification.
                (diagonal_commute T)
                (@diagonal_pp T).
     refine (transport_is_colimit _ _ _ _ _ _ _ _ _ _ _ _ (separated_Type_is_colimit_Cech_nerve T)).
-    - exact (diagrams_are_equal_types T).
+    - apply hPullback_separated_unit_is_cl_diag.
     - exact (diagrams_are_equal_proj (T:=T)).
-    - apply path_forall; intro i. apply path_forall; intro x.
-      simpl in *.
-      unfold diagonal_commute, Cech_nerve_commute.
-      apply ap. apply ap.
-      unfold diagrams_are_equal_types.
-      unfold ap10, path_forall.
-      path_via ((transport idmap
-                           (path_universe_uncurried (hPullback_separated_unit_is_cl_diag T i))^ x).1).
-      apply ap. refine (transport2 idmap _ _).
-      apply ap.
-      refine (apD10 (eisretr apD10 _) _).
-      (* rewrite eisretr. *)
-      path_via (((hPullback_separated_unit_is_cl_diag T i)^-1 x).1).
-      apply ap.
-      apply transport_path_universe_V_uncurried.
-    - simpl.
-      apply path_forall; intro i.
+    - reflexivity.
+    - apply path_forall; intro i.
       apply path_forall; intro j.
-      apply path_forall; intros [pp q].
-      apply path_forall; intros [x xp]. 
-      unfold path_forall. rewrite eisretr.
-      rewrite eisretr.
+      apply path_forall; intros [pp [q Hq]].
+      apply path_forall; intros x.
       destruct pp.
-      unfold diagonal_pp, Cech_nerve_pp.
-      destruct q as [q Hq].
       Opaque diagrams_are_equal_proj.
-      unfold Cech_nerve_commute.
-      repeat rewrite <- ap_compose.
-      rewrite concat_p1.
-      match goal with
-        |[|- _ @ (ap _ (ap ?XX ?pp @ (ap ?YY ?qq)) @ _) = _ ] => rewrite <- (ap_pp XX pp qq)
-      end.
-      match goal with
-        |[|- _ @ (ap ?gg (ap ?ff ?pp) @ _) = _ ] => rewrite <- (ap_compose ff gg pp)
-      end.
-      rewrite concat_p_pp. 
-      match goal with
-        |[|- (ap ?ff ?pp @ ap _ ?qq) @ _ = _] => rewrite <- (ap_pp ff pp qq)
-      end.
+      Opaque hPullback_separated_unit_is_cl_diag.
+      simpl.
+      repeat rewrite concat_1p; repeat rewrite concat_p1.
       induction q.
-      { simpl. simpl in xp.
-        match goal with
-          |[|- ?pp @ _ = _] => set (bar := pp)
-        end.
-        simpl in bar.
+      { unfold Cech_nerve_commute. simpl.
+        rewrite (ap_compose (fst o pr1) (separated_unit T)).
+        rewrite (ap_compose (fst o pr1) (separated_unit T)).
+        rewrite (ap_compose pr1 fst).
+        rewrite (ap_compose pr1 fst).
+        Transparent diagrams_are_equal_proj.
+        unfold diagrams_are_equal_proj. simpl.
+        unfold path_sigma'.
+        pose (p := @pr1_path_sigma); unfold pr1_path in p. rewrite p; clear p. simpl.
+        rewrite concat_1p. apply moveR_Vp.
+        Opaque separated_unit_paths_are_nj_paths_fun.
+        Opaque separated_unit_paths_are_nj_paths_inv.
+        Opaque separated_unit_paths_are_nj_paths_retr.
+        Opaque separated_unit_paths_are_nj_paths_sect.
         
-        match goal with
-          |[|- _ @ (?PP1^ @ (?PP2^ @ ?PP3)) = _] =>
-           set (p1 := PP1); set (p2 := PP2); set (p3 := PP3)
-        end. simpl in p1, p2, p3.
-        apply moveR_Mp. rewrite <- inv_pp.
-        rewrite concat_p_pp. rewrite <- inv_pp. apply moveR_pM.
-        rewrite <- inv_pp. apply ap.
-        unfold diagonal_commute in p2. simpl in p2.
-
-        assert (X : (λ x : ∃ y : T.1 ∧ T.1 ∧ hProduct T.1 j,
-                    ((O cloture_hpullback.nj
-                        (fst y = fst (snd y);
-                        istrunc_paths T.2 (fst y) (fst (snd y)))).1).1
-                    ∧ (cl_char_hPullback' idmap j (snd y)).1,
-              ap (separated_unit T)
-                (ap fst
-                   (ap pr1
-                      (transport2 idmap
-                         (ap inverse
-                            (apD10
-                               (eisretr apD10
-                                  (λ x0 : nat,
-                                   path_universe_uncurried
-                                     (hPullback_separated_unit_is_cl_diag T
-                                        x0))) (j.+1)%nat)) x) @
-                    (ap pr1
-                       (transport_path_universe_V_uncurried
-                          (hPullback_separated_unit_is_cl_diag T j.+1) x) @ 1)))) (transport idmap (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
-                                                                                             (x; xp)) = p2).
-        { unfold p2.
-          match goal with
-            |[|- _ = apD10 (f := ?ff) (g:= ?gg) _ _ ] => rewrite (eisretr (apD10 (f:=ff) (g:=gg)))
-          end. reflexivity. }
-        destruct X. simpl.
-        match goal with |[|- ?PP2 @ _ = _] => set (p2 := PP2) end. simpl in p2.
-
-        assert (X : (ap (λ P : ∃ P : T.1 ∧ T.1 ∧ hProduct T.1 j,
-            separated_unit T (fst P) = separated_unit T (fst (snd P))
-            ∧ (char_hPullback n (separated_unit T) j
-                 (separated_Type_is_Trunk_Sn (T:=T)) T.2 
-                 (snd P)).1, separated_unit T (fst P.1))
-                        ((transport2 idmap
-                   (ap inverse
-                      (apD10
-                         (eisretr apD10
-                            (λ x0 : nat,
-                             path_universe_uncurried
-                               (hPullback_separated_unit_is_cl_diag T x0)))
-                         (j.+1)%nat))
-                   (transport idmap
-                      (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
-                      (x; xp))) @ (transport_path_universe_V_uncurried
-                    (hPullback_separated_unit_is_cl_diag T j.+1)
-                    (transport idmap
-                       (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
-                       (x; xp))))^)^ = p2).
-        { unfold p2.
-          rewrite <- (ap_compose fst (separated_unit T)).
-          rewrite concat_p1.
-          rewrite <- (ap_pp pr1 (transport2 idmap
-           (ap inverse
-              (apD10
-                 (eisretr apD10
-                    (λ x0 : nat,
-                     path_universe_uncurried
-                       (hPullback_separated_unit_is_cl_diag T x0)))
-                 (j.+1)%nat))
-           (transport idmap (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
-                      (x; xp)))
-                     (transport_path_universe_V_uncurried
-           (hPullback_separated_unit_is_cl_diag T j.+1)
-           (transport idmap (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
-                      (x; xp)))).
-          rewrite <- (ap_compose pr1 (λ x0 : T.1 ∧ T.1 ∧ hProduct T.1 j, separated_unit T (fst x0)) (transport2 idmap
-           (ap inverse
-              (apD10
-                 (eisretr apD10
-                    (λ x0 : nat,
-                     path_universe_uncurried
-                       (hPullback_separated_unit_is_cl_diag T x0)))
-                 (j.+1)%nat))
-           (transport idmap (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
-              (x; xp)) @
-         transport_path_universe_V_uncurried
-           (hPullback_separated_unit_is_cl_diag T j.+1)
-           (transport idmap (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
-                      (x; xp)))).
-          rewrite ap_V. rewrite inv_V.
-          reflexivity. }
-        destruct X.
-        apply moveR_Vp.
-        rewrite concat_p_pp.
-        match goal with
-          |[|- _ = ?PP2 @ _] => set (p2 := PP2)
-        end.
-        assert (X : ap (λ P : ∃ P : T.1 ∧ T.1 ∧ hProduct T.1 j,
-                 separated_unit T (fst P) = separated_unit T (fst (snd P))
-                 ∧ (char_hPullback n (separated_unit T) j
-                      (separated_Type_is_Trunk_Sn (T:=T)) T.2 
-                      (snd P)).1, separated_unit T (fst P.1))
-                       ((transport2 idmap
-             (ap inverse
-                (apD10
-                   (eisretr apD10
-                      (λ x0 : nat,
-                       path_universe_uncurried
-                         (hPullback_separated_unit_is_cl_diag T x0)))
-                   (j.+1)%nat))
-             (transport idmap (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
-                (x; xp)) @
-           transport_path_universe_V_uncurried
-             (hPullback_separated_unit_is_cl_diag T j.+1)
-             (transport idmap (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
-                (x; xp)))^ @ (transport_Vp idmap (ap10 (diagrams_are_equal_types T) (j.+1)%nat)
-                                           (x; xp))) = p2).
-        { admit. }
-        destruct X.
-        
-        unfold p1, p3, bar. clear bar; clear p3; clear p1.
-        unfold separated_unit_paths_are_nj_paths_inv.
-        apply moveR_EV.
-        apply (@equiv_inj _ _ _ (isequiv_ap10 _ _)).
-        unfold ap10 at 3, path_forall at 1.
-        match goal with
-          |[|- apD10 (apD10^-1 ?pp) = _] => set (p1 := pp)
-        end.
-        (* match goal with *)
-        (*   |[|- ?pp = _ ] => set (pp1 := pp) *)
-        (* end. *)
-        (* assert (X : p1 = pp1). *)
-        (* { admit. } *)
-        (* unfold p1 in pp1. *)
-        path_via p1.
-        rewrite eisretr. reflexivity.
-        unfold p1; clear p1.
-        apply path_forall; intro u.
-        apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_unique_subuniverse _ _))).
-        apply isequiv_inverse.
-        match goal with
-          |[|- ?ff^-1 (?gg ?pp) = _] => path_via pp
-        end.
-        apply eissect.
-        apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_truncn_unique _ _))).
-        apply isequiv_inverse.
-        match goal with
-          |[|- ?ff^-1 (?gg ?pp) = _] => path_via pp
-        end.
-        apply eissect.
+        Transparent hPullback_separated_unit_is_cl_diag.
         simpl.
+        path_via (idpath (separated_unit T (fst x.1))). Focus 2.
+        apply moveL_pV. rewrite concat_1p.
+        symmetry. apply separated_unit_paths_are_nj_paths_sect.
+        path_via (ap (separated_unit T) (idpath (fst x.1))). apply ap.
+        path_via (ap fst (idpath x.1)). apply ap.
+        
+        rewrite ap_pp.
+        apply moveR_pM.
+        repeat rewrite concat_1p.
+
+        unfold path_sigma'.
+        pose (p := @pr1_path_sigma); unfold pr1_path in p. rewrite p; clear p. simpl.
+        rewrite ap_pp.
+        apply moveR_Mp. rewrite concat_p1.
+        symmetry.
         match goal with
-          |[|- _ = ?pp] => path_via (pp^^)
+          |[|- (ap ?ff ?pp)^ = _] => rewrite <- (ap_V ff pp)
         end.
+        match goal with
+          |[|- ap _ (ap ?ff ?pp)^= _] => rewrite <- (ap_V ff pp)
+        end.
+        match goal with
+          |[|- ap _ (ap _ (ap ?ff ?pp)^) = _] => rewrite <- (ap_V ff pp)
+        end.
+        rewrite inv_V.
+        match goal with
+          |[|- ap ?gg1 (ap ?ff1 ?pp1) = ap ?gg2 (ap ?ff2 ?pp2) ] =>
+           rewrite <- (ap_compose ff1 gg1 pp1);
+             rewrite <- (ap_compose ff2 gg2 pp2)
+        end.
+        simpl.
+        pose (p := @pr1_path_sigma); unfold pr1_path in p. rewrite p; clear p. simpl.
+        match goal with
+          |[|- ap ?gg (ap ?ff ?pp) = _ ] => rewrite <- (ap_compose ff gg pp)
+        end. simpl.
+        pose (p := @pr1_path_sigma); unfold pr1_path in p. rewrite p; clear p.
+        reflexivity. }
+      { rewrite concat_1p.
+        unfold Cech_nerve_commute.
+        rewrite (ap_compose (fst o pr1) (separated_unit T)).
+        rewrite (ap_compose (fst o pr1) (separated_unit T)).
+        apply moveR_pM.
+        rewrite <- ap_V. rewrite concat_1p.
         apply ap.
-        apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_universe))).
-        apply isequiv_inverse.
-        match goal with
-          |[|- ?ff^-1 (?gg ?pp) = _] => path_via pp
-        end.
-        apply eissect.
+        rewrite (ap_compose pr1 fst).
+        rewrite (ap_compose pr1 fst).
+        rewrite <- ap_V.
+        unfold diagrams_are_equal_proj.
+        Opaque hPullback_separated_unit_is_cl_diag.
         simpl.
-        apply equal_equiv. unfold mu_modal_paths_func_univ_inv. simpl.
-        apply (@equiv_inj _ _ _ (O_equiv _ _ _)).
-        simpl. apply path_forall; intro v.
+        unfold path_sigma'.
+        pose (p := @pr1_path_sigma); unfold pr1_path in p. rewrite p; clear p. simpl.
+        clear IHq.
+        path_via (ap fst (idpath (x.1)))^. rewrite ap_V. apply ap. apply ap.
+        Transparent hPullback_separated_unit_is_cl_diag.
+        unfold hPullback_separated_unit_is_cl_diag. simpl.
+        rewrite (ap_pp pr1).
+        unfold path_sigma'.
+        pose (p := @pr1_path_sigma); unfold pr1_path in p. rewrite p; clear p. simpl. repeat rewrite concat_p1.
+        unfold functor_sigma. simpl.
         match goal with
-          |[|- O_rec _ _ ?ff _ = _] => path_via (ff v)
+          |[|- _ = ap ?ff (?pp1 @ ?pp2)] =>
+           rewrite (ap_pp ff pp1 pp2)
         end.
-        refine (apD10 (O_rec_retr _ _ _) _).
-        apply (moveL_transport_V idmap).
-        admit.
+        apply moveL_Mp. rewrite concat_p1.
+        match goal with
+          |[|- (ap ?ff ?pp)^ = _] => rewrite <- (ap_V ff pp)
+        end.
+        match goal with
+          |[|- ap _ (ap ?ff ?pp)^= _] => rewrite <- (ap_V ff pp)
+        end.
+        match goal with
+          |[|- ap _ (ap _ (ap ?ff ?pp)^) = _] => rewrite <- (ap_V ff pp)
+        end.
+        rewrite inv_V.
+        match goal with
+          |[|- ap ?gg1 (ap ?ff1 ?pp1) = ap ?gg2 (ap ?ff2 ?pp2) ] =>
+           rewrite <- (ap_compose ff1 gg1 pp1);
+             rewrite <- (ap_compose ff2 gg2 pp2)
+        end.
+        simpl.
+        pose (p := @pr1_path_sigma); unfold pr1_path in p. rewrite p; clear p. simpl.
+        match goal with
+          |[|- ap ?gg (ap ?ff ?pp) = _ ] => rewrite <- (ap_compose ff gg pp)
+        end. simpl.
+        pose (p := @pr1_path_sigma); unfold pr1_path in p. rewrite p; clear p.
+        reflexivity. }
+  Qed.
         
-      }
-      { admit. }
-    
-    (* Here, we would like to use the fact that [separated_Type T] is the colimit of [Cech_nerve_separated_unit], that [p: Cech_nerve_separated_unit = cl_diagonal_diagram], and that commutation in these diagrams are equal modulo [p] *)
-  Defined.
-
   Definition separated_Type_is_colimit_cl_diagonal_diagram' (T:Trunk (trunc_S n))
   : is_colimit (Cech_nerve_graph)
                (cl_diagonal_diagram T)
@@ -1025,6 +902,7 @@ Section Sheafification.
         apply (transport (λ u, 1 = u) p0^). clear p0.
 
         rewrite eisretr. simpl.
+        Transparent separated_unit_paths_are_nj_paths_inv.
         unfold separated_unit_paths_are_nj_paths_inv.
         simpl.
         path_via (ap f (idpath ((separated_unit P b1)))). apply ap.
@@ -1089,17 +967,12 @@ Section Sheafification.
       + intros [e' q]. destruct q. reflexivity.
     - intros e' e''. simpl in *.
       unfold equiv_adjointify.
-
-
       apply path_forall; intro u. simpl.
       rewrite transport_pp.
-
-
       rewrite transport_path_universe_uncurried.
       unfold incl_Aeq_Eeq. simpl.
       destruct u as [[u11 u12] u2]. simpl in *.
       destruct u2. simpl.
-
       pose (dense_diag χ).
       unfold incl_Aeq_Eeq in p. simpl in p.
       specialize (p (e'.1.1;e'.2)). simpl in p.
@@ -2382,7 +2255,6 @@ Section Sheafification.
       
   (* Proposition 35 as an axiom because of universes issues *)
   Axiom cumulativity : forall (T:Trunk n) (SnT : IsTrunc (n.+1) T.1), (O nj T).1.1 = (good_sheafification_Type (T.1;SnT)).
-
 
   Definition O_paths_is_paths_sheafification_unit_fun (T:Trunk (n.+1)) (a b:T.1) : ((good_sheafification_unit T a) = (good_sheafification_unit T b)) -> (O nj (a = b; (istrunc_paths T.2 a b))).1.1.
     intro p.

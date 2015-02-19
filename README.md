@@ -3,7 +3,7 @@ Sheafification
 
 Sheafification functor in type theory.
 
-Compared with the version described in the paper, the problem concerning the equality of the projections map of the Cech nerve and the closed diagonal diagram (raised section VI.B) has been fixed. The "path between paths" part in the proof that separation is a modality has also been fixed.
+Compared with the version described in the paper, all problems mentionned in the first paragraph of section VI-B of the paper has been solved (the technical facts to show that ☐ is a modality are now proved, as well as the admitted lemmas about projections and collimits).
 
 # Usage #
 These files compile with the HoTT library https://github.com/HoTT/HoTT, commit 247016b019c48e761b58751bafa71ef22ee4edaf.
@@ -12,7 +12,7 @@ One can use the library with
 ```
 /path/to/coq_makefile -R . "" *.v -o Makefile COQC = /path/to/hoqc  COQDEP = /path/to/hoqdep
 ```
-then simply compiling with `make` (this can take some time, in particular `sheaf_induction.v`).
+then simply compiling with `make` (this can take some time, in particular `sheaf_induction.v` (approximatively 10 minutes on my computer).
 
 # Files #
 `Utf8_core.v` contains notations.

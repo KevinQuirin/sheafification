@@ -3,7 +3,7 @@ Sheafification
 
 Sheafification functor in type theory.
 
-Compared with the version described in the paper, all problems mentionned in the first paragraph of section VI-B of the paper has been solved (the technical facts to show that ☐ is a modality are now proved, as well as the previously admitted lemmas about projections and collimits).
+Compared with the version described in the paper, all problems mentionned in the first paragraph of section VI-B of the paper have been solved (the technical facts to show that ☐ is a modality are now proved, as well as the previously admitted lemmas about projections and collimits).
 
 # Usage #
 These files compile with the HoTT library https://github.com/HoTT/HoTT, commit dbf560f67ac2b0c21dd903fddf21434eeb88b3f7.

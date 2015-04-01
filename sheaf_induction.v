@@ -954,7 +954,7 @@ Section Sheafification.
 
   Lemma density_sigma (E:Type) (χ : EnJ E) (e:E) (E' := {e':E & e = e'})
   : EnJ {e':E & e' = e}.
-    refine (@Build_EnJ _ _ _ _).
+    refine (@Build_EnJ _ _ _).
     - intro x. apply χ. exact x.1.
     - intros e0.
       pose (dense_eq χ e0.1).
@@ -965,26 +965,26 @@ Section Sheafification.
       + intros [e' q]. destruct q. exists e0. reflexivity.
       + intros [e' q]. destruct q. reflexivity.
       + intros [e' q]. destruct q. reflexivity.
-    - intros e' e''. simpl in *.
-      unfold equiv_adjointify.
-      apply path_forall; intro u. simpl.
-      rewrite transport_pp.
-      rewrite transport_path_universe_uncurried.
-      unfold incl_Aeq_Eeq. simpl.
-      destruct u as [[u11 u12] u2]. simpl in *.
-      destruct u2. simpl.
-      pose (dense_diag χ).
-      unfold incl_Aeq_Eeq in p. simpl in p.
-      specialize (p (e'.1.1;e'.2)). simpl in p.
-      assert (∃ e'0 : ∃ e0 : E, (χ e0).1, (e'.1).1 = e'0.1).
-      refine (exist _ _ _).
-      refine (exist _ _ _).
-      exact (e'.1.1).
-      exact (e'.2).
-      simpl. exact 1. specialize (p X). clear X.
-      apply ap10 in p. simpl in p.
-      specialize (p ((e'.1.1; u12);1)).
-      simpl in p. exact p.
+    (* - intros e' e''. simpl in *. *)
+    (*   unfold equiv_adjointify. *)
+    (*   apply path_forall; intro u. simpl. *)
+    (*   rewrite transport_pp. *)
+    (*   rewrite transport_path_universe_uncurried. *)
+    (*   unfold incl_Aeq_Eeq. simpl. *)
+    (*   destruct u as [[u11 u12] u2]. simpl in *. *)
+    (*   destruct u2. simpl. *)
+    (*   pose (dense_diag χ). *)
+    (*   unfold incl_Aeq_Eeq in p. simpl in p. *)
+    (*   specialize (p (e'.1.1;e'.2)). simpl in p. *)
+    (*   assert (∃ e'0 : ∃ e0 : E, (χ e0).1, (e'.1).1 = e'0.1). *)
+    (*   refine (exist _ _ _). *)
+    (*   refine (exist _ _ _). *)
+    (*   exact (e'.1.1). *)
+    (*   exact (e'.2). *)
+    (*   simpl. exact 1. specialize (p X). clear X. *)
+    (*   apply ap10 in p. simpl in p. *)
+    (*   specialize (p ((e'.1.1; u12);1)). *)
+    (*   simpl in p. exact p. *)
   Defined.
 
   (* Proposition 31 *)

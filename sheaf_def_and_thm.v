@@ -94,12 +94,13 @@ Section Definitions.
   Definition is_dense_diag (E:Type) (char : E -> Trunk n) (dense_eq : is_dense_eq char)
     := forall x:{e:E & (char e).1}, forall u:{e':{e:E & (char e).1} & x.1 = e'.1}, (equiv_path _ _ (dense_eq x.1)) o (incl_Aeq_Eeq char x) = (O_unit nj _) o ((eq_dense_1 char x)).
 
+    
   (* Definition 19 *)
   Record EnJ (E:Type) :=
     {
       char :> E -> Trunk n ;
-      dense_eq : forall e:E, ({e':E & e=e'}) = (O nj (char e)).1.1 ;
-      dense_diag : forall x:{e:E & (char e).1}, forall u:{e':{e:E & (char e).1} & x.1 = e'.1}, (equiv_path _ _ (dense_eq x.1)) o (incl_Aeq_Eeq char x) = (O_unit nj _) o ((eq_dense_1 char x))
+      dense_eq : forall e:E, ({e':E & e=e'}) = (O nj (char e)).1.1
+      (* dense_diag : forall x:{e:E & (char e).1}, forall u:{e':{e:E & (char e).1} & x.1 = e'.1}, (equiv_path _ _ (dense_eq x.1)) o (incl_Aeq_Eeq char x) = (O_unit nj _) o ((eq_dense_1 char x)) *)
 
 (* For A a subobject of E, and x:A, this diagram commute : *)
 (*                                                         *)   
@@ -110,6 +111,16 @@ Section Definitions.
 (*          v                    v                         *)
 (*    {e':E & x.1 = e'}  === (O nj (χ x.1)).1.1            *)                                                                                                                                                                       
     }.
+
+  
+  Definition dense_diag (E:Type) (char : EnJ E)
+  : forall x:{e:E & (char e).1}, forall u:{e':{e:E & (char e).1} & x.1 = e'.1}, (equiv_path _ _ (dense_eq char x.1)) o (incl_Aeq_Eeq char x) = (O_unit nj _) o ((eq_dense_1 char x)).
+    intros x u.
+    apply path_forall; intro z.
+    assert (Contr ((O nj (char x.1)).1).1).
+    { rewrite <- dense_eq. exists (x.1;1). intros [y q]. destruct q. reflexivity. }
+    apply (path_contr).
+  Qed.
 
 
   Definition witness_is_eta (E:Type) (χ:EnJ E) (x:{e:E & (χ e).1})
@@ -186,7 +197,8 @@ Section Definitions.
         apply path_forall; intro x.
         rewrite ap10_ap_precompose.
         unfold ap10 at 1, path_forall at 1; rewrite eisretr. simpl.
-        destruct χ as [χ χeq χdiag]. simpl in *.
+        assert (χdiag := dense_diag χ).
+        destruct χ as [χ χeq]. simpl in *.
         specialize (χdiag x (x;1)).
         unfold incl_Aeq_Eeq in χdiag.
         apply ap10 in χdiag.
@@ -930,14 +942,15 @@ Section Definitions.
   (* Any object seen as a subobject of its closure is closed *)
   Definition dense_into_cloture (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
   : EnJ clA.
-    refine (Build_EnJ (dense_into_cloture_dense_eq φ) _).
-    apply dense_into_cloture_dense_diag.
+    refine (Build_EnJ _ (dense_into_cloture_dense_eq φ)).
+    (* apply dense_into_cloture_dense_diag. *)
   Defined.
 
   Definition transport_density (E:Type) (φ:E -> Trunk n) (A:={e:E & (φ e).1}) (clA := {e:E & (O nj (φ e)).1.1})
   : forall X, clA = X -> EnJ X.
     pose (e := dense_into_cloture φ); simpl in e.
-    destruct e as [χ χeq χdiag].
+    assert (χdiag := dense_diag e).
+    destruct e as [χ χeq].
     intros X p.
     refine (Build_EnJ _ _).
     - intro x. apply χ.
@@ -945,8 +958,8 @@ Section Definitions.
       exact x.
     - destruct p. intro x. simpl.
       apply χeq.
-    - destruct p. intros x e'. simpl.
-      apply χdiag. exact e'.
+    (* - destruct p. intros x e'. simpl. *)
+      (* apply χdiag. exact e'. *)
   Defined.
 
   Definition path_sigma_transport (E:Type) (φ χ : E -> Type) (eq : χ = φ) (x y : {e:E & φ e})
@@ -991,7 +1004,8 @@ Section Definitions.
       intro a. apply equiv_path. apply p.
     }
     pose (e := dense_into_cloture φ); simpl in e.
-    destruct e as [χ χeq χdiag].
+    assert (χdiag := dense_diag e).
+    destruct e as [χ χeq].
     refine (Build_EnJ _ _).
     - intro x. apply χ.
       exists x.1.
@@ -1008,23 +1022,23 @@ Section Definitions.
       apply equiv_path. exact (p a)^.
       intro a. simpl. unfold functor_sigma.
       apply path_sigma_transport'.
-    - simpl.
-      intros x y.
-      unfold equiv_functor_sigma', equiv_functor_sigma_id, equiv_functor_sigma. simpl.
+    (* - simpl. *)
+    (*   intros x y. *)
+    (*   unfold equiv_functor_sigma', equiv_functor_sigma_id, equiv_functor_sigma. simpl. *)
 
-      apply path_forall; intro z.
-      rewrite transport_pp.
-      rewrite transport_path_universe_uncurried. simpl.
-      unfold functor_sigma. simpl.
-      specialize (χdiag (((x.1).1; transport idmap (p (x.1).1)^ (x.1).2); x.2)). simpl in χdiag.
-      unfold incl_Aeq_Eeq in χdiag; simpl in χdiag.
-      specialize (χdiag (((x.1.1 ; (equiv_path _ _ (p x.1.1)^ x.1.2)) ; x.2);1)).
-      apply ap10 in χdiag.
-      specialize (χdiag (((((z.1).1).1; transport idmap (p ((z.1).1).1)^ ((z.1).1).2) ; z.1.2);(path_sigma_transport' p x.1 (z.1).1) z.2)).
-      simpl in χdiag.
-      etransitivity; try exact χdiag.
-      apply ap.
-      exact (ap10 (@path_sigma_transport'_transport E (pr1 o α) (pr1 o pr1 o O nj o φ) (pr1 o χ) p x.1 z.1.1 z.2) z.1.2). 
+    (*   apply path_forall; intro z. *)
+    (*   rewrite transport_pp. *)
+    (*   rewrite transport_path_universe_uncurried. simpl. *)
+    (*   unfold functor_sigma. simpl. *)
+    (*   specialize (χdiag (((x.1).1; transport idmap (p (x.1).1)^ (x.1).2); x.2)). simpl in χdiag. *)
+    (*   unfold incl_Aeq_Eeq in χdiag; simpl in χdiag. *)
+    (*   specialize (χdiag (((x.1.1 ; (equiv_path _ _ (p x.1.1)^ x.1.2)) ; x.2);1)). *)
+    (*   apply ap10 in χdiag. *)
+    (*   specialize (χdiag (((((z.1).1).1; transport idmap (p ((z.1).1).1)^ ((z.1).1).2) ; z.1.2);(path_sigma_transport' p x.1 (z.1).1) z.2)). *)
+    (*   simpl in χdiag. *)
+    (*   etransitivity; try exact χdiag. *)
+    (*   apply ap. *)
+    (*   exact (ap10 (@path_sigma_transport'_transport E (pr1 o α) (pr1 o pr1 o O nj o φ) (pr1 o χ) p x.1 z.1.1 z.2) z.1.2).  *)
   Defined.
       
 End Definitions.

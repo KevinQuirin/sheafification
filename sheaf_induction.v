@@ -3,10 +3,9 @@ Require Import HoTT HoTT.hit.Truncations Connectedness.
 Require Import lemmas epi_mono equivalence univalence sub_object_classifier reflective_subuniverse modalities.
 Require Import nat_lemmas.
 Require Import colimit.
-Require Import cech_nerve.
+Require Import VD_truncation gpd.
 Require Import sheaf_base_case.
 Require Import sheaf_def_and_thm.
-Require Import cloture_hpullback.
 
 Set Universe Polymorphism.
 Global Set Primitive Projections. 
@@ -393,11 +392,6 @@ Section Sheafification.
     - apply separated_unit_paths_are_nj_paths_sect.
   Qed.
 
-  Lemma separated_unit_paths_are_nj_paths_idpath T (a:T.1) (p : (separated_unit T a = separated_unit T a)) (eq : 1 = p)
-   : separated_unit_paths_are_nj_paths_fun p = O_unit nj (a = a; istrunc_paths T.2 a a) idpath.
-     destruct eq. reflexivity.
-  Qed.
-
   Lemma separated_unit_paths_are_nj_paths_concat (T:Trunk n.+1) (a b c:T.1) (p : (separated_unit T a = separated_unit T b)) (q : (separated_unit T b = separated_unit T c))
   : separated_unit_paths_are_nj_paths_fun (p@q)
     = O_rec_paths nj T a b c (separated_unit_paths_are_nj_paths_fun p) (separated_unit_paths_are_nj_paths_fun q).
@@ -444,44 +438,59 @@ Section Sheafification.
     rewrite X. simpl.
     reflexivity.
   Qed.
-  
-  Lemma hPullback_separated_unit_is_cl_diag (T:Trunk (n.+1)) (k:nat)
-  : (hPullback n (separated_unit T) (S k) (@separated_Type_is_Trunk_Sn T) T.2)
-      <~> {y : hProduct T.1 (S k) & (@cl_char_hPullback' T T idmap k y).1}.
-    simpl.
-    apply equiv_functor_sigma_id.
-    intros P.
-    simpl.
-    induction k.
-    - simpl. apply (equiv_adjointify idmap idmap (λ _, 1) (λ _,1)).
-    - simpl.
-      apply equiv_functor_prod'. simpl.
-      refine (equiv_adjointify (@separated_unit_paths_are_nj_paths_fun T (fst P) (fst (snd P))) (@separated_unit_paths_are_nj_paths_inv T (fst P) (fst (snd P))) _ _).
-      apply separated_unit_paths_are_nj_paths_retr.
-      apply separated_unit_paths_are_nj_paths_sect.
-      apply IHk.
-  Defined.
 
   Definition Cech_nerve_separated_unit T
-    := Cech_nerve_diagram n (separated_unit T) (@separated_Type_is_Trunk_Sn T) T.2.
+    := Gpd (separated_unit T).
 
-  Definition cl_diagonal_projections T (k:nat) (p: {p:nat & Peano.le p (S k)})
-  : {y : hProduct T.1 (S (S k)) & (@cl_char_hPullback' T T idmap (S k) y).1} -> {y : hProduct T.1 (S k) & (@cl_char_hPullback' T T idmap k y).1}.
-    intro X.
-    exists (forget_hProduct T.1 (S k) X.1 p).
-    apply forget_cl_char_hPullback'.
-    exact X.2.
+  Lemma KP_is_cldiag (T:Trunk (n.+1))
+    : Pullback (separated_unit T) (separated_unit T) <~> {x:T.1 & {y:T.1 & (O nj (x = y; istrunc_paths T.2 x y)).1.1}}.
+  Proof.
+    unfold Pullback.
+    apply (equiv_functor_sigma_id); intro a.
+    apply (equiv_functor_sigma_id); intro b.
+    apply separated_unit_paths_are_nj_paths.
   Defined.
+  
+  Definition foo T (Q: Trunk (n.+1)) (sepQ: separated Q) (f:T.1 -> Q.1)
+    : cocone (Cech_nerve_separated_unit T) Q.1.
+  Proof.
+    refine (exist _ _ _).
+    - induction i.
+      exact f.
+      refine (Coeq_rec _ _ _).
+      induction i.
+      simpl.
+      exact f.
+      simpl in *.
+      exact IHi.
+      simpl.
+      intros [a [b p]]; unfold pullback_pr1, pullback_pr2.
+      simpl.
+      induction i.
+      simpl in *.
+      assert (forall b:{x:T.1 & {y:T.1 & (O nj (x = y; istrunc_paths T.2 x y)).1.1}}, f (b.1) = f (b.2.1)).
+      { intros [x [y q]]. simpl.
+        unfold separated in sepQ.
+        specialize (sepQ {x:T.1 & {y:T.1 & (O nj (x = y; istrunc_paths T.2 x y)).1.1}}).
 
-  Definition cl_diagonal_diagram (T:Trunk (trunc_S n)) : diagram (Cech_nerve_graph).
-    refine (Build_diagram _ _ _).
-    - exact (λ k, {y : hProduct T.1 (S k) & (@cl_char_hPullback' T T idmap k y).1}).
-    - intros i j [p q] a. simpl in *.
-      apply cl_diagonal_projections.
-      destruct p. exact q.
-      destruct p. exact a.
-  Defined.
+        assert (EnJ (∃ x y : T.1, ((O nj (x = y; istrunc_paths T.2 x y)).1).1)).
+        pose (dense_into_cloture (E := T.1)). simpl in e.
+        
+        refine (Build_EnJ _ _).
+        
+        intros z. exact (z.1 = z.2.1; istrunc_paths T.2 _ _).
+        intros e. simpl.
+        pose (@dense_into_cloture _ _ (∃ x y : T.1, ((O nj (x = y; istrunc_paths T.2 x y)).1).1) (λ z, (z.1 = z.2.1; istrunc_paths T.2 _ _))).
 
+        simpl in e0.
+        intro b.
+
+
+
+
+
+
+    
   (* Lemma 29 *)
   Lemma diagrams_are_equal_types (T:Trunk (trunc_S n))
   : diagram0 (Cech_nerve_separated_unit T) = diagram0 (cl_diagonal_diagram T).

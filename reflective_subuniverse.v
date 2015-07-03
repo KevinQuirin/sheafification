@@ -1,6 +1,6 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
-Require Import univalence lemmas epi_mono equivalence sub_object_classifier colimit nat_lemmas cech_nerve.
+Require Import univalence lemmas epi_mono equivalence sub_object_classifier colimit nat_lemmas.
 
 Set Universe Polymorphism.
 Global Set Primitive Projections.

@@ -1,6 +1,6 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
-Require Import equivalence univalence sub_object_classifier reflective_subuniverse modalities.
+Require Import reflective_subuniverse modalities.
 
 Set Universe Polymorphism.
 Global Set Primitive Projections.
@@ -14,37 +14,32 @@ Local Open Scope type_scope.
 Arguments trunc_arrow {H} {A} {B} {n} H0: simpl never.
 Arguments trunc_sigma {A} {P} {n} H H0: simpl never.
 Arguments istrunc_paths {A} {n} H x y: simpl never.
-Arguments truncn_unique _ {n} A B H: simpl never.
 
 Section Reflective_Subuniverse_base_case.
 
   Context `{ua: Univalence}.
   Context `{fs: Funext}.
   
-  Instance _j (P:HProp) : IsHProp (not (not (pr1 P))).
-  repeat (apply trunc_forall; intro). Defined.
-
-  Definition j (P:HProp) := (not (not (pr1 P));_j _).
-
-  Instance _is_classical (P:HProp) : IsHProp (pr1 (j P) -> pr1 P).
-  apply (@trunc_forall _ _ (fun _ => P.1)). intro. exact (pr2 P). Defined.  
+  Definition j (P:hProp) : hProp := BuildTruncType _ (~ ~P).
+  Definition is_classical (P:hProp) : hProp := BuildTruncType _ ((j P) -> P).
   
-  Definition is_classical (P:HProp) := (pr1 (j P) -> pr1 P ; _is_classical (P:=P)).
-
-  Definition Oj (P:HProp) : {P : HProp & pr1 (is_classical P)}.
+  Definition Oj (P:hProp) : {P : hProp & is_classical P}.
     exists (j P). exact (λ X X0, X (λ X1, X1 X0)). Defined.
     
-  Definition Oj_unit (P:HProp) : pr1 P -> pr1 (pr1 (Oj P)) := fun x k => k x.
+  Definition Oj_unit (P:hProp) : P -> (Oj P).1 := fun x k => k x.
 
-  Definition Oj_equiv (P : Trunk -1) (Q : {T : Trunk -1 & pr1 (is_classical T)}) :
-      (pr1 P -> pr1 (pr1 Q)) -> pr1 (pr1 (Oj P)) -> pr1 (pr1 Q).
-    intros f jp. apply (pr2 Q). intro notQ. unfold Oj in jp; simpl in jp. apply jp. intro p. exact (notQ (f p)). Defined.
+  Definition Oj_equiv (P : TruncType -1) (Q : {T : TruncType -1 & is_classical T}) :
+    (P -> Q.1) -> (Oj P).1 -> Q.1.
+  Proof.
+    intros f jp. apply (pr2 Q). intro notQ. unfold Oj in jp; simpl in jp.
+    apply jp. intro p. exact (notQ (f p)).
+  Defined.
   
   Definition subuniverse_Prop : subuniverse_struct -1.
-    apply (Build_subuniverse_struct is_classical Oj Oj_unit). 
-    intros. eapply log_equiv_is_equiv.
-    apply (@trunc_forall _ _ (fun P => _)); intro. exact Q.1.2.
-    apply (@trunc_forall _ _ (fun P => _)); intro. exact Q.1.2.
+  Proof.
+    refine (Build_subuniverse_struct -1 is_classical Oj Oj_unit _).
+    intros P Q.
+    refine (isequiv_iff_hprop _ _).
     exact (Oj_equiv _).
   Defined.
 
@@ -53,18 +48,18 @@ Section Reflective_Subuniverse_base_case.
     apply subuniverse_sigma. exact ua. exact fs.
     intros A B g; simpl in *.
     refine (exist _ _ _).
-    intro z. apply (equiv_inv (IsEquiv := O_modal_equiv _)).
+    intro z. apply (equiv_inv (IsEquiv := O_modal_equiv _ _ _)).
+    Transparent O. cbn in *. Opaque O.
     intro nBz.
     apply z; intro a.
     specialize (g a).
-    pose (f := Oj_unit ((B (Oj_unit A a)).1) g).
+    pose (f := Oj_unit ((B (Oj_unit A a))) g).
     unfold Oj in f; simpl in f.
     apply f.
-    exact (transport (λ x, ~ (B x).1.1) (path_ishprop (Oj_unit A a) z)^ nBz).
+    exact (transport (λ x, ~ (B x)) (path_ishprop (Oj_unit A a) z)^ nBz).
 
     intro a; simpl.
     refine (path_ishprop _ _).
-    exact ((B (Oj_unit A a)).1).2.
   Defined.
 
   Definition islex_modality_Prop : IsLex modality_Prop.
@@ -74,8 +69,8 @@ Section Reflective_Subuniverse_base_case.
     intros p q.
     apply path_forall; intro u.
     destruct (p u).
-
-    intro p. apply p. refine (path_ishprop x y). exact A.2.
+    Transparent O. cbn in *. Opaque O.
+    intro p. apply p. refine (path_ishprop x y). 
   Defined.
 
 End Reflective_Subuniverse_base_case.

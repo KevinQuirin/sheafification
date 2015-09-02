@@ -1,0 +1,30 @@
+-R . ""
+COQC = ../HoTT/hoqc
+COQDEP = ../HoTT/hoqdep
+
+Limit/Auxiliary.v
+Limit/CechNerve.v
+Limit/CoEqualizer.v
+Limit/Colimit.v
+Limit/Colimit_Prod.v
+Limit/Colimit_Sigma.v
+Limit/Colimit_trunc.v
+Limit/CommutativeSquares.v
+Limit/Diagram.v
+Limit/KernelPair.v
+Limit/MappingTelescope.v
+Limit/MyLemmas.v
+Limit/MyTacs.v
+
+Limit.v
+Equivalences_.v
+Forall_.v
+MyTacs.v
+epi_mono.v
+modalities.v
+nat_lemmas.v
+reflective_subuniverse.v
+sheaf_base_case.v
+sheaf_def_and_thm.v
+sheaf_induction.v
+Draft.v

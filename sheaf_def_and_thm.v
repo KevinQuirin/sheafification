@@ -164,6 +164,8 @@ Section Definitions.
     apply trunc_prod.
   Defined.
 
+
+
   (* If T is a n-Type, then if T is a n-sheaf, then T is also a (S n)-sheaf *)
 
   Lemma nsheaf_to_Snsheaf (T:TruncType (trunc_S n)) (Trn : IsTrunc n T) (nsheaf : IsSubu _ nj (@BuildTruncType n T Trn))
@@ -1059,6 +1061,125 @@ Section Definitions.
   (*     intro a. simpl. unfold functor_sigma. *)
   (*     apply path_sigma_transport'. *)
   (* Defined. *)
+
+    (** We note that a type is separated if, and only if all its path spaces are n-sheaves *)
+  Definition separated_nj_paths (T:TruncType (n.+1))
+    : separated T -> forall x y:T, IsSubu n nj (BuildTruncType _ (x=y)).
+  Proof.
+    intros sepT x y.
+    rewrite <- (subuniverse_iff_O n nj _).
+    refine (O_unit_retract_equiv n nj _ _ _).
+    intro p.
+    specialize (sepT _ (dense_into_cloture (T*T) (λ x, BuildTruncType _ (fst x = snd x))) (fst o pr1) (snd o pr1)).
+    apply (λ C, ap10 (equiv_inv (IsEquiv := sepT) C) ((x,y);p)).
+    unfold E_to_χ_map. apply path_forall; intros q. exact q.2.1.
+    intro p. destruct p.
+    transparent assert (xx: (∃
+                 (x : ∃ e : T ∧ T,
+                      O nj (BuildTruncType _ (fst e = snd e)))
+                 (π : fst (pr1 x) = snd (pr1 x)),
+                 O_unit nj
+                   (BuildTruncType _ (fst (pr1 x) = snd (pr1 x))) π = 
+                 pr2 x)).
+    { refine (exist _  _ _).
+      exists (x,x).
+      apply O_unit. reflexivity.
+      simpl. exists 1. reflexivity. }
+    match goal with
+    |[|- ap10 ?gg _ = _] => path_via (ap10 gg (pr1 xx))
+    end.
+    rewrite <- ap10_ap_precompose.
+    unfold equiv_inv. simpl.
+    destruct (sepT (∃ e : T ∧ T, O nj (BuildTruncType _ (fst e = snd e)))
+            (dense_into_cloture (T ∧ T) (λ x0 : T ∧ T, BuildTruncType _ (fst x0 = snd x0)))
+            (λ
+             x0 : ∃ e : T ∧ T, O nj (BuildTruncType _ (fst e = snd e)),
+             let (fst, _) := let (proj1_sig, _) := x0 in proj1_sig in fst)
+            (λ
+             x0 : ∃ e : T ∧ T, O nj (BuildTruncType _ (fst e = snd e)),
+               let (_, snd) := let (proj1_sig, _) := x0 in proj1_sig in snd)) as [inv retr sect _].
+    cbn in *.
+    unfold Sect, E_to_χ_map in *; cbn in *.
+    specialize (retr (path_forall _ _
+              (λ
+               q : ∃
+                   (x0 : ∃ e : T ∧ T,
+                         O nj (BuildTruncType _ (fst e = snd e)))
+                   (π : fst (pr1 x0) = snd (pr1 x0)),
+                   O_unit nj
+                     (BuildTruncType _ (fst (pr1 x0) = snd (pr1 x0))) π = 
+                   pr2 x0, pr1 (pr2 q)))). clear sect.
+    rewrite retr.
+    unfold ap10, path_forall; rewrite eisretr. reflexivity.
+  Defined.
+
+  Definition nj_paths_separated (T:TruncType (n.+1))
+    : (forall x y:T, IsSubu n nj (BuildTruncType _ (x=y))) -> separated T.
+  Proof.
+    intros H F χ f g.
+    refine (isequiv_adjointify _ _ _ _).
+    - intro p. apply path_forall; intro x.
+      specialize (H (f x) (g x)).
+      unfold E_to_χ_map in *.
+      generalize (equiv_path _ _ (dense_eq χ x) (x;1)).
+      apply (O_rec n nj (χ x) (Build_subuniverse_Type n nj (BuildTruncType _ (f x=g x)) _)).
+      intro w.
+      exact (ap10 p (x;w)).
+    - intro p. unfold E_to_χ_map in *; cbn in *.
+      rewrite (path_forall_precompose (∃ x : F, χ x) F T pr1 _ _ (λ x : F,
+         O_rec n nj (χ x)
+           {| st := BuildTruncType _ (f x = g x); subu_struct := H (f x) (g x) |}
+           (λ w : χ x, ap10 p (x; w)) (transport idmap (dense_eq χ x) (x; 1)))).
+      apply (@equiv_inj _ _ _ (isequiv_apD10 _ _ _ _)).
+      unfold path_forall; rewrite eisretr.
+      apply path_forall; intro x.
+      pose (r:= ap10 (dense_diag χ x (x;1)) (x;1)). 
+      unfold incl_Aeq_Eeq in r; cbn in r.
+      rewrite r; clear r.
+      pose (r := λ P Q f, ap10 (O_rec_retr n nj P Q f)).
+      rewrite r. reflexivity.
+    - intro p.
+      apply (@equiv_inj _ _ _ (isequiv_apD10 _ _ _ _)).
+      unfold path_forall; rewrite eisretr.
+      apply path_forall; intro x. simpl.
+      generalize (equiv_path _ _ (dense_eq χ x) (x;1)).
+      transparent assert (sh : (subuniverse_Type nj)).
+      { refine (Build_subuniverse_Type n nj
+                 (BuildTruncType _ (O_rec n nj (χ x)
+                             {| st := BuildTruncType _ (f x = g x); subu_struct := H (f x) (g x) |}
+                             (λ w : χ x, ap10 (ap (E_to_χ_map T χ) p) (x; w))
+                             (transport idmap (dense_eq χ x) (x; 1)) = apD10 p x)) _).
+        apply istrunc_paths.
+        apply istrunc_paths. apply trunc_succ. apply istrunc_trunctype_type.
+        assert (X: IsSubu n nj (BuildTruncType _ (f x = g x))). apply H.
+        pose (pp:= subuniverse_paths n nj (Build_subuniverse_Type n nj (BuildTruncType _ (f x=g x)) _)
+             (O_rec n nj (χ x)
+                         {|
+                         st := {|
+                               trunctype_type := f x = g x;
+                               istrunc_trunctype_type := istrunc_paths _ 
+                                                  (f x) (g x) |};
+                         subu_struct := H (f x) (g x) |}
+                         (λ w : χ x, ap10 (ap (E_to_χ_map T χ) p) (x; w))
+                         (transport idmap (dense_eq χ x) (x; 1)))
+             (apD10 p x)).
+
+        match goal with
+        |[pp: IsSubu _ _ {| trunctype_type := _; istrunc_trunctype_type := ?XX|} |- IsSubu _ _ {| trunctype_type := _; istrunc_trunctype_type := ?YY|}]
+           => assert (rr: XX = YY) by apply path_ishprop
+        end.
+        destruct rr. exact pp. }
+      apply (O_rec n nj (χ x) sh).
+      unfold sh; clear sh; cbn.
+      intro w.
+      pose (r:= ap10 (dense_diag χ (x;w) ((x;w);1)) ((x;w);1)).
+      unfold incl_Aeq_Eeq in r; cbn in r.
+      rewrite r; clear r.
+      pose (r := λ P Q f, ap10 (O_rec_retr n nj P Q f)).
+      rewrite r.
+      unfold E_to_χ_map.
+      apply (ap10_ap_precompose pr1 p (x; w)).
+  Defined.
 
   Definition Omono (A B:TruncType (trunc_S n)) (f: A -> B)
     := forall x y:A, IsEquiv (function_lift n nj (BuildTruncType _ (x=y)) (BuildTruncType _ (f x=f y)) (ap (x:=x) (y:=y) f)).

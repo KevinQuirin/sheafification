@@ -1,4 +1,4 @@
-Require Import Limit.Auxiliary
+Require Export Limit.Auxiliary
         Limit.CechNerve
         Limit.CoEqualizer
         Limit.Colimit
@@ -9,5 +9,4 @@ Require Import Limit.Auxiliary
         Limit.Diagram
         Limit.KernelPair
         Limit.MappingTelescope
-        Limit.MyLemmas
-        Limit.MyTacs.
+        Limit.MyLemmas.

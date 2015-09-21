@@ -25,6 +25,7 @@ modalities.v
 nat_lemmas.v
 reflective_subuniverse.v
 OPaths.v
+T.v
 sheaf_base_case.v
 sheaf_def_and_thm.v
 sheaf_induction.v

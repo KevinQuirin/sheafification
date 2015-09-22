@@ -26,7 +26,7 @@ nat_lemmas.v
 reflective_subuniverse.v
 OPaths.v
 T.v
+T_telescope.v
 sheaf_base_case.v
 sheaf_def_and_thm.v
 sheaf_induction.v
-Draft.v

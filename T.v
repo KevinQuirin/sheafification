@@ -57,3 +57,14 @@ Definition T_rec_beta_tp {A B:Type} {f:A -> B} (P:Type)
   : ap (T_rec P t' tp' tp_1') (tp a b p) = tp' a b p.
 Proof.
 Admitted.
+
+Lemma path_T {A A' B:Type} (f: A -> A')
+      (α β : T f -> B)
+      (eq1: α o t == β o t)
+      (eq2: forall a b p, eq1 a @ ap β (tp a b p) = ap α (tp a b p) @ eq1 b)
+      (eq3: forall a,  (eq2 a a 1)
+                      = transport (λ U, eq1 a @ ap β U = ap α U @ eq1 a) (tp_1 a)^ (concat_p1 (eq1 a) @ (concat_1p (eq1 a))^))
+  : α == β.
+Proof.
+  (* We refer to the general case in R.v *)
+Admitted.

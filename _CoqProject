@@ -16,7 +16,10 @@ Limit/MappingTelescope.v
 Limit/MyLemmas.v
 Limit/MyTacs.v
 
+
+R.v
 Limit.v
+PathGroupoid_.v
 Equivalences_.v
 Forall_.v
 MyTacs.v
@@ -29,4 +32,7 @@ T.v
 T_telescope.v
 sheaf_base_case.v
 sheaf_def_and_thm.v
+Tf_Omono_sep.v
+OT.v
+OT_Tf.v
 sheaf_induction.v

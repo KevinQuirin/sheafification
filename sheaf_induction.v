@@ -6,6 +6,7 @@ Require Import nat_lemmas.
 (* Require Import VD_truncation gpd. *)
 Require Import sheaf_base_case.
 Require Import sheaf_def_and_thm.
+Require Import OPaths T T_telescope Tf_Omono_sep OT.
 
 Set Universe Polymorphism.
 Global Set Primitive Projections. 
@@ -62,20 +63,18 @@ Section Sheafification.
   Instance separated_mono_is_separated_ {T U:TruncType (trunc_S n)} {E} χ g h (f: T -> U)
         (H:IsEquiv (ap (E_to_χ_map U (E:=E) χ) (x:=f o g) (y:=f o h))) (fMono : IsMonof f) : 
            IsEquiv (ap (E_to_χ_map T (E:=E) χ) (x:=g) (y:=h)).
-  apply (isequiv_adjointify _ (fun X => @equiv_inv _ _ _ (fMono E g h) (@equiv_inv _ _ _ H (ap (fun u => f o u) X)))).
+  apply (isequiv_adjointify (fun X => @equiv_inv _ _ _ (fMono E g h) (@equiv_inv _ _ _ H (ap (fun u => f o u) X)))).
   - intro e. 
     apply (@apf_Mono _ _ _ fMono). 
     unfold equiv_inv.
-    pose (E_to_χ_map_ap T U χ g f 
+    pose (E_to_χ_map_ap T0 U χ g f 
                         (@equiv_inv _ _ _ (fMono _ g h) (@equiv_inv _ _ _ H (ap (fun u => f o u) e)))).
     apply (transport (fun X => X = _) (inverse p)). clear p.
     eapply concat; try exact (@eisretr _ _ _ H (ap (fun u => f o u) e)). 
     apply ap. apply (@eisretr _ _ _ (fMono _ _ _)).
   - intro e. 
-    pose (E_to_χ_map_ap T U χ g f e).
-    apply (transport (fun X => equiv_inv (equiv_inv X) = _) (inverse p)).
-    apply (transport (fun X => equiv_inv X = _) 
-                     (inverse ((@eissect _ _ _ H (ap (fun u => f o u) e))))).
+    pose (E_to_χ_map_ap T0 U χ g f e).
+    rewrite p. rewrite ((@eissect _ _ _ H (ap (fun u => f o u) e))).
     apply eissect.
   Defined.
 
@@ -109,7 +108,7 @@ Section Sheafification.
               (sheaf_is_separated (T_nType_j_Type_sheaf T))
               (pr1 )).
     intros X f g. simpl in *.
-    apply @isequiv_adjointify with (g := λ H, (path_forall _ _ (λ x, path_sigma _ _ _ (ap10 H x) (path_ishprop _ _)))).
+    apply @isequiv_adjointify with (g := λ H, (path_forall (λ x, path_sigma _ _ _ (ap10 H x) (path_ishprop _ _)))).
     - intro p.
       apply (@equiv_inj _ _ _ (isequiv_apD10 _ _ _ _)).
       apply path_forall; intro x.
@@ -129,6 +128,164 @@ Section Sheafification.
 
   Definition separated_unit (T:TruncType (n.+1)) :  T -> separated_Type T := toIm _.
 
+  Require Import Limit.
+
+  Lemma transport2_is_ap :
+    ∀ (A : Type) (Q : A → Type) (x y : A) (p q : x = y) 
+      (r : p = q) (z : Q x), transport2 Q r z = ap (λ U, transport Q U z) r.
+  Proof.
+    intros A Q x y p q r0 z.
+    destruct r0. reflexivity.
+  Defined.
+
+  Theorem separation_colimit_OTtelescope_cocone (U V:TruncType (n.+1)) (sepV:separated V)
+          (f:U -> V)
+    : cocone (OTtelescope U) V.
+  Proof.
+    transparent assert (F : (forall i, (OTtelescope U) i → V)).
+    { intro i; cbn. induction i.
+      exact f.
+      refine (Trunc_rec _).
+      refine (OTid_rec _ _ _ _ _).
+      exact IHi.
+      intros a b. cbn.
+      refine (O_rec n nj (BuildTruncType _ (a=b))
+                    (Build_subuniverse_Type n nj _
+                                            (separated_nj_paths (BuildTruncType (n.+1) V)
+                                                                sepV
+                                                                (IHi a) (IHi b))) _).
+      exact (ap IHi).
+      
+      intro a; cbn.
+      match goal with
+      |[|- O_rec n nj ?P ?Q ?f ?x = _]
+       => exact (ap10 (O_rec_retr n nj P Q f) 1)
+      end. }
+    refine (Build_cocone _ _).    
+    - exact F.
+    - intros i j q; destruct q.
+      induction i.
+      + intro x; reflexivity.
+      + refine (Trunc_ind _ _).
+        refine (OTid_ind _ _ _ _ _).
+        
+        intro a; reflexivity.
+        
+        intros a b p. simpl.
+        match goal with
+        |[|- transport _ ?pp ?qq = _] =>
+         refine (transport_paths_FlFr pp qq @ _)
+        end.
+        match goal with |[|- (?PP^ @ 1) @ ?QQ = _] => set (P := PP)
+        end.
+        exact ((whiskerR (concat_p1 P^) P) @ concat_Vp P).
+        
+        intro a; simpl.
+        apply moveR_Vp. rewrite concat_p1.
+        match goal with
+        |[|- _ @ (whiskerR (concat_p1 (ap ?ff _)^) ?PP2 @ concat_Vp ?PP3) = _]
+         => set (P1 := ff)
+        end.
+        pose (p:= apD (λ U, transport_paths_FlFr U 1
+                               @ (whiskerR (concat_p1 (ap P1 U)^) (ap P1 U)
+                               @ concat_Vp (ap P1 U))) (Otp_1 a)^).
+        cbn in p.
+        rewrite <- p; clear p.
+        rewrite transport_paths_Fl.
+        rewrite ap_V. rewrite inv_V. rewrite concat_p1.
+        match goal with
+        |[|- _ = transport2 ?P ?Q ?R]
+         => apply (transport2_is_ap _ P _ _ _ _ Q R)^
+        end.
+  Defined.
+
+  Theorem isequiv_separation_colimit_OTtelescope_cocone (U V:TruncType (n.+1)) (sepV:separated V)
+    : IsEquiv (separation_colimit_OTtelescope_cocone U V sepV).
+  Proof.
+    refine (isequiv_adjointify _ _ _).
+    - intro C. exact (C 0).
+    - intro C.
+      refine (path_cocone _ _).
+      + intro i. induction i.
+        * intro x; reflexivity.
+        * induction i. cbn.
+          refine (Trunc_ind _ _); cbn.
+          refine (path_OT _ _ _ _ _ _ _).
+          { intro a. exact (IHi a @ (qq C 0 (0.+1) 1 a)^). }
+          { intros a b p; cbn.
+            rewrite OT_rec_beta_Otp.
+
+
+
+          
+        * refine (Trunc_ind _ _).
+          refine (path_OT _ _ _ _ _ _ _).
+          { intro a. exact (IHi a @ (qq C i (i.+1) 1 a)^). }
+          { intros a b p; cbn.
+            rewrite OT_rec_beta_Otp. simpl.
+          
+          Refine (OTid_ind _ _ _ _ _); cbn.
+          { intro a; exact (IHi a @ (qq C i (i.+1) 1 a)^). }
+          { intros a b p; cbn.
+            match goal with
+            |[|- transport _ ?pp ?qq = _]
+             => refine (transport_paths_FlFr pp qq @ _)
+            end.
+            
+          
+        * induction i.
+          cbn.
+          refine (Trunc_ind _ _).
+          refine (OTid_ind _ _ _ _ _); cbn.
+          intro a.
+          exact (qq C 0 (0.+1) 1 a)^.
+          intros a b p. cbn.
+          rewrite transport_paths_FlFr. cbn.
+          rewrite OT_rec_beta_Otp.
+          assert {q:a=b & O_unit nj _ q = p} by admit.
+          destruct X as [q pq]. destruct pq. cbn.
+          rewrite (λ P Q f, ap10 (O_rec_retr n nj P Q f)).
+          destruct q. cbn. rewrite concat_1p.
+          pose @Otp_1; unfold Oidpath in p. rewrite p. cbn.
+          apply concat_p1.
+          rewrite_moveR_Vp_p.
+        * refine (Trunc_ind _ _).
+          refine (OTid_ind _ _ _ _ _).
+          { intro x; cbn.
+            etransitivity; try exact (IHi x).
+            symmetry; apply (qq C i (i.+1) 1). }
+          { intros a b p. cbn. admit. }
+          { admit. }
+      + intros i j q. admit.
+    - intro f. reflexivity.
+  Admitted.
+        
+  Theorem separation_colimit_OTtelescope (U:TruncType (n.+1))
+    : is_m_universal (n.+1)
+                     (separation_colimit_OTtelescope_cocone
+                        U
+                        (@BuildTruncType _ (separated_Type U) (separated_Type_is_TruncType_Sn U))
+                        (separated_Type_is_separated U)
+                        (separated_unit U)).
+  Admitted.
+
+  Definition separated_equiv : forall (P : TruncType (trunc_S n)) (Q :{T : TruncType (trunc_S n) & separated T}),
+                                 IsEquiv (fun f : separated_Type P -> Q.1 =>
+                                            f o (separated_unit P)).
+  Proof.
+    intros P [Q sepQ].
+    pose (G := separation_colimit_OTtelescope P Q).
+    match goal with |[G:IsEquiv ?ff |- _] => pose (F := ff) end.
+    refine (isequiv_compose' F _ (λ C, C 0) _).
+    - pose (isequiv_inverse _ (feq := isequiv_separation_colimit_OTtelescope_cocone P Q sepQ)).
+  Admitted.
+    
+
+      
+  Admitted.
+
+
+  
   Definition mu_modal_paths_func_univ_func
              (T : TruncType (trunc_S n))
              (a : T)

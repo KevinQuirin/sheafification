@@ -28,7 +28,7 @@ Module Export R.
              (Q : R P p0 -> Type)
              (r' : forall a, Q (r a))
              (rp' : forall a b p, transport Q (rp a b p) (r' a) = r' b)
-             (rp_1' : forall a, (transport2 Q (rp_1 a) (r' a))^ @ rp' a a (p0 a) = 1)
+             (rp_1' : forall a, transport2 Q (rp_1 a) (r' a) = rp' a a (p0 a))
     : forall w, Q w
     := fun w => match w with
                 |r a => fun _ => r' a
@@ -38,10 +38,17 @@ Module Export R.
              (Q : R P p0 -> Type)
              (r' : forall a, Q (r a))
              (rp' : forall a b p, transport Q (rp a b p) (r' a) = r' b)
-             (rp_1' : forall a, (transport2 Q (rp_1 a) (r' a))^ @ rp' a a (p0 a) = 1)
+             (rp_1' : forall a, transport2 Q (rp_1 a) (r' a) = rp' a a (p0 a))
              a b p,
       apD (R_ind P p0 Q r' rp' rp_1') (rp a b p) = rp' a b p.
 
+  Axiom R_ind_beta_rp_1 : forall {A:Type} (P:A -> A -> Type) (p0: forall x:A, P x x)
+             (Q : R P p0 -> Type)
+             (r' : forall a, Q (r a))
+             (rp' : forall a b p, transport Q (rp a b p) (r' a) = r' b)
+             (rp_1' : forall a, transport2 Q (rp_1 a) (r' a) = rp' a a (p0 a))
+             (a:A),
+      apD02 (R_ind P p0 Q r' rp' rp_1') (rp_1 a) @ (concat_p1 _) @ (rp_1' a) = R_ind_beta_rp P p0 Q r' rp' rp_1' a a (p0 a).
 End R.
 
 Definition R_rec {A:Type} (P:A -> A -> Type) (p0: forall x:A, P x x)
@@ -53,7 +60,9 @@ Definition R_rec {A:Type} (P:A -> A -> Type) (p0: forall x:A, P x x)
 Proof.
   refine (R_ind _ _ _ r' (fun a b p => transport_const _ _ @ rp' a b p)  _).
   intro a.
-  exact ((@concat_p_pp _ _ _ _ _ ((transport2 (λ _ : R P p0, Q) (rp_1 a) (r' a))^)  (transport_const (rp a a (p0 a)) (r' a)) (rp' a a (p0 a)))                                                                                                 @ whiskerR (moveR_Vp _ _ _ (transport2_const (A:=R P p0) (B:= Q) (rp_1 a) (r' a))) (rp' a a (p0 a))                                                                                                         @ concat_1p _                                                                                     @ (rp_1' a)).
+  pose (p:=whiskerR (transport2_const (A:=R P p0) (B:= Q) (rp_1 a) (r' a) @ concat_p1 _)^ (rp' a a (p0 a))). cbn in p.
+  pose (p1:=(whiskerL (transport2 (λ _ : R P p0, Q) (rp_1 a) (r' a)) (rp_1' a) @ concat_p1 _)^).
+  exact (p1 @ p).
 Defined.
 
 Definition R_rec_beta_rp {A:Type} (P:A -> A -> Type) (p0: forall x:A, P x x)
@@ -65,6 +74,17 @@ Definition R_rec_beta_rp {A:Type} (P:A -> A -> Type) (p0: forall x:A, P x x)
   : ap (R_rec _ _ Q r' rp' rp_1') (rp a b p) = rp' a b p.
 Proof.
 Admitted.
+
+Definition R_rec_beta_rp_1 {A:Type} (P:A -> A -> Type) (p0: forall x:A, P x x)
+           (Q:Type)
+           (r': A -> Q)
+           (rp' : forall (a b:A) (p:P a b), r' a = r' b)
+           (rp_1' : forall a, rp' a a (p0 a) = 1)
+           (a:A)
+  : ap02 (R_rec P p0 Q r' rp' rp_1') (rp_1 a) = R_rec_beta_rp P p0 Q r' rp' rp_1' a a (p0 a) @ (rp_1' a).
+Proof.
+Admitted.
+  
 
 
 Lemma path_R {A B:Type} (P: A -> A -> Type) (p0 : forall x, P x x)
@@ -92,7 +112,8 @@ Proof with cbn.
     repeat rewrite concat_pp_p.
     rewrite ap_V. rewrite inv_V.
     repeat rewrite whiskerL_pp.
-    apply moveR_Vp.
+    (* apply moveR_Vp. *)
+    symmetry.
 
     match goal with
     |[|- ?PP1 @ (?PP2 @ ((?PP3 @ (?PP4 @ ((?PP5 @ (?PP6 @ ?PP7)) @ ?PP8)) @ ?PP9))) = ?PP10] =>
@@ -124,7 +145,11 @@ Proof with cbn.
     rewrite ap_V. rewrite inv_V.
 
     unfold P10. rewrite transport2_is_ap.
-    repeat rewrite concat_pp_p. apply whiskerL.
+    repeat rewrite concat_pp_p.
+    match goal with
+    |[|- _ = ?XX] => path_via (XX @ 1)
+    end.
+    apply whiskerL.
     rewrite ap_V.
     do 3 apply moveR_Vp.
     match goal with
@@ -379,4 +404,264 @@ Proof with cbn.
     unfold whiskerR. simpl.
     rewrite <- concat2_p_pp. reflexivity.
 Qed.
+
+Context `{fs: Funext}.
+
+Lemma equiv_R_id_fun {A:Type} (P: A -> A -> Type) (p0 : forall x, P x x)
+      (Q: A -> A -> Type) (q0: forall x, Q x x)
+      (φ : forall a b, P a b -> Q a b)
+      (κ : forall a, (φ a a) (p0 a) = q0 a)
+  : R P p0 -> R Q q0.
+Proof.
+  refine (R_rec _ _ _ _ _ _).
+  intro a; apply r. exact a.
+  intros a b p; cbn.
+  apply rp. exact (φ a b p).
+  intro a; cbn.
+  etransitivity; try apply rp_1.
+  apply ap. apply κ.
+Defined.
+
+Lemma equiv_R_id_sect {A:Type} (P: A -> A -> Type) (p0 : forall x, P x x)
+      (Q: A -> A -> Type) (q0: forall x, Q x x)
+      (φ : forall a b, P a b <~> Q a b)
+      (κ : forall a, (φ a a) (p0 a) = q0 a)
+      (κ': forall a, (φ a a)^-1 (q0 a) = p0 a)
+      (κκ' : (λ a : A, ap (φ a a)^-1 (κ a)^ @ eissect (φ a a) (p0 a)) = κ')
+  : Sect (equiv_R_id_fun Q q0 P p0 (λ a b, equiv_inverse (φ a b)) κ') (equiv_R_id_fun P p0 Q q0 φ κ).
+Proof.
+  destruct κκ'.
+  unfold Sect.
+  refine (path_R _ _ _ _ _ _ _); cbn.
+  + intro x; reflexivity.
+  + intros a b p; cbn.
+    refine (concat_1p _ @ _).
+    refine (_ @ (concat_p1 _)^).
+    refine (ap_idmap _ @ _).
+    match goal with |[|- _ = ap (λ x, ?ff (?gg x)) ?pp]
+                     => refine (_ @ (ap_compose gg ff pp)^)
+    end.
+    match goal with
+    |[|- _ = ap ?ff _ ]
+     => refine (_ @ (ap (ap ff) (R_rec_beta_rp _ _ _ _ _ _ _ _ _))^)
+    end.
+    refine (_ @ (R_rec_beta_rp _ _ _ _ _ _ _ _ _)^).
+    apply ap. symmetry; apply eisretr.
+  + intro a; cbn.
+    rewrite transport_paths_FlFr.
+    repeat rewrite ap_V. rewrite inv_V.
+    match goal with
+    |[|- ?yy @ ((?zz @ _) @ _) = ?xx @ _] => assert (rr: xx = yy @ zz @ (rp_1 a))
+    end.
+    { match goal with
+      |[|- ?xx @ ?yy = _] => rewrite (concat_p1 xx)
+      end.
+      rewrite (concat_ap_pFq).
+      rewrite concat_pp_p.
+      apply moveL_Mp.
+      match goal with
+      |[|- _ @ whiskerL _ ?pp = _] 
+       => pose (whiskerL_1p pp)
+      end.
+      apply moveL_pV in p. rewrite p; clear p.
+      cbn. rewrite concat_p1.
+      assert (lemma : forall (X:Type) (x:X) (p:x = x) (r:1 = p),
+                 ap (ap idmap) r^ = ap_idmap p @ r^).
+      { intros X x p r0. destruct r0.
+        reflexivity. }
+      specialize (lemma (R Q q0) (r a) (rp a a (q0 a)) (rp_1 a)^).
+      rewrite inv_V in lemma. exact lemma. }
     
+    rewrite rr; clear rr.
+    repeat rewrite concat_pp_p. apply whiskerL. apply whiskerL.
+    apply moveR_Vp.
+    repeat rewrite concat_p_pp.
+    apply moveR_pV.
+    repeat rewrite concat_pp_p.
+    rewrite concat_ap_Fpq.
+    rewrite <- whiskerR_RV.
+    match goal with
+    |[|- _ = _ @ (_ @ (whiskerR ?pp 1 @ _)) ]
+     => pose (whiskerR_p1 pp)
+    end.
+    rewrite concat_pp_p in p.
+    apply moveL_Vp in p. rewrite p; clear p.
+    rewrite inv_V. simpl. rewrite concat_1p.
+    repeat rewrite concat_p_pp. apply moveL_pV.
+    repeat rewrite concat_pp_p.
+    do 3 apply moveR_Vp.
+    repeat rewrite concat_p_pp.
+    match goal with
+    |[|- ap (ap ?ff) ?pp = _]
+     => refine ((ap02_is_ap _ _ ff _ _ _ _ pp)^ @ _)
+    end.
+    rewrite ap02_compose.
+    repeat rewrite concat_pp_p. apply whiskerL.
+    rewrite <- (ap02_is_ap _ _ (R_rec P p0 (R Q q0) (λ a0 : A, r a0)
+                                      (λ (a0 b : A) (p : P a0 b), rp a0 b ((φ a0 b) p))
+                                      (λ a0 : A, ap (rp a0 a0) (κ a0) @ rp_1 a0)) _ _ _ _ (R_rec_beta_rp Q q0 (R P p0) (λ a0 : A, r a0)
+                                                                                                         (λ (a0 b : A) (p : Q a0 b), rp a0 b ((φ a0 b)^-1 p))
+                                                                                                         (λ a0 : A,
+                                                                                                                 ap (rp a0 a0) (ap (φ a0 a0)^-1 (κ a0)^ @ eissect (φ a0 a0) (p0 a0)) @
+                                                                                                                    rp_1 a0) a a (q0 a))).
+    simpl. rewrite concat_p1.
+    apply moveL_Mp.
+    match goal with
+    |[|- (ap02 ?ff ?pp)^@ (ap02 ?gg ?qq) = _] =>
+     rewrite <- (ap02_V _ _ ff _ _ _ _ pp);
+       rewrite <- (ap02_pp ff pp^ qq)
+    end.
+
+    pose @R_rec_beta_rp_1.
+    unfold equiv_R_id_fun.
+    rewrite p.
+    rewrite concat_V_pp.
+    rewrite ap02_pp.
+    rewrite p; clear p.
+    repeat rewrite concat_p_pp.
+    apply whiskerR.
+    transparent assert (X : (∀ a : A, (φ a a)^-1 (q0 a) = p0 a)).
+    { intro b. pose (eissect (φ b b) (p0 b)).
+      refine (_ @ p).
+      apply ap. exact (κ b)^. }
+
+    pose (apD (λ U, R_rec_beta_rp P p0 (R Q q0) (λ a0 : A, r a0)
+                                  (λ (a0 b : A) (p : P a0 b), rp a0 b ((φ a0 b) p))
+                                  (λ a0 : A, ap (rp a0 a0) (κ a0) @ rp_1 a0) a a 
+                                  U) (X a)^). cbn in p.
+    rewrite <- p; clear p.
+    rewrite transport_paths_FlFr. simpl.
+    unfold X; clear X. simpl.
+    rewrite (ap_compose (φ a a) (rp a a)). simpl.
+    repeat rewrite concat_pp_p.
+    rewrite <- (ap_pp (rp a a) (ap (φ a a) (ap (φ a a)^-1 (κ a)^ @ eissect (φ a a) (p0 a))^) (eisretr (φ a a) (q0 a))).
+    match goal with
+    |[|- _ = _ @ (_ @ ap _ ?pp)] => assert (κ a = pp)
+    end.
+    { destruct (κ a). cbn.
+      rewrite concat_1p. rewrite eisadj.
+      rewrite ap_V. symmetry; apply concat_Vp. }
+    destruct X.
+    apply whiskerR.
+    do 2 rewrite ap_V. rewrite inv_V.
+    rewrite ap02_is_ap.
+    rewrite ap_compose. reflexivity.
+Qed.
+
+Lemma isequiv_equiv_R_id_fun {A:Type} (P: A -> A -> Type) (p0 : forall x, P x x)
+      (Q: A -> A -> Type) (q0: forall x, Q x x)
+      (φ : forall a b, P a b <~> Q a b)
+      (κ : forall a, (φ a a) (p0 a) = q0 a)
+  : IsEquiv (equiv_R_id_fun P p0 Q q0 φ κ).
+Proof.
+  refine (isequiv_adjointify _ _ _ _).
+  - refine (equiv_R_id_fun Q q0 P p0 (λ a b, equiv_inverse (φ a b)) _).
+    intro a. refine (_ @ (eissect (φ a a) (p0 a))).
+    apply ap. exact (κ a)^.
+  - apply equiv_R_id_sect. reflexivity.
+  - apply equiv_R_id_sect.
+    apply path_forall; intro a. cbn. destruct (κ a); cbn.
+    rewrite concat_1p. rewrite eisadj. rewrite ap_V.
+    apply concat_Vp.
+Defined.
+
+Lemma equiv_R_id {A:Type} (P: A -> A -> Type) (p0 : forall x, P x x)
+      (Q: A -> A -> Type) (q0: forall x, Q x x)
+      (φ : forall a b, P a b <~> Q a b)
+      (κ : forall a, (φ a a) (p0 a) = q0 a)
+  : R P p0 <~> R Q q0.
+Proof.
+  exists (equiv_R_id_fun P p0 Q q0 φ κ).
+  exact (isequiv_equiv_R_id_fun P p0 Q q0 φ κ).
+Defined.
+
+Definition equiv_R_fun {A B:Type}
+           (P: A -> A -> Type) (p0: forall x, P x x)
+           (Q: B -> B -> Type) (q0: forall x, Q x x)
+           (α: A -> B)
+           (φ: forall a b, P a b -> Q (α a) (α b))
+           (κ: forall a, (φ a a) (p0 a) = q0 (α a))
+  : R P p0 -> R Q q0.
+Proof.
+  refine (R_rec _ _ _ _ _ _).
+  - intro a. apply r. exact (α a).
+  - intros a b p; cbn. apply rp.
+    apply φ. exact p.
+  - intro a; cbn.
+    refine (ap (rp (α a) (α a)) (κ a) @ _).
+    apply rp_1.
+Defined.
+
+Definition equiv_R {A B:Type}
+           (P: A -> A -> Type) (p0: forall x, P x x)
+           (Q: B -> B -> Type) (q0: forall x, Q x x)
+           (α: A = B)
+           (φ: forall a b, P a b <~> Q (equiv_path _ _ α a) (equiv_path _ _ α b))
+           (κ: forall a, (φ a a) (p0 a) = q0 (equiv_path _ _ α a))
+  : IsEquiv (equiv_R_fun P p0 Q q0 (equiv_path _ _ α) φ κ).
+Proof.
+  destruct α.
+  assert ((equiv_R_fun P p0 Q q0 (equiv_path A A 1) (λ a b : A, φ a b) κ) =
+          (equiv_R_id_fun P p0 Q q0 φ κ)).
+  { reflexivity. }
+  apply isequiv_equiv_R_id_fun.
+Defined.
+
+(*
+
+Definition equiv_R_inv {A B:Type}
+           (P: A -> A -> Type) (p0: forall x, P x x)
+           (Q: B -> B -> Type) (q0: forall x, Q x x)
+           (α: A <~> B)
+           (φ: forall a b, P a b <~> Q (α a) (α b))
+           (κ: forall a, (φ a a) (p0 a) = q0 (α a))
+  : R Q q0 -> R P p0.
+Proof.
+  refine (equiv_R_fun Q q0 P p0 (equiv_inverse α) _ _).
+  - intros a b q; cbn.    
+    cut (Q (α (α^-1 a)) (α (α^-1 b))).
+    apply (φ _ _)^-1.
+    apply (transport (λ U, Q (α (α^-1 a)) U) (eisretr α b)^).
+    apply (transport (λ U, Q U b) (eisretr α a)^). exact q.
+  - intro a; cbn.
+    path_via ((φ (α^-1 a) (α^-1 a))^-1 (q0 (α (α^-1 a)))).
+    apply ap.
+    pose (transport_transport Q (eisretr α a)^ (eisretr α a)^).
+    pose (apD q0 (eisretr α a)^).
+    destruct (eisretr α a)^. reflexivity.
+    path_via ((φ (α^-1 a) (α^-1 a))^-1 ((φ (α^-1 a) (α^-1 a)) (p0 (α^-1 a)))).
+    apply ap.
+    apply (κ (α^-1 a))^.
+    apply eissect.
+Defined.
+
+Definition equiv_R_sect {A B:Type}
+           (P: A -> A -> Type) (p0: forall x, P x x)
+           (Q: B -> B -> Type) (q0: forall x, Q x x)
+           (α: A <~> B)
+           (φ: forall a b, P a b <~> Q (α a) (α b))
+           (κ: forall a, (φ a a) (p0 a) = q0 (α a))
+  : forall x, (equiv_R_fun P p0 Q q0 α φ κ) (equiv_R_inv P p0 Q q0 α φ κ x) = x.
+Proof.
+  refine (path_R _ _ _ _ _ _ _).
+  - intro a; cbn. exact (ap r (eisretr α a)).
+  - intros a b q; cbn.
+    refine (((idpath (ap r (eisretr α a))) @@ (ap_idmap (rp (p0:=q0) a b q))) @ _).
+    unfold equiv_R_inv, equiv_R_fun; cbn.
+    match goal with
+    |[|- _ = ap (λ x, ?ff (?gg x)) ?pp @ _]
+     => refine (_ @ ((ap_compose gg ff pp)^ @@ 1))       
+    end.
+    match goal with
+    |[|- _ = ap ?ff (ap (R_rec ?X1 ?X2 ?X3 ?X4 ?X5 ?X6) _) @ _]
+     => refine (_ @ ((ap02 ff (R_rec_beta_rp X1 X2 X3 X4 X5 X6 a b q)^) @@ 1))
+    end.
+    refine (_ @ ((R_rec_beta_rp _ _ _ _ _ _ _ _ _)^ @@ 1)).
+    path_via ((rp (p0 := q0) _ _ (transport (λ U : B, Q (α (α^-1 a)) U) (eisretr α b)^
+              (transport (λ U : B, Q U b) (eisretr α a)^ q))) @ (ap r (eisretr α b))).
+    2: apply whiskerR; apply ap; symmetry; apply eisretr.
+
+*)
+
+
+(** Madame Maury : B323 *)

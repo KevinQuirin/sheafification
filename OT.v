@@ -45,7 +45,7 @@ Module Export OTid.
   Definition OTid_ind (A:TruncType (n.+1)) (P : OTid A -> Type)
              (Ot' : forall a, P (Ot a))
              (Otp' : forall a b p, transport P (Otp a b p) (Ot' a) = Ot' b)
-             (Otp_1' : forall a, (transport2 P (Otp_1 a) (Ot' a))^ @ Otp' a a °1 = 1)
+             (Otp_1' : forall a, transport2 P (Otp_1 a) (Ot' a) = Otp' a a °1)
     : forall w, P w
     := fun w => match w with
                 |Ot a => fun _ => Ot' a
@@ -54,9 +54,17 @@ Module Export OTid.
   Axiom OTid_ind_beta_Otp : forall (A:TruncType (n.+1)) (P : OTid A -> Type)
              (Ot' : forall a, P (Ot a))
              (Otp' : forall a b p, transport P (Otp a b p) (Ot' a) = Ot' b)
-             (Otp_1' : forall a, (transport2 P (Otp_1 a) (Ot' a))^ @ Otp' a a °1 = 1)
+             (Otp_1' : forall a, transport2 P (Otp_1 a) (Ot' a) = Otp' a a °1)
              a b p,
-     apD (OTid_ind A P Ot' Otp' Otp_1') (Otp a b p) = Otp' a b p.
+      apD (OTid_ind A P Ot' Otp' Otp_1') (Otp a b p) = Otp' a b p.
+
+  Axiom OTid_ind_beta_Otp_1 : forall (A:TruncType (n.+1)) (P : OTid A -> Type)
+             (Ot' : forall a, P (Ot a))
+             (Otp' : forall a b p, transport P (Otp a b p) (Ot' a) = Ot' b)
+             (Otp_1' : forall a, transport2 P (Otp_1 a) (Ot' a) = Otp' a a °1)
+             a,
+      apD02 (OTid_ind A P Ot' Otp' Otp_1') (Otp_1 a) @ (concat_p1 _) @ (Otp_1' a) = OTid_ind_beta_Otp A P Ot' Otp' Otp_1' a a °1.
+        
         
 End OTid.
 
@@ -68,7 +76,9 @@ Definition OTid_rec (A:TruncType (n.+1)) (P:Type)
 Proof.
   refine (OTid_ind _ _ Ot' (fun a b p => transport_const _ _ @ Otp' a b p)  _).
   intro a.
-  exact ((@concat_p_pp _ _ _ _ _ ((transport2 (λ _ : OTid A, P) (Otp_1 a) (Ot' a))^)  (transport_const (Otp a a °1) (Ot' a)) (Otp' a a °1))                                                                                                 @ whiskerR (moveR_Vp _ _ _ (transport2_const (A:=OTid A) (B:= P) (Otp_1 a) (Ot' a))) (Otp' a a °1)                                                                                                         @ concat_1p _                                                                                     @ (Otp_1' a)).
+  pose (p:=whiskerR (transport2_const (A:=OTid A) (B:= P) (Otp_1 a) (Ot' a) @ concat_p1 _)^ (Otp' a a °1)). cbn in p.
+  pose (p1:=(whiskerL (transport2 (λ _ : OTid A, P) (Otp_1 a) (Ot' a)) (Otp_1' a) @ concat_p1 _)^).
+  exact (p1 @ p).
 Defined.
 
 Definition OT_rec_beta_Otp (A:TruncType (n.+1)) (P:Type)
@@ -77,6 +87,15 @@ Definition OT_rec_beta_Otp (A:TruncType (n.+1)) (P:Type)
            (Otp_1' : forall a, Otp' a a °1 = 1)
            a b p
   : ap (OTid_rec A P Ot' Otp' Otp_1') (Otp a b p) = Otp' a b p.
+Proof.
+Admitted.
+
+Definition OT_rec_beta_Otp_1 (A:TruncType (n.+1)) (P:Type)
+           (Ot': A -> P)
+           (Otp' : forall (a b:A) (p:O nj (BuildTruncType _ (a=b))), Ot' a = Ot' b)
+           (Otp_1' : forall a, Otp' a a °1 = 1)
+           a
+  : ap02 (OTid_rec A P Ot' Otp' Otp_1') (Otp_1 a) = OT_rec_beta_Otp A P Ot' Otp' Otp_1' a a °1 @ (Otp_1' a).
 Proof.
 Admitted.
 
@@ -90,7 +109,18 @@ Lemma path_OT (A:(n.+1)-Type) (B:Type)
 Proof.
   (* We refer to the general case in R.v *)
 Admitted.
-  
+
+Lemma path_OT_compute (A:(n.+1)-Type) (B:Type)
+      (α β :OTid A -> B)
+      (eq1: α o Ot == β o Ot)
+      (eq2: forall a b p, eq1 a @ ap β (Otp a b p) = ap α (Otp a b p) @ eq1 b)
+      (eq3: forall a,  (eq2 a a °1)
+                       = transport (λ U, eq1 a @ ap β U = ap α U @ eq1 a) (Otp_1 a)^ (concat_p1 (eq1 a) @ (concat_1p (eq1 a))^)) x
+  : path_OT A B α β eq1 eq2 eq3 (Ot x) = eq1 x.
+Proof.
+  (* We refer to the general case in R.v *)
+Admitted.
+
 
 Section OT_telescope.
   

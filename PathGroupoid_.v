@@ -24,66 +24,90 @@ Proof.
 Defined.
 
 Lemma whiskerL_1pp (A : Type) (x y z t: A) (p : x = y) (p':y=t) (q q' : t = z) 
-        (r : q = q') 
-    : whiskerL (p@p') r = (concat_pp_p _ _ _) @ whiskerL p (whiskerL p' r) @ (concat_p_pp _ _ _).
-  Proof.
-    destruct r, q, p, p'. reflexivity.
-  Qed.
+      (r : q = q') 
+  : whiskerL (p@p') r = (concat_pp_p _ _ _) @ whiskerL p (whiskerL p' r) @ (concat_p_pp _ _ _).
+Proof.
+  destruct r, q, p, p'. reflexivity.
+Qed.
 
-  Lemma whiskerL_LV (A : Type) (x y z: A) (p : x = y) (q q' : y = z) 
-        (r : q = q')
-    : whiskerL p r^ = (whiskerL p r)^.
-  Proof.
-    destruct r, q, p; reflexivity.
-  Qed.
-  
+Lemma whiskerL_LV (A : Type) (x y z: A) (p : x = y) (q q' : y = z) 
+      (r : q = q')
+  : whiskerL p r^ = (whiskerL p r)^.
+Proof.
+  destruct r, q, p; reflexivity.
+Qed.
 
-  Lemma concat_ap_FpFq_pp_p (A B:Type) (a b:A)
-        (c d e f:B)
-        (g: a = b -> e = f) (h: a = b -> c = d)
-        (v:d = e)
-        (u1 u2:a=b) (p:u1 = u2)
-    : ap (fun u:a=b => (h u @ v) @ g u) p
-      = ((concat_pp_p _ _ _) @ (whiskerR (ap h p) (v @ g u1) @ (concat_p_pp _ _ _))) @
-         whiskerL (h u2 @ v) (ap g p).
-  Proof.
-    destruct p, u1, v; cbn.
-    destruct (g idpath), (h idpath); reflexivity.
-  Defined.
+Lemma whiskerR_RV (A : Type) (x y z: A) (p : y = z) (q q' : x = y) 
+      (r : q = q')
+  : whiskerR r^ p = (whiskerR r p)^.
+Proof.
+  destruct r, q, p; reflexivity.
+Defined.
 
-  Lemma concat_ap_FpFq_p_pp (A B:Type) (a b:A)
-        (c d e f:B)
-        (g: a = b -> e = f) (h: a = b -> c = d)
-        (v:d = e)
-        (u1 u2:a=b) (p:u1 = u2)
-    : ap (fun u:a=b => h u @ (v @ g u)) p = 
-      (whiskerR (ap h p) (v @ g u1) @ (concat_p_pp _ _ _)) @ (whiskerL (h u2 @ v) (ap g p) @ (concat_pp_p _ _ _)).
-  Proof.
-    destruct p, u1, v; cbn.
-    destruct (g idpath), (h idpath); reflexivity.
-  Defined.
+Lemma concat_ap_FpFq_pp_p (A B:Type) (a b:A)
+      (c d e f:B)
+      (g: a = b -> e = f) (h: a = b -> c = d)
+      (v:d = e)
+      (u1 u2:a=b) (p:u1 = u2)
+  : ap (fun u:a=b => (h u @ v) @ g u) p
+    = ((concat_pp_p _ _ _) @ (whiskerR (ap h p) (v @ g u1) @ (concat_p_pp _ _ _))) @
+                                                                                   whiskerL (h u2 @ v) (ap g p).
+Proof.
+  destruct p, u1, v; cbn.
+  destruct (g idpath), (h idpath); reflexivity.
+Defined.
 
-  Lemma concat_ap_FFpq_p_pp (A B:Type) (a b:A)
-        (c d e f:B)
-        (g: a = b -> d = f) (h: a = b -> c = d)
-        (v:f = e)
-        (u1 u2:a=b) (p:u1 = u2)
-    : ap (fun u:a=b => h u @ (g u @ v)) p = (concat_p_pp _ _ _) @ (whiskerR (ap h p @@ ap g p) v @ (concat_pp_p _ _ _)).
-  Proof.
-    destruct p, u1, v; cbn.
-    destruct (g idpath), (h idpath); reflexivity.
-  Defined.
+Lemma concat_ap_FpFq_p_pp (A B:Type) (a b:A)
+      (c d e f:B)
+      (g: a = b -> e = f) (h: a = b -> c = d)
+      (v:d = e)
+      (u1 u2:a=b) (p:u1 = u2)
+  : ap (fun u:a=b => h u @ (v @ g u)) p = 
+    (whiskerR (ap h p) (v @ g u1) @ (concat_p_pp _ _ _)) @ (whiskerL (h u2 @ v) (ap g p) @ (concat_pp_p _ _ _)).
+Proof.
+  destruct p, u1, v; cbn.
+  destruct (g idpath), (h idpath); reflexivity.
+Defined.
 
-  Lemma concat2_inv (A : Type) (x y z : A) (p p' : x = y) (q q' : y = z)
-        (r:p=p') (s:q=q')
-    : (r @@ s)^ = (r^ @@ s^).
-  Proof.
-    destruct r, s. reflexivity.
-  Defined.
-  
-  Lemma concat2_p_pp (A : Type) (w x y z : A) (p p' : w = x) (q q' : x = y) (r r' : y = z)
-        (s:p=p') (s':q=q') (s'':r=r')
-    : s @@ (s' @@ s'') = (concat_p_pp _ _ _) @ (((s @@ s') @@ s'') @ (concat_pp_p _ _ _)).
-  Proof.
-    destruct s, s', s'', p, q, r; reflexivity.
-  Defined.
+Lemma concat_ap_FFpq_p_pp (A B:Type) (a b:A)
+      (c d e f:B)
+      (g: a = b -> d = f) (h: a = b -> c = d)
+      (v:f = e)
+      (u1 u2:a=b) (p:u1 = u2)
+  : ap (fun u:a=b => h u @ (g u @ v)) p = (concat_p_pp _ _ _) @ (whiskerR (ap h p @@ ap g p) v @ (concat_pp_p _ _ _)).
+Proof.
+  destruct p, u1, v; cbn.
+  destruct (g idpath), (h idpath); reflexivity.
+Defined.
+
+Lemma concat2_inv (A : Type) (x y z : A) (p p' : x = y) (q q' : y = z)
+      (r:p=p') (s:q=q')
+  : (r @@ s)^ = (r^ @@ s^).
+Proof.
+  destruct r, s. reflexivity.
+Defined.
+
+Lemma concat2_p_pp (A : Type) (w x y z : A) (p p' : w = x) (q q' : x = y) (r r' : y = z)
+      (s:p=p') (s':q=q') (s'':r=r')
+  : s @@ (s' @@ s'') = (concat_p_pp _ _ _) @ (((s @@ s') @@ s'') @ (concat_pp_p _ _ _)).
+Proof.
+  destruct s, s', s'', p, q, r; reflexivity.
+Defined.
+
+Lemma ap02_is_ap (A B : Type) (f : A -> B) (x y : A) (p q : x = y) (r:p=q)
+  : ap02 f r = ap (ap f) r.
+Proof.
+  destruct r; reflexivity.
+Defined.
+
+Lemma ap02_compose (A B C : Type) (f : A -> B) (g : B -> C) (x y : A) (p p': x = y) (q:p=p')
+  : ap02 (g o f) q = ap_compose f g p @ (ap02 g (ap02 f q) @ (ap_compose f g p')^).
+Proof.
+  destruct q, p; reflexivity.
+Defined.
+
+Lemma ap02_V (A B : Type) (f : A -> B) (x y : A) (p q : x = y) (r:p=q)
+  : ap02 f r^ = (ap02 f r)^.
+Proof.
+  destruct r; reflexivity.
+Defined.

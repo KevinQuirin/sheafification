@@ -2,6 +2,7 @@
 
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
+Require Import PathGroupoid_.
 
 Set Universe Polymorphism.
 Global Set Primitive Projections. 
@@ -23,7 +24,7 @@ Module Export T.
   Definition T_ind {A B:Type} {f:A -> B} (P : T f -> Type)
              (t' : forall a, P (t a))
              (tp' : forall a b p, transport P (tp a b p) (t' a) = t' b)
-             (tp_1' : forall a, (transport2 P (tp_1 a) (t' a))^ @ tp' a a 1 = 1)
+             (tp_1' : forall a, transport2 P (tp_1 a) (t' a) = tp' a a 1)
     : forall w, P w
     := fun w => match w with
                 |t a => fun _ => t' a
@@ -32,9 +33,16 @@ Module Export T.
   Axiom T_ind_beta_tp : forall {A B:Type} {f:A -> B} (P : T f -> Type)
              (t' : forall a, P (t a))
              (tp' : forall a b p, transport P (tp a b p) (t' a) = t' b)
-             (tp_1' : forall a, (transport2 P (tp_1 a) (t' a))^ @ tp' a a 1 = 1)
+             (tp_1' : forall a, transport2 P (tp_1 a) (t' a) = tp' a a 1)
              a b p,
-     apD (T_ind P t' tp' tp_1') (tp a b p) = tp' a b p.
+      apD (T_ind P t' tp' tp_1') (tp a b p) = tp' a b p.
+
+  Axiom T_ind_beta_tp_1 : forall {A B:Type} {f:A -> B} (P : T f -> Type)
+             (t' : forall a, P (t a))
+             (tp' : forall a b p, transport P (tp a b p) (t' a) = t' b)
+             (tp_1' : forall a, transport2 P (tp_1 a) (t' a) = tp' a a 1)
+             a,
+      apD02 (T_ind P t' tp' tp_1') (tp_1 a) @ (concat_p1 _) @ (tp_1' a) = T_ind_beta_tp P t' tp' tp_1' a a 1.
         
 End T.
 
@@ -46,7 +54,9 @@ Definition T_rec {A B:Type} {f:A -> B} (P:Type)
 Proof.
   refine (T_ind _ t' (fun a b p => transport_const _ _ @ tp' a b p)  _).
   intro a.
-  exact ((concat_p_pp ((transport2 (λ _ : T f, P) (tp_1 a) (t' a))^)  (transport_const (tp a a 1) (t' a)) (tp' a a 1))                                                                                                 @ whiskerR (moveR_Vp _ _ _ (transport2_const (A:=T f) (B:= P) (tp_1 a) (t' a))) (tp' a a 1)                                                                                                         @ concat_1p _                                                                                     @ (tp_1' a)).
+  pose (p:=whiskerR (transport2_const (A:=T f) (B:= P) (tp_1 a) (t' a) @ concat_p1 _)^ (tp' a a 1)). cbn in p.
+  pose (p1:=(whiskerL (transport2 (λ _ : T f, P) (tp_1 a) (t' a)) (tp_1' a) @ concat_p1 _)^).
+  exact (p1 @ p).
 Defined.
 
 Definition T_rec_beta_tp {A B:Type} {f:A -> B} (P:Type)
@@ -55,6 +65,15 @@ Definition T_rec_beta_tp {A B:Type} {f:A -> B} (P:Type)
            (tp_1' : forall a, tp' a a 1 = 1)
            a b p
   : ap (T_rec P t' tp' tp_1') (tp a b p) = tp' a b p.
+Proof.
+Admitted.
+
+Definition T_rec_beta_tp_1 {A B:Type} {f:A -> B} (P:Type)
+           (t': A -> P)
+           (tp' : forall (a b:A) (p:f a = f b), t' a = t' b)
+           (tp_1' : forall a, tp' a a 1 = 1)
+           a
+  : ap02 (T_rec P t' tp' tp_1') (tp_1 a) = T_rec_beta_tp P t' tp' tp_1' a a 1 @ (tp_1' a).
 Proof.
 Admitted.
 
@@ -68,3 +87,178 @@ Lemma path_T {A A' B:Type} (f: A -> A')
 Proof.
   (* We refer to the general case in R.v *)
 Admitted.
+
+
+Lemma T_trunc `{fs: Funext} (m:trunc_index) (A:Type) (B:TruncType m) (f:A -> B)
+    : Trunc m (T f) <~> Trunc m (T (Trunc_rec (n:=m) f)).
+  Proof.
+    refine (equiv_adjointify _ _ _ _).
+    - refine (Trunc_rec _).
+      refine (T_rec _ _ _ _).
+      intro a. exact (tr (t (tr a))).
+      intros a b p; cbn. apply ap. apply tp. exact p.
+      intros a; cbn.
+      match goal with |[|- ap ?ff ?pp =_] => path_via (ap (x:=t (tr a)) ff 1) end.
+      apply ap.
+      apply (tp_1 (f:=Trunc_rec (n:=m) f) (tr a)).
+    - refine (Trunc_rec _).
+      refine (T_rec _ _ _ _).
+      refine (Trunc_rec _).
+      intro a; exact (tr (t a)).
+      refine (Trunc_ind _ _). intro a. 
+      refine (Trunc_ind _ _). intros b p.
+      cbn in *.
+      apply ap. apply tp. exact p.
+      refine (Trunc_ind _ _).
+      intro a. cbn.
+      match goal with |[|- ap ?ff ?pp =_] => path_via (ap (x:=t a) ff 1) end.
+      apply ap. apply tp_1.
+    - refine (Trunc_ind _ _).
+      refine (path_T _ _ _ _ _ _).
+      refine (Trunc_ind _ _). intro a; reflexivity.
+      refine (Trunc_ind _ _). intro a.
+      refine (Trunc_ind _ _). intros b p.
+      cbn in *.
+      refine (concat_1p _ @ _). refine (_ @ (concat_p1 _)^).
+      match goal with
+      |[|- _ = ap (λ x, Trunc_rec ?ff (?gg x)) ?pp]
+       => refine (_ @ (ap_compose gg (Trunc_rec ff) pp)^)
+      end.
+      match goal with
+      |[|- _ = ap ?ff (ap (T_rec ?X1 ?X2 ?X3 ?X4) (tp ?aa ?bb ?pp)) ]
+       => refine (_ @ (ap02 ff (T_rec_beta_tp X1 X2 X3 X4 aa bb pp)^))
+      end. cbn.
+      match goal with
+      |[|- _ = ap ?ff (ap ?gg ?pp)]
+       => refine (_ @ (ap_compose gg ff pp))
+      end. cbn.
+      match goal with
+      |[|- _ = (ap (λ x, T_rec ?X1 ?X2 ?X3 ?X4 x) (tp ?aa ?bb ?pp)) ]
+       => refine ((T_rec_beta_tp X1 X2 X3 X4 aa bb pp)^)
+      end.
+
+      refine (Trunc_ind _ _). cbn.
+      intro a. rewrite transport_paths_FlFr.
+      repeat rewrite ap_V. repeat rewrite inv_V.
+      match goal with
+      |[|- _ = (?pp @ 1) @ _]
+       => rewrite (concat_p1 pp)
+      end.
+      repeat rewrite concat_p_pp. apply moveL_Mp.
+      match goal with
+      |[|- ?XX = _] => path_via (XX^^); apply ap
+      end.
+      match goal with
+      |[|- _ = ap (λ x, ap ?ff x @ 1) ?pp] => 
+       assert (rr: ap (λ x, ap ff x @ 1) pp = concat_p1 _ @ ap02 ff pp @ (concat_1p _)^)
+      end.
+      { rewrite concat_ap_Fpq.
+        apply moveL_pV.
+        apply moveL_Mp.
+        rewrite concat_p_pp.
+        match goal with
+        |[|- (_ @ whiskerR ?hh _) @ _ = _]
+         => pose (rew := whiskerR_p1 hh)
+        end.
+        cbn in *. rewrite rew; clear rew.
+        rewrite ap02_is_ap. reflexivity. }
+      rewrite rr; clear rr.
+      repeat rewrite inv_pp.
+      repeat rewrite concat_pp_p.
+      repeat rewrite inv_V.
+      apply whiskerL. cbn. rewrite concat_p1.
+      rewrite ap02_V. rewrite inv_V.
+      match goal with
+      |[|- _ = ap02 (λ x, Trunc_rec ?ff (?gg x)) ?pp]
+       => rewrite (ap02_compose _ _ _ gg (Trunc_rec ff) _ _ _ _ pp)
+      end.
+      apply whiskerL.
+      rewrite T_rec_beta_tp_1. cbn. rewrite concat_p1.
+      rewrite ap02_pp. apply whiskerL.
+      rewrite ap02_pp. cbn. rewrite concat_p1.        
+      rewrite <- ap02_is_ap. apply moveR_Vp.
+      match goal with
+      |[|- _ = _ @ (ap02 ?ff (ap02 ?gg ?pp))] =>
+       pose (rew := ap02_compose _ _ _ gg ff _ _ _ _ pp)
+      end.
+      cbn in rew. rewrite concat_p1 in rew. rewrite <- rew; clear rew.
+      rewrite T_rec_beta_tp_1.
+      apply whiskerL. 
+      rewrite concat_ap_pFq. apply moveL_pM.
+      match goal with
+      |[|- (_ @ whiskerL _ ?hh) @ _ = _] => exact (whiskerL_1p hh)
+      end.
+    - refine (Trunc_ind _ _).
+      refine (path_T _ _ _ _ _ _).
+      intro a; reflexivity.
+      intros a b p; cbn.
+      refine (concat_1p _ @ _). refine (_ @ (concat_p1 _)^).
+      match goal with
+      |[|- _ = ap (λ x, Trunc_rec ?ff (?gg x)) ?pp]
+       => refine (_ @ (ap_compose gg (Trunc_rec ff) pp)^)
+      end.
+      match goal with
+      |[|- _ = ap ?ff (ap (T_rec ?X1 ?X2 ?X3 ?X4) (tp ?aa ?bb ?pp)) ]
+       => refine (_ @ (ap02 ff (T_rec_beta_tp X1 X2 X3 X4 aa bb pp)^))
+      end. cbn.
+      match goal with
+      |[|- _ = ap ?ff (ap ?gg ?pp)]
+       => refine (_ @ (ap_compose gg ff pp))
+      end. cbn.
+      match goal with
+      |[|- _ = (ap (λ x, T_rec ?X1 ?X2 ?X3 ?X4 x) (tp ?aa ?bb ?pp)) ]
+       => refine ((T_rec_beta_tp X1 X2 X3 X4 aa bb pp)^)
+      end.
+
+      intro a. rewrite transport_paths_FlFr.
+      repeat rewrite ap_V. repeat rewrite inv_V.
+      cbn.
+      match goal with
+      |[|- _ = (?pp @ 1) @ _]
+       => rewrite (concat_p1 pp)
+      end.
+      repeat rewrite concat_p_pp. apply moveL_Mp.
+      match goal with
+      |[|- ?XX = _] => path_via (XX^^); apply ap
+      end.
+      match goal with
+      |[|- _ = ap (λ x, ap ?ff x @ 1) ?pp] => 
+       assert (rr: ap (λ x, ap ff x @ 1) pp = concat_p1 _ @ ap02 ff pp @ (concat_1p _)^)
+      end.
+      { rewrite concat_ap_Fpq.
+        apply moveL_pV.
+        apply moveL_Mp.
+        rewrite concat_p_pp.
+        match goal with
+        |[|- (_ @ whiskerR ?hh _) @ _ = _]
+         => pose (rew := whiskerR_p1 hh)
+        end.
+        cbn in *. rewrite rew; clear rew.
+        rewrite ap02_is_ap. reflexivity. }
+      rewrite rr; clear rr.
+      repeat rewrite inv_pp.
+      repeat rewrite concat_pp_p.
+      repeat rewrite inv_V.
+      apply whiskerL. cbn. rewrite concat_p1.
+      rewrite ap02_V. rewrite inv_V.
+      match goal with
+      |[|- _ = ap02 (λ x, Trunc_rec ?ff (?gg x)) ?pp]
+       => rewrite (ap02_compose _ _ _ gg (Trunc_rec ff) _ _ _ _ pp)
+      end.
+      apply whiskerL.
+      rewrite T_rec_beta_tp_1. cbn. rewrite concat_p1.
+      rewrite ap02_pp. apply whiskerL.
+      rewrite ap02_pp. cbn. rewrite concat_p1.        
+      rewrite <- ap02_is_ap. apply moveR_Vp.
+      match goal with
+      |[|- _ = _ @ (ap02 ?ff (ap02 ?gg ?pp))] =>
+       pose (rew := ap02_compose _ _ _ gg ff _ _ _ _ pp)
+      end.
+      cbn in rew. rewrite concat_p1 in rew. rewrite <- rew; clear rew.
+      rewrite (T_rec_beta_tp_1 (f:= Trunc_rec f)).
+      apply whiskerL. 
+      rewrite concat_ap_pFq. apply moveL_pM.
+      match goal with
+      |[|- (_ @ whiskerL _ ?hh) @ _ = _] => exact (whiskerL_1p hh)
+      end.
+  Defined.

@@ -1,12 +1,14 @@
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
-Require Import Forall_ Equivalences_ epi_mono reflective_subuniverse modalities.
+Require Import PathGroupoid_ Forall_ Equivalences_ epi_mono reflective_subuniverse modalities.
 Require Import nat_lemmas.
 (* Require Import colimit. *)
 (* Require Import VD_truncation gpd. *)
 Require Import sheaf_base_case.
 Require Import sheaf_def_and_thm.
 Require Import OPaths T T_telescope Tf_Omono_sep OT.
+Require Import Limit.
+
 
 Set Universe Polymorphism.
 Global Set Primitive Projections. 
@@ -67,13 +69,13 @@ Section Sheafification.
   - intro e. 
     apply (@apf_Mono _ _ _ fMono). 
     unfold equiv_inv.
-    pose (E_to_χ_map_ap T0 U χ g f 
+    pose (E_to_χ_map_ap T U χ g f 
                         (@equiv_inv _ _ _ (fMono _ g h) (@equiv_inv _ _ _ H (ap (fun u => f o u) e)))).
     apply (transport (fun X => X = _) (inverse p)). clear p.
     eapply concat; try exact (@eisretr _ _ _ H (ap (fun u => f o u) e)). 
     apply ap. apply (@eisretr _ _ _ (fMono _ _ _)).
   - intro e. 
-    pose (E_to_χ_map_ap T0 U χ g f e).
+    pose (E_to_χ_map_ap T U χ g f e).
     rewrite p. rewrite ((@eissect _ _ _ H (ap (fun u => f o u) e))).
     apply eissect.
   Defined.
@@ -128,75 +130,155 @@ Section Sheafification.
 
   Definition separated_unit (T:TruncType (n.+1)) :  T -> separated_Type T := toIm _.
 
-  Require Import Limit.
-
-  Lemma transport2_is_ap :
-    ∀ (A : Type) (Q : A → Type) (x y : A) (p q : x = y) 
-      (r : p = q) (z : Q x), transport2 Q r z = ap (λ U, transport Q U z) r.
+  
+  Lemma OT_to_sep (E S:TruncType (n.+1)) (sepS: separated S) (f:E -> S)
+        (oT := Trunc (n.+1) (OTid E)) 
+  : oT -> S.
   Proof.
-    intros A Q x y p q r0 z.
-    destruct r0. reflexivity.
+    refine (Trunc_rec _).
+    refine (OTid_rec _ _ _ _ _).
+    exact f.
+    intros a b. refine (O_rec n nj _ (Build_subuniverse_Type n nj _ (separated_nj_paths S sepS (f a) (f b))) _).
+    exact (ap f).
+    intro a; cbn.
+    exact (ap10 (O_rec_retr n nj
+                            {|
+                              trunctype_type := a = a;
+                              istrunc_trunctype_type := istrunc_paths a a |}
+                            {|
+                              st := {|
+                                     trunctype_type := f a = f a;
+                                     istrunc_trunctype_type := istrunc_paths (f a) (f a) |};
+                              subu_struct := separated_nj_paths S sepS (f a) (f a) |} 
+                            (ap f)) 1).
   Defined.
 
-  Theorem separation_colimit_OTtelescope_cocone (U V:TruncType (n.+1)) (sepV:separated V)
+  Lemma OT_to_sep_eq (E S:TruncType (n.+1)) (sepS: separated S) (f g:E -> S)
+        (oT := Trunc (n.+1) (OTid E)) (g1: oT -> S)
+        (c: g1 o (tr o (@Ot E)) = g)
+        (f1 := OT_to_sep E S sepS f)
+        (eq: f = g)
+    : f1 = g1.
+  Proof.
+    unfold f1, OT_to_sep. clear f1.
+    apply path_forall.
+    refine (Trunc_ind _ _); cbn.
+    refine (path_OT _ _ _ _ _ _ _); cbn.
+    
+    intro x.
+    path_via (g x). exact (ap10 eq x).    
+    exact (ap10 c^ x).
+    
+    intros a b; cbn.
+    match  goal with
+    |[|- forall p:?XX, ?P1 @ ap ?f1 (?P2 p) = ap ?f2 (?P3 p) @ ?P4] => 
+     pose (shf:= λ p:XX, Build_subuniverse_Type n nj _ (subuniverse_paths n nj
+                                                                    (Build_subuniverse_Type n nj _ (separated_nj_paths S sepS (f a) (g1 (tr (Ot b)))))
+                                                                    (P1 @ ap f1 (P2 p)) (ap f2 (P3 p) @ P4)))
+    end.
+
+    refine (O_rec_dep _ shf _).1.
+    unfold shf; clear shf; cbn.
+    intro p. destruct p.
+    refine (_ @ ((OT_rec_beta_Otp E S f _ _ a a °1)^ @@ 1)).
+
+    match goal with
+    |[|- _ = O_rec n nj ?PP ?QQ ?ff _ @ _] =>
+     refine (_ @ ((ap10 (O_rec_retr n nj PP QQ ff) 1)^ @@ 1))
+    end.
+    cbn.
+    match goal with |[|- _ = 1 @ ?xx] => path_via (xx @ 1) end.
+    apply whiskerL.
+    
+    match goal with |[|- ap ?ff _ = _] => path_via (ap (x:= Ot a) ff 1) end.
+    apply ap.
+    apply Otp_1.
+
+    refine (concat_p1 _ @ _). symmetry; apply concat_1p.
+    
+    Opaque O_rec_dep.
+    abstract (
+        intro a; cbn;
+        match goal with |[|- (pr1 ?ff) °1 = _ ]
+                         => pose (pp := pr2 ff 1)
+        end;
+        cbn in pp; rewrite pp; clear pp;
+        rewrite transport_paths_FlFr; cbn;
+        rewrite (concat_p1 (ap (ap (λ x : OTid E, g1 (tr x))) (Otp_1 a)));
+        rewrite ap_V; rewrite inv_V;
+        rewrite concat_ap_pFq;
+        match goal with
+        |[|- (?P1 @ ?P2) @ ?P3 = ?P4 @ _ ] 
+         => rewrite (concat_pp_p (p:=P1))
+        end;
+        apply whiskerL; rewrite concat_concat2;
+        cbn;
+        rewrite concat_ap_Fpq; unfold whiskerR;
+        rewrite ap_V;
+
+        match goal with
+        |[|- ?P1 @@ 1 = ?P2 @@ 1] => assert (rr: P1 = P2)
+        end;
+        [idtac | destruct rr; reflexivity];
+        rewrite <- inv_pp;
+        apply ap;
+        match goal with
+        |[|- _ = ap (ap ?ff) ?rr] => 
+         rewrite <- (ap02_is_ap _ _ ff _ _ _ _ rr)
+        end;
+        rewrite OT_rec_beta_Otp_1;
+        reflexivity ).
+  Defined.
+
+  Lemma ap10_OT_to_sep_eq (E S:TruncType (n.+1)) (sepS: separated S) (f g:E -> S)
+        (oT := Trunc (n.+1) (OTid E)) (g1: oT -> S)
+        (c: g1 o (tr o (@Ot E)) = g)
+        (f1 := OT_to_sep E S sepS f)
+        (eq: f = g) x
+    : ap10 (OT_to_sep_eq E S sepS f g g1 c eq) (tr (Ot x)) = ap10 eq x @ ap10 c^ x.
+  Proof.
+    unfold ap10 at 1. unfold OT_to_sep_eq at 1.
+    unfold path_forall. rewrite eisretr. cbn.
+    rewrite path_OT_compute. reflexivity.
+  Defined.
+  
+  Lemma OT_to_sep_coh (E S:TruncType (n.+1)) (sepS: separated S) (f g:E -> S)
+        (oT := Trunc (n.+1) (OTid E)) (g1: oT -> S)
+        (c: g1 o (tr o (@Ot E)) = g)
+        (f1 := OT_to_sep E S sepS f)
+        (eq: f = g)
+    : ap (λ u, u o (tr o (@Ot E))) (OT_to_sep_eq E S sepS f g g1 c eq) @ c @ eq^ = 1.
+  Proof.
+    apply (@equiv_inj _ _ _ (isequiv_apD10 _ _ _ _)).
+    apply path_forall; intro x. simpl.
+    pose (p:=@ap10_ap_precompose). unfold ap10 in p.
+    cbn in p.
+    do 2 rewrite apD10_pp.
+    rewrite (p _ _ _ (λ x0, (tr (Ot x0))) _ _ (OT_to_sep_eq E S sepS f g g1 c eq) x).
+    unfold OT_to_sep_eq. unfold path_forall; rewrite eisretr.
+    simpl. rewrite path_OT_compute.
+    unfold ap10.
+    do 2 rewrite apD10_V.
+    apply moveR_pV.
+    rewrite concat_pV_p.
+    rewrite concat_1p. reflexivity.
+  Defined.
+
+  Definition separation_colimit_OTtelescope_cocone (U V:TruncType (n.+1)) (sepV:separated V)
           (f:U -> V)
     : cocone (OTtelescope U) V.
   Proof.
     transparent assert (F : (forall i, (OTtelescope U) i → V)).
     { intro i; cbn. induction i.
       exact f.
-      refine (Trunc_rec _).
-      refine (OTid_rec _ _ _ _ _).
-      exact IHi.
-      intros a b. cbn.
-      refine (O_rec n nj (BuildTruncType _ (a=b))
-                    (Build_subuniverse_Type n nj _
-                                            (separated_nj_paths (BuildTruncType (n.+1) V)
-                                                                sepV
-                                                                (IHi a) (IHi b))) _).
-      exact (ap IHi).
-      
-      intro a; cbn.
-      match goal with
-      |[|- O_rec n nj ?P ?Q ?f ?x = _]
-       => exact (ap10 (O_rec_retr n nj P Q f) 1)
-      end. }
+      apply OT_to_sep. exact sepV. exact IHi. }
     refine (Build_cocone _ _).    
     - exact F.
     - intros i j q; destruct q.
       induction i.
       + intro x; reflexivity.
-      + refine (Trunc_ind _ _).
-        refine (OTid_ind _ _ _ _ _).
-        
-        intro a; reflexivity.
-        
-        intros a b p. simpl.
-        match goal with
-        |[|- transport _ ?pp ?qq = _] =>
-         refine (transport_paths_FlFr pp qq @ _)
-        end.
-        match goal with |[|- (?PP^ @ 1) @ ?QQ = _] => set (P := PP)
-        end.
-        exact ((whiskerR (concat_p1 P^) P) @ concat_Vp P).
-        
-        intro a; simpl.
-        apply moveR_Vp. rewrite concat_p1.
-        match goal with
-        |[|- _ @ (whiskerR (concat_p1 (ap ?ff _)^) ?PP2 @ concat_Vp ?PP3) = _]
-         => set (P1 := ff)
-        end.
-        pose (p:= apD (λ U, transport_paths_FlFr U 1
-                               @ (whiskerR (concat_p1 (ap P1 U)^) (ap P1 U)
-                               @ concat_Vp (ap P1 U))) (Otp_1 a)^).
-        cbn in p.
-        rewrite <- p; clear p.
-        rewrite transport_paths_Fl.
-        rewrite ap_V. rewrite inv_V. rewrite concat_p1.
-        match goal with
-        |[|- _ = transport2 ?P ?Q ?R]
-         => apply (transport2_is_ap _ P _ _ _ _ Q R)^
-        end.
+      + intro x; cbn.
+        reflexivity.
   Defined.
 
   Theorem isequiv_separation_colimit_OTtelescope_cocone (U V:TruncType (n.+1)) (sepV:separated V)
@@ -205,60 +287,38 @@ Section Sheafification.
     refine (isequiv_adjointify _ _ _).
     - intro C. exact (C 0).
     - intro C.
+      (* Opaque OT_to_sep. Opaque OT_to_sep_eq. *)
+      (* Opaque separation_colimit_OTtelescope_cocone. *)
       refine (path_cocone _ _).
-      + intro i. induction i.
-        * intro x; reflexivity.
-        * induction i. cbn.
-          refine (Trunc_ind _ _); cbn.
-          refine (path_OT _ _ _ _ _ _ _).
-          { intro a. exact (IHi a @ (qq C 0 (0.+1) 1 a)^). }
-          { intros a b p; cbn.
-            rewrite OT_rec_beta_Otp.
-
-
-
-          
-        * refine (Trunc_ind _ _).
-          refine (path_OT _ _ _ _ _ _ _).
-          { intro a. exact (IHi a @ (qq C i (i.+1) 1 a)^). }
-          { intros a b p; cbn.
-            rewrite OT_rec_beta_Otp. simpl.
-          
-          Refine (OTid_ind _ _ _ _ _); cbn.
-          { intro a; exact (IHi a @ (qq C i (i.+1) 1 a)^). }
-          { intros a b p; cbn.
-            match goal with
-            |[|- transport _ ?pp ?qq = _]
-             => refine (transport_paths_FlFr pp qq @ _)
-            end.
-            
-          
-        * induction i.
-          cbn.
-          refine (Trunc_ind _ _).
-          refine (OTid_ind _ _ _ _ _); cbn.
-          intro a.
-          exact (qq C 0 (0.+1) 1 a)^.
-          intros a b p. cbn.
-          rewrite transport_paths_FlFr. cbn.
-          rewrite OT_rec_beta_Otp.
-          assert {q:a=b & O_unit nj _ q = p} by admit.
-          destruct X as [q pq]. destruct pq. cbn.
-          rewrite (λ P Q f, ap10 (O_rec_retr n nj P Q f)).
-          destruct q. cbn. rewrite concat_1p.
-          pose @Otp_1; unfold Oidpath in p. rewrite p. cbn.
-          apply concat_p1.
-          rewrite_moveR_Vp_p.
-        * refine (Trunc_ind _ _).
-          refine (OTid_ind _ _ _ _ _).
-          { intro x; cbn.
-            etransitivity; try exact (IHi x).
-            symmetry; apply (qq C i (i.+1) 1). }
-          { intros a b p. cbn. admit. }
-          { admit. }
-      + intros i j q. admit.
-    - intro f. reflexivity.
-  Admitted.
+      + intro i. apply ap10.
+        induction i.
+        reflexivity.
+        cbn.
+        match goal with
+        |[|- OT_to_sep ?X1 ?X2 ?X3 ?X4 = _]
+         => apply (OT_to_sep_eq X1 X2 X3 X4 (C i) (C (i.+1)))
+        end.
+        exact (path_forall (qq C i (i.+1) 1)).
+        exact IHi.
+      + intros i j g x. destruct g; simpl.
+        induction i.
+        
+        cbn.
+        unfold OT_to_sep_eq; cbn.
+        unfold ap10 at 1, path_forall at 1. rewrite eisretr. cbn.
+        rewrite path_OT_compute. unfold ap10, path_forall.
+        rewrite apD10_V. rewrite eisretr. rewrite concat_1p.
+        symmetry; apply concat_Vp.
+        
+        cbn. rewrite concat_1p.
+        rewrite ap10_OT_to_sep_eq.
+        rewrite concat_pp_p.
+        match goal with |[|- ?XX = _ ] => path_via (XX @ 1) end.
+        apply whiskerL.
+        unfold ap10, path_forall. rewrite apD10_V. rewrite (eisretr apD10).
+        symmetry; apply concat_Vp.
+    - intro f; reflexivity.
+  Defined.
         
   Theorem separation_colimit_OTtelescope (U:TruncType (n.+1))
     : is_m_universal (n.+1)
@@ -277,14 +337,8 @@ Section Sheafification.
     pose (G := separation_colimit_OTtelescope P Q).
     match goal with |[G:IsEquiv ?ff |- _] => pose (F := ff) end.
     refine (isequiv_compose' F _ (λ C, C 0) _).
-    - pose (isequiv_inverse _ (feq := isequiv_separation_colimit_OTtelescope_cocone P Q sepQ)).
-  Admitted.
-    
-
-      
-  Admitted.
-
-
+    - exact (isequiv_inverse _ (feq := isequiv_separation_colimit_OTtelescope_cocone P Q sepQ)).
+  Defined.
   
   Definition mu_modal_paths_func_univ_func
              (T : TruncType (trunc_S n))
@@ -467,14 +521,14 @@ Section Sheafification.
     simpl.
     unfold separated_unit, toIm in p. simpl in p.
 
-    apply (@equiv_inj _ _ (equiv_inv (f:=(path_sigma_hprop (separated_unit T a) (separated_unit T b))))).
+    apply (@equiv_inj _ _ (equiv_inv ((path_sigma_hprop (separated_unit T a) (separated_unit T b))))).
     apply isequiv_inverse.
     rewrite eissect.
     apply (@equiv_inj _ _ _ (isequiv_apD10 _ _ _ _));
       unfold path_forall; rewrite eisretr.
     apply path_forall; intro t.
 
-    apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_unique_subuniverse _ _ _ _)));
+    apply (@equiv_inj _ _ (equiv_inv _ (IsEquiv := isequiv_unique_subuniverse _ _ _ _)));
       [apply isequiv_inverse | rewrite eissect].
       
     apply (@equiv_inj _ _ _ (isequiv_ap_trunctype _ _)).
@@ -576,13 +630,13 @@ Section Sheafification.
     intros [a [b p]]; cbn.
     specialize (sepQ (∃ e : T ∧ T,
          (O nj (BTT (fst e=snd e)))) (dense_into_cloture _ (δ T)) (λ u, f (fst u.1)) (λ u, f (snd u.1))). unfold IsMono in sepQ.
-    refine (ap10 (equiv_inv (IsEquiv := sepQ) (path_forall _ _ (λ x, ap f x.2.1))) ((a,b);_)).
+    refine (ap10 (equiv_inv _ (IsEquiv := sepQ) (path_forall (λ x, ap f x.2.1))) ((a,b);_)).
     apply separated_unit_paths_are_nj_paths_fun. exact p.
   Defined.
 
 
   (* Proposition 30 *)
-  Definition separated_equiv : forall (P : TruncType (trunc_S n)) (Q :{T : TruncType (trunc_S n) & separated T}),
+  Definition separated_equiv_ : forall (P : TruncType (trunc_S n)) (Q :{T : TruncType (trunc_S n) & separated T}),
                                  IsEquiv (fun f : separated_Type P -> Q.1 =>
                                             f o (separated_unit P)).
   Admitted.
@@ -618,12 +672,12 @@ Section Sheafification.
     destruct A as [A sepA]. simpl in sepA.
     unfold separated.
     intros E χ f g. simpl in *.
-    refine (isequiv_adjointify _ _ _ _).
+    refine (isequiv_adjointify _ _ _).
     - unfold E_to_χ_map; simpl. intros H. simpl in H.
       apply path_forall; intro x.
       refine (path_sigma _ _ _ _ _).
       apply (ap10 (f := (pr1 o f)) (g := (pr1 o g))).
-      apply (equiv_inv (IsEquiv := sepA E χ (pr1 o f) (pr1 o g))).
+      apply (equiv_inv _ (IsEquiv := sepA E χ (pr1 o f) (pr1 o g))).
       apply path_forall; intro y. exact (ap10 H y)..1.
       simpl.
       pose (p := @subu_struct _ _ (B (g x).1)).
@@ -640,15 +694,13 @@ Section Sheafification.
             (λ x0 : E, let (proj1_sig, _) := g x0 in proj1_sig) in
           equiv_inv)
            (path_forall
-              (E_to_χ_map A χ
-                 (λ x0 : E, let (proj1_sig, _) := f x0 in proj1_sig))
-              (E_to_χ_map A χ
-                 (λ x0 : E, let (proj1_sig, _) := g x0 in proj1_sig))
+              
+              
               (λ y : ∃ x0 : E, χ x0, (ap10 H y) ..1))) z.1) 
      (f z.1).2))).
       specialize (p (λ z, transport (λ u, B (g u).1) z.2 (g z.1).2)).
 
-      pose (X := λ X, (ap10 (equiv_inv (IsEquiv := p) X) (x;1)));
+      pose (X := λ X, (ap10 (equiv_inv _ (IsEquiv := p) X) (x;1)));
         simpl in X; apply X; clear X.
       unfold E_to_χ_map; simpl.
       apply path_forall; intros [[a b] c]; simpl in *.
@@ -660,13 +712,11 @@ Section Sheafification.
       pose (p0 := ap10_ap_precompose (pr1 : {e:E & (χ e)} -> E) ((let (equiv_inv, eisretr, eissect, _) :=
            sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1) in
        equiv_inv)
-        (path_forall (λ x0 : ∃ b : E, (χ b), (f x0.1).1)
-           (λ x0 : ∃ b : E, (χ b), (g x0.1).1)
+        (path_forall 
            (λ y : ∃ b : E, (χ b), ap pr1 (ap10 H y)))) (a;c)). simpl in p0.
       apply (transport (λ u, u = _) p0); clear p0.
 
-      pose (eisretr _ (IsEquiv := sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1)) (path_forall (λ x0 : ∃ b : E, (χ b), (f x0.1).1)
-           (λ x0 : ∃ b : E, (χ b), (g x0.1).1)
+      pose (eisretr _ (IsEquiv := sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1)) (path_forall
            (λ y : ∃ b : E, (χ b), ap pr1 (ap10 H y)))).
       unfold Sect, equiv_inv, E_to_χ_map in p0.
       pose (p1 := ap (λ u, ap10 u (a;c)) p0). simpl in p1.
@@ -681,7 +731,7 @@ Section Sheafification.
       unfold path_forall at 1. rewrite eisretr.
 
       unfold path_sigma.
-      apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_sigma))).
+      apply (@equiv_inj _ _ (equiv_inv _ (IsEquiv := isequiv_path_sigma))).
       apply isequiv_inverse.
       rewrite eissect. simpl.
       unfold pr1_path, pr2_path.
@@ -689,13 +739,11 @@ Section Sheafification.
       { pose (p0 := ap10_ap_precompose (pr1 : {e:E & χ e} -> E) ((let (equiv_inv, eisretr, eissect, _) :=
                                                                     sepA E χ (pr1 o f) (pr1 o g) in
                                                                 equiv_inv)
-                                                                 (path_forall (pr1 o f o pr1) (pr1 o g o pr1)
+                                                                 (path_forall 
                                                                               (λ y : ∃ b : E, χ b, ap pr1 (ap10 p y)))) e).
         apply (transport (λ u, u=_) p0). clear p0.
 
-        pose (p0 := eisretr _ (IsEquiv := sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1)) (path_forall (λ x : ∃ b : E, χ b, (f x.1).1)
-           (λ x : ∃ b : E, χ b, (g x.1).1)
-           (λ y : ∃ b : E, χ b, ap pr1 (ap10 p y)))).
+        pose (p0 := eisretr _ (IsEquiv := sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1)) (path_forall (λ y : ∃ b : E, χ b, ap pr1 (ap10 p y)))).
         unfold Sect, equiv_inv, E_to_χ_map in p0. 
         apply (transport (λ u, ap10 u e = _) p0^). clear p0.
         exact (apD10 (eisretr (apD10 (f:=(λ x0 : ∃ b : E, χ b, (f x0.1).1)) (g:=(λ x0 : ∃ b : E, χ b, (g x0.1).1))) (IsEquiv := isequiv_apD10 _ _ (λ x0 : ∃ b : E, χ b, (f x0.1).1) (λ x0 : ∃ b : E, χ b, (g x0.1).1)) (λ y : ∃ b : E, χ b, ap pr1 (ap10 p y))) e). }
@@ -723,8 +771,7 @@ Section Sheafification.
                          ((let (equiv_inv, eisretr, eissect, _) :=
                                sepA E χ (λ x : E, (f x).1) (λ x : E, (g x).1) in
                            equiv_inv)
-                            (path_forall (λ x : ∃ b : E, χ b, (f x.1).1)
-                               (λ x : ∃ b : E, χ b, (g x.1).1)
+                            (path_forall 
                                (λ y : ∃ b : E, χ b, (ap10 p y) ..1))) z.1)
                       (f z.1).2))
                 (λ z : ∃ e' : E, e' = a,
@@ -737,8 +784,7 @@ Section Sheafification.
                  ((let (equiv_inv, eisretr, eissect, _) :=
                        sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1) in
                    equiv_inv)
-                    (path_forall (λ x0 : ∃ b : E, χ b, (f x0.1).1)
-                       (λ x0 : ∃ b : E, χ b, (g x0.1).1)
+                    (path_forall 
                        (λ y : ∃ b : E, χ b, (ap10 p y) ..1))) 
                  (x.1).1) (f (x.1).1).2))
               (λ x : ∃ b : ∃ e' : E, e' = a, χ b.1,
@@ -764,10 +810,10 @@ Section Sheafification.
         rewrite inv_V.
         reflexivity. }
     - intro p.
-      apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_forall f g))). apply isequiv_inverse.
+      apply (@equiv_inj _ _ (equiv_inv _ (IsEquiv := isequiv_path_forall f g))). apply isequiv_inverse.
       rewrite eissect. simpl.
       apply path_forall; intro x. simpl.
-      apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_path_sigma))). apply isequiv_inverse.
+      apply (@equiv_inj _ _ (equiv_inv _ (IsEquiv := isequiv_path_sigma))). apply isequiv_inverse.
       unfold path_sigma.
       rewrite eissect. simpl.
 
@@ -781,7 +827,7 @@ Section Sheafification.
                          equiv_inv)
                           1)).
         apply ap. apply ap. apply path_forall_1.
-        apply (moveR_equiv_V (f := path_forall _ _) (H := isequiv_path_forall _ _)).
+        apply (moveR_equiv_V (f := path_forall (f:=_) (g:=_)) (H := isequiv_path_forall _ _)).
         etransitivity; try (symmetry; apply path_forall_1).
         apply moveR_equiv_V. reflexivity.
       }
@@ -804,8 +850,7 @@ Section Sheafification.
                      ((let (equiv_inv, eisretr, eissect, _) :=
                            sepA E χ (pr1 o f) (pr1 o f) in
                        equiv_inv)
-                        (path_forall (E_to_χ_map A χ (pr1 o f))
-                           (E_to_χ_map A χ (pr1 o f))
+                        (path_forall 
                            (λ y : ∃ b : E, χ b, 1))) z.1) 
                   (f z.1).2)) ==
             (λ z : ∃ e' : E, e' = x,
@@ -819,13 +864,13 @@ Section Sheafification.
                          equiv_inv)
                             1)).
           apply ap. apply ap. apply path_forall_1.
-          apply (moveR_equiv_V (f := path_forall _ _) (H := isequiv_path_forall _ _)).
+          apply (moveR_equiv_V (f := path_forall (f:=_) (g:=_)) (H := isequiv_path_forall _ _)).
           etransitivity; try (symmetry; apply path_forall_1).
           apply moveR_equiv_V. reflexivity. }
         
         match goal with
           |[ |- @ap10 ?XXX ?XY ?Xf ?Xg ?XH ?Xu = ?X2 ] => 
-           assert (foo := λ p, apD10 (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_apD10 _ _ Xf Xg)) (isequiv_inverse _) (ap10 XH) XX p) (x;1))
+           assert (foo := λ p, apD10 (@equiv_inj _ _ (equiv_inv _ (IsEquiv := isequiv_apD10 _ _ Xf Xg)) (isequiv_inverse _) (ap10 XH) XX p) (x;1))
         end.
         transitivity (XX (x;1)).
         apply foo.
@@ -890,9 +935,7 @@ Section Sheafification.
                                          x : (λ x : ∃ b0 : E, χ b0, (f x.1).1) =
                                              (λ x : ∃ b0 : E, χ b0, (f x.1).1), ap10 x bc)
                                       (eisretr (IsEquiv := HELP) (ap (λ (f0 : E → A) (x : ∃ b0 : E, χ b0), f0 x.1))
-                                               (path_forall (λ x0 : ∃ b0 : E, χ b0, (f x0.1).1)
-                                                            (λ x0 : ∃ b0 : E, χ b0, (f x0.1).1)
-                                                            (λ y : ∃ b0 : E, χ b0, 1))) @ apD10 foo bc) _ _).
+                                               (path_forall (λ y : ∃ b0 : E, χ b0, 1))) @ apD10 foo bc) _ _).
           clear bc. clear c. clear b. 
           unfold foo; clear foo.
           etransitivity; [exact (@apD _ (λ U : (λ x0 : E, (f x0).1) = (λ x0 : E, (f x0).1),
@@ -901,8 +944,7 @@ Section Sheafification.
                      ((let (equiv_inv, eisretr, eissect, _) :=
                            sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (f x0).1) in
                        equiv_inv)
-                        (path_forall (λ x0 : ∃ b : E, χ b, (f x0.1).1)
-                                     (λ x0 : ∃ b : E, χ b, (f x0.1).1) (λ y : ∃ b : E, χ b, 1)))
+                        (path_forall (λ y : ∃ b : E, χ b, 1)))
                      (ap
                         (let (equiv_inv, eisretr, eissect, _) :=
                              sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (f x0).1) in
@@ -1044,10 +1086,10 @@ Section Sheafification.
       unfold E_to_χ_map in *; cbn in *.
       exact (@compose_equiv _ (∃ x : T, φ x) T (∃ e : P, χ e) P pr1 f g pr1 SepP Monoχ).
     - intros E φ.
-      refine (isequiv_adjointify _ _ _ _).
+      refine (isequiv_adjointify _ _ _).
       + intros f e. cbn.
-        refine (exist _ _ _). apply (equiv_inv (IsEquiv := ShP E φ) (pr1 o f) e). 
-        apply (equiv_inv (IsEquiv := clχ (equiv_inv (IsEquiv := ShP E φ) (pr1 o f) e))).
+        refine (exist _ _ _). apply (equiv_inv _ (IsEquiv := ShP E φ) (pr1 o f) e). 
+        apply (equiv_inv _ (IsEquiv := clχ (equiv_inv _ (IsEquiv := ShP E φ) (pr1 o f) e))).
         generalize (equiv_path _ _ (j_is_nj (φ e).1) (φ e).2).
         apply O_rec; intro p; apply O_unit.
         apply (transport (λ u, χ u) (ap10 (eisretr (E_to_χmono_map P φ) (pr1 o f)) (e;p))^).
@@ -1122,7 +1164,7 @@ Section Sheafification.
   Defined.
   
   Definition IsMono_fromIm {A B} (f : A -> B) : IsMono (fromIm f). 
-    intros x y; apply (isequiv_adjointify (ap (fromIm f)) (IsMono_fromIm_inv f x y)).
+    intros x y; apply (isequiv_adjointify (IsMono_fromIm_inv f x y)).
     - intro a.
       destruct x as [x s]; destruct y as [y r]; simpl in *.
       destruct a; simpl in *.     unfold IsMono_fromIm_inv. simpl.
@@ -1160,7 +1202,7 @@ Section Sheafification.
     apply hprop_allpath.
     intros u v.
     specialize (Monom (x;u) (x;v)).
-    pose (equiv_inv (IsEquiv := Monom) 1)..2. simpl in p.
+    pose (equiv_inv _ (IsEquiv := Monom) 1)..2. simpl in p.
     etransitivity; try exact p.
     unfold pr1_path. rewrite eisretr. reflexivity.
   Defined.
@@ -1169,7 +1211,7 @@ Section Sheafification.
     : IsMono (pr1 : {t:T & O nj (χ t)} -> T).
   Proof.
     intros [x px] [y py].
-    simpl; refine (isequiv_adjointify _ _ _ _).
+    simpl; refine (isequiv_adjointify _ _ _).
     - intro p. apply path_sigma' with p. 
       refine (path_ishprop _ _). apply IsMono_IsHProp_cloture. exact Monom.
     - intro p. simpl. destruct p. simpl.
@@ -1323,7 +1365,7 @@ Section Sheafification.
     - assert (p := subu_sigma _ (separated_modality)). simpl in p.      
       exact (p (Build_subuniverse_Type _ separation_reflective_subuniverse A sepA) (λ a, Build_subuniverse_Type _ separation_reflective_subuniverse (B a) (fst (modB a)))). 
     - intros E χ.
-      refine (isequiv_adjointify _ _ _ _).
+      refine (isequiv_adjointify _ _ _).
       + simpl.
         intros φ e.
         destruct ((sheafA E χ)) as [inva retra secta _]. unfold Sect in *; simpl in *.
@@ -1333,7 +1375,7 @@ Section Sheafification.
         specialize (modB a).
         destruct modB as [sepB sheafB]. simpl in *.        
         specialize (sheafB {e':E & e = e'} (λ x, χ x.1)).
-        refine (equiv_inv (IsEquiv := sheafB) _ (e;1)).
+        refine (equiv_inv _ (IsEquiv := sheafB) _ (e;1)).
         intros X.
         specialize (retra (pr1 o φ)).
         apply ap10 in retra.
@@ -1491,14 +1533,14 @@ Section Sheafification.
     simpl.
     unfold good_sheafification_unit, toIm in p. simpl in p.
 
-    apply (@equiv_inj _ _ (equiv_inv (f:=(path_sigma_hprop (good_sheafification_unit T a) (good_sheafification_unit T b))))).
+    apply (@equiv_inj _ _ (equiv_inv ((path_sigma_hprop (good_sheafification_unit T a) (good_sheafification_unit T b))))).
     apply isequiv_inverse.
     rewrite eissect.
     apply (@equiv_inj _ _ _ (isequiv_apD10 _ _ _ _));
       unfold path_forall; rewrite eisretr.
     apply path_forall; intro t.
 
-    apply (@equiv_inj _ _ (equiv_inv (IsEquiv := isequiv_unique_subuniverse _ _ _ _)));
+    apply (@equiv_inj _ _ (equiv_inv _ (IsEquiv := isequiv_unique_subuniverse _ _ _ _)));
       [apply isequiv_inverse | rewrite eissect].
       
     apply (@equiv_inj _ _ _ (isequiv_ap_trunctype _ _)).

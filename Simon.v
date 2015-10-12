@@ -1,5 +1,7 @@
 (* -*- coq-prog-args: ("-emacs" "-indices-matter" "-type-in-type") -*- *)
 
+(* This file prove the last admitted thing in Simon Boulier's proof that the colimit of the [T f]s is the image of [f] *)
+
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
 Require Import Limit.
@@ -27,64 +29,6 @@ Proof.
   destruct r,s. reflexivity.
 Defined.
 
-  
-Lemma foo (Y:Type) (A:Y -> Type) (B:Type) (f: forall y:Y, A y -> B)
-  : {y:Y &{a:A y & {b:A y & f y a = f y b}}}
-      <~>
-    {a:{y:Y & A y} & {b:{y:Y & A y} & ((a.1, f a.1 a.2) = (b.1, f b.1 b.2))}}.
-Proof.
-  refine (equiv_adjointify _ _ _ _).
-  - intros [y [a [b p]]].
-    exists (y;a). exists (y;b).
-    cbn.
-    apply path_prod. reflexivity. exact p.
-  - intros [[y1 a] [[y2 b] p]]; cbn in *.
-    exists y2.
-    exists ((ap fst p) # a). exists b.
-    refine (ap_transport (ap fst p) f a @ _).
-    refine (transport_const _ _ @ _). cbn. exact (ap snd p).
-  - Opaque path_prod. intros [[y1 a] [[y2 b] p]]; cbn in *.
-    refine (path_sigma' _ _ _).
-    refine (path_sigma' _ _ _).
-    exact (ap fst p)^.
-    apply transport_Vp.
-
-    rewrite transport_sigma'. cbn.
-    refine (path_sigma' _ 1 _); cbn.
-    rewrite transport_paths_Fl.
-   
-    
-    rewrite_moveR_Mp_p. rewrite inv_V.
-    refine (path_path_prod _ _ _ _ _ _ _ _).
-    rewrite ap_fst_path_prod.
-    rewrite ap_pp.
-    match goal with
-    |[|- _ = ap ?gg (ap ?ff ?pp) @ _ ] => rewrite <- (ap_compose ff gg pp)
-    end.
-    cbn.
-    pose (r:= @pr1_path_sigma); unfold pr1_path in r; unfold path_sigma'; rewrite r; clear r.
-    symmetry; apply concat_Vp.
-    
-    rewrite ap_snd_path_prod.
-    rewrite ap_pp.
-    apply whiskerR.
-    match goal with
-    |[|- _ = ap ?gg (ap ?ff ?pp) ] => rewrite <- (ap_compose ff gg pp)
-    end.
-    cbn.
-    generalize (ap fst p); cbn.
-    intro q. destruct q. reflexivity.
-  - intros [y [a [b p]]]; cbn.
-    refine (path_sigma' _ 1 _); cbn.
-    refine (path_sigma' _ _ _).    
-    refine (transport2 A (ap_fst_path_prod (z:=(y, f y a)) (z':=(y, f y b)) 1 p) _). 
-    rewrite transport_sigma'.
-    cbn.
-    refine (path_sigma' _ 1 _).
-    cbn.
-    destruct p. reflexivity.
-Defined.
-
 Generalizable All Variables.
 
 Lemma transport_T `{f: forall (z: Z), A z -> B z} `(p: z1 = z2 :> Z) (x: A z1)
@@ -92,7 +36,7 @@ Lemma transport_T `{f: forall (z: Z), A z -> B z} `(p: z1 = z2 :> Z) (x: A z1)
       by destruct p.
 Defined.
 
-Lemma bar (Y:Type) (A:Y -> Type) 
+Lemma T_to_sigmaUnit (Y:Type) (A:Y -> Type) 
   : T (λ x : ∃ y : Y, A y, pr1 x) <~> (∃ y : Y, T (λ _ : A y, tt)).
 Proof.
   transparent assert (F : ((∃ y : Y, T (λ _ : A y, tt)) -> T (λ x : ∃ y : Y, A y, pr1 x))).
@@ -375,8 +319,6 @@ Proof.
     rewrite concat_pV_p. reflexivity.
 Defined.
 
-Axiom ADMIT : forall X, X.
-
 Definition equiv_T_equiv_fun `{ua: Univalence} {A B C:Type}
            (f: A -> B)
            (g: C -> B)
@@ -419,10 +361,45 @@ Proof.
     intro a; cbn.
     rewrite transport_paths_FlFr. cbn.
     rewrite ap_V. rewrite inv_V.
-    rewrite concat_ap_pFq. admit. }
+    rewrite concat_ap_pFq.
+    rewrite concat_ap_Fpq.
+    apply moveR_pV. 
+    match goal with
+    |[|- _ = ((?P1 @ _) @ ?P2) @ ?P3] =>
+     rewrite (concat_p1 P1);
+       rewrite (concat_pp_p (r:= P3))
+    end.
+    match goal with
+    |[|- _ = _ @ (whiskerR ?hh 1 @ _) ]
+     => pose (rew := whiskerR_p1 hh);
+       rewrite concat_pp_p in rew;
+       apply moveL_Vp in rew;
+       rewrite rew; clear rew
+    end.
+    rewrite inv_V.
+    apply moveR_Mp.
+    match goal with
+    |[|- _ = ?P1 @ ((whiskerL 1 ?hh) @ ?P3)] =>
+     rewrite (concat_p_pp (p := P1));
+       pose (rew := whiskerL_1p hh);
+       apply moveL_pV in rew;
+       rewrite rew; clear rew
+    end. cbn.
+    repeat rewrite concat_p1; repeat rewrite concat_1p.
+    rewrite <- (apD (λ U, ap_idmap U) (tp_1 a)^).
+    rewrite transport_paths_FlFr. cbn. rewrite ap_V. rewrite inv_V.
+    rewrite concat_p1.
+    repeat rewrite concat_pp_p. apply whiskerL.
+    repeat rewrite ap_V.
+    rewrite <- (ap02_is_ap _ _ (T_rec (T g) (λ a0 : A, t a0)
+            (λ (a0 b : A) (p : g a0 = g b), tp a0 b ((1 @ p) @ 1))
+            (λ a0 : A, 1 @ tp_1 a0))).
+    rewrite T_rec_beta_tp_1.
+    rewrite ap_idmap. rewrite (concat_1p (tp_1 a)).
+    rewrite inv_pp.  reflexivity. }
   refine (isequiv_homotopic idmap  _).
   exact (λ x, (X x)^).
-Admitted.
+Defined.
 
 Definition isequiv_T_equiv_fun `{ua: Univalence} {A B C:Type}
            (f: A -> B)
@@ -444,81 +421,11 @@ Proof.
   exact (isequiv_T_equiv_fun_path f g ((path_universe_uncurried α)) (ap (λ (u : A → C) (x : A), g (u x))
                                                                        (ap (equiv_fun (B:=C)) (equiv_path_path_universe_uncurried α)) @ e)).
 Qed.  
-  
-    
 
-  
-
-Definition equiv_T_equiv `{ua: Univalence} {A B C:Type}
-           (f: A -> B)
-           (g: C -> B)
-           (α: A <~> C)
-           (e: g o α = f)
-  : T f <~> T g.
-Proof.
-  refine (equiv_adjointify _ _ _ _).
-  - refine (T_rec _ _ _ _).
-    intro a; apply t. exact (α a).
-    intros a b p; cbn.
-    apply tp. exact (ap10 e a @ p @ (ap10 e b)^).
-    intro a; cbn.
-    path_via (tp (f:=g) (α a) (α a) 1).
-    apply ap.
-    refine ((concat_p1 _ @@ 1) @ _).
-    apply concat_pV.
-    apply tp_1.
-  - refine (T_rec _ _ _ _).
-    intro c; apply t. exact (α^-1 c).
-    intros a b p; cbn. apply tp.
-    refine ((ap10 e (α^-1 a))^ @ _ @ (ap10 e (α^-1 b))).
-    exact (ap g (eisretr α a) @ p @ (ap g (eisretr α b))^).
-    intro a; cbn.
-    path_via (tp (f:=f) (α^-1 a) (α^-1 a) 1).
-    apply ap.
-    refine (1 @@ (concat_p1 _ @@ 1) @@ 1 @ _).
-    refine ((1 @@ (concat_pV _)) @@ 1 @ _).
-    refine ((concat_p1 _ @@ 1) @ _).
-    apply concat_Vp.
-    apply tp_1.
-  - destruct e. cbn.
-    refine (path_T _ _ _ _ _ _).
-    intro x; cbn. apply ap. apply eisretr.
-    intros a b p; cbn.
-    match goal with
-    |[|- _ = ap (λ x, ?gg (?ff x)) ?pp @ _] =>
-     refine (_ @ (ap_compose ff gg pp @@ 1)^);
-       refine (_ @ (ap02 gg (T_rec_beta_tp _ _ _ _ _ _ _) @@ 1)^)
-    end.
-    refine (_ @ ((T_rec_beta_tp _ _ _ _ _ _ _) @@ 1)^).
-    hott_simpl.
-    apply ADMIT.
-    apply ADMIT.
-  - apply ADMIT.
-Defined.
-    
-    
-    
-    
-(* Definition equiv_T_equiv `{ua: Univalence} {A B C D:Type} *)
-(*            (f: A -> B) *)
-(*            (g: C -> D) *)
-(*            (α: A <~> C) *)
-(*            (φ: forall a b, (f a = f b) <~> g (α a) = g (α b)) *)
-(*            (κ: forall a, (φ a a) 1 = 1) *)
-(*   : T f <~> T g. *)
-(* Proof. *)
-(*   assert (X: (equiv_path A C (path_universe_uncurried α)) = α). *)
-(*   { apply equiv_path_path_universe_uncurried. } *)
-(*   refine (BuildEquiv (equiv_T _ _ _ _ _)). *)
-(*   exact (path_universe_uncurried α). *)
-(*   destruct X^. exact φ. *)
-(*   destruct X^. exact κ. *)
-(* Defined. *)
-
-Lemma foobar `{ua: Univalence}  (A B:Type) (f: A -> B)
+Lemma T_to_sigmahfiber `{ua: Univalence}  (A B:Type) (f: A -> B)
   : T f <~> {y:B & T (λ _:hfiber f y, tt)}.
 Proof.
-  etransitivity; [idtac | exact (bar B (hfiber f))].
+  etransitivity; [idtac | exact (T_to_sigmaUnit B (hfiber f))].
   refine (BuildEquiv (isequiv_T_equiv_fun _ _ _ _)).
   refine (equiv_adjointify _ _ _ _).
   intro x; exact (f x; (x;1)).
@@ -538,12 +445,6 @@ Proof.
     etransitivity. refine (transport_T _ _).
       by apply tp.
   - intros a; cbn. exact (ap _ (ap _ (tp_1 _))).
-Defined.
-
-Definition KP_lift  (A B:Type) (f: A -> B) : T f -> B.
-Proof.
-  refine (T_rec _ _ _ _). exact f. intros a b; exact idmap.
-  intro a; reflexivity.
 Defined.
 
 Lemma G_simon_eq `{ua: Univalence} (A B:Type) (f: A -> B) :

@@ -262,3 +262,29 @@ Lemma T_trunc `{fs: Funext} (m:trunc_index) (A:Type) (B:TruncType m) (f:A -> B)
       |[|- (_ @ whiskerL _ ?hh) @ _ = _] => exact (whiskerL_1p hh)
       end.
   Defined.
+
+  Definition equiv_T_fun {A B C D:Type}
+           (f: A -> B) 
+           (g: C -> D)
+           (α: A -> C)
+           (φ: forall a b, (f a = f b) -> g (α a) = g (α b))
+           (κ: forall a, (φ a a) 1 = 1)
+  : T f -> T g.
+Proof.
+  refine (T_rec _ _ _ _).
+  - intro a. apply t. exact (α a).
+  - intros a b p; cbn. apply tp.
+    apply φ. exact p.
+  - intro a; cbn.
+    refine (ap (tp (α a) (α a)) (κ a) @ _).
+    apply tp_1.
+Defined.
+
+Definition equiv_T {A B C D:Type}
+           (f: A -> B) 
+           (g: C -> D)
+           (α: A = C)
+           (φ: forall a b, (f a = f b) <~> g (equiv_path _ _ α a) = g (equiv_path _ _ α b))
+           (κ: forall a, (φ a a) 1 = 1)
+  : IsEquiv (equiv_T_fun f g (equiv_path _ _ α) φ κ).
+Admitted.

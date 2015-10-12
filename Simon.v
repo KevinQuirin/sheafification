@@ -7,13 +7,6 @@ Require Import HoTT HoTT.hit.Truncations Connectedness.
 Require Import Limit.
 Require Import PathGroupoid_ Forall_ Equivalences_ epi_mono reflective_subuniverse modalities OPaths.
 Require Import T.
-(* Require Import T_telescope OT OT_Tf. *)
-
-(* Require Import sheaf_base_case. *)
-(* Require Import sheaf_def_and_thm. *)
-(* Require Import sheaf_induction. *)
-
-
 
 Set Universe Polymorphism.
 Global Set Primitive Projections. 
@@ -196,14 +189,11 @@ Proof.
      rewrite (concat_p1 P1)
     end.
     apply moveL_Vp. rewrite inv_pp. apply moveL_pV.
-    (* unfold G at 12. rewrite T_rec_beta_tp_1. *)
     match goal with
     |[|- _ = (whiskerR (?P1 @ _) _)^ ]
      => rewrite (concat_p1 P1)
     end.
-    (* rewrite ap02_pp. *)
     rewrite <- whiskerR_RV.
-    (* rewrite inv_pp. rewrite whiskerR_pp. *)
     unfold X; clear X.
     match goal with
     |[|- (whiskerL _ ?hh @ (((?P @ _) @ _) @ _)) @ _ = _] =>

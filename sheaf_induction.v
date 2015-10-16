@@ -6,7 +6,7 @@ Require Import nat_lemmas.
 (* Require Import VD_truncation gpd. *)
 Require Import sheaf_base_case.
 Require Import sheaf_def_and_thm.
-Require Import OPaths T T_telescope Tf_Omono_sep OT.
+Require Import OPaths T T_telescope Tf_Omono_sep OT OT_Tf.
 Require Import Limit.
 
 
@@ -130,6 +130,297 @@ Section Sheafification.
 
   Definition separated_unit (T:TruncType (n.+1)) :  T -> separated_Type T := toIm _.
 
+  
+  Definition mu_modal_paths_func_univ_func
+             (T : TruncType (trunc_S n))
+             (a : T)
+             (b : T)
+             (p : ((clδ T) (a, b)))
+             (t : T)
+  : O nj (BTT (a = t)) -> O nj (BTT (b = t)).
+    apply O_rec; intro u.
+    generalize dependent p; apply O_rec; intro v. apply (O_unit nj).
+    exact (v^@u).
+  Defined.
+
+  Definition mu_modal_paths_func_univ_inv
+             (T : TruncType (trunc_S n))
+             (a : T)
+             (b : T)
+             (p : ((clδ T) (a, b)))
+             (t : T)
+  : O nj (BTT (b = t)) -> O nj (BTT (a = t)).
+    apply O_rec; intro u.
+    generalize dependent p; apply O_rec; intro v; apply (O_unit nj).
+    exact (v@u).
+  Defined.
+
+  Lemma mu_modal_paths_func_univ_eq
+        (T : TruncType (trunc_S n))
+        (a : T)
+        (b : T)
+        (p : (clδ T (a, b)))
+        (t : T)
+  : (Sect (mu_modal_paths_func_univ_inv T a b p t) (mu_modal_paths_func_univ_func T a b p t))
+    /\ (Sect (mu_modal_paths_func_univ_func T a b p t) (mu_modal_paths_func_univ_inv T a b p t)).
+    split.
+    - intro x.
+      unfold mu_modal_paths_func_univ_inv, mu_modal_paths_func_univ_func, δ; simpl. unfold clδ, δ in p; simpl in p.
+      refine (ap10 (f:= (O_rec n nj (BTT (a = t))
+                               (O nj (BTT (b = t)))
+                               (λ u : a = t,
+                                      O_rec n nj (BTT (a = b))
+                                            (O nj (BTT (b = t)))
+                                            (λ v : a = b, O_unit nj (BTT (b = t)) (v ^ @ u))
+                                            p)) 
+                          o (O_rec n nj (BTT (b = t))
+                                   (O nj (BTT (a = t)))
+                                   (λ u : b = t,
+                                          O_rec n nj (BTT (a = b))
+                                                (O nj (BTT (a = t)))
+                                                (λ v : a = b, O_unit nj (BTT (a = t)) (v @ u))
+                                                p))) (g:=idmap) _ x).
+      apply O_rec_O_rec. exact fs.
+      intros q q'. destruct q.
+      rewrite concat_p1.
+      apply concat_Vp.
+    - intro x. unfold mu_modal_paths_func_univ_inv, mu_modal_paths_func_univ_func, δ. simpl.
+      (* pose (foo := O_rec_O_rec nj *)
+      (*                (b = t; istrunc_paths T.2 b t) *)
+      (*                (a = t; istrunc_paths T.2 a t) *)
+      (*                (a = b; istrunc_paths T.2 a b) *)
+      (*                (λ u v, v @ u) *)
+      (*                (λ u v, v^ @ u) *)
+      (*                p *)
+      (*            ); simpl in foo. *)
+
+      refine (ap10 (f:= (O_rec n nj (BTT (b = t))
+                               (O nj (BTT (a = t)))
+                               (λ u : b = t,
+                                      O_rec n nj (BTT (a = b))
+                                            (O nj (BTT (a = t)))
+                                            (λ v : a = b, O_unit nj (BTT (a = t)) (v @ u))
+                                            p)) 
+                          o (O_rec n nj (BTT (a = t))
+                                   (O nj (BTT (b = t)))
+                                   (λ u : a = t,
+                                          O_rec n nj (BTT (a = b))
+                                                (O nj (BTT (b = t)))
+                                                (λ v : a = b, O_unit nj (BTT (b = t)) (v^ @ u))
+                                                p))) (g:=idmap) _ x).
+      apply O_rec_O_rec. exact fs.
+      intros q q'. destruct q'.
+      rewrite concat_1p.
+      apply concat_1p.
+  Qed.
+
+  Arguments mu_modal_paths_func_univ_eq : default implicits, simpl never.
+
+
+  Definition separated_unit_paths_are_nj_paths_fun (T:(n.+1)-Type) (a b:T) : (separated_unit T a = separated_unit T b) -> (O nj (BTT (a=b))).
+    intro p.
+    unfold separated_unit, toIm in p. simpl in p.
+    pose (p' := ap trunctype_type (ap (@st n nj) (ap10 p..1 b))). simpl in p'.
+    apply (transport idmap p'^). apply O_unit. reflexivity.
+  Defined.
+
+  Definition separated_unit_paths_are_nj_paths_inv (T:(n.+1)-Type) (a b:T) : (O nj (BTT (a=b))) -> (separated_unit T a = separated_unit T b).
+    intro p.
+    pose (Ωj := @BuildTruncType _ (T -> subuniverse_Type nj) (T_nType_j_Type_trunc T)).
+    pose (inj := pr1 : (separated_Type T) -> Ωj).
+    transparent assert (X : (IsMono inj)).
+    intros x y. 
+    exact (isequiv_inverse (path_sigma_hprop x y)).
+    
+    assert (inj (separated_unit T a) = inj (separated_unit T b)).
+    unfold inj, separated_unit. simpl.
+    apply path_forall; intro t; simpl.
+    apply unique_subuniverse; apply path_trunctype.
+    symmetry.
+    exists (mu_modal_paths_func_univ_inv T a b p t).
+    apply isequiv_adjointify with (g := mu_modal_paths_func_univ_func T a b p t);
+      [exact (snd (mu_modal_paths_func_univ_eq T a b p t)) | exact (fst (mu_modal_paths_func_univ_eq T a b p t))].
+    exact (@equiv_inv _ _ _ (X (separated_unit T a) (separated_unit T b)) X0).
+  Defined.
+
+  Lemma mu_modal_paths_aux (A B:TruncType n) (v:A) (eq : A = B :> Type)
+    : O_unit nj B (transport idmap eq v)
+      = transport idmap
+                  (ap trunctype_type
+                      (ap (@st n nj)
+                          (ap (O nj)
+                              (path_trunctype (equiv_path _ _ eq))))) (O_unit nj A v).
+        destruct A as [A TrA], B as [B Trb]; simpl in *.
+        destruct eq.
+        simpl.
+        assert (p := (center (TrA = Trb))). destruct p.
+        unfold path_trunctype. cbn.
+        rewrite eta_path_universe_uncurried.
+        unfold path_sigma_hprop, path_sigma_uncurried. 
+        cbn. hott_simpl.
+        match goal with
+        |[|- _ = transport idmap (ap _ (ap _ (ap _ (ap _
+                                                       match ?foo in (_ = v2) return _ with |_ => _ end)))) _] => assert (r: 1 = foo) by apply path_ishprop; destruct r
+        end.
+        reflexivity.
+  Defined.
+
+  Lemma separated_unit_paths_are_nj_paths_retr (T:TruncType (n.+1)) (a b:T)
+  : Sect (separated_unit_paths_are_nj_paths_inv T a b) (separated_unit_paths_are_nj_paths_fun T a b).
+    unfold separated_unit_paths_are_nj_paths_fun, separated_unit_paths_are_nj_paths_inv.
+    intro x.
+    apply (moveR_transport_V idmap _ _ x).
+    unfold pr1_path. simpl.
+
+    pose (s := eissect (path_sigma_hprop (separated_unit T a) (separated_unit T b))).
+    unfold Sect in s; cbn in s; unfold pr1_path in s; cbn in s.
+    rewrite s; clear s.
+    unfold ap10, path_forall; rewrite eisretr.
+
+    assert (rew := eissect _ (IsEquiv := isequiv_unique_subuniverse n nj (O nj (BTT (a = b))) (O nj (BTT (b = b))))). unfold Sect in rew; simpl in rew; unfold pr1_path in rew.
+    rewrite rew; clear rew.
+
+    pose (eisretr _ (IsEquiv := isequiv_ap_trunctype (O nj (BTT (a = b))) (O nj (BTT (b = b))))).
+    unfold Sect in s; cbn in *; rewrite s; clear s.
+    rewrite transport_idmap_path_universe_uncurried.
+     
+    unfold mu_modal_paths_func_univ_func, δ. simpl.
+
+    revert x.
+    transparent assert (sh : ((O nj (BTT (a = b))) -> subuniverse_Type nj)).
+    { intro x.
+      refine (Build_subuniverse_Type _ nj (BTT (O_unit nj (BTT (b = b)) 1 =
+   O_rec sheaf_def_and_thm.n nj (BTT (a = b)) (O nj (BTT (b = b)))
+     (λ u : a = b,
+      O_rec sheaf_def_and_thm.n nj
+        {|
+        trunctype_type := a = b;
+        istrunc_trunctype_type := istrunc_paths a b |} 
+        (O nj (BTT (b = b))) (λ v : a = b, O_unit nj (BTT (b = b)) (v^ @ u))
+        x) x)) _). }
+      refine (O_rec_dep _ sh _).1.
+      unfold sh; clear sh; intro x; simpl.
+              
+      pose (foo := λ P Q f, ap10 (O_rec_retr n nj P Q f)).
+      simpl in foo.
+      rewrite foo. rewrite foo. apply ap. hott_simpl.
+  Qed.
+  
+  Lemma separated_unit_paths_are_nj_paths_sect (T:(n.+1)-Type) (a b:T)
+  : Sect (separated_unit_paths_are_nj_paths_fun T a b) (separated_unit_paths_are_nj_paths_inv T a b).
+    unfold separated_unit_paths_are_nj_paths_fun, separated_unit_paths_are_nj_paths_inv.
+    intro p.
+    simpl.
+    unfold separated_unit, toIm in p. simpl in p.
+
+    apply (@equiv_inj _ _ (equiv_inv ((path_sigma_hprop (separated_unit T a) (separated_unit T b))))).
+    apply isequiv_inverse.
+    rewrite eissect.
+    apply (@equiv_inj _ _ _ (isequiv_apD10 _ _ _ _));
+      unfold path_forall; rewrite eisretr.
+    apply path_forall; intro t.
+
+    apply (@equiv_inj _ _ (equiv_inv _ (IsEquiv := isequiv_unique_subuniverse _ _ _ _)));
+      [apply isequiv_inverse | rewrite eissect].
+      
+    apply (@equiv_inj _ _ _ (isequiv_ap_trunctype _ _)).
+    pose (s := λ A B, eisretr _ (IsEquiv := isequiv_ap_trunctype (n := n) A B)).
+    unfold Sect in s; cbn in *. rewrite s; clear s.
+    unfold symmetric_equiv.
+
+    path_via (ap trunctype_type (ap (@st sheaf_def_and_thm.n nj) (apD10 p ..1 t)))^^.
+    rewrite path_universe_V_uncurried.
+    apply ap.
+    apply (@equiv_inj _ _ _ (isequiv_equiv_path _ _)); unfold path_universe_uncurried; rewrite eisretr. 
+    
+    apply path_equiv.
+    unfold mu_modal_paths_func_univ_inv, mu_modal_paths_func_univ_func, δ. simpl.
+
+    apply (@equiv_inj _ _ _ (O_equiv n nj (BTT (b = t)) (O nj (BTT (a = t))))).
+    rewrite O_rec_retr.
+    apply path_forall; intro u. simpl in *.
+      
+    destruct u.
+    unfold ap10, pr1_path; cbn.
+
+    apply (ap10 (g:=idmap)).
+    etransitivity; [idtac | exact (O_rec_sect n nj (BTT (a=b)) (O nj (BTT (a=b))) idmap)].
+    apply ap. apply path_forall; intro v. apply ap. apply concat_p1.
+  Defined.
+
+
+  (* For any [x,y:T], [(μ x = μ y) = ○ (x = y)] : in proof of Lemma 29 *)
+  (* Theorem separated_unit_paths_are_nj_paths (T:(n.+1)-Type) (a b:T) : (separated_unit T a = separated_unit T b) <~> (O nj (BTT (a=b))). *)
+  (* Proof. *)
+  (*   refine (equiv_adjointify _ _ _ _). *)
+  (*   - apply separated_unit_paths_are_nj_paths_fun. *)
+  (*   - apply separated_unit_paths_are_nj_paths_inv. *)
+  (*   - apply separated_unit_paths_are_nj_paths_retr. *)
+  (*   - apply separated_unit_paths_are_nj_paths_sect. *)
+  (* Qed. *)
+
+  Theorem separated_unit_paths_are_nj_paths (T:(n.+1)-Type) (a b:T)
+    : IsEquiv (separated_unit_paths_are_nj_paths_inv T a b).
+  Proof.
+      refine (isequiv_adjointify _ _ _).
+    - apply separated_unit_paths_are_nj_paths_fun.
+    - apply separated_unit_paths_are_nj_paths_sect.
+    - apply separated_unit_paths_are_nj_paths_retr.
+  Defined.
+    
+
+  Lemma Omono_sep_separated_unit (T:TruncType (n.+1))
+    : Omono_sep T _ (separated_Type_is_separated T) (separated_unit T).
+  Proof.
+    intros x y.
+    refine (isequiv_homotopic (separated_unit_paths_are_nj_paths_inv T x y) _).
+    apply separated_unit_paths_are_nj_paths.
+    
+    intro p. unfold separated_unit_paths_are_nj_paths_inv.
+    apply (@equiv_inj _ _ (equiv_inv ((path_sigma_hprop (separated_unit T x) (separated_unit T y))))). apply isequiv_inverse. rewrite eissect.
+    apply (@equiv_inj _ _ _ (isequiv_apD10 _ _ _ _)). unfold path_forall; rewrite eisretr.
+    apply path_forall; intro t.
+    apply (@equiv_inj _ _ (equiv_inv _ (IsEquiv := isequiv_unique_subuniverse _ _ _ _)));
+      [apply isequiv_inverse | rewrite eissect].
+    apply (@equiv_inj _ _ _ (isequiv_ap_trunctype _ _)).
+    pose (s := λ A B, eisretr _ (IsEquiv := isequiv_ap_trunctype (n := n) A B)).
+    unfold Sect in s; cbn in *. rewrite s; clear s.
+    unfold symmetric_equiv.
+
+    match goal with
+    |[|- _ = ?xx] => path_via (xx^^)
+    end.
+    rewrite path_universe_V_uncurried.
+    apply ap.
+    apply (@equiv_inj _ _ _ (isequiv_equiv_path _ _)); unfold path_universe_uncurried; rewrite eisretr. 
+    
+    apply path_equiv.
+    unfold mu_modal_paths_func_univ_inv, mu_modal_paths_func_univ_func, δ. simpl.
+    
+    apply (@equiv_inj _ _ _ (O_equiv n nj (BTT (y = t)) (O nj (BTT (x = t))))).
+    rewrite O_rec_retr.
+    apply path_forall; intro u. simpl in *.
+    
+    destruct u.
+    unfold ap10, pr1_path; cbn.
+    match goal with
+    |[|- ?ff p = transport idmap (ap trunctype_type
+                                     (ap (@st sheaf_def_and_thm.n nj)
+                                         (apD10 (ap pr1 (?gg p)) y)))^
+                 (O_unit nj (BTT (y = y)) 1)]
+     => set (F := ff);
+       set (G := λ p, transport idmap (ap trunctype_type
+                                          (ap (@st sheaf_def_and_thm.n nj)
+                                              (apD10 (ap pr1 (gg p)) y)))^
+                      (O_unit nj (BTT (y = y)) 1))
+    end.
+    path_via (G p).
+    revert p.
+    refine (O_rec_dep _ (λ p, Build_subuniverse_Type n nj (BuildTruncType _ (F p = G p)) _) _).1.
+    intro p; cbn. unfold F; clear F; unfold G; clear G.
+    repeat rewrite (λ P Q f, ap10 (O_rec_retr n nj P Q f)).
+    destruct p; cbn. reflexivity.
+  Qed.
   
   Lemma OT_to_sep (E S:TruncType (n.+1)) (sepS: separated S) (f:E -> S)
         (oT := Trunc (n.+1) (OTid E)) 
@@ -287,8 +578,6 @@ Section Sheafification.
     refine (isequiv_adjointify _ _ _).
     - intro C. exact (C 0).
     - intro C.
-      (* Opaque OT_to_sep. Opaque OT_to_sep_eq. *)
-      (* Opaque separation_colimit_OTtelescope_cocone. *)
       refine (path_cocone _ _).
       + intro i. apply ap10.
         induction i.
@@ -319,7 +608,7 @@ Section Sheafification.
         symmetry; apply concat_Vp.
     - intro f; reflexivity.
   Defined.
-        
+  
   Theorem separation_colimit_OTtelescope (U:TruncType (n.+1))
     : is_m_universal (n.+1)
                      (separation_colimit_OTtelescope_cocone
@@ -327,6 +616,8 @@ Section Sheafification.
                         (@BuildTruncType _ (separated_Type U) (separated_Type_is_TruncType_Sn U))
                         (separated_Type_is_separated U)
                         (separated_unit U)).
+  Proof.
+    pose (@is_colimit_Im_OTtelescope ua fs U (@BuildTruncType _ (separated_Type U) (separated_Type_is_TruncType_Sn U)) (separated_unit U) (separated_Type_is_separated U)).
   Admitted.
 
   Definition separated_equiv : forall (P : TruncType (trunc_S n)) (Q :{T : TruncType (trunc_S n) & separated T}),
@@ -473,99 +764,7 @@ Section Sheafification.
     exact (@equiv_inv _ _ _ (X (separated_unit T a) (separated_unit T b)) X0).
   Defined.
 
-  Lemma separated_unit_paths_are_nj_paths_retr (T:TruncType (n.+1)) (a b:T)
-  : Sect (separated_unit_paths_are_nj_paths_inv T a b) (separated_unit_paths_are_nj_paths_fun T a b).
-    unfold separated_unit_paths_are_nj_paths_fun, separated_unit_paths_are_nj_paths_inv.
-    intro x.
-    apply (moveR_transport_V idmap _ _ x).
-    unfold pr1_path. simpl.
-
-    pose (s := eissect (path_sigma_hprop (separated_unit T a) (separated_unit T b))).
-    unfold Sect in s; cbn in s; unfold pr1_path in s; cbn in s.
-    rewrite s; clear s.
-    unfold ap10, path_forall; rewrite eisretr.
-
-    assert (rew := eissect _ (IsEquiv := isequiv_unique_subuniverse n nj (O nj (BTT (a = b))) (O nj (BTT (b = b))))). unfold Sect in rew; simpl in rew; unfold pr1_path in rew.
-    rewrite rew; clear rew.
-
-    pose (eisretr _ (IsEquiv := isequiv_ap_trunctype (O nj (BTT (a = b))) (O nj (BTT (b = b))))).
-    unfold Sect in s; cbn in *; rewrite s; clear s.
-    rewrite transport_idmap_path_universe_uncurried.
-     
-    unfold mu_modal_paths_func_univ_func, δ. simpl.
-
-    revert x.
-    transparent assert (sh : ((O nj (BTT (a = b))) -> subuniverse_Type nj)).
-    { intro x.
-      refine (Build_subuniverse_Type _ nj (BTT (O_unit nj (BTT (b = b)) 1 =
-   O_rec sheaf_def_and_thm.n nj (BTT (a = b)) (O nj (BTT (b = b)))
-     (λ u : a = b,
-      O_rec sheaf_def_and_thm.n nj
-        {|
-        trunctype_type := a = b;
-        istrunc_trunctype_type := istrunc_paths a b |} 
-        (O nj (BTT (b = b))) (λ v : a = b, O_unit nj (BTT (b = b)) (v^ @ u))
-        x) x)) _). }
-      refine (O_rec_dep _ sh _).1.
-      unfold sh; clear sh; intro x; simpl.
-              
-      pose (foo := λ P Q f, ap10 (O_rec_retr n nj P Q f)).
-      simpl in foo.
-      rewrite foo. rewrite foo. apply ap. hott_simpl.
-  Qed.
   
-  Lemma separated_unit_paths_are_nj_paths_sect (T:(n.+1)-Type) (a b:T)
-  : Sect (separated_unit_paths_are_nj_paths_fun T a b) (separated_unit_paths_are_nj_paths_inv T a b).
-    unfold separated_unit_paths_are_nj_paths_fun, separated_unit_paths_are_nj_paths_inv.
-    intro p.
-    simpl.
-    unfold separated_unit, toIm in p. simpl in p.
-
-    apply (@equiv_inj _ _ (equiv_inv ((path_sigma_hprop (separated_unit T a) (separated_unit T b))))).
-    apply isequiv_inverse.
-    rewrite eissect.
-    apply (@equiv_inj _ _ _ (isequiv_apD10 _ _ _ _));
-      unfold path_forall; rewrite eisretr.
-    apply path_forall; intro t.
-
-    apply (@equiv_inj _ _ (equiv_inv _ (IsEquiv := isequiv_unique_subuniverse _ _ _ _)));
-      [apply isequiv_inverse | rewrite eissect].
-      
-    apply (@equiv_inj _ _ _ (isequiv_ap_trunctype _ _)).
-    pose (s := λ A B, eisretr _ (IsEquiv := isequiv_ap_trunctype (n := n) A B)).
-    unfold Sect in s; cbn in *. rewrite s; clear s.
-    unfold symmetric_equiv.
-
-    path_via (ap trunctype_type (ap (@st sheaf_def_and_thm.n nj) (apD10 p ..1 t)))^^.
-    rewrite path_universe_V_uncurried.
-    apply ap.
-    apply (@equiv_inj _ _ _ (isequiv_equiv_path _ _)); unfold path_universe_uncurried; rewrite eisretr. 
-    
-    apply path_equiv.
-    unfold mu_modal_paths_func_univ_inv, mu_modal_paths_func_univ_func, δ. simpl.
-
-    apply (@equiv_inj _ _ _ (O_equiv n nj (BTT (b = t)) (O nj (BTT (a = t))))).
-    rewrite O_rec_retr.
-    apply path_forall; intro u. simpl in *.
-      
-    destruct u.
-    unfold ap10, pr1_path; cbn.
-
-    apply (ap10 (g:=idmap)).
-    etransitivity; [idtac | exact (O_rec_sect n nj (BTT (a=b)) (O nj (BTT (a=b))) idmap)].
-    apply ap. apply path_forall; intro v. apply ap. apply concat_p1.
-  Defined.
-
-
-  (* For any [x,y:T], [(μ x = μ y) = ○ (x = y)] : in proof of Lemma 29 *)
-  Theorem separated_unit_paths_are_nj_paths (T:(n.+1)-Type) (a b:T) : (separated_unit T a = separated_unit T b) <~> (O nj (BTT (a=b))).
-  Proof.
-    refine (equiv_adjointify _ _ _ _).
-    - apply separated_unit_paths_are_nj_paths_fun.
-    - apply separated_unit_paths_are_nj_paths_inv.
-    - apply separated_unit_paths_are_nj_paths_retr.
-    - apply separated_unit_paths_are_nj_paths_sect.
-  Qed.
 
   Lemma separated_unit_paths_are_nj_paths_idpath (T:(n.+1)-Type) (a:T) (p : (separated_unit T a = separated_unit T a)) (eq : 1 = p)
     : separated_unit_paths_are_nj_paths_fun T _ _ p = O_unit nj (BTT (a=a)) idpath.

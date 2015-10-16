@@ -79,6 +79,19 @@ Section DiagramMap.
   Global Arguments diag_equiv_map [D1 D2] e : rename.
   Global Arguments diag_equiv_isequiv [D1 D2] e i : rename.
   Global Arguments Build_diagram_equiv [D1 D2] m H : rename.
+
+  Lemma diagram_equiv' (D1 D2: diagram G)
+    : {path_type : forall x, (diagram0 D1 x) <~> (diagram0 D2 x) 
+                             & forall (i j:G), forall x:G i j, (path_type j) o (diagram1 D1 x) == (diagram1 D2 x) o (path_type i) } -> diagram_equiv D1 D2.
+  Proof.
+    intros [p pp].
+    refine (Build_diagram_equiv _ _).
+    refine (Build_diagram_map _ _).
+    intro x; apply (p x).
+    intros i j g x; cbn.
+    exact (pp i j g x)^.
+    intro i. cbn. apply equiv_isequiv.
+  Defined. 
   
   Lemma diagram_equiv_inv {D1 D2 : diagram G} (w : diagram_equiv D1 D2)
   : diagram_map D2 D1.

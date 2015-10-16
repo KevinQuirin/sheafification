@@ -1,6 +1,7 @@
 Require Export MyTacs.
 Require Import HoTT.
 Require Export Utf8_core.
+Require Import Forall_.
 Require Import reflective_subuniverse modalities.
 
 Set Universe Polymorphism.
@@ -210,10 +211,32 @@ Definition Oap_idmap {A:TruncType (n.+1)} {x y:A} (p: O subU (BTT (x=y)))
   : Oap idmap p = p.
 Proof.
   unfold Oap.
-  rewrite (path_forall _ _ (λ q:x=y, ap_idmap q)).
-  rewrite function_lift_idmap.
-  reflexivity.
+  path_via (function_lift n subU (BTT (x = y)) (BTT (x = y)) idmap p).
+  apply (ap (λ U, function_lift n subU (BTT (x = y)) (BTT (x = y)) U p)).
+  apply (path_forall _ _ (ap_idmap)).
+  apply (ap10 (function_lift_idmap _ _ _)).
 Defined.
+
+Lemma Oap_idmap_Oap_1 {A:TruncType (n.+1)} (x:A) 
+  : Oap_idmap (A:=A) (x:=x) °1 = Oap_1 idmap.
+Proof.
+  unfold Oap_idmap, Oap_1.
+  unfold function_lift_idmap.
+  rewrite <- (apD (λ U, ap10
+     (O_rec_retr n subU
+        (default_TruncType n (x = x)
+           (istrunc_paths (istrunc_trunctype_type A) x x))
+        (O subU (BTT (x = x)))
+        (λ x0 : x = x, O_unit subU (BTT (x = x)) (U x0))) 1) (path_forall (ap idmap) idmap ap_idmap)^).
+  
+  rewrite transport_paths_FlFr. cbn. rewrite ap_V. rewrite inv_V.
+  rewrite !concat_pp_p. apply whiskerL.
+  unfold Oidpath. refine ((ap10_O_retr_sect n subU (BTT (x = x)) (O subU (BTT (x = x))) idmap 1) @ _).
+  refine ((concat_p1 _)^ @ _). apply whiskerL.
+  rewrite (ap_compose (λ x0, x0 1) (λ x0, (O_unit subU (BTT (x = x))) x0)).
+  rewrite ap_apply_l. rewrite ap10_V.
+  rewrite ap10_path_forall. reflexivity.
+Qed.
 
 Definition Oap_compose {A B C:TruncType (n.+1)} (f: A -> B) (g: B -> C) {x y:A} (p: O subU (BTT (x=y)))
   : Oap (g o f) p = Oap g (Oap f p).

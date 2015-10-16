@@ -30,7 +30,14 @@ Section T_telescope.
     - intros n m q; destruct q; simpl. apply t.
   Defined.
 
-  Axiom Colimit_Ttelescope : IsSurjection f -> is_colimit Ttelescope Y.
+  Definition Ttelescope_cocone : cocone Ttelescope Y.
+  Proof.
+    refine (Build_cocone _ _).
+    intro i. apply (Ttelescope_aux i).2.
+    intros i j g x; destruct g; reflexivity.
+  Defined.
+
+  Axiom Colimit_Ttelescope : IsSurjection f -> is_universal Ttelescope_cocone.
   
 End T_telescope.
 

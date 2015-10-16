@@ -19,6 +19,121 @@ Global Set Primitive Projections.
 Local Open Scope path_scope.
 Local Open Scope type_scope.
 
+Generalizable All Variables.
+
+Lemma transport_T `{f: forall (z: Z), A z -> B z} `(p: z1 = z2 :> Z) (x: A z1)
+  : transport (λ z, T (f z)) p (t x) = t (p # x).
+      by destruct p.
+Defined.
+
+
+Context (A B:Type).
+Context (f:A -> B).
+
+
+
+Lemma KP_slicing_fun : T f -> {y: B & T (λ _:hfiber f y, tt)}.
+  Proof.
+    refine (T_rec _ _ _ _).
+    - intro a. exact (f a ; (t (a; 1))).
+    - intros a b p; cbn.
+      refine (path_sigma' _ p _).
+      etransitivity. refine (transport_T _ _).
+        by apply tp.
+    - intros a; cbn. exact (ap _ (ap _ (tp_1 _))).
+  Defined.
+
+  Lemma KP_slicing_isequiv : IsEquiv KP_slicing_fun.
+  Admitted.
+  
+  Definition KP_slicing : T f <~> {y: B & T (λ _:hfiber f y, tt)}
+    := BuildEquiv KP_slicing_isequiv.
+  
+  Definition KP_lift : T f -> B.
+  Proof.
+    refine (T_rec _ f _ _); intros; try reflexivity.
+    exact p.
+    cbn. reflexivity.
+  Defined.
+  
+  Definition KP_lift_slicing : KP_lift == pr1 o KP_slicing.
+  Proof.
+    refine (path_T _ _ _ _ _ _).
+    - intro; reflexivity.
+    - intros x y p. cbn beta.
+      refine (concat_1p _ @ _ @ (concat_p1 _)^).
+      unfold KP_slicing, KP_slicing_fun; cbn.
+      unfold KP_lift.
+      symmetry.
+      refine (T_rec_beta_tp _ _ _ _ _ _ _ @ _).
+      refine (_ @ (ap_compose KP_slicing pr1 (tp _ _ p))^).
+      refine (_ @ (ap (ap pr1) _)).
+      3: exact (T_rec_beta_tp _ _ _ _ _ _ _)^.
+      exact (pr1_path_sigma _ _)^.
+    - intro. cbn beta. Opaque transport_T.
+      Opaque pr1_path_sigma.
+      rewrite transport_paths_FlFr.
+      rewrite concat_ap_pFq. rewrite concat_ap_Fpq.
+      cbn.
+      apply moveR_pV.
+      repeat rewrite concat_pp_p.
+      pose (rew := whiskerR_p1 (ap (ap KP_lift) (tp_1 a)^)).
+      rewrite concat_pp_p in rew.
+      apply moveL_Vp in rew.
+      rewrite rew; clear rew.
+      apply moveL_Vp.
+      repeat rewrite concat_p_pp.
+      pose (rew := whiskerL_1p (ap
+         (ap (λ x : T f, let (proj1_sig, _) := KP_slicing_fun x in proj1_sig))
+         (tp_1 a)^)).
+      rewrite concat_pp_p in rew.
+      apply moveL_Vp in rew.
+      rewrite rew; clear rew.
+      repeat rewrite inv_V.
+      repeat rewrite ap_V.
+      repeat rewrite <- ap02_is_ap.
+      unfold KP_lift.
+      rewrite T_rec_beta_tp_1. cbn.
+      rewrite <- (ap02_is_ap _ _ (λ x : T f, let (proj1_sig, _) := KP_slicing_fun x in proj1_sig)).
+      unfold KP_slicing_fun. cbn.
+      rewrite (ap02_compose _ _ _ _ pr1).
+      rewrite T_rec_beta_tp_1.
+      rewrite <- (ap02_is_ap _ _ pr1).
+      repeat rewrite concat_1p. repeat rewrite concat_p1.
+      repeat rewrite inv_pp. repeat rewrite inv_V.
+      repeat rewrite concat_p_pp.
+      refine (_ @ concat_1p _). apply whiskerR.
+      cbn.
+      Transparent transport_T. unfold transport_T.
+      match goal with
+      |[|- _ @ ?foo (?bar @ _) = _] => 
+       pose (p := apD (λ U: t (a;1) = t (a;1), foo (bar @ U)) (tp_1 (f:=(λ _ : hfiber f (f a), tt)) (a;1))^)
+      end.
+      cbn in p; rewrite <- p; clear p.
+      rewrite transport_paths_Fl.
+      Transparent pr1_path_sigma. cbn.
+      rewrite concat_p1. rewrite ap_V. rewrite inv_V.
+      match goal with
+      |[|- ((((_ @ ?P1) @ ?P2) @ ?P3) @ ?P4) @ ?P5 = _]
+       => rewrite (concat_1p P1)
+      end.
+      rewrite concat_pV_p. rewrite ap02_pp. rewrite inv_pp.
+      rewrite concat_pV_p.
+      apply moveR_Vp. rewrite <- (ap_compose (concat 1) (path_sigma' (λ y : B, T (λ _ : hfiber f y, tt)) 1) (tp_1 (a; 1))); cbn.
+      rewrite ap02_is_ap.
+      unfold pr1_path.
+      rewrite (ap_compose (λ x, (path_sigma (λ y : B, T (λ _ : hfiber f y, tt)) 
+                                            (f a; t (a; 1)) (f a; t (a; 1)) 1 (1 @ x))) (ap pr1)).
+      rewrite concat_p1.
+      apply ap. cbn. reflexivity.
+  Defined.
+      
+      
+            
+
+      admit.
+  Defined.
+
 Lemma path_path_prod (A B : Type) (z z' : A ∧ B) (p q: z = z')
   : (ap fst p = ap fst q) -> (ap snd p = ap snd q) -> p=q.
 Proof.
@@ -27,12 +142,6 @@ Proof.
   destruct r,s. reflexivity.
 Defined.
 
-Generalizable All Variables.
-
-Lemma transport_T `{f: forall (z: Z), A z -> B z} `(p: z1 = z2 :> Z) (x: A z1)
-  : transport (λ z, T (f z)) p (t x) = t (p # x).
-      by destruct p.
-Defined.
 
 Lemma bar (Y:Type) (A:Y -> Type) 
   : T (λ x : ∃ y : Y, A y, pr1 x) <~> (∃ y : Y, T (λ _ : A y, tt)).

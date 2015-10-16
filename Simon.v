@@ -438,7 +438,7 @@ Proof.
 Defined.
 
 Lemma G_simon_eq `{ua: Univalence} (A B:Type) (f: A -> B) :
-  (foobar A B f) == G_simon A B f.
+  (T_to_sigmahfiber A B f) == G_simon A B f.
 Proof.
   intro x; cbn. unfold G_simon.
   revert x.

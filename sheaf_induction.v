@@ -617,7 +617,7 @@ Section Sheafification.
                         (separated_Type_is_separated U)
                         (separated_unit U)).
   Proof.
-    pose (@is_colimit_Im_OTtelescope ua fs U (@BuildTruncType _ (separated_Type U) (separated_Type_is_TruncType_Sn U)) (separated_unit U) (separated_Type_is_separated U)).
+    pose (@is_colimit_Im_OTtelescope ua fs U (@BuildTruncType _ (separated_Type U) (separated_Type_is_TruncType_Sn U)) (separated_unit U) (separated_Type_is_separated U) (Omono_sep_separated_unit U) (IsSurjection_toIm _ _ _)).
   Admitted.
 
   Definition separated_equiv : forall (P : TruncType (trunc_S n)) (Q :{T : TruncType (trunc_S n) & separated T}),

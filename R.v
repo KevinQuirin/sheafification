@@ -73,7 +73,32 @@ Definition R_rec_beta_rp {A:Type} (P:A -> A -> Type) (p0: forall x:A, P x x)
            a b p
   : ap (R_rec _ _ Q r' rp' rp_1') (rp a b p) = rp' a b p.
 Proof.
-Admitted.
+  refine (cancelL (transport_const (rp (p0:=p0) a b p) (r' a)) _ _ _).
+  pose (e1:= R_ind_beta_rp P p0 (λ _ : R P p0, Q) r'
+        (λ (a0 b0 : A) (p1 : P a0 b0),
+         transport_const (rp a0 b0 p1) (r' a0) @ rp' a0 b0 p1)
+        (λ a0 : A,
+         (whiskerL (transport2 (λ _ : R P p0, Q) (rp_1 a0) (r' a0))
+            (rp_1' a0) @
+          concat_p1 (transport2 (λ _ : R P p0, Q) (rp_1 a0) (r' a0)))^ @
+         whiskerR
+           (transport2_const (rp_1 a0) (r' a0) @
+            concat_p1 (transport2 (λ _ : R P p0, Q) (rp_1 a0) (r' a0)))^
+         (rp' a0 a0 (p0 a0))) a b p). 
+
+  pose (e2:= apD_const (R_ind P p0 (λ _ : R P p0, Q) r'
+        (λ (a0 b0 : A) (p2 : P a0 b0),
+         transport_const (rp a0 b0 p2) (r' a0) @ rp' a0 b0 p2)
+        (λ a0 : A,
+         (whiskerL (transport2 (λ _ : R P p0, Q) (rp_1 a0) (r' a0))
+            (rp_1' a0) @
+          concat_p1 (transport2 (λ _ : R P p0, Q) (rp_1 a0) (r' a0)))^ @
+         whiskerR
+           (transport2_const (rp_1 a0) (r' a0) @
+            concat_p1 (transport2 (λ _ : R P p0, Q) (rp_1 a0) (r' a0)))^
+         (rp' a0 a0 (p0 a0)))) (rp a b p)).
+  exact (e2^@ e1).
+Defined.
 
 Definition R_rec_beta_rp_1 {A:Type} (P:A -> A -> Type) (p0: forall x:A, P x x)
            (Q:Type)
@@ -83,8 +108,76 @@ Definition R_rec_beta_rp_1 {A:Type} (P:A -> A -> Type) (p0: forall x:A, P x x)
            (a:A)
   : ap02 (R_rec P p0 Q r' rp' rp_1') (rp_1 a) = R_rec_beta_rp P p0 Q r' rp' rp_1' a a (p0 a) @ (rp_1' a).
 Proof.
-Admitted.
-  
+  apply (cancel2L (transport2_const (rp_1 (p0:=p0) a) (r' a))).
+  apply (cancelL (apD_const (R_rec P p0 Q r' rp' rp_1') (rp a a (p0 a)))).
+  apply (cancelR _ _ (concat_p_pp _ (transport_const _ _) _)^).
+  apply (cancelR _ _ (whiskerL (transport2 _ (rp_1 a) (r' a)) (apD_const (R_rec P p0 Q r' rp' rp_1') 1)^)).
+  refine ((apD02_const (R_rec P p0 Q r' rp' rp_1') (rp_1 a) )^ @ _).
+  apply (cancelR _ _ (concat_p1 (transport2 (λ _ : R P p0, Q) (rp_1 a) (r' a)))).
+  apply (cancelR _ _ ((whiskerL (transport2 (λ _ : R P p0, Q) (rp_1 a) (r' a)) (rp_1' a) @
+        concat_p1 (transport2 (λ _ : R P p0, Q) (rp_1 a) (r' a)))^ @
+       whiskerR
+         (transport2_const (rp_1 a) (r' a) @
+          concat_p1 (transport2 (λ _ : R P p0, Q) (rp_1 a) (r' a)))^
+                      (rp' a a (p0 a)))).
+  Opaque concat_p_pp.
+  refine (R_ind_beta_rp_1 _ _ _ _ _ _ _ @ _); cbn.
+  apply (cancelL (apD_const
+               (R_ind P p0 (λ _ : R P p0, Q) r'
+                  (λ (a0 b0 : A) (p2 : P a0 b0),
+                   transport_const (rp a0 b0 p2) (r' a0) @ rp' a0 b0 p2)
+                  (λ a0 : A,
+                   (whiskerL (transport2 (λ _ : R P p0, Q) (rp_1 a0) (r' a0))
+                      (rp_1' a0) @
+                    concat_p1
+                      (transport2 (λ _ : R P p0, Q) (rp_1 a0) (r' a0)))^ @
+                   whiskerR
+                     (transport2_const (rp_1 a0) (r' a0) @
+                      concat_p1
+                        (transport2 (λ _ : R P p0, Q) (rp_1 a0) (r' a0)))^
+                   (rp' a0 a0 (p0 a0)))) (rp a a (p0 a)))^).
+
+  apply (@equiv_inj _ _ _ (isequiv_cancelL (transport_const (rp a a (p0 a)) (r' a))
+                                           (ap (R_rec P p0 Q r' rp' rp_1') (rp a a (p0 a)))
+                                           (rp' a a (p0 a)))).
+
+  path_via (R_rec_beta_rp P p0 Q r' rp' rp_1' a a (p0 a)).
+  apply (@equiv_inj _ _ _ (isequiv_inverse _ (feq:= isequiv_cancelL (transport_const (rp (p0:=p0) a a (p0 a)) (r' a))
+                                           (ap (R_rec P p0 Q r' rp' rp_1') (rp (p0:=p0) a a (p0 a)))
+                                           (rp' a a (p0 a))))).
+  rewrite eissect. cbn. repeat rewrite concat_pp_p.
+  rewrite concat_V_pp.
+  rewrite !inv_pp. repeat rewrite concat_p_pp. rewrite concat_pp_V.
+
+  rewrite whiskerR_pp. 
+  rewrite whiskerR_RV.
+  rewrite <- (apD (λ u, (whiskerR (concat_p1 (transport2 (λ _ : R P p0, Q) (rp_1 a) (r' a)))
+                                  u)) (rp_1' a)^).
+  cbn. rewrite transport_paths_FlFr. cbn. rewrite !ap_V; rewrite !inv_V.
+  rewrite !concat_ap_pFq. rewrite ap_idmap. rewrite !inv_pp; rewrite !inv_V.
+  rewrite !concat_p_pp. rewrite concat_pV_p. rewrite (concat_p1 ((transport2_const (rp_1 a) (r' a) @@
+        (R_rec_beta_rp P p0 Q r' rp' rp_1' a a (p0 a) @ rp_1' a)) @
+                                                                  (concat_p_pp (transport2 (λ _ : R P p0, Q) (rp_1 a) (r' a)) 1 1)^)).
+  rewrite whiskerR_RV.
+  apply moveL_pV.
+  unfold whiskerR at 1, whiskerL at 1.
+  rewrite concat_concat2. cbn.
+  rewrite (concat_1p (transport2_const (rp_1 a) (r' a))).
+  rewrite (concat_p1 (R_rec_beta_rp P p0 Q r' rp' rp_1' a a (p0 a))).
+  refine ((concat_p1 _)^ @ _). rewrite !concat_pp_p.
+  match goal with
+  |[|- _ = (?P @@ ?Q) @ ?R] => path_via (((P @ 1) @@ Q) @ R)
+  end.
+  2: rewrite (concat_p1 (transport2_const (rp_1 a) (r' a))); reflexivity.
+  rewrite <- concat_concat2.
+  rewrite !concat_pp_p. apply whiskerL.
+  rewrite !concat_p_pp. apply moveL_pV. rewrite concat_1p.
+  rewrite !concat_pp_p. refine ((concat_p1 _)^@ _).
+  apply whiskerL. cbn.
+  pose (rew:= @triangulator _ _ _ _ (transport2 (λ _ : R P p0, Q) (rp_1 a) (r' a)) 1).
+  apply moveL_Vp in rew. rewrite rew; clear rew. cbn.
+  rewrite inv_pp. cbn. rewrite concat_1p. symmetry; apply concat_pV.
+Qed.
 
 
 Lemma path_R {A B:Type} (P: A -> A -> Type) (p0 : forall x, P x x)

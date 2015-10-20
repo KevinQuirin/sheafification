@@ -1,3 +1,5 @@
+(* -*- coq-prog-args: ("-emacs" "-indices-matter" "-type-in-type") -*- *)
+
 Require Import HoTT HoTT.hit.Truncations Connectedness.
 Require Export Utf8_core.
 Require Import Forall_.

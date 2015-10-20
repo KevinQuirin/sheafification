@@ -1,3 +1,5 @@
+(* -*- coq-prog-args: ("-emacs" "-indices-matter" "-type-in-type") -*- *)
+
 Require Export MyTacs.
 Require Import HoTT.
 Require Export Utf8_core.

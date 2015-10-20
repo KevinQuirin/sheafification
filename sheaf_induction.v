@@ -1,3 +1,5 @@
+(* -*- coq-prog-args: ("-emacs" "-indices-matter" "-type-in-type" "-bt") -*- *)
+
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
 Require Import PathGroupoid_ Forall_ Equivalences_ epi_mono reflective_subuniverse modalities.
@@ -530,7 +532,7 @@ Section Sheafification.
   Proof.
     unfold ap10 at 1. unfold OT_to_sep_eq at 1.
     unfold path_forall. rewrite eisretr. cbn.
-    rewrite path_OT_compute. reflexivity.
+    reflexivity.
   Defined.
   
   Lemma OT_to_sep_coh (E S:TruncType (n.+1)) (sepS: separated S) (f g:E -> S)
@@ -547,7 +549,7 @@ Section Sheafification.
     do 2 rewrite apD10_pp.
     rewrite (p _ _ _ (λ x0, (tr (Ot x0))) _ _ (OT_to_sep_eq E S sepS f g g1 c eq) x).
     unfold OT_to_sep_eq. unfold path_forall; rewrite eisretr.
-    simpl. rewrite path_OT_compute.
+    simpl. 
     unfold ap10.
     do 2 rewrite apD10_V.
     apply moveR_pV.
@@ -595,7 +597,7 @@ Section Sheafification.
         cbn.
         unfold OT_to_sep_eq; cbn.
         unfold ap10 at 1, path_forall at 1. rewrite eisretr. cbn.
-        rewrite path_OT_compute. unfold ap10, path_forall.
+        unfold ap10, path_forall.
         rewrite apD10_V. rewrite eisretr. rewrite concat_1p.
         symmetry; apply concat_Vp.
         
@@ -618,7 +620,17 @@ Section Sheafification.
                         (separated_unit U)).
   Proof.
     pose (@is_colimit_Im_OTtelescope ua fs U (@BuildTruncType _ (separated_Type U) (separated_Type_is_TruncType_Sn U)) (separated_unit U) (separated_Type_is_separated U) (Omono_sep_separated_unit U) (IsSurjection_toIm _ _ _)).
-  Admitted.
+
+    assert (is_m_colimit_C (n.+1) _ _ i = ((separation_colimit_OTtelescope_cocone U
+        {|
+        trunctype_type := separated_Type U;
+        istrunc_trunctype_type := separated_Type_is_TruncType_Sn U |}
+        (separated_Type_is_separated U) (separated_unit U)))).
+    { apply (@equiv_inj _ _ (equiv_inv _ (IsEquiv := isequiv_separation_colimit_OTtelescope_cocone U _ (separated_Type_is_separated U)))).
+      apply isequiv_inverse. 
+      reflexivity. }
+    exact (X # is_m_colimit_H _ _ _ i).
+  Qed.    
 
   Definition separated_equiv : forall (P : TruncType (trunc_S n)) (Q :{T : TruncType (trunc_S n) & separated T}),
                                  IsEquiv (fun f : separated_Type P -> Q.1 =>
@@ -630,215 +642,6 @@ Section Sheafification.
     refine (isequiv_compose' F _ (λ C, C 0) _).
     - exact (isequiv_inverse _ (feq := isequiv_separation_colimit_OTtelescope_cocone P Q sepQ)).
   Defined.
-  
-  Definition mu_modal_paths_func_univ_func
-             (T : TruncType (trunc_S n))
-             (a : T)
-             (b : T)
-             (p : ((clδ T) (a, b)))
-             (t : T)
-  : O nj (BTT (a = t)) -> O nj (BTT (b = t)).
-    apply O_rec; intro u.
-    generalize dependent p; apply O_rec; intro v. apply (O_unit nj).
-    exact (v^@u).
-  Defined.
-
-  Definition mu_modal_paths_func_univ_inv
-             (T : TruncType (trunc_S n))
-             (a : T)
-             (b : T)
-             (p : ((clδ T) (a, b)))
-             (t : T)
-  : O nj (BTT (b = t)) -> O nj (BTT (a = t)).
-    apply O_rec; intro u.
-    generalize dependent p; apply O_rec; intro v; apply (O_unit nj).
-    exact (v@u).
-  Defined.
-
-  Lemma mu_modal_paths_func_univ_eq
-        (T : TruncType (trunc_S n))
-        (a : T)
-        (b : T)
-        (p : (clδ T (a, b)))
-        (t : T)
-  : (Sect (mu_modal_paths_func_univ_inv T a b p t) (mu_modal_paths_func_univ_func T a b p t))
-    /\ (Sect (mu_modal_paths_func_univ_func T a b p t) (mu_modal_paths_func_univ_inv T a b p t)).
-    split.
-    - intro x.
-      unfold mu_modal_paths_func_univ_inv, mu_modal_paths_func_univ_func, δ; simpl. unfold clδ, δ in p; simpl in p.
-      refine (ap10 (f:= (O_rec n nj (BTT (a = t))
-                               (O nj (BTT (b = t)))
-                               (λ u : a = t,
-                                      O_rec n nj (BTT (a = b))
-                                            (O nj (BTT (b = t)))
-                                            (λ v : a = b, O_unit nj (BTT (b = t)) (v ^ @ u))
-                                            p)) 
-                          o (O_rec n nj (BTT (b = t))
-                                   (O nj (BTT (a = t)))
-                                   (λ u : b = t,
-                                          O_rec n nj (BTT (a = b))
-                                                (O nj (BTT (a = t)))
-                                                (λ v : a = b, O_unit nj (BTT (a = t)) (v @ u))
-                                                p))) (g:=idmap) _ x).
-      apply O_rec_O_rec. exact fs.
-      intros q q'. destruct q.
-      rewrite concat_p1.
-      apply concat_Vp.
-    - intro x. unfold mu_modal_paths_func_univ_inv, mu_modal_paths_func_univ_func, δ. simpl.
-      (* pose (foo := O_rec_O_rec nj *)
-      (*                (b = t; istrunc_paths T.2 b t) *)
-      (*                (a = t; istrunc_paths T.2 a t) *)
-      (*                (a = b; istrunc_paths T.2 a b) *)
-      (*                (λ u v, v @ u) *)
-      (*                (λ u v, v^ @ u) *)
-      (*                p *)
-      (*            ); simpl in foo. *)
-
-      refine (ap10 (f:= (O_rec n nj (BTT (b = t))
-                               (O nj (BTT (a = t)))
-                               (λ u : b = t,
-                                      O_rec n nj (BTT (a = b))
-                                            (O nj (BTT (a = t)))
-                                            (λ v : a = b, O_unit nj (BTT (a = t)) (v @ u))
-                                            p)) 
-                          o (O_rec n nj (BTT (a = t))
-                                   (O nj (BTT (b = t)))
-                                   (λ u : a = t,
-                                          O_rec n nj (BTT (a = b))
-                                                (O nj (BTT (b = t)))
-                                                (λ v : a = b, O_unit nj (BTT (b = t)) (v^ @ u))
-                                                p))) (g:=idmap) _ x).
-      apply O_rec_O_rec. exact fs.
-      intros q q'. destruct q'.
-      rewrite concat_1p.
-      apply concat_1p.
-  Qed.
-
-  Arguments mu_modal_paths_func_univ_eq : default implicits, simpl never.
-
-    Lemma mu_modal_paths_aux (A B:TruncType n) (v:A) (eq : A = B :> Type)
-  : O_unit nj B (transport idmap eq v)
-    = transport idmap
-                (ap trunctype_type
-                    (ap (@st n nj)
-                        (ap (O nj)
-                            (path_trunctype (equiv_path _ _ eq))))) (O_unit nj A v).
-    destruct A as [A TrA], B as [B Trb]; simpl in *.
-    destruct eq.
-    simpl.
-    assert (p := (center (TrA = Trb))). destruct p.
-    unfold path_trunctype. cbn.
-    rewrite eta_path_universe_uncurried.
-    unfold path_sigma_hprop, path_sigma_uncurried. 
-    cbn. hott_simpl.
-    match goal with
-    |[|- _ = transport idmap (ap _ (ap _ (ap _ (ap _
-                                                   match ?foo in (_ = v2) return _ with |_ => _ end)))) _] => assert (r: 1 = foo) by apply path_ishprop; destruct r
-    end.
-    reflexivity.
-    Defined.
-
-  Definition separated_unit_paths_are_nj_paths_fun (T:(n.+1)-Type) (a b:T) : (separated_unit T a = separated_unit T b) -> (O nj (BTT (a=b))).
-    intro p.
-    unfold separated_unit, toIm in p. simpl in p.
-    pose (p' := ap trunctype_type (ap (@st n nj) (ap10 p..1 b))). simpl in p'.
-    apply (transport idmap p'^). apply O_unit. reflexivity.
-  Defined.
-
-  Definition separated_unit_paths_are_nj_paths_inv (T:(n.+1)-Type) (a b:T) : (O nj (BTT (a=b))) -> (separated_unit T a = separated_unit T b).
-    intro p.
-    pose (Ωj := @BuildTruncType _ (T -> subuniverse_Type nj) (T_nType_j_Type_trunc T)).
-    pose (inj := pr1 : (separated_Type T) -> Ωj).
-    transparent assert (X : (IsMono inj)).
-    intros x y. 
-    exact (isequiv_inverse (path_sigma_hprop x y)).
-    
-    assert (inj (separated_unit T a) = inj (separated_unit T b)).
-    unfold inj, separated_unit. simpl.
-    apply path_forall; intro t; simpl.
-    apply unique_subuniverse; apply path_trunctype.
-    symmetry.
-    exists (mu_modal_paths_func_univ_inv T a b p t).
-    apply isequiv_adjointify with (g := mu_modal_paths_func_univ_func T a b p t);
-      [exact (snd (mu_modal_paths_func_univ_eq T a b p t)) | exact (fst (mu_modal_paths_func_univ_eq T a b p t))].
-    exact (@equiv_inv _ _ _ (X (separated_unit T a) (separated_unit T b)) X0).
-  Defined.
-
-  
-
-  Lemma separated_unit_paths_are_nj_paths_idpath (T:(n.+1)-Type) (a:T) (p : (separated_unit T a = separated_unit T a)) (eq : 1 = p)
-    : separated_unit_paths_are_nj_paths_fun T _ _ p = O_unit nj (BTT (a=a)) idpath.
-  Proof.
-    destruct eq. reflexivity.
-  Qed.
-
-  Lemma separated_unit_paths_are_nj_paths_pp (T:TruncType n.+1) (a b c:T) (p : (separated_unit T a = separated_unit T b)) (q : (separated_unit T b = separated_unit T c))
-  : separated_unit_paths_are_nj_paths_fun T _ _ (p@q)
-    = O_rec_concat n nj T a b c (separated_unit_paths_are_nj_paths_fun _ _ _ p) (separated_unit_paths_are_nj_paths_fun _ _ _ q).
-    simpl.
-    unfold O_rec_concat.
-    unfold separated_unit_paths_are_nj_paths_fun, separated_unit_paths_are_nj_paths_inv. simpl.
-    unfold pr1_path.
-    apply (ap10 (f:=transport idmap (ap trunctype_type (ap (@st n nj) (ap10 (p @ q) ..1 c)))^)
-                (g := (O_rec n nj (BTT (b=c)) (O nj (BTT (a=c)))
-     (λ q0 : b = c,
-      O_rec n nj (BTT (a=b))
-        (O nj (BTT (a=c)))
-        (λ p0 : a = b, O_unit nj (BTT (a=c)) (p0 @ q0))
-        (transport idmap
-           (ap trunctype_type (ap (@st n nj) (ap10 (ap pr1 p) b)))^
-           (O_unit nj (BTT (b = b)) 1)))) o (transport idmap
-        (ap trunctype_type (ap (@st n nj) (ap10 (ap pr1 q) c)))^))).
-    symmetry.
-    refine (moveL_equiv_pV _ _ _).
-    apply (@equiv_inj _ _ _ (O_equiv n nj (BTT (b = c)) (O nj (BTT (a = c))))).
-    rewrite (O_rec_retr).
-    apply path_forall; intro u. simpl in *.
-    destruct u.
-    apply (ap10 (f := (O_rec n nj (BTT (a = b)) (O nj (BTT (a = b))) 
-                             (λ p0 : a = b, O_unit nj (BTT (a = b)) (p0 @ 1)))
-                        o (transport idmap
-        (ap trunctype_type (ap (@st n nj) (ap10 (ap pr1 p) b)))^))
-                (g := transport idmap (ap trunctype_type (ap (@st n nj) (ap10 (p @ q) ..1 b)))^ o
-                                                                                     (transport idmap
-        ((ap trunctype_type (ap (@st n nj) (ap10 (ap pr1 q) b)))^)^))).
-    refine (moveL_equiv_pV _ _ _).
-    apply (@equiv_inj _ _ _ (O_equiv n nj (BTT (a = b)) (O nj (BTT (a = b))))).
-    rewrite (O_rec_retr).
-    apply path_forall; intro u. simpl in *.
-    destruct u; simpl; hott_simpl.
-    repeat rewrite <- transport_pp.
-    unfold pr1_path.
-    rewrite ap_pp. rewrite ap10_pp. rewrite inv_pp. repeat rewrite ap_pp.
-    repeat rewrite ap_V. rewrite concat_p_pp. rewrite <- inv_pp.
-    rewrite concat_pV. reflexivity.
-  Qed.
-      
-  Lemma KP_is_cldiag (T:TruncType (n.+1))
-    : Pullback (separated_unit T) (separated_unit T) <~> {x:T & {y:T & O nj (BTT (x=y))}}.
-  Proof.
-    unfold Pullback.
-    apply (equiv_functor_sigma_id); intro a.
-    apply (equiv_functor_sigma_id); intro b.
-    apply separated_unit_paths_are_nj_paths.
-  Defined.
-
-  Definition separated_cocone_KP (T Q: TruncType (n.+1)) (sepQ: separated Q) (f:T -> Q)
-    : forall (x:Pullback (separated_unit T) (separated_unit T)), f x.1 = f x.2.1.
-  Proof.
-    intros [a [b p]]; cbn.
-    specialize (sepQ (∃ e : T ∧ T,
-         (O nj (BTT (fst e=snd e)))) (dense_into_cloture _ (δ T)) (λ u, f (fst u.1)) (λ u, f (snd u.1))). unfold IsMono in sepQ.
-    refine (ap10 (equiv_inv _ (IsEquiv := sepQ) (path_forall (λ x, ap f x.2.1))) ((a,b);_)).
-    apply separated_unit_paths_are_nj_paths_fun. exact p.
-  Defined.
-
-
-  (* Proposition 30 *)
-  Definition separated_equiv_ : forall (P : TruncType (trunc_S n)) (Q :{T : TruncType (trunc_S n) & separated T}),
-                                 IsEquiv (fun f : separated_Type P -> Q.1 =>
-                                            f o (separated_unit P)).
-  Admitted.
   
   (* Proposition 30 *)
   Definition separation_reflective_subuniverse
@@ -1387,11 +1190,6 @@ Section Sheafification.
     pose (p:= (j_is_nj (BuildTruncType -1 (χ x)))).
     rewrite <- p. apply istrunc_trunctype_type.
   Qed.
-
-  (* Lemma transport'_1 (A : Type) (P : A → Type) (x : A) (u : P x) v (H : 1=v) *)
-  (* : transport P v u = u. *)
-    (* destruct H. reflexivity. *)
-  (* Qed. *)
   
   Lemma IsMono_IsHProp_cloture (T: Type) (χ : T -> TruncType n) (Monom : IsMono (pr1 : {t:T & χ t} -> T))
     : forall x, IsHProp (O nj (χ x)).
@@ -1433,12 +1231,7 @@ Section Sheafification.
     exact (IsMono_cloture _ _ Monom).
     apply cloture_is_closed.
   Defined.
-
-  (* The following has exactly the same type as separated_to_sheaf, but doesn't create universes constraints *)
-  Definition separated_to_sheaf' (U:SnType_j_Type) (χ:U.1 -> TruncType n) (sep: separated (BuildTruncType _ {u:U.1 & χ u})) Monom :
-    Snsheaf_struct (BuildTruncType _ (@separated_to_sheaf_Type U.1 χ Monom)).
-  Admitted. (* Universes *)
-
+  
   Definition sheafification_Type (T:TruncType (trunc_S n)) 
     :=
     @separated_to_sheaf_Type (T -> subuniverse_Type nj)
@@ -1456,7 +1249,7 @@ Section Sheafification.
     @BuildTruncType _ (sheafification_Type T) (sheafification_istrunc T).
   
   Definition sheafification_ (T:TruncType (trunc_S n)) : Snsheaf_struct (sheafification_trunc T)
-    := separated_to_sheaf' (T_nType_j_Type_sheaf T)
+    := separated_to_sheaf (T_nType_j_Type_sheaf T)
                            (λ b, @BuildTruncType _ (Trunc (-1) (hfiber (λ t t' : T, O nj (BTT (t = t'))) b)) (@trunc_leq -1 n tt _ _))
                            (@separated_Type_is_separated T)
                            (IsMono_fromIm _).
@@ -1778,11 +1571,6 @@ Section Sheafification.
     - apply good_sheafification_unit_paths_are_nj_paths_sect.
   Qed.
 
-  (* The following has exactly the same type as good_sheafification_unit_paths_are_nj_paths, but doesn't collapse universes *)
-  Theorem good_sheafification_unit_paths_are_nj_paths' (T:(n.+1)-Type) (a b:T) : (good_sheafification_unit T a = good_sheafification_unit T b) <~> (O nj (BTT (a=b))).
-  Admitted. (* Universes *)
-
-
   (* Left-exactness of sheafification *)
   Definition sheafification_left_exact
     : IsLex sheafification_modality.
@@ -1790,7 +1578,7 @@ Section Sheafification.
     intros A x y H. simpl.
     Transparent O. cbn. Opaque O.
     refine (contr_equiv' _ (cumulativity (BTT (x=y)) _)).
-    apply (@trunc_equiv' (good_sheafification_unit A x = good_sheafification_unit A y) ((O nj (BTT (x=y)))) (good_sheafification_unit_paths_are_nj_paths' A x y) -2).
+    apply (@trunc_equiv' (good_sheafification_unit A x = good_sheafification_unit A y) ((O nj (BTT (x=y)))) (good_sheafification_unit_paths_are_nj_paths A x y) -2).
     apply (@contr_paths_contr).
     simpl in H.
     unfold good_sheafification. simpl.
@@ -1798,16 +1586,69 @@ Section Sheafification.
   Defined.
     
   Definition sheafification_hprop (T:TruncType n.+1) (HT : IsHProp T)
-    : (Oj (BuildTruncType -1 T)).1 <~> (good_sheafification_Type T).
+    : ((Oj (BuildTruncType -1 T)).1 : Type) = (good_sheafification_Type T).
   Proof.
-    pose (e:= cumulativity (@BuildTruncType n T (@trunc_leq -1 n tt _ _)) _).
-    match goal with
-    |[e: _ <~> ?XX |- _] => equiv_via XX
-    end.
-    Focus 2. apply equiv_path. apply ap. apply path_trunctype. apply equiv_idmap.
-    etransitivity; try exact e; clear e.
-    pose (j_is_nj (BuildhProp T)).
-    apply equiv_path; exact p.
-  Qed.
+    assert (IsHProp (good_sheafification_Type T)).
+    {
+      pose (@hprop_stability ua fs (n.+1)). 
+      (* pose (@hprop_stability ua fs (n.+1) (sheafification_modality)). *)
+      admit.
+    }
+
+    refine (ap (trunctype_type) (path_iff_hprop (A:=pr1 (Oj (BuildhProp T))) (B:=@BuildTruncType -1 _ X) _ _)).
+    - intro x.
+      cbn. unfold good_sheafification_Type.
+      refine (exist _ _ _).
+      intro t.
+      refine (Build_subuniverse_Type n nj _ _).
+      revert x.
+
+      cut ((O subuniverse_Prop (BuildhProp T)) -> (O subuniverse_Prop
+          (@BuildhProp
+             (Trunc (-1)
+                (∃ a : T,
+                 (λ t' : T, O nj (BTT (a = t'))) =
+                 (λ _ : T,
+                  {|
+                  st := {|
+                        trunctype_type := Unit;
+                        istrunc_trunctype_type := istrunc_inO_tr Unit |};
+                  subu_struct := subuniverse_unit n nj |}))) (istrunc_truncation _ _)))).
+
+      exact idmap.
+      apply O_rec.
+      intro x; cbn in x.
+      apply (O_unit subuniverse_Prop). apply tr.
+      exists x. cbn. apply path_forall; intro t.
+      apply unique_subuniverse. apply path_trunctype.
+      cbn. equiv_via (O nj (BTT Unit)).
+      apply function_lift_equiv'. exact fs.
+      refine (equiv_adjointify _ _ _ _).
+      intro p; exact tt.
+      intro tt; apply path_ishprop.
+      intro y; apply path_ishprop.
+      intro y; apply path_ishprop.
+      apply equiv_path.
+      apply OUnit_is_Unit. exact ua. exact fs.
+    - intros [u p]. 
+      revert p.
+      apply Oj_equiv.
+      apply Trunc_rec.
+      intros [a p]. destruct p.
+      apply Oj_unit.
+      exact a.
+
+      (* Another proof, using [cumulativity] *)
+      
+      (* apply path_universe_uncurried. *)
+      (* pose (e:= cumulativity (@BuildTruncType n T (@trunc_leq -1 n tt _ _)) _). *)
+      (* match goal with *)
+      (* |[e: _ <~> ?XX |- _] => equiv_via XX *)
+      (* end. *)
+      (* Focus 2. apply equiv_path. apply ap. apply path_trunctype. apply equiv_idmap. *)
+      (* etransitivity; try exact e; clear e. *)
+      (* pose (j_is_nj (BuildhProp T)). *)
+      (* apply equiv_path; exact p. *)
+  Admitted.
       
 End Sheafification.

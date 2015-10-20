@@ -10,9 +10,9 @@ Section TruncatedColimit.
      is_m_colimit_H : is_m_universal m is_m_colimit_C}.
 
   Variable (G:graph). Variable (D:diagram G).
-  Variable (Q:Type).
-  Variable (ColimQ : is_colimit D Q).
   Variable (m:trunc_index).
+  Variable (Q:TruncType m).
+  Variable (ColimQ : is_colimit D Q).
 
   Definition tr_diagram : diagram G.
   Proof.
@@ -21,13 +21,13 @@ Section TruncatedColimit.
     - intros i j f. cbn. refine (Trunc_rec _). intro x. exact (tr (diagram1 D f x)).
   Defined.
 
-  Definition tr_cocone : cocone tr_diagram (Trunc m Q).
+  Definition tr_cocone : cocone tr_diagram Q.
   Proof.
     refine (Build_cocone _ _).
-    - intro i. refine (Trunc_rec _). intro x. apply tr.
+    - intro i. refine (Trunc_rec _). intro x. 
       exact (ColimQ i x).
     - intros i j f. refine (Trunc_ind _ _).
-      intro a. cbn. apply ap. exact (qq ColimQ i j f a).
+      intro a. cbn. exact (qq ColimQ i j f a).
   Defined.
 
   Lemma tr_cocone_to_cocone {X:TruncType m} (C: cocone tr_diagram X)
@@ -72,8 +72,8 @@ Section TruncatedColimit.
   (*                                  *)
   
   Lemma compose_cocone_m_cocone {X:TruncType m}
-    : cocone_to_tr_cocone o (@postcompose_cocone _ D Q ColimQ X) o (λ f:Trunc m Q -> X, (λ x, (f (tr x))) : Q -> X)
-      = @postcompose_cocone _ tr_diagram (Trunc m Q) tr_cocone X.
+    : cocone_to_tr_cocone o (@postcompose_cocone _ D Q ColimQ X)
+      = @postcompose_cocone _ tr_diagram Q tr_cocone X.
   Proof.
     cbn.
     apply path_forall; intro f.
@@ -85,12 +85,12 @@ Section TruncatedColimit.
       rewrite ap_compose. reflexivity.
   Defined.
       
-  Lemma tr_colimit : is_m_colimit m (tr_diagram) (Trunc m Q).
+  Lemma tr_colimit : is_m_colimit m (tr_diagram) Q.
   Proof.
     refine (Build_is_m_colimit _ _ _ _ tr_cocone _).
     intro X.
     refine (isequiv_adjointify _ _ _).
-    - intro C. refine (Trunc_rec _).
+    - intro C. 
       apply (equiv_inv _ (IsEquiv := is_colimit_H ColimQ X) (tr_cocone_to_cocone C)).
     - intro C.
       rewrite <- compose_cocone_m_cocone; cbn.
@@ -98,9 +98,9 @@ Section TruncatedColimit.
       exact (eisretr _ (IsEquiv := equiv_isequiv (cocone_eq_tr_cocone (X:=X))) C).
     - intro C.
       rewrite <- compose_cocone_m_cocone.
-      pose (r := eissect _ (IsEquiv := equiv_isequiv (cocone_eq_tr_cocone (X:=X))) (postcompose_cocone ColimQ (λ x : Q, C (tr x)))); cbn in r; rewrite r; clear r.
+      pose (r := eissect _ (IsEquiv := equiv_isequiv (cocone_eq_tr_cocone (X:=X))) (postcompose_cocone ColimQ (λ x : Q, C x))); cbn in r; rewrite r; clear r.
       rewrite eissect.
-      apply path_forall; refine (Trunc_ind _ _).
+      apply path_forall; 
       intro a; reflexivity.
   Defined.
   

@@ -1,3 +1,5 @@
+(* -*- coq-prog-args: ("-emacs" "-indices-matter" "-type-in-type") -*- *)
+
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
 Require Import reflective_subuniverse.

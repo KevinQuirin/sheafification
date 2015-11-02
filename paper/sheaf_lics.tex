@@ -631,6 +631,21 @@ where $\postcompose_f : \phi = \psi \to \phi \circ f = \psi \circ f$,
 is an equivalence.
 \end{defi}
 
+Colimits behave well with truncations, in the following sense:
+
+\begin{lem}
+  Let $D$ be a diagram, $m$ a truncation index, and
+  $P:\Type_{m}$. Let's call $P$ a $m$-colimit of $D$ if
+  for any other $X:\Type_m$, the
+  map
+  $$\lambda f:P \to X, \left( \lambda i,~f \circ q_i~;~ \lambda i\, j\,
+    \phi,~ \postcompose_f (p(i, j, g)) \right)$$
+  is an equivalence.
+
+  Then, if $\|D\|_m$ is the same diagram as $D$, but where every type
+  is $m$-truncated, $P$ is a $m$-colimit of $\|D\|_m$.
+\end{lem}
+
 % Essentially, being a colimit means making the diagram commutes, and
 % being universal for this property.
 
@@ -1350,7 +1365,11 @@ We will need the following lemma:
 
 \begin{lem}
   Let $A,S:\Type_{n+1}$, $S$ separated, and $f:A \to S$. Then if 
-  $$\forall a,b:A,~f a = f b \simeq \modal (a=b),$$ then 
+  \begin{equation}
+    \label{eq:Omono}\tag{$\star$}
+    \forall a,b:A,~f a = f b \simeq \modal (a=b),
+  \end{equation}
+  then
   $$\forall a,b:\|T_f\|_{n+1},~|\tilde f|_{n+1} a = |\tilde f|_{n+1} b \simeq \modal (a=b).$$
 \end{lem}
 
@@ -1367,14 +1386,34 @@ We will need the following lemma:
   As $\mu_T$ is an surjection, using the particular case of 
   Giraud-Rezk-Lurie axiom introduced in Section~\ref{sec:giraud-ax},
   we know that $\separated T$ is the $(n+1)$-colimit of $\|C(\mu_T)\|_{n+1}$. 
-%
+  % 
   Thus the result follows from the fact that $\|C(\mu_T)\|_{n+1} =
   \mathring T$,
   which we now show.
 
-  By induction, we need to show that for any $A,B:\Type_{n+1}$ such
-  that $\varphi:~A \simeq B$, with an arrow $f:A \to \separated T$, 
-  $$T_f = \mathring T_B.$$
+  First, we show that $\mu_T$ satisfies condition~(\ref{eq:Omono}),
+  \ie{} $\forall a,b:T$, $\modal_n (a=b) = (\mu_T a =
+  \mu_T b)$. By univalence, we want arrows in both ways, forming an
+  equivalence.
+  \begin{itemize}
+  \item Suppose $p : (\mu_T a = \mu_T b)$. Then projecting $p$ along
+    first components yields $q : \prod_{t:T} \modal_n(a=t) = \modal_n (b=t)
+    $.
+    Taking for example $t=b$, we deduce $\modal_n (a=b) = \modal_n(b=b)$,
+    and the latter is inhabited by $\eta_{b=b} 1$.
+  \item Suppose now $p : \modal_n(a=b)$. Let $\iota$ be the first
+    projection from $\separated T \to (T \to \Type_n^\modal)$. $\iota$ is
+    an embedding, thus it suffices to prove $\iota (\mu_T a) = \iota
+    (\mu_T b)$, \ie $\prod_{t:T}\modal_n (a=t) = \modal_n (b=t)$. The latter
+    remains true by univalence.
+  \end{itemize}
+  The fact that these two form an equivalence is technical, we refer to
+  the formalization for an explicit proof.
+
+  Then, by induction, we need to show that for any $A,B:\Type_{n+1}$ such
+  that $\varphi:~A \simeq B$, with an arrow $f:A \to \separated T$
+  satisfying~(\ref{eq:Omono}), 
+  $$T_f \simeq \mathring T_B.$$
   For this, we use 
   \begin{align*}
     T_f &= \mathrm{Coeq}_1 \left( 
@@ -1385,48 +1424,34 @@ We will need the following lemma:
     \\
     \mathring T_B &= \mathrm{Coeq}_1 \left( 
                     \xymatrix{\sum_{a,b:B} \modal (a=b) \dar[r]{4pt}^-{\pi_1}_-{\pi_2}
-                                                                & B
+                                                                & B}
                                                                   \right)
   \end{align*}
 
+  By~(\ref{eq:Omono}), $\sum_{a,b:A} f a = f b \simeq \sum_{a,b:A} \modal
+  (a=b)$, and by $\varphi$, $\sum_{a,b:A} f a = f b \simeq
+  \sum_{a,b:B} \modal ( a = b)$.
 
-%   Let $k:\nat$, we have to show that 
-%   \begin{align*}
-%     &\sum_{t:T^k} (\mu_T t_1 = \mu_T t_2 \land \cdots
-%       \land \mu_T t_{k-1} \mu_T t_k)\\
-%     &= \sum_{t:T^k} \modal_n (t_1 = t_2 \land \cdots
-%       \land t_{k-1} = t_k)
-%   \end{align*}
-% By induction on $k$, and the preservation of products by $\modal_n$, it
-% suffices to show that for any $a,b:T$, $\modal_n (a=b) = (\mu_T a =
-% \mu_T b)$. By univalence, we want arrows in both ways, forming an
-% equivalence.
-% \begin{itemize}
-% \item Suppose $p : (\mu_T a = \mu_T b)$. Then projecting $p$ along
-%   first components yields $q : \prod_{t:T} \modal_n(a=t) = \modal_n (b=t)
-%   $.
-%   Taking for example $t=b$, we deduce $\modal_n (a=b) = \modal_n(b=b)$,
-%   and the latter is inhabited by $\eta_{b=b} 1$.
-% \item Suppose now $p : \modal_n(a=b)$. Let $\iota$ be the first
-%   projection from $\separated T \to (T \to \Type_n^\modal)$. $\iota$ is
-%   an embedding, thus it suffices to prove $\iota (\mu_T a) = \iota
-%   (\mu_T b)$, \ie $\prod_{t:T}\modal_n (a=t) = \modal_n (b=t)$. The latter
-%   remains true by univalence.
-% \end{itemize}
-% The fact that these two form an equivalence is technical, we refer to
-% the formalization for an explicit proof.
+Thus, $T_f \simeq \mathring T$.
 \end{proof}
 
-Now, let $Q$ be a separated $\Type_{n+1}$, and $f:T \to Q$. Then the
+Now, let $Q$ be any separated $\Type_{n+1}$, and $f:X \to Q$. Then the
 following diagram commutes
-$$\xymatrix @C=4em{ 
-    \cdots \overline{\Delta_3} \tar[r]{4pt} \ar[rd]_{f\circ \pi_1} & \overline{\Delta_2}
-    \dar[r]{2pt} \ar[d]^{f\circ \pi_1} &
-    \overline{\Delta_1} = T \ar[ld]^{f\circ \pi_1}\\
-    & Q &
-  }$$
+
+$$\xymatrix{
+\|X\|_{n+1} \ar[r] \ar[rd] & \|\mathring T_{X}\|_{n+1} \ar[r] \ar[d] & \|\mathring
+  T_{\mathring T_X} \|_{n+1} \ar[ld]\cdots \\
+  & Q &
+} $$ 
+
+% $$\xymatrix @C=4em{ 
+%     \cdots \overline{\Delta_3} \tar[r]{4pt} \ar[rd]_{f\circ \pi_1} & \overline{\Delta_2}
+%     \dar[r]{2pt} \ar[d]^{f\circ \pi_1} &
+%     \overline{\Delta_1} = T \ar[ld]^{f\circ \pi_1}\\
+%     & Q &
+%   }$$
 But we know (lemma~\ref{lem:sepiscolim}) that $\separated T$ is the
-colimit of the closed diagonals diagram, thus there is an universal
+$(n+1)$-colimit of the diagram $\mathring T$, thus there is an universal
 arrow $\separated T \to Q$.
 %
 This is enough to state the following proposition.
@@ -1586,7 +1611,7 @@ $\Type_n$, left exactness means that for any $x,y : T$,
 $\modal_n(x=y)$ is contractible.
 
 Using a proof by univalence as we have done for proving $\modal_n (a=b) = (\mu_T a =
-\mu_T b)$ in Proposition~\ref{prop:sep-subu}, we can show that:
+\mu_T b)$ in Proposition~\ref{prop:sepiscolim}, we can show that:
 \begin{prop}
   For all $a,b:T$, $\modal_n(a=b) = (\nu_T a = \nu_T b)$.
 \end{prop}
@@ -1673,10 +1698,10 @@ Section~\ref{sec:sheafification} is formalized in
 \end{itemize}
 
 Overall, with other files containing technical lemmas, the project
-contains 6322 lines, and it could be reduced a bit by improving the
+contains 8081 lines, and it could be reduced a bit by improving the
 way Coq tries to rewrite and apply lemmas automatically. 
-The \texttt{coqwc} tool counts 2000 lines of specifications
-(definitions, lemmas, theorems, propositions) and 3700 lines of proof
+The \texttt{coqwc} tool counts 1750 lines of specifications
+(definitions, lemmas, theorems, propositions) and 6330 lines of proof
 script.
 %
 This constitutes a significant amount of work but the part dedicated
@@ -1706,42 +1731,9 @@ part of the theory of higher toposes. As a matter of comparison, this
 \subsection{Limitations of the formalization}
 \label{sec:limit-form}
 
-In our formalization of sheafification defined in
-Section~\ref{sec:sheafification} (done in 
-\texttt{sheaf\_induction.v}), two very technical facts required to
-show that $\separated$ is a modality have been
-admitted. 
-%
-It is due to a lack of technical lemmas on paths between paths in
-the Coq/HoTT library.
-%
-This is not surprising because those lemmas are defined in a
-call-by-need approach and there is no notion of a complete set of
-lemmas on paths for the moment. 
-%
-This is the subject of ongoing work, in particular those trying to
-define a syntax based on the cubical set model~\cite{bezem2013model}
-of Coquand et al.  
-%
-Nevertheless, we are confident that with an enrichment of the Coq/HoTT
-library, they can be proved and have been admitted only by lack of
-time.
-%
-In the proof that diagrams are equal in lemma~\ref{lem:sepiscolim},
-the equality of projections is admitted, because if this proof is
-obvious on paper, it becomes really technical when formalized.
-%
-This suggest that we should try to fine a better way to encode
-projections, with a better computational content.
-%
-As a consequence, the fact that $P$ is a colimit of the diagonal
-closed diagram is admitted too, but again, this proof should be really
-as short as it is on paper.
+In the formalization, we had to use the type-in-type option, to handle
+the universe issues we faced.
 
-More importantly, there are few axioms in the formalization that are
-due to an unsatisfactory management of polymorphic universe levels in
-Coq.
-%
 Universes are used in type theory to ensure consistency by checking
 that definitions are well-stratified according to a certain hierarchy.
 %
@@ -1764,8 +1756,6 @@ But as it would not have any computational content, such a solution
 would really complicate the proofs as the axiom would appear
 everywhere cumulativity is needed and it would need explicit
 annotations for universe levels everywhere in the formalization.
-%
-We have chosen a more simple but maybe less satisfactory solution. 
 %
 When the absence of cumulativity on $\Type_n$ rises a universe issue
 for a lemma (it occurs twice in the formalization), we have proved the
@@ -1838,18 +1828,13 @@ ways:
   At the moment, sheafification only works with truncated
   types. This is fine from a programming point of view, 
   but many important types in homotopy theory are not
-  truncated, \eg the circle $\mathbb S^1$.  Thus, we plan to extend
+  truncated, \eg the circle $\mathbb S^2$.  Thus, we plan to extend
   the sheafification to all types by using a
   limit construction.
 \item 
-  In this work, a particular case of a Giraud-Rezk-Lurie axiom has
-  been admitted. The work done in~\cite[Chapter 6]{lurie} suggests,
-  considering that homotopy type theory is a language for higher topos
-  theory, that this axiom is provable. We plan to investigate whether the
-  higher-topos-theoretic proof can be adapted to our setting.
-  %
-  % A computer-checked proof of this fact would improve our
-  % developpement.
+  We would like to have much more examples of left-exact modalities on
+  $\HProp$, in order to extend type theory with different principles
+  than excluded middle.
 \end{itemize}
 Moreover, in topos theory, Lawvere-Tierney subsumes Grothendieck~\cite[Section~V.4]{maclanemoerdijk} in the sense that any
 Grothendieck topology gives rise to a Lawvere-Tierney topology with
@@ -1869,7 +1854,8 @@ remains true in higher topos theory.
 \section*{Acknowledgment}
 
 We would like to thank all maintainers of the Coq/HoTT library, who
-have provided a very solid base for our formalization. We also would like
+have provided a very solid base for our formalization. 
+We also would like
 to thank Bas Spitters for helpful discussions on the subject.
 
 % trigger a \newpage just before the given reference

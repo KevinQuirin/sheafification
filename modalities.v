@@ -41,6 +41,28 @@ Section Preliminary.
     apply subu_sigma.
   Defined.
 
+  Definition is_equiv_Opaths {n} {mod : Modality n} (subU := underlying_subu n mod)
+             (A:TruncType n) (x y : O subU A)
+    : IsEquiv (O_unit subU (BuildTruncType _ (x = y))).
+  Proof.
+    refine (isequiv_adjointify _ _ _ _).
+    - refine (O_rec _ _ _ (Build_subuniverse_Type _ _ (BuildTruncType _ (x=y)) _) _).
+      exact idmap.
+    - unfold Sect.
+      intro u.
+      match goal with
+      |[|- ?ff (?gg u) = _] => set (F := ff); set (G := gg)
+      end.
+      revert u.
+      refine (O_rec_dep _ (λ u, Build_subuniverse_Type _ _ (BuildTruncType _ (F (G u) = u)) _) _).1.
+      intro u; unfold F; clear F; unfold G; clear G. cbn.
+      rewrite (λ P Q f, ap10 (O_rec_retr _ subU P Q f)).
+      reflexivity.
+    - intro u.
+      rewrite (λ P Q f, ap10 (O_rec_retr _ subU P Q f)).
+      reflexivity.
+  Defined.
+      
   (* Proposition 16, for HProps *)
   Definition hprop_stability {n} {mod : Modality n} (subU := underlying_subu n mod) (P:hProp) (t : IsTrunc n P)
   : IsHProp (O subU (@BuildTruncType n P t)).

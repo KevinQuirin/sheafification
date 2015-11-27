@@ -76,6 +76,7 @@
 \newcommand \colim[1] {\mathrm{colim}(Q)}
 \newcommand \zero {\mathbf{0}}
 \newcommand \one {\mathbf{1}}
+\newcommand \two {\mathbf{2}}
 
 
  \IEEEpubid{} 
@@ -1611,7 +1612,7 @@ $\Type_n$, left exactness means that for any $x,y : T$,
 $\modal_n(x=y)$ is contractible.
 
 Using a proof by univalence as we have done for proving $\modal_n (a=b) = (\mu_T a =
-\mu_T b)$ in Proposition~\ref{prop:sepiscolim}, we can show that:
+\mu_T b)$ in Proposition~\ref{lem:sepiscolim}, we can show that:
 \begin{prop}
   For all $a,b:T$, $\modal_n(a=b) = (\nu_T a = \nu_T b)$.
 \end{prop}
@@ -1657,6 +1658,39 @@ this for future work.
 % \nt{Recap what has been done, and give the final result about EM with
 %   the dense topology as a corollary.}
 
+\section{Extension to $\Type$}
+\label{sec:extension-type}
+
+Now, we have defined a (countably) infinite family of modalities
+$\Type_i \to \Type_i$. Now:
+
+\begin{lem}
+  Let $\modal_i:\Type_i \to \Type_i$ be a modality. Then $\modal_i
+  \circ \|\cdot\|_i : \Type \to \Type$ is a modality in the sense
+  of~\cite[Section 7.7]{hottbook}
+\end{lem}
+
+Taking $i$ as a non-fixed parameter, that would allow us to work in an
+universe where the forced principle ({\em e.g.} mere excluded middle) is
+true for any explicit truncated type. Indeed, $i$ can be chosen
+dynamically along a proof, and thus be increased as much as needed.
+
+\subsection{New objects}
+\label{sec:new-objects}
+
+Working in $\Type^\modal$, one can consider new objects. For example,
+let $c:nat \to \nat$ implementing the Collatz function. Then, for any
+$n:\nat$, the type $C_n \defeq \sum_{k:\nat}\left( c^k(n) = 1 \land k\text{ is the
+  smallest such $\nat$}\right)$ is an $\HProp$.
+Thus, for any $n$, one have $C_n + \lnot C_n$, and one can {\em
+  constructively} build a map $\varphi:\nat \to \two$ such that
+$\varphi(n) = \True$ if and only if $n$ satisfies the Collatz
+conjecture.
+Actually, one can defined such a map for any family of $\HProp$
+indexed by $\nat$, for example with the family $C_n \defeq \text{«\,The $n$-th Turing Machine halts\,»}$.
+
+
+
 \section{Formalization} 
 \label{sec:formalization}
 
@@ -1680,8 +1714,8 @@ We provide a more detailed insight of the structure of our formalization:
 \item  Homotopy fibers and subobject classifiers are formalized in
 \texttt{sub\_object\_classifier.v}.% (284 lines).
 %
-\item Colimits, $p$-pullbacks and \v{C}ech nerves are formalized in
-\texttt{colimits.v, cech\_nerve.v}.% (552 lines).
+\item Colimits and \v{C}ech nerves are formalized in
+\texttt{Limit, T.v, OT.v OT\_Tf.v, T\_telescope.v, Tf\_Omono\_sep.v}.% (552 lines).
 \item
 Reflective subuniverses and modalities are formalized in
 \texttt{reflective\_subuniverse.v, modalities.v}. % (1053 lines).
@@ -1794,7 +1828,7 @@ but the complete recursive sheafification can not be defined for the
 moment.
 
 Note that the same increasing in the universe levels occurs in the
-Resk completion for categories~\cite{resk}. In the definition of the
+Rezk completion for categories~\cite{rezk}. In the definition of the
 completion, they use the Yoneda embedding and representable functors,
 which is similar to our use of characteristic functions.
  

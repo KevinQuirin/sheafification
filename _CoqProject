@@ -6,9 +6,11 @@ Limit/Auxiliary.v
 Limit/CechNerve.v
 Limit/CoEqualizer.v
 Limit/Colimit.v
+Limit/limit.v
 Limit/Colimit_Prod.v
 Limit/Colimit_Sigma.v
 Limit/Colimit_trunc.v
+Limit/limit_trunc.v
 Limit/CommutativeSquares.v
 Limit/Diagram.v
 Limit/KernelPair.v

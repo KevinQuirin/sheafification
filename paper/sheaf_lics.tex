@@ -17,6 +17,7 @@
 \newtheorem{defi}[thm]{Definition}
 \newtheorem{lem}[thm]{Lemma}
 \newtheorem{ax}[thm]{Axiom}
+\newtheorem{cond}[thm]{Condition}
 
 \newcommand \defeq {\overset{de\hspace{-0.2ex}f}{=}}
 
@@ -55,7 +56,7 @@
 \DeclareMathOperator{\id}{id}
 \DeclareMathOperator{\Contr}{Contr}
 \DeclareMathOperator{\IsContr}{IsContr}
-\DeclareMathOperator{\postcompose}{\mathrm{postcompose}}
+\DeclareMathOperator{\precompose}{\mathrm{precompose}}
 
 \def\mymathhyphen{{\hbox{-}}}
 
@@ -147,7 +148,7 @@ from already existing ones, allowing logical principles---that can not
 be proved to be true or false in the old topos---to be valid (or
 invalid) in the new topos.
 %
-The most common use of sheafification is the construction a boolean
+One use of sheafification is the construction a boolean
 topos, thus validating the classical principle of the law of excluded
 middle (EM), from an intuitionistic topos using the dense topology. 
 %
@@ -327,14 +328,16 @@ single step anymore. It must rather be performed by induction on the
 level of homotopy types. More precisely, the first layer of
 sheafification is defined for $\Type_{0}$, given a topology on
 $\Type_{-1}$. This part corresponds to sheafification for toposes. Then,
-assuming that the sheafification has been constructed up to level $n$,
+assuming that the sheafification has been constructed above level $n$,
 one can define the sheafification for $\Type_{n+1}$.
 %
 This inductive process in the definition of sheafification is similar
 to construction in the Grothendieck setting, where the
 sheafification is obtained by applying the plus-construction $n+1$
 times to
-$n$-types~\cite[Chapter~6]{lurie}.
+$n$-types~\cite[Chapter~6]{lurie}. Unfortunately, some types does not
+have a finite homotopy level, hence this construction cannot reach
+every type.
 
 This inductive step requires to formalize the notion of left-exact
 reflective subuniverse, which corresponds to a stratified version of
@@ -435,7 +438,9 @@ dependent pair (noted $(a;b)$). We use informal mathematical language
 instead of type theory whenever it is possible, to ease the reading
 without making our statement imprecise. In particular, (higher)
 inductive types are defined using itemization to avoid an overhead of
-notation.
+notation. In the rest of the paper, $\Type$ must be seen in an
+universe-polymorphic way.
+
  
  \subsection{Homotopy Types and Classifying Objects}
 \label{ssec:hott}
@@ -627,8 +632,8 @@ vertex $i:G_0$, \ie $$q : \prod_{i:G_0} D_0(i) \to P$$
 Then $P$ is the {\em colimit} of $D$ if for any other $X:\Type$, the
 map
 $$\lambda f:P \to X, \left( \lambda i,~f \circ q_i~;~ \lambda i\, j\,
-  \phi,~ \postcompose_f (p(i, j, g)) \right)$$
-where $\postcompose_f : \phi = \psi \to \phi \circ f = \psi \circ f$,
+  \phi,~ \precompose_f (p(i, j, g)) \right)$$
+where $\precompose_f : \phi = \psi \to \phi \circ f = \psi \circ f$,
 is an equivalence.
 \end{defi}
 
@@ -640,7 +645,7 @@ Colimits behave well with truncations, in the following sense:
   for any other $X:\Type_m$, the
   map
   $$\lambda f:P \to X, \left( \lambda i,~f \circ q_i~;~ \lambda i\, j\,
-    \phi,~ \postcompose_f (p(i, j, g)) \right)$$
+    \phi,~ \precompose_f (p(i, j, g)) \right)$$
   is an equivalence.
 
   Then, if $\|D\|_m$ is the same diagram as $D$, but where every type
@@ -1045,7 +1050,7 @@ dense $n$-subobject comes with an additional coherence condition
   classified by $\chi$ is {\em dense} in $E$ when its $\modal_n$-closure
   is equivalent to $\chi_E$, \ie
   %
-  $$\forall e:E,~ \left(\sum_{e':E} e=e'\right) \simeq \modal_n
+  $$\prod_{e:E}~ \left(\sum_{e':E} e=e'\right) \simeq \modal_n
   (\chi~e).$$
   % 
   and moreover, for any $x:A$, the following diagram 
@@ -1072,7 +1077,7 @@ their dense subobjects.
     $$
     %
     as the map sending an
-    arrow $f:E\to F$ to its restriction $f \circ m$.
+    arrow $f:E\to F$ to its restriction $f \circ \iota$.
   % \item if $A \to E$ with $n$-truncated homotopy fibers, $\Phi_E^\chi$ is the
   %   map sending $f:~E \to f$ to $\restriction f A$.
   % \end{itemize}
@@ -1175,7 +1180,7 @@ on $\modal_n$ in $\Type_n^\modal$ to ease the reading.}
 
 \end{proof}
 
-An other fundamental property on sheaves is that the type of (dependent)
+Another fundamental property on sheaves is that the type of (dependent)
 functions is a sheaf as soon as its codomain is a sheaf.
 
 \begin{prop}\label{prop:sheaf-forall}
@@ -1214,7 +1219,7 @@ sense that the following property holds.
 % We have to be careful: if we want to propagate the properties of the
 % first modality $\modal_{-1}$, all the higher modalities $\modal_n$ must be compatible
 % with $\modal_{-1}$, \ie we want the property
-\begin{prop}\label{prop:hprop}
+\begin{cond}\label{cond:hprop}
   For any mere proposition $P$ (with $\widehat P$ is $P$ seen as a
   $\Type_n$),  $\modal_n \widehat P = \modal_{-1} P$ and the
   following coherence diagram commutes
@@ -1222,7 +1227,7 @@ sense that the following property holds.
     P \ar@{=}[r] \ar[d]_{\eta_{-1}} & \widehat P \ar[d]^{\eta_n} \\
     \modal_{-1} P \ar@{=}[r] & \modal_n \widehat P 
   }$$
-\end{prop}
+\end{cond}
 
 
 Note that once the first modality $\modal_{-1}$ is defined, its
@@ -1280,7 +1285,7 @@ steps:
 In the rest of the section, we suppose given a truncation index
 $n\geqslant -1$, and a left exact modality $\modal_n$ on $\Type_n$,
 compatible with a left exact modality $\modal_{-1}$ on $\HProp$ in the
-sense of proposition~\ref{prop:hprop}.
+sense of condition~\ref{cond:hprop}.
 
 \subsection{From Type to Separated Type}
 \label{ssec:from-type-separated}
@@ -1603,7 +1608,7 @@ compatible with $\modal_n$ on lower homotopy types.
 \end{proof}
 
 This proves in particular that $\modal_{n+1}$ is compatible with
-$\modal_{-1}$ in the sense of proposition~\ref{prop:hprop}.
+$\modal_{-1}$ in the sense of condition~\ref{cond:hprop}.
 
 The last step is the left-exactness of $\modal_{n+1}$. Let $T$ be in
 $\Type_{n+1}$ such that $\Contr(\modal_{n+1} T)$.  Thanks to the just
@@ -1796,7 +1801,7 @@ for a lemma (it occurs twice in the formalization), we have proved the
 lemma and then admit the exact same lemma, just letting Coq infer less
 constrained universe levels.
 
-An other issue with universe polymorphism lies in the management of
+Another issue with universe polymorphism lies in the management of
 recursive definitions. Indeed, the following recursive definition of
 sheafification
 %

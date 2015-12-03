@@ -379,7 +379,7 @@ between paths.
 \subsection{Plan of the Paper}
 
 Section~\ref{sec:hott} presents the foundations of homotopy type theory
-and defines a particular case of Giraud-Rezk-Lurie axioms. 
+and present a analogous of~\cite[Corollary 6.2.3.5]{lurie}. 
 %
 Section~\ref{sec:lexmod} introduces the notion of left-exact stratified
 modalities, on which this paper is based.
@@ -417,7 +417,7 @@ factorization system in the light of homotopy type theory.
 Section~\ref{sec:colim-homot-type} introduces the notion of colimits
 in homotopy type theory. 
 %
-And Section~\ref{sec:giraud-ax} defines a particular case of
+And Section~\ref{sec:giraud-ax} defines an analogue of
 Giraud-Rezk-Lurie axioms on higher toposes that we need in the
 definition of sheafification.
 %
@@ -676,15 +676,14 @@ of Giraud-Rezk-Lurie axioms.
 The Giraud-Rezk-Lurie axioms are the $\infty$-version of Giraud's
 axioms that characterize a topos. Namely, there are 4 axioms on a
 $(\infty,1)$-category that have been shown to be equivalent to
-$(\infty,1)$-topos~\cite[Chapter 6]{lurie}. In~\cite{boulier}, a
-type-theoritic version of these axioms are proposed.
+$(\infty,1)$-topos~\cite[Chapter 6]{lurie}.
 %
-This particular case connects a surjection (or a $(-1)$-connected
-function) to the colimit of its \v{C}ech nerve.
+The consequence we want to use here is the fact that a surjection
+(\ie{} $(-1)$-connected function) is the colimit of its \v{C}ech
+nerve.
 %
-This is the $\infty$-generalization of the fact that, in a topos,
-every epimorphism is the colimit of its kernel pair, which plays a
-central part in the definition of sheafification.
+In~\cite{boulier}, the authors propose an analogue of this property~:
+they give, for any map $f$, a diagram $D_f$ whose colimit is $\im(f)$.
 
 \begin{defi}
   Let $f:X \to Y$ be a map. $T_f$ is the higher inductive type given
@@ -702,29 +701,77 @@ central part in the definition of sheafification.
 
   We call $\tilde f$ the map $T_f \to Y$ given by induction.
 \end{defi}
-%
-The \v{C}ech nerve of a map $f$ can then be described as the
-simplicial object that, at degree $p$, is given by the
-$p$th iteration of $T$. 
-%
+
+Then, the desired diagram is the mapping telescope of the iterations
+of $T$.
 \begin{defi}
-  Let $f$ be a map from $X$ to $Y$. The {\em \v{C}ech nerve} $C(f)$ of $f$
+  Let $f$ be a map from $X$ to $Y$. Then $C(f)$
   is given by the diagram
   $$\xymatrix{
     C(f) := X \ar[r]^t & T_f \ar[r]^t & T_{\tilde f} \ar[r] &\cdots
-% \cdots~ X \times_Y X \times_Y X \tar[r]{4pt} & X \times_Y X \dar[r]{2pt} & X
   }$$
 \end{defi}
 
-\begin{thm}[Giraud-Rezk-Lurie]
-  For any surjection $f : X \to Y$, the colimit of its \v{C}ech nerve
-  $C(f)$ is $Y$.
+Let's recall the main theorem:
+\begin{thm}[Colimit of $C(f)$~\cite{boulier}]\label{cech}
+  For any surjection $f : X \to Y$, the colimit of $C(f)$ is $Y$.
 \end{thm}
 
-With the point of view that homotopy type theory is a type-theoretic
-version of higher topos theory, this seems to be the analogous of Theorem 6.1.0.6 of~\cite{lurie}.
-%
-The proof of this theorem can be found in~\cite{boulier}.
+% \subsection{On Giraud-Rezk-Lurie axioms}
+% \label{sec:giraud-ax}
+
+% The Giraud-Rezk-Lurie axioms are the $\infty$-version of Giraud's
+% axioms that characterize a topos. Namely, there are 4 axioms on a
+% $(\infty,1)$-category that have been shown to be equivalent to
+% $(\infty,1)$-topos~\cite[Chapter 6]{lurie}. In~\cite{boulier}, a
+% type-theoritic version of these axioms are proposed.
+% %
+% This particular case connects a surjection (or a $(-1)$-connected
+% function) to the colimit of its \v{C}ech nerve.
+% %
+% This is the $\infty$-generalization of the fact that, in a topos,
+% every epimorphism is the colimit of its kernel pair, which plays a
+% central part in the definition of sheafification.
+
+% \begin{defi}
+%   Let $f:X \to Y$ be a map. $T_f$ is the higher inductive type given
+%   by
+%   \begin{itemize}
+%   \item $t:~X \to T_f$
+%   \item $\alpha:~\forall a\,b:X,~f a = f b \to t a = t b$
+%   \item $\alpha_1:~\forall a:X,~\alpha\, a\, a\, 1 = 1$
+%   \end{itemize}
+%   We view $T_f$ as the coequalizer of
+%   $$\xymatrix{
+%     \sum_{a,b:X} f a = f b \dar[r]{4pt}^-{\pi_1}_-{\pi_2} & X
+%   }$$
+%   preserving the identity.
+
+%   We call $\tilde f$ the map $T_f \to Y$ given by induction.
+% \end{defi}
+% %
+% The \v{C}ech nerve of a map $f$ can then be described as the
+% simplicial object that, at degree $p$, is given by the
+% $p$th iteration of $T$. 
+% %
+% \begin{defi}
+%   Let $f$ be a map from $X$ to $Y$. The {\em \v{C}ech nerve} $C(f)$ of $f$
+%   is given by the diagram
+%   $$\xymatrix{
+%     C(f) := X \ar[r]^t & T_f \ar[r]^t & T_{\tilde f} \ar[r] &\cdots
+% % \cdots~ X \times_Y X \times_Y X \tar[r]{4pt} & X \times_Y X \dar[r]{2pt} & X
+%   }$$
+% \end{defi}
+
+% \begin{thm}[Giraud-Rezk-Lurie]
+%   For any surjection $f : X \to Y$, the colimit of its \v{C}ech nerve
+%   $C(f)$ is $Y$.
+% \end{thm}
+
+% With the point of view that homotopy type theory is a type-theoretic
+% version of higher topos theory, this seems to be the analogous of Theorem 6.1.0.6 of~\cite{lurie}.
+% %
+% The proof of this theorem can be found in~\cite{boulier}.
 
 
 
@@ -1389,8 +1436,7 @@ We will need the following lemma:
 \end{proof}
 
 \begin{proof}[Proof of lemma~\ref{lem:sepiscolim}]
-  As $\mu_T$ is an surjection, using the particular case of 
-  Giraud-Rezk-Lurie axiom introduced in Section~\ref{sec:giraud-ax},
+  As $\mu_T$ is an surjection, using the theorem~\ref{cech} introduced in Section~\ref{sec:giraud-ax},
   we know that $\separated T$ is the $(n+1)$-colimit of $\|C(\mu_T)\|_{n+1}$. 
   % 
   Thus the result follows from the fact that $\|C(\mu_T)\|_{n+1} =

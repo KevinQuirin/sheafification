@@ -187,9 +187,9 @@ restriction on elimination of dependent sums and lazy
 evaluation~\cite{herbelin2012constructive}.
 %
 
-Unfortunately, all those works---although they provide very nice and
-sophisticated theoretical results---do not share the generality and
-simplicity of sheafification in topos theory and are not amenable to a
+All those works---although they provide very nice and
+sophisticated theoretical results---are not as general as the process
+of sheafification in topos theory and are not amenable to a
 direct integration into a proof assistant based on type theory such as
 Coq~\cite{coq:refman:8.4} or Agda~\cite{norell2007towards}.  
 %
@@ -376,6 +376,10 @@ setting become relevant and require a careful use of univalence
 with appropriate isomorphisms and a lot of reasoning on equalities
 between paths.
 
+In what follows, we work in the context of homotopy type theory, seen
+as Martin-Löf type thepry, with univalence axiom (and thus functional
+extensionality) and higher inductive types.
+
 \subsection{Plan of the Paper}
 
 Section~\ref{sec:hott} presents the foundations of homotopy type theory
@@ -422,8 +426,7 @@ Giraud-Rezk-Lurie axioms on higher toposes that we need in the
 definition of sheafification.
 %
 The definitions of Section~\ref{ssec:hott} and \ref{sec:epi-mono-fact}
-are part of the Coq library
-available at \url{https://github.com/HoTT/HoTT}, while other definitions
+are part, or direct applications of the Coq library~\cite{hottlib}, while other definitions
 and theorems are specific to our formalization. 
 
 As a prerequisite, we encourage the reader to be familiar with type theory and
@@ -907,9 +910,7 @@ $$\xymatrix{
   \sum_{x:\modal X} (\modal f x = \eta_Y y) & }$$
 where $\pi_1 \circ \gamma = \eta_X \circ \pi_1$, and
 $\pi_2 \circ \gamma$ is given by the modalisation of
-paths.\footnote{This proposition comes from on old version of the
-  formalization of left exact modalities in the Coq/HoTT library, but is
-  not present anymore in the library.}
+paths.
 \end{prop}
 \begin{proof}
 % \nt{ça a du sens de mettre une preuve, non ? c'est non trivial et
@@ -1010,12 +1011,13 @@ $\modal_P T = P \to T$.
 %
 When one works in
 the subuniverse defined by this modality, defining an inhabitant of a
-type $T$ amounts to give an inhabitant of $P \to T$. 
-%
-Thus, working in this subuniverse amounts to add the axiom $P$ to the
-theory. Of course, adding an axiom this way does not add any computational
-content to $P$, and the consistency of the modality corresponds to
-the fact that $P \to \zero$ (or $\lnot P$) is not inhabited.
+type $T$ amounts to give an inhabitant of $P \to T$ (but where $P$ is
+still a type in the original theory).
+% %
+% Thus, working in this subuniverse amounts to add the axiom $P$ to the
+% theory. Of course, adding an axiom this way does not add any computational
+% content to $P$, and the consistency of the modality corresponds to
+% the fact that $P \to \zero$ (or $\lnot P$) is not inhabited.
 
 Another example of a left exact modality for every level $p$ is the
 double negation modality,
@@ -1100,14 +1102,14 @@ dense $n$-subobject comes with an additional coherence condition
   $$\prod_{e:E}~ \left(\sum_{e':E} e=e'\right) \simeq \modal_n
   (\chi~e).$$
   % 
-  and moreover, for any $x:A$, the following diagram 
-  commutes, 
-  $$\xymatrix{
-    \sum_{e':A} x = e' \ar@{=}[r] \ar[d]_{\iota'} & (\chi \ x)
-    \ar[d]^{\eta_{(\chi \ x)}}\\
-    \sum_{e':E} x = e' \ar@{=}[r] & \modal_n (\chi \ x)
-  }$$
-  where $\iota': x \mapsto (\iota (\pi_1 x) ; \pi_2 x)$.
+  % and moreover, for any $x:A$, the following diagram 
+  % commutes, 
+  % $$\xymatrix{
+  %   \sum_{e':A} x = e' \ar@{=}[r] \ar[d]_{\iota'} & (\chi \ x)
+  %   \ar[d]^{\eta_{(\chi \ x)}}\\
+  %   \sum_{e':E} x = e' \ar@{=}[r] & \modal_n (\chi \ x)
+  % }$$
+  % where $\iota': x \mapsto (\iota (\pi_1 x) ; \pi_2 x)$.
 \end{defi}
 
 It follows from homotopy fibers preservation that any $n$-subobject of
@@ -1138,26 +1140,39 @@ of separated types.
 \begin{defi}[Separated Type]
   A type $F$ in $\Type_{n+1}$ is {\em separated} if for any type $E$, and
   all dense $n$-subobject of $\iota : A \to E$,
-  $\Phi_E^\iota$ is an embedding. In other words, the dotted arrow,
-  if exists, is unique.
+  $\Phi_E^\iota$ is an embedding.%  In other words, the dotted arrow,
+  % if exists, is unique.
 
-  $$\xymatrix{
-    A \ar[r]^f \ar[d]_{\iota} & F \\
-    E \ar@{-->}[ru]_{!}&
-  }$$
+  % $$\xymatrix{
+  %   A \ar[r]^f \ar[d]_{\iota} & F \\
+  %   E \ar@{-->}[ru]_{!}&
+  % }$$
 \end{defi}
+
+With topos theory point of view, it means that given a map $A\to F$,
+if there is an extension $\tilde f:E\to F$, then it is unique.
+Actually, there is a simpler characterisation:
+
+\begin{prop}
+  A type $F$ is $\Type_{n+1}$ is separated if, and only if all its
+  path types are $n$-modal, ie
+  $$\mathrm{separated}(F) = \prod_{x,y:F}~\modal_n(x=y) = (x=y).$$
+\end{prop}
 
 \begin{defi}[Sheaves]
   A type $F$ of $\Type_{n+1}$ is a {\em $(n+1)$-sheaf} if it is
   separated, and for any type $E$ and all dense $(-1)$-subobject of
   $\iota : A \to E$, $\Phi_E^\iota$ is an
-  equivalence. In other words, the dotted arrow exists and is unique.
+  equivalence. % In other words, the dotted arrow exists and is unique.
 
-  $$\xymatrix{
-    A \ar[r]^f \ar[d]_{\iota} & F \\
-    E \ar@{-->}[ru]_{\exists !}&
-  }$$
+  % $$\xymatrix{
+  %   A \ar[r]^f \ar[d]_{\iota} & F \\
+  %   E \ar@{-->}[ru]_{\exists !}&
+  % }$$
 \end{defi}
+
+In topos-theoretic words, it means that given a map $A\to F$, one can
+extend it uniquely in $\tilde f:E \to F$.
 
 Note that these definitions are almost the same as the ones
 in~\cite{maclanemoerdijk}. The main difference is that {separated}
@@ -1267,12 +1282,12 @@ sense that the following property holds.
 % first modality $\modal_{-1}$, all the higher modalities $\modal_n$ must be compatible
 % with $\modal_{-1}$, \ie we want the property
 \begin{cond}\label{cond:hprop}
-  For any mere proposition $P$ (with $\widehat P$ is $P$ seen as a
+  For any mere proposition $P$ (where $\widehat P$ is $P$ seen as a
   $\Type_n$),  $\modal_n \widehat P = \modal_{-1} P$ and the
   following coherence diagram commutes
   $$\xymatrix{
-    P \ar@{=}[r] \ar[d]_{\eta_{-1}} & \widehat P \ar[d]^{\eta_n} \\
-    \modal_{-1} P \ar@{=}[r] & \modal_n \widehat P 
+    P \ar@{->}^{\sim}[r] \ar[d]_{\eta_{-1}} & \widehat P \ar[d]^{\eta_n} \\
+    \modal_{-1} P \ar@{->}^{\sim}[r] & \modal_n \widehat P 
   }$$
 \end{cond}
 

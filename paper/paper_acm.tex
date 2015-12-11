@@ -428,7 +428,7 @@ with appropriate isomorphisms and a lot of reasoning on equalities
 between paths.
 
 In what follows, we work in the context of homotopy type theory, seen
-as Martin-Löf type thepry, with univalence axiom (and thus functional
+as Martin-Löf type theory, with univalence axiom (and thus functional
 extensionality) and higher inductive types.
 
 \subsection{Plan of the Paper}
@@ -550,12 +550,12 @@ homotopy level $n$ and any type $B$, $\Type_n$ classifies subobjects
 of $B$ with $n$-truncated homotopy fibers in the sense that there is
 an equivalence
 %
-\begin{align*}
-  \chi &: \left(\sum_{A:\Type} \sum_{f:A \to B} \prod_{b\in B}
+\begin{mymath}[0em]
+  \chi : \sum_{A:\Type} \sum_{f:A \to B} \prod_{b\in B}
 \IsType n\
-\fib{f}{b}\right) \\ &\qquad\xrightarrow{\sim} 
+\fib{f}{b} \xrightarrow{\sim} 
  (B \to \Type_n)
-\end{align*}
+\end{mymath}
 %
  such that the diagram
 \begin{mymath}
@@ -680,15 +680,15 @@ that defines a cocone of $D$, plus the universal property that for any
 type $X$, the canonical map that transforms a function $f : P
 \rightarrow X$ to a cocone of $D$ on $X$ is an isomorphism.
 % 
-\begin{defi}
+\begin{defi}\label{def:colimit}
 Let $G$ be a graph, and $D$ be a diagram on $G$. 
 Let $P:\Type$ together with
 \begin{itemize}
 \item a map $q_i : D_0(i) \to P$ for any
-vertex $i:G_0$, \ie \begin{mymath}q : \prod_{i:G_0} D_0(i) \to P\end{mymath}
+vertex $i:G_0$, \ie \begin{mymath}[0em]q : \prod_{i:G_0} D_0(i) \to P\end{mymath}
 \item for any vertices $i,j:G_0$ and all edges $\phi:G_1(i,j)$, a path
   $p_{i,j}^\phi : q_j \circ D_1(\phi) = q_i$, \ie
-  \begin{mymath}p : \prod_{i,j:G_0} \prod_{\phi:G_1(i,j)} q_j \circ D_1(\phi) = q_i.\end{mymath}
+  \begin{mymath}[0em]p : \prod_{i,j:G_0} \prod_{\phi:G_1(i,j)} q_j \circ D_1(\phi) = q_i.\end{mymath}
 \end{itemize}
 
 Then $P$ is the {\em colimit} of $D$ if for any other $X:\Type$, the
@@ -701,37 +701,34 @@ is an equivalence.
 Using higher inductive types, every diagram $D$ on a graph $G$ admits a
 colimit in homotopy type theory. 
 
-% Colimits behave well with truncations, in the following sense:
+In~\ref{ssec:from-type-separated}, we will need to know how colimits
+behave with respect to truncations. An answer is given by the following:
 
-% \begin{lem}
-%   Let $D$ be a diagram, $m$ a truncation index, and
-%   $P:\Type_{m}$. Let's call $P$ a $m$-colimit of $D$ if
-%   for any other $X:\Type_m$, the
-%   map
-%   \begin{mymath}\lambda f:P \to X, \left( \lambda i,~f \circ q_i\, ;\, \lambda i\, j\,
-%   \phi,\ \precompose_f (p_{i, j}^\phi)) \right)\end{mymath}
-%   is an equivalence.
-
-%   Then, if $\|D\|_m$ is the same diagram as $D$, but where every type
-%   is $m$-truncated, $P$ is a $m$-colimit of $\|D\|_m$.
-% \end{lem}
+\begin{lem}
+  Let $D$ be a diagram, $m$ a truncation index, and
+  $P:\Type_{m}$. 
+  Then, if $\|D\|_m$ is the same diagram as $D$, but where every type
+  is $m$-truncated, $P$ is a $m$-colimit\footnote{$P$ is a $m$-colimit
+    if $P$ satisfies the same property as in~\ref{def:colimit} when
+    we replace $\Type$ by $\Type_m$} of $\|D\|_m$.
+\end{lem}
 
 % Essentially, being a colimit means making the diagram commutes, and
 % being universal for this property.
 
-This colimit $\colim D$ is given by
-%
-\begin{itemize}
-\item a function $q:\prod_{i:G_0} D_0(i) \to \colim D$
-\item for any $i,j:G_0$ and $\phi:G_1(i,j)$, a path
-  $q_j \circ D_1(\phi) = q_i$.
-\end{itemize}
-%
-Although we have proved in our formalization that $\colim D$ is
-actually a colimit over $D$, we do not detail the proof here as the
-existence of colimits is not used in the definition of the
-sheafification process. We only make use of the following special case
-of Giraud-Rezk-Lurie axioms.
+% This colimit $\colim D$ is given by
+% %
+% \begin{itemize}
+% \item a function $q:\prod_{i:G_0} D_0(i) \to \colim D$
+% \item for any $i,j:G_0$ and $\phi:G_1(i,j)$, a path
+%   $q_j \circ D_1(\phi) = q_i$.
+% \end{itemize}
+% %
+% Although we have proved in our formalization that $\colim D$ is
+% actually a colimit over $D$, we do not detail the proof here as the
+% existence of colimits is not used in the definition of the
+% sheafification process. We only make use of the following special case
+% of Giraud-Rezk-Lurie axioms.
 
 \subsection{On Giraud-Rezk-Lurie axioms}
 \label{sec:giraud-ax}
@@ -867,15 +864,15 @@ modalities at level $-1$ and sheafification is described as an inductive
 process that produces a left exact modality at level $n+1$ from a
 level exact modality at level $n$. 
 
-Section~\ref{sec:definition} presents the definition and basic
-properties of left exact modalities. 
-%
-Section~\ref{sec:new-type-theory} discusses how a left exact modality
-induces a new homotopy theory, and in which case this theory is
-consistent.
-%
-Finally, Section~\ref{sec:examples-left-exact} introduces some
-examples, and in particular the modality for the dense topology.
+% Section~\ref{sec:definition} presents the definition and basic
+% properties of left exact modalities. 
+% %
+% Section~\ref{sec:new-type-theory} discusses how a left exact modality
+% induces a new homotopy theory, and in which case this theory is
+% consistent.
+% %
+% Finally, Section~\ref{sec:examples-left-exact} introduces some
+% examples, and in particular the modality for the dense topology.
 
 \subsection{Definition and Basic Properties}
 \label{sec:definition}
@@ -954,67 +951,69 @@ level $n$.
 
 As the definition of sheafification is based on subobject classifiers
 and thus on homotopy fibers, we need to take a closer look at the way left
-exact modalities preserve homotopy fibers.
+exact modalities preserve homotopy fibers. The following is a part of
+the library~\cite{hottlib}.
 %
 \begin{prop}
 \label{sec:defin-basic-prop}
 For any $n$-truncated types $X$ and $Y$,
 and any map $f:X \to Y$, the modalisation of fiber of $f$ above any element $y:Y$
 is the fiber of $\modal f$ above $\eta_Y y$:
-\begin{mymath}\modal \left(\sum_{x:X}  (f x = y)\right) = \sum_{x:\modal X}
+\begin{mymath}[-0.3em]\modal \left(\sum_{x:X}  (f x = y)\right) = \sum_{x:\modal X}
 (\modal f x = \eta_Y y),\end{mymath}
 where $\modal f:\modal X \to \modal Y$ is defined via the equivalence {\it (iv)} and $\eta_Y$.
 
 Moreover the following diagram commute
-\begin{mymath}\xymatrix{
+\begin{mymath}[-0.3em]\xymatrix{
   \sum_{x:X} (f x = y) \ar[r]^\eta \ar[d]_\gamma & \modal \left(\sum_{x:X}  (f x = y)\right) \ar@{=}[dl]\\
   \sum_{x:\modal X} (\modal f x = \eta_Y y) & }\end{mymath}
 where $\pi_1 \circ \gamma = \eta_X \circ \pi_1$, and
 $\pi_2 \circ \gamma$ is given by the modalisation of
 paths.
 \end{prop}
-\begin{proof}
-% \nt{ça a du sens de mettre une preuve, non ? c'est non trivial et
-%   nouveau par rapport aux travaux sur les modalités. Ou alors c'est
-%   la preuve de Shulman qui tu n'as pas faite. En tout cas, il faut
-%   clarifier.}
+% \begin{proof}
+% % \nt{ça a du sens de mettre une preuve, non ? c'est non trivial et
+% %   nouveau par rapport aux travaux sur les modalités. Ou alors c'est
+% %   la preuve de Shulman qui tu n'as pas faite. En tout cas, il faut
+% %   clarifier.}
 
-The proof is based on the following central result.
-\begin{lem}
-  Let $X:\Type_p$, $Y:\Type_p^\modal$ and $f:X\to Y$. If for all $y:Y$,
-  $\modal (\fib f y)$ is contractible, then $\modal X = Y$.
-\end{lem}
-%
-It is straighforward to define a map
-\begin{mymath}\phi:\sum_{x:X}  (f x = y)\to
-\sum_{x:\modal X} (\modal f x = \eta_Y y),\end{mymath}
-using $\eta$ functions.
-We just need to check that every $\modal$-fiber $\modal(\fib \phi {x;p})$ is
-contractible.
-Technical transformations allow one to prove
-\begin{mymath}\fib\phi{x;p} = \fib s {y;p^{-1}}\end{mymath}
-for some $a:\modal X$, $b:\modal Y$ and 
-\begin{mymath}s:\fib{\eta_X}a \to \fib{\eta_Y}b.\end{mymath}
-%
-From definition of left exactness, one can deduce the following:
-\begin{lem}
-  Let $A,B:\Type_p$. Let $f:A\to B$. If $\modal A$ and $\modal B$ are
-  contractible, then so is $\fib f b$ for any $b:B$.
-\end{lem}
-Thus, we just need to prove that $\modal(\fib {\eta_X} a)$ and
-$\modal(\fib {\eta_Y} b)$ are contractible.
-But we have the lemma:
-\begin{lem}
-  Let $A:\Type_p$. Then for any $y:\modal A$, $\modal(\fib {\eta_A}
-  y)$ is contractible.
-\end{lem}
+% The proof is based on the following central result.
+% \begin{lem}
+%   Let $X:\Type_p$, $Y:\Type_p^\modal$ and $f:X\to Y$. If for all $y:Y$,
+%   $\modal (\fib f y)$ is contractible, then $\modal X = Y$.
+% \end{lem}
+% %
+% It is straighforward to define a map
+% \begin{mymath}\phi:\sum_{x:X}  (f x = y)\to
+% \sum_{x:\modal X} (\modal f x = \eta_Y y),\end{mymath}
+% using $\eta$ functions.
+% We just need to check that every $\modal$-fiber $\modal(\fib \phi {x;p})$ is
+% contractible.
+% Technical transformations allow one to prove
+% \begin{mymath}\fib\phi{x;p} = \fib s {y;p^{-1}}\end{mymath}
+% for some $a:\modal X$, $b:\modal Y$ and 
+% \begin{mymath}s:\fib{\eta_X}a \to \fib{\eta_Y}b.\end{mymath}
+% %
+% From definition of left exactness, one can deduce the following:
+% \begin{lem}
+%   Let $A,B:\Type_p$. Let $f:A\to B$. If $\modal A$ and $\modal B$ are
+%   contractible, then so is $\fib f b$ for any $b:B$.
+% \end{lem}
+% Thus, we just need to prove that $\modal(\fib {\eta_X} a)$ and
+% $\modal(\fib {\eta_Y} b)$ are contractible.
+% But we have the lemma:
+% \begin{lem}
+%   Let $A:\Type_p$. Then for any $y:\modal A$, $\modal(\fib {\eta_A}
+%   y)$ is contractible.
+% \end{lem}
 
-Finally, $\modal(\fib s{y;p^{-1}})$ is contractible, so $\modal(\fib \phi {x;p})$ also, and the result is proved.
-%\kq{Finish that}
+% Finally, $\modal(\fib s{y;p^{-1}})$ is contractible, so $\modal(\fib \phi {x;p})$ also, and the result is proved.
+% %\kq{Finish that}
 
-%\nt{Indeed, I can't follow the proof for the moment}
-\end{proof}
+% %\nt{Indeed, I can't follow the proof for the moment}
+% \end{proof}
 
+\kq{Is the following usefull?}
 In the same way, left exact modalities preserve homotopy types.
 \begin{prop}
   Let $k \leq n$.
@@ -1689,12 +1688,10 @@ compatible with $\modal_n$ on lower homotopy types.
   We prove it by induction on $n$:
   \begin{itemize}
   \item For $n=-1$: Let $T:\HProp$. Then
-    \begin{align*}
-      \modal_{0} \widehat T &= \sum_{u:T \to \Type_n^\modal} \modal_{-1}\left\| \sum_{a:T} 
-      (\lambda t,~\modal_{-1} (a=t)) = u\right\| \\
-      &= \sum_{u:T \to \Type_n^\modal} \modal_{-1}\left( \sum_{a:T} 
+    \begin{mymath}
+      \modal_{0} \widehat T = \sum_{u:T \to \Type_n^\modal} \modal_{-1}\left( \sum_{a:T} 
       (\lambda t,~\modal_{-1} (a=t)) = u\right)
-    \end{align*}
+    \end{mymath}
     because the type inside the truncation is already in $\HProp$.
     Now, let define $\phi : \modal_{-1} T \to \modal_0T$ by
     \begin{mymath}\phi t = (\lambda t',\, \modal_{-1}(t=t') ; \eta
@@ -1707,18 +1704,15 @@ compatible with $\modal_n$ on lower homotopy types.
     trivial because the equivalence is between mere propositions).
   \item Suppose now that $\modal_{n+1}$ is compatible with all $\modal_k$ on
     lower homotopy types. Let $\modal_{n+2}$ be as above, and let
-    $T:\Type_{n+1}$. Then
-    \begin{align*}
-      \modal_{n+2} \widehat  T &= \hspace{-1em} \sum_{u:T \to \Type_{n+1}^\modal}
-                       \hspace{-1em} \modal_{-1}\left\| \sum_{a:T} 
-            (\lambda t,~\modal_{n+1} (a=t)) = u\right\| \\
-                     &= \hspace{-1em} \sum_{u:T \to
-                       \Type_{n+1}^\modal} 
-\hspace{-1em} \modal_{-1}\left\| \sum_{a:T} 
-            (\lambda t,~\modal_{n} (a=t)) = u\right\|
-    \end{align*}
-    because $\modal_{n+1}$ is compatible with $\modal_{n}$, and
-    $(a=t)$ is in $\Type_n$.
+    $T:\Type_{n+1}$. Then, as $\modal_{n+1}$ is compatible with $\modal_{n}$, and
+    $(a=t)$ is in $\Type_n$,
+    \begin{mymath}
+      \modal_{n+2} \widehat = \hspace{-1em} \sum_{u:T \to
+        \Type_{n+1}^\modal} 
+      \hspace{-1em} \modal_{-1}\left\| \sum_{a:T} 
+        (\lambda t,~\modal_{n} (a=t)) = u\right\|.
+    \end{mymath}
+    
 
     It remains to prove that for every $(u,x)$ inhabiting the
     $\Sigma$-type above, $u$ is in $T\to\Type_n^\modal$, \ie that for
@@ -1801,18 +1795,9 @@ $\Type$ by composing with truncation:
   of~\cite[Section 7.7]{hottbook}
 \end{lem}
 
-\begin{exm}
-  If $\modal_{-1}$ is the double negation modality on $\HProp$ and
-  $i=-1$, for any type $X$:
-  \begin{align*}
-  \modal X &\defeq \lnot\lnot \|X\|  \\
-           &= \lnot\lnot X
-  \end{align*}
-  by univalence for h-propositions.
-
- Thus, $\modal$ is exactly the double negation modality on $\Type$
-  described in~\ref{sec:examples-left-exact}.
-\end{exm}
+If $\modal_{-1}$ is the double negation modality on $\HProp$ and
+$i=-1$, $\modal$ is exactly the double negation modality on $\Type$
+described in~\ref{sec:examples-left-exact}.
 
 Chosing $i\geqslant 0$ is a refinement of this double negation
 modality on $\Type$: it will collapse every type to a $\Type_i$,
@@ -1824,13 +1809,13 @@ true for any explicit truncated type. Indeed, $i$ can be chosen
 dynamically along a proof, and thus be increased as much as needed.
 
 Unfortunately, one lose canonicity when working in $\Type^\modal$;
-indeed, for example, the term 
-\begin{mymath}\left( \lambda P:\HProp,~\left\{\begin{array}{l} 0 \text{ if $P$ is
+indeed, for example, the function 
+\begin{mymath}\lambda P:\HProp,~\left\{\begin{array}{l} 0 \text{ if $P$ is
                                     false} \\ 1 \text{ if $P$ is
-                                    true} \end{array}\right. \right)
-                            P~:~\nat\end{mymath}
-will not reduce to a numeral if the chosen property $P$ is not
-decidable. However, we keep canonicity for ``old'' terms, i.e. the
+                                    true} \end{array}\right.~:~\HProp
+                              \to \nat\end{mymath}
+will not reduce to a numeral when applied to a undecidable
+property. However, we keep canonicity for ``old'' terms, i.e. the
 ones constructed without using excluded middle.
 
 % \subsection{New objects}

@@ -1,4 +1,35 @@
-\documentclass[conference]{IEEEtran}
+%-----------------------------------------------------------------------------
+%
+%               Template for sigplanconf LaTeX Class
+%
+% Name:         sigplanconf-template.tex
+%
+% Purpose:      A template for sigplanconf.cls, which is a LaTeX 2e class
+%               file for SIGPLAN conference proceedings.
+%
+% Guide:        Refer to "Author's Guide to the ACM SIGPLAN Class,"
+%               sigplanconf-guide.pdf
+%
+% Author:       Paul C. Anagnostopoulos
+%               Windfall Software
+%               978 371-2316
+%               paul@windfall.com
+%
+% Created:      15 February 2005
+%
+%-----------------------------------------------------------------------------
+
+
+\documentclass[preprint,10pt,numbers]{sigplanconf}
+
+% The following \documentclass options may be useful:
+
+% preprint      Remove this option only once the paper is in final form.
+% 10pt          To set in 10-point type instead of 9-point.
+% 11pt          To set in 11-point type instead of 9-point.
+% numbers       To obtain numeric citation style instead of author/year.
+
+\usepackage{amsmath}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -7,7 +38,7 @@
 
 % *** MATH PACKAGES ***
 %
-\usepackage[cmex10]{amsmath}
+%\usepackage[cmex10]{amsmath}
 \usepackage{amssymb,amsthm,amsfonts}
 
 
@@ -80,39 +111,40 @@
 \newcommand \one {\mathbf{1}}
 \newcommand \two {\mathbf{2}}
 
-
- \IEEEpubid{} 
+\newcommand{\cL}{{\cal L}}
 
 \begin{document}
-%
-% paper title
-% Titles are generally capitalized except for words such as a, an, and, as,
-% at, but, by, for, in, nor, of, on, or, the, to and up, which are usually
-% not capitalized unless they are the first or last word of the title.
-% Linebreaks \\ can be used within to get better formatting as desired.
-% Do not put math or special symbols in the title.
+
+\special{papersize=8.5in,11in}
+\setlength{\pdfpageheight}{\paperheight}
+\setlength{\pdfpagewidth}{\paperwidth}
+
+\conferenceinfo{LICS '16}{July 5--8, 2016, New York City, USA}
+\copyrightyear{2016}
+\copyrightdata{978-1-nnnn-nnnn-n/yy/mm}
+\copyrightdoi{nnnnnnn.nnnnnnn}
+
+% Uncomment the publication rights you want to use.
+%\publicationrights{transferred}
+%\publicationrights{licensed}     % this is the default
+%\publicationrights{author-pays}
+
+\titlebanner{banner above paper title}        % These are ignored unless
+\preprintfooter{short description of paper}   % 'preprint' option specified.
+
 \title{Lawvere-Tierney Sheafification\\ in Homotopy Type Theory}
+% \subtitle{Subtitle Text, if any}
 
+\authorinfo{Kevin Quirin}
+           {\'Ecole des Mines de Nantes}
+           {kevin.quirin@inria.fr}
+\authorinfo{Nicolas Tabareau}
+           {Inria}
+           {nicolas.tabareau@inria.fr}
 
-% author names and affiliations
-% use a multiple column layout for up to three different
-% affiliations
-\author{\IEEEauthorblockN{Kevin Quirin and Nicolas Tabareau}
-\IEEEauthorblockA{Inria \\ \'Ecole des Mines de Nantes \\ Nantes, France}}
-
-% conference papers do not typically use \thanks and this command
-% is locked out in conference mode. If really needed, such as for
-% the acknowledgment of grants, issue a \IEEEoverridecommandlockouts
-% after \documentclass
-
-
-% make the title area
 \maketitle
 
-% As a general rule, do not put math, special symbols or citations
-% in the abstract
 \begin{abstract}
-
   Sheafification is a popular tool in topos theory which
   allows to extend the internal logic of a topos with new
   principles. One of its most famous applications is the possibility
@@ -132,10 +164,17 @@
   in particular to give a meaning to the (propositional) law of
   excluded middle inside homotopy type theory, being
   compatible with the full type-theoretic axiom of choice.
-  
 \end{abstract}
 
-% no keywords
+\category{CR-number}{subcategory}{third-level}
+
+% general terms are not compulsory anymore,
+% you may leave them out
+\terms
+term1, term2
+
+\keywords
+keyword1, keyword2
 
 \section{Introduction}
 \label{sec:intro}
@@ -500,10 +539,12 @@ homotopy level $n$ and any type $B$, $\Type_n$ classifies subobjects
 of $B$ with $n$-truncated homotopy fibers in the sense that there is
 an equivalence
 %
-$$\chi : \left(\sum_{A:\Type} \sum_{f:A \to B} \prod_{b\in B}
+\begin{align*}
+  \chi &: \left(\sum_{A:\Type} \sum_{f:A \to B} \prod_{b\in B}
 \IsType n\
-\fib{f}{b}\right) \xrightarrow{\sim} 
- (B \to \Type_n)$$
+\fib{f}{b}\right) \\ &\qquad\xrightarrow{\sim} 
+ (B \to \Type_n)
+\end{align*}
 %
  such that the diagram
 $$
@@ -635,8 +676,8 @@ vertex $i:G_0$, \ie $$q : \prod_{i:G_0} D_0(i) \to P$$
 
 Then $P$ is the {\em colimit} of $D$ if for any other $X:\Type$, the
 map
-$$\lambda f:P \to X, \left( \lambda i,~f \circ q_i~;~ \lambda i\, j\,
-  \phi,~ \precompose_f (p(i, j, g)) \right)$$
+$$\lambda f:P \to X, \left( \lambda i,~f \circ q_i\, ;\, \lambda i\, j\,
+  \phi,\ \precompose_f (p_{i, j}^\phi)) \right)$$
 where $\precompose_f : \phi = \psi \to \phi \circ f = \psi \circ f$,
 is an equivalence.
 \end{defi}
@@ -648,8 +689,8 @@ Colimits behave well with truncations, in the following sense:
   $P:\Type_{m}$. Let's call $P$ a $m$-colimit of $D$ if
   for any other $X:\Type_m$, the
   map
-  $$\lambda f:P \to X, \left( \lambda i,~f \circ q_i~;~ \lambda i\, j\,
-    \phi,~ \precompose_f (p(i, j, g)) \right)$$
+  $$\lambda f:P \to X, \left( \lambda i,~f \circ q_i\, ;\, \lambda i\, j\,
+  \phi,\ \precompose_f (p_{i, j}^\phi)) \right)$$
   is an equivalence.
 
   Then, if $\|D\|_m$ is the same diagram as $D$, but where every type
@@ -930,7 +971,7 @@ It is straighforward to define a map
 $$\phi:\sum_{x:X}  (f x = y)\to
 \sum_{x:\modal X} (\modal f x = \eta_Y y),$$
 using $\eta$ functions.
-We just need to check that every $\modal(\fib \phi {x;p})$ is
+We just need to check that every $\modal$-fiber $\modal(\fib \phi {x;p})$ is
 contractible.
 Technical transformations allow one to prove
 $$\fib\phi{x;p} = \fib s {y;p^{-1}}$$
@@ -1135,7 +1176,7 @@ their dense subobjects.
 \end{defi}
 
 Here, we need to distinguish between
-dense $(-1)$-subobjects, that will be used in the definition of
+dense $(-1)$-sub\-objects, that will be used in the definition of
 sheaves, and dense $n$-subobjects, that will be used in the definition
 of separated types. 
 
@@ -1233,9 +1274,9 @@ on $\modal_n$ in $\Type_n^\modal$ to ease the reading.}
     Then
     \begin{itemize}
     \item If $g$ is an embedding, then 
-      $$\forall b:B,~\fib f b = \fib {g\circ f} {g\, b}.$$
+      $$\prod_{b:B}\fib f b = \fib {g\circ f} {g\, b}.$$
     \item If all fibers of $f$ and $g$ are $n$-truncated, then
-      $$\forall c:C,~\modal_n(\fib {g \circ f} c) =
+      $$\prod_{c:C}\modal_n(\fib {g \circ f} c) =
       \modal_n \left(  
         \sum_{w:\fib g c} \modal_n (\fib f {w_1})
       \right).$$
@@ -1369,7 +1410,7 @@ $\separated T$ can be given explicitly by
 $$
 \begin{array}{rcl}
 \separated T &\defeq & \im (\lambda~t:T,~\lambda~ t',~ \modal_n (t = t')) \\
-          & \defeq & \sum_{u:T \to \Type_n^\modal} \left\| \sum_{a:T} 
+          & \defeq & \sum\limits_{u:T \to \Type_n^\modal} \left\| \sum_{a:T} 
             (\lambda t,~\modal_n (a=t)) = u\right\|.
 \end{array}
 $$
@@ -1448,7 +1489,7 @@ We will need the following lemma:
   $$\forall a,b:T_f,~\tilde f |a|_{n+1} = \tilde f |b|_{n+1} \simeq
   \modal (|a|_{n+1}=|b|_{n+1}).$$
 
-  We use the encode-decode method to characterize $\tilde f |a|_{n+1}
+  We use the encode-decode~\cite[Section 8.9]{hottbook} method to characterize $\tilde f |a|_{n+1}
   = x$, and the result follows. We refer to the formalization for details.
 \end{proof}
 
@@ -1726,7 +1767,7 @@ this for future work.
 % \nt{Recap what has been done, and give the final result about EM with
 %   the dense topology as a corollary.}
 
-\section{Extension to $\Type$}
+\section{Extension to Type}
 \label{sec:extension-type}
 
 In the previous section, we defined a (countably) infinite family of
@@ -1772,31 +1813,27 @@ will not reduce to a numeral if the chosen property $P$ is not
 decidable. However, we keep canonicity for ``old'' terms, i.e. the
 ones constructed without using excluded middle.
 
-\subsection{New objects}
-\label{sec:new-objects}
+% \subsection{New objects}
+% \label{sec:new-objects}
 
-Working in $\Type^\modal$, one can consider new objects. For example,
-let $c:nat \to \nat$ implementing the Collatz function. Then, for any
-$n:\nat$, the type $C_n \defeq \sum_{k:\nat}\left( c^k(n) = 1 \land k\text{ is the
-  smallest such $\nat$}\right)$ is an $\HProp$.
-Thus, for any $n$, one have $C_n + \lnot C_n$, and one can {\em
-  constructively} build a map $\varphi:\nat \to \two$ such that
-$\varphi(n) = \True$ if and only if $n$ satisfies the Collatz
-conjecture.
-Actually, one can defined such a map for any family of $\HProp$
-indexed by $\nat$, for example with the family $C_n \defeq \text{«\,The $n$-th Turing Machine halts\,»}$.
+% Working in $\Type^\modal$, one can consider new objects. For example,
+% let $c:nat \to \nat$ implementing the Collatz function. Then, for any
+% $n:\nat$, the type $$C_n \defeq \sum_{k:\nat}\left( c^k(n) = 1 \land k\text{ is the
+%   smallest such $\nat$}\right)$$ is an $\HProp$.
+% Thus, for any $n$, one have $C_n + \lnot C_n$, and one can {\em
+%   constructively} build a map $\varphi:\nat \to \two$ such that
+% $\varphi(n) = \True$ if and only if $n$ satisfies the Collatz
+% conjecture.
+% Actually, one can defined such a map for any family of $\HProp$
+% indexed by $\nat$, for example with the family $C_n \defeq \text{«\,The $n$-th Turing Machine halts\,»}$.
 
 
 
 \section{Formalization} 
 \label{sec:formalization}
 
-A Coq formalization is available at
-\url{https://github.com/KevinQuirin/sheafification}.
-%
-It is based on the Coq/HoTT library available at
-\url{https://github.com/HoTT/HoTT} and uses the version of Coq
-tailored for that library.
+A Coq formalization based on the Coq/HoTT library~\cite{hottlib} is available at
+\url{github.com/KevinQuirin/sheafification}.
 %
 After reviewing the content and some statistics about the
 formalization in Section~\ref{sec:cont-form}, we present the
@@ -1809,10 +1846,10 @@ particular the issues relative to universe polymorphism.
 We provide a more detailed insight of the structure of our formalization:
 \begin{itemize} 
 \item Colimits and iterated kernel pairs are formalized in
-\texttt{Limit, T.v, OT.v OT\_Tf.v, T\_telescope.v, Tf\_Omono\_sep.v}.% (552 lines).
+\texttt{Limit}, \texttt{T.v}, \texttt{OT.v}v \texttt{OT\_Tf.v}, \texttt{T\_telescope.v},\\ \texttt{Tf\_Omono\_sep.v}.% (552 lines).
 \item
-Reflective subuniverses and modalities are formalized in
-\texttt{reflective\_subuniverse.v, modalities.v}. % (1053 lines).
+Reflective subuniverses and modalities are formalized in\\
+\texttt{reflective\_subuniverse.v}, \texttt{modalities.v}. % (1053 lines).
 \item 
 %
   The definition of the dense topology as a left exact modality on
@@ -1969,8 +2006,8 @@ ways:
   $\HProp$, in order to extend type theory with different principles
   than excluded middle.
 \end{itemize}
-Moreover, in topos theory, Lawvere-Tierney subsumes Grothendieck~\cite[Section~V.4]{maclanemoerdijk} in the sense that any
-Grothendieck topology gives rise to a Lawvere-Tierney topology with
+Moreover, in topos theory, Lawvere-Tierney subsumes Gro\-thendieck~\cite[Section~V.4]{maclanemoerdijk} in the sense that any
+Grothen\-dieck topology gives rise to a Lawvere-Tierney topology with
 the same notion of sheaves. Higher Lawvere-Tierney sheaves are
 presented here, and higher Grothendieck sheaves have been defined
 in~\cite{lurie}. It should be interesting to check if the subsumption
@@ -1978,12 +2015,6 @@ remains true in higher topos theory.
 
 
 
-
-
-% conference papers do not normally have an appendix
-
-
-% use section* for acknowledgment
 \section*{Acknowledgment}
 
 We would like to thank all maintainers of the Coq/HoTT library, who
@@ -1991,32 +2022,7 @@ have provided a very solid base for our formalization.
 We also would like
 to thank Bas Spitters for helpful discussions on the subject.
 
-% trigger a \newpage just before the given reference
-% number - used to balance the columns on the last page
-% adjust value as needed - may need to be readjusted if
-% the document is modified later
-%\IEEEtriggeratref{8}
-% The "triggered" command can be changed if desired:
-%\IEEEtriggercmd{\enlargethispage{-5in}}
-
-% references section
-
-% can use a bibliography generated by BibTeX as a .bbl file
-% BibTeX documentation can be easily obtained at:
-% http://www.ctan.org/tex-archive/biblio/bibtex/contrib/doc/
-% The IEEEtran BibTeX style support page is at:
-% http://www.michaelshell.org/tex/ieeetran/bibtex/
-\bibliographystyle{IEEEtran}
+\bibliographystyle{abbrvnat}
 \bibliography{sheaf_lics}
-% argument is your BibTeX string definitions and bibliography database(s)
-%\bibliography{IEEEabrv,../bib/paper}
-%
-% <OR> manually copy in the resultant .bbl file
-% set second argument of \begin to the number of references
-% (used to reserve space for the reference number labels box)
-% \begin{thebibliography}{5}
-
-
-% that's all folks
 
 \end{document}

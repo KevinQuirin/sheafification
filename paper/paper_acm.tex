@@ -113,6 +113,10 @@
 
 \newcommand{\cL}{{\cal L}}
 
+\newenvironment{mymath}%
+{\vspace{-0.7em}\begin{equation*}}%
+  {\vspace{-0.7em}\end{equation*}}
+
 \begin{document}
 
 \special{papersize=8.5in,11in}
@@ -244,9 +248,9 @@ theory and homotopy theory, such as higher inductive
 types~\cite{lumsdaine2011higher,lumsdaine2013higher} and
 Voevodsky's univalence principle~\cite{kapulkin2012simplicial}, which
 says that for any types $T$ and $U$, the canonical map 
-$$
+\begin{mymath}
 (T = U) \to (T \simeq U)
-$$ 
+\end{mymath}
 %
 which transports equalities to equivalences is an equivalence.
 %
@@ -297,9 +301,9 @@ Lawvere-Tierney sheafification in a topos $\E$ is based on an abstract
 point of view on the topology to be considered, being simply defined by an
 endomorphism on the classifying object $\Omega$ of $\E$  
 %
-$$
+\begin{mymath}
 j : \Omega \rightarrow \Omega
-$$
+\end{mymath}
 %
 that is required to preserve $\True$ ($j \ \True = \True$), to be
 idempotent ($j \circ j = j$) and compatible with products ($j \circ
@@ -312,9 +316,9 @@ $A \mapsto \closure{A}$ on subobjects. If we see a subobject $A$ of $E$
 as a characteristic function $\Char{A}$, the closure $\closure{A}$
 corresponds to the subobject of $E$ whose characteristic function is 
 %
-$$
+\begin{mymath}
 \Char{\closure{A}} = j \circ \Char{A}.
-$$
+\end{mymath}
 %
 A subobject $A$ of $E$ is said to
 be dense when $\closure{A} = E$.
@@ -332,9 +336,9 @@ isomorphism
 One can show that $\Sh{\E}$, the full sub-category of $\E$ given by
 sheaves, is again a topos, with classifying object
 %
-$$
+\begin{mymath}
 \Omega_j = \{ P \in \E \ | \ j P  = P \}.
-$$
+\end{mymath}
 %
 Thus, in case of the double negation, the resulting topos is boolean  
 and admits classical reasoning.
@@ -342,9 +346,9 @@ and admits classical reasoning.
 Furthermore, one can define a left adjoint to the inclusion, the
 sheafification functor
 %
-$$
+\begin{mymath}
 a_j : \E \rightarrow \Sh{\E}
-$$
+\end{mymath}
 which exhibits $\Sh{\E}$ as a reflective
 subcategory of $\E$ (which is a particular case of localization). This
 means that logical principles valid in $\E$ are still valid in
@@ -526,9 +530,9 @@ hierarchy of subobject classifiers on $n$-truncated homotopy fibers.
 %
 The homotopy fiber $\fib{f}{b}$ of a function $f$ at element $b$ is
 defined as 
-$$
+\begin{mymath}
 \fib{f}{b} \defeq \sum_{a:A} f(a) = b.
-$$ 
+\end{mymath} 
 %
 A function $f$ is with $n$-truncated homotopy fibers (or simply
 $n$-truncated function) when $\fib{f}{b}$
@@ -547,17 +551,17 @@ an equivalence
 \end{align*}
 %
  such that the diagram
-$$
+\begin{mymath}
 \xymatrix{
   A \ar[r]^{\hspace{-1em} t_f} \ar[d]_f & \Type_n^\bullet \ar[d]^{\pi_1}\\
   B \ar[r]_{\hspace{-1em} \chi_f} & \Type_n
 }
-$$
+\end{mymath}
 is a pullback for any $f$ with
  $n$-truncated homotopy fibers where $\Type_n^\bullet \defeq
  \sum_{A:\Type_n} A$ is the universe of pointed
 $n$-truncated types and 
-$$t_f = \lambda a,~(\fib{f}{f(a)},(a,\mathrm{idpath})).$$
+\begin{mymath}t_f = \lambda a,~(\fib{f}{f(a)},(a,\mathrm{idpath})).\end{mymath}
 
 Finally, we need to use mere propositions as basic elements of a logic
 when characterizing properties of types or functions. 
@@ -606,7 +610,7 @@ inhabited (\ie $\|\fib f y\|$ holds for all $y$).
 
 \begin{defi}
   Let $f:A\to B$ be a function. The {\em image} of $f$ is defined as 
-  $$\im(f) \defeq \sum_{y:B} \|\fib f y\|.$$
+  \begin{mymath}\im(f) \defeq \sum_{y:B} \|\fib f y\|.\end{mymath}
 \end{defi}
 
 The canonical function $\hat f : A \to \im(f)$ is (-1)-connected,
@@ -668,16 +672,16 @@ Let $G$ be a graph, and $D$ be a diagram on $G$.
 Let $P:\Type$ together with
 \begin{itemize}
 \item a map $q_i : D_0(i) \to P$ for any
-vertex $i:G_0$, \ie $$q : \prod_{i:G_0} D_0(i) \to P$$
+vertex $i:G_0$, \ie \begin{mymath}q : \prod_{i:G_0} D_0(i) \to P\end{mymath}
 \item for any vertices $i,j:G_0$ and all edges $\phi:G_1(i,j)$, a path
   $p_{i,j}^\phi : q_j \circ D_1(\phi) = q_i$, \ie
-  $$p : \prod_{i,j:G_0} \prod_{\phi:G_1(i,j)} q_j \circ D_1(\phi) = q_i.$$
+  \begin{mymath}p : \prod_{i,j:G_0} \prod_{\phi:G_1(i,j)} q_j \circ D_1(\phi) = q_i.\end{mymath}
 \end{itemize}
 
 Then $P$ is the {\em colimit} of $D$ if for any other $X:\Type$, the
 map
-$$\lambda f:P \to X, \left( \lambda i,~f \circ q_i\, ;\, \lambda i\, j\,
-  \phi,\ \precompose_f (p_{i, j}^\phi)) \right)$$
+\begin{mymath}\lambda f:P \to X, \left( \lambda i,~f \circ q_i\, ;\, \lambda i\, j\,
+  \phi,\ \precompose_f (p_{i, j}^\phi)) \right)\end{mymath}
 where $\precompose_f : \phi = \psi \to \phi \circ f = \psi \circ f$,
 is an equivalence.
 \end{defi}
@@ -689,8 +693,8 @@ Colimits behave well with truncations, in the following sense:
   $P:\Type_{m}$. Let's call $P$ a $m$-colimit of $D$ if
   for any other $X:\Type_m$, the
   map
-  $$\lambda f:P \to X, \left( \lambda i,~f \circ q_i\, ;\, \lambda i\, j\,
-  \phi,\ \precompose_f (p_{i, j}^\phi)) \right)$$
+  \begin{mymath}\lambda f:P \to X, \left( \lambda i,~f \circ q_i\, ;\, \lambda i\, j\,
+  \phi,\ \precompose_f (p_{i, j}^\phi)) \right)\end{mymath}
   is an equivalence.
 
   Then, if $\|D\|_m$ is the same diagram as $D$, but where every type
@@ -739,9 +743,9 @@ they give, for any map $f$, a diagram $D_f$ whose colimit is $\im(f)$.
   \item $\alpha_1:~\forall a:X,~\alpha\, a\, a\, 1 = 1$
   \end{itemize}
   We view $T_f$ as the coequalizer of
-  $$\xymatrix{
+  \begin{mymath}\xymatrix{
     \sum_{a,b:X} f a = f b \dar[r]{4pt}^-{\pi_1}_-{\pi_2} & X
-  }$$
+  }\end{mymath}
   preserving the identity.
 
   We call $\tilde f$ the map $T_f \to Y$ given by induction.
@@ -753,9 +757,9 @@ of $T$.
   Let $f$ be a map from $X$ to $Y$. Then the iterated kernel pair of
   $f$ $C(f)$
   is given by the diagram
-  $$\xymatrix{
+  \begin{mymath}\xymatrix{
     C(f) := X \ar[r]^t & T_f \ar[r]^t & T_{\tilde f} \ar[r] &\cdots
-  }$$
+  }\end{mymath}
 \end{defi}
 
 Let's recall the main theorem:
@@ -788,9 +792,9 @@ Let's recall the main theorem:
 %   \item $\alpha_1:~\forall a:X,~\alpha\, a\, a\, 1 = 1$
 %   \end{itemize}
 %   We view $T_f$ as the coequalizer of
-%   $$\xymatrix{
+%   \begin{mymath}\xymatrix{
 %     \sum_{a,b:X} f a = f b \dar[r]{4pt}^-{\pi_1}_-{\pi_2} & X
-%   }$$
+%   }\end{mymath}
 %   preserving the identity.
 
 %   We call $\tilde f$ the map $T_f \to Y$ given by induction.
@@ -803,10 +807,10 @@ Let's recall the main theorem:
 % \begin{defi}
 %   Let $f$ be a map from $X$ to $Y$. The {\em \v{C}ech nerve} $C(f)$ of $f$
 %   is given by the diagram
-%   $$\xymatrix{
+%   \begin{mymath}\xymatrix{
 %     C(f) := X \ar[r]^t & T_f \ar[r]^t & T_{\tilde f} \ar[r] &\cdots
 % % \cdots~ X \times_Y X \times_Y X \tar[r]{4pt} & X \times_Y X \dar[r]{2pt} & X
-%   }$$
+%   }\end{mymath}
 % \end{defi}
 
 % \begin{thm}[Giraud-Rezk-Lurie]
@@ -878,11 +882,11 @@ examples, and in particular the modality for the dense topology.
   \begin{enumerate}[(i)]
     \setcounter{enumi}{3}
   \item For every $n$-truncated types $A$ and $B$, if $P(B)$ then
-    $$\left\{
+    \begin{mymath}\left\{
       \begin{array}{rcl}
         (\modal A \to B) & \to & (A \to B) \\
         f & \mapsto & f \circ \eta_A
-      \end{array} \right.$$
+      \end{array} \right.\end{mymath}
     is an equivalence.
   \item for any $A:\Type_n$ and $B:A \to \Type_n$ such that $P(A)$
     and $\prod_{x:A} P(B x)$, then $P\left( \sum_{x:A} B(x)\right)$
@@ -895,9 +899,9 @@ examples, and in particular the modality for the dense topology.
 
 The type of all modal $n$-types, \ie types for which $P$ holds, is
 defined as %$\Type^\modal_p$, so 
-$$
+\begin{mymath}
 \Type_n^\modal \ \defeq \sum_{T : \Type_n} P (T).
-$$
+\end{mymath}
 %
 Since basic type formers (dependent products, products, sigma types)
 preserve truncation levels, we can leverage all theorems on modalities
@@ -943,14 +947,14 @@ exact modalities preserve homotopy fibers.
 For any $n$-truncated types $X$ and $Y$,
 and any map $f:X \to Y$, the modalisation of fiber of $f$ above any element $y:Y$
 is the fiber of $\modal f$ above $\eta_Y y$:
-$$\modal \left(\sum_{x:X}  (f x = y)\right) = \sum_{x:\modal X}
-(\modal f x = \eta_Y y),$$
+\begin{mymath}\modal \left(\sum_{x:X}  (f x = y)\right) = \sum_{x:\modal X}
+(\modal f x = \eta_Y y),\end{mymath}
 where $\modal f:\modal X \to \modal Y$ is defined via the equivalence {\it (iv)} and $\eta_Y$.
 
 Moreover the following diagram commute
-$$\xymatrix{
+\begin{mymath}\xymatrix{
   \sum_{x:X} (f x = y) \ar[r]^\eta \ar[d]_\gamma & \modal \left(\sum_{x:X}  (f x = y)\right) \ar@{=}[dl]\\
-  \sum_{x:\modal X} (\modal f x = \eta_Y y) & }$$
+  \sum_{x:\modal X} (\modal f x = \eta_Y y) & }\end{mymath}
 where $\pi_1 \circ \gamma = \eta_X \circ \pi_1$, and
 $\pi_2 \circ \gamma$ is given by the modalisation of
 paths.
@@ -968,15 +972,15 @@ The proof is based on the following central result.
 \end{lem}
 %
 It is straighforward to define a map
-$$\phi:\sum_{x:X}  (f x = y)\to
-\sum_{x:\modal X} (\modal f x = \eta_Y y),$$
+\begin{mymath}\phi:\sum_{x:X}  (f x = y)\to
+\sum_{x:\modal X} (\modal f x = \eta_Y y),\end{mymath}
 using $\eta$ functions.
 We just need to check that every $\modal$-fiber $\modal(\fib \phi {x;p})$ is
 contractible.
 Technical transformations allow one to prove
-$$\fib\phi{x;p} = \fib s {y;p^{-1}}$$
+\begin{mymath}\fib\phi{x;p} = \fib s {y;p^{-1}}\end{mymath}
 for some $a:\modal X$, $b:\modal Y$ and 
-$$s:\fib{\eta_X}a \to \fib{\eta_Y}b.$$
+\begin{mymath}s:\fib{\eta_X}a \to \fib{\eta_Y}b.\end{mymath}
 %
 From definition of left exactness, one can deduce the following:
 \begin{lem}
@@ -1129,7 +1133,7 @@ characteristic function $\chi_E$ of $E$ seen as an $n$-subobject of
 itself is not the constant function equal to $\one$, as it is the case
 for toposes, but rather the map 
 %
-$$\chi_E  = \lambda e . \ \sum_{e':E} e=e'.$$
+\begin{mymath}\chi_E  = \lambda e . \ \sum_{e':E} e=e'.\end{mymath}
 %
 This means that we need to take more care of the homotopy structure of
 this characteristic function, and in particular, the definition of a
@@ -1142,16 +1146,16 @@ dense $n$-subobject comes with an additional coherence condition
   classified by $\chi$ is {\em dense} in $E$ when its $\modal_n$-closure
   is equivalent to $\chi_E$, \ie
   %
-  $$\prod_{e:E}~ \left(\sum_{e':E} e=e'\right) \simeq \modal_n
-  (\chi~e).$$
+  \begin{mymath}\prod_{e:E}~ \left(\sum_{e':E} e=e'\right) \simeq \modal_n
+  (\chi~e).\end{mymath}
   % 
   % and moreover, for any $x:A$, the following diagram 
   % commutes, 
-  % $$\xymatrix{
+  % \begin{mymath}\xymatrix{
   %   \sum_{e':A} x = e' \ar@{=}[r] \ar[d]_{\iota'} & (\chi \ x)
   %   \ar[d]^{\eta_{(\chi \ x)}}\\
   %   \sum_{e':E} x = e' \ar@{=}[r] & \modal_n (\chi \ x)
-  % }$$
+  % }\end{mymath}
   % where $\iota': x \mapsto (\iota (\pi_1 x) ; \pi_2 x)$.
 \end{defi}
 
@@ -1164,9 +1168,9 @@ their dense subobjects.
 
 \begin{defi}
   For any type $A$ and $E$, $\iota : A \to E$ and $F:\Type_{n+1}$, we define
-    $$
+    \begin{mymath}
     \Phi_E^\iota : (E \to F) \to (A \to F) 
-    $$
+    \end{mymath}
     %
     as the map sending an
     arrow $f:E\to F$ to its restriction $f \circ \iota$.
@@ -1186,10 +1190,10 @@ of separated types.
   $\Phi_E^\iota$ is an embedding.%  In other words, the dotted arrow,
   % if exists, is unique.
 
-  % $$\xymatrix{
+  % \begin{mymath}\xymatrix{
   %   A \ar[r]^f \ar[d]_{\iota} & F \\
   %   E \ar@{-->}[ru]_{!}&
-  % }$$
+  % }\end{mymath}
 \end{defi}
 
 With topos theory point of view, it means that given a map $A\to F$,
@@ -1199,7 +1203,7 @@ Actually, there is a simpler characterisation:
 \begin{prop}
   A type $F$ is $\Type_{n+1}$ is separated if, and only if all its
   path types are $n$-modal, ie
-  $$\mathrm{separated}(F) = \prod_{x,y:F}~\modal_n(x=y) = (x=y).$$
+  \begin{mymath}\mathrm{separated}(F) = \prod_{x,y:F}~\modal_n(x=y) = (x=y).\end{mymath}
 \end{prop}
 
 \begin{defi}[Sheaves]
@@ -1208,10 +1212,10 @@ Actually, there is a simpler characterisation:
   $\iota : A \to E$, $\Phi_E^\iota$ is an
   equivalence. % In other words, the dotted arrow exists and is unique.
 
-  % $$\xymatrix{
+  % \begin{mymath}\xymatrix{
   %   A \ar[r]^f \ar[d]_{\iota} & F \\
   %   E \ar@{-->}[ru]_{\exists !}&
-  % }$$
+  % }\end{mymath}
 \end{defi}
 
 In topos-theoretic words, it means that given a map $A\to F$, one can
@@ -1262,10 +1266,10 @@ on $\modal_n$ in $\Type_n^\modal$ to ease the reading.}
   \Type_n^\modal$. We want to extend $f$ to $E \to \Type_n^\modal$.
 
   We define $g$ as 
-  $$g(e) = \modal_n \left( \fib \phi e \right), $$
+  \begin{mymath}g(e) = \modal_n \left( \fib \phi e \right), \end{mymath}
   where
-  $$\phi : \left(\sum_{b:\left(\sum_{e:E} (\chi\, e)\right)} (f\,
-    b)\right) \to E$$
+  \begin{mymath}\phi : \left(\sum_{b:\left(\sum_{e:E} (\chi\, e)\right)} (f\,
+    b)\right) \to E\end{mymath}
   defined by $\phi(x) = (x_1)_1$.
   Using the following properties on fibers, we can prove that it
   defines an equivalence.
@@ -1274,12 +1278,12 @@ on $\modal_n$ in $\Type_n^\modal$ to ease the reading.}
     Then
     \begin{itemize}
     \item If $g$ is an embedding, then 
-      $$\prod_{b:B}\fib f b = \fib {g\circ f} {g\, b}.$$
+      \begin{mymath}\prod_{b:B}\fib f b = \fib {g\circ f} {g\, b}.\end{mymath}
     \item If all fibers of $f$ and $g$ are $n$-truncated, then
-      $$\prod_{c:C}\modal_n(\fib {g \circ f} c) =
+      \begin{mymath}\prod_{c:C}\modal_n(\fib {g \circ f} c) =
       \modal_n \left(  
         \sum_{w:\fib g c} \modal_n (\fib f {w_1})
-      \right).$$
+      \right).\end{mymath}
     \end{itemize}
   \end{lem}
 
@@ -1328,10 +1332,10 @@ sense that the following property holds.
   For any mere proposition $P$ (where $\widehat P$ is $P$ seen as a
   $\Type_n$),  $\modal_n \widehat P = \modal_{-1} P$ and the
   following coherence diagram commutes
-  $$\xymatrix{
+  \begin{mymath}\xymatrix{
     P \ar@{->}^{\sim}[r] \ar[d]_{\eta_{-1}} & \widehat P \ar[d]^{\eta_n} \\
     \modal_{-1} P \ar@{->}^{\sim}[r] & \modal_n \widehat P 
-  }$$
+  }\end{mymath}
 \end{cond}
 
 
@@ -1381,7 +1385,7 @@ steps:
 
 % For the case $n=-1$, one can take any left exact modality on
 % $\HProp$. Here we took the $\lnot\lnot$ modality:
-% $$\forall P:\HProp,~\modal_j P = \lnot\lnot P.$$
+% \begin{mymath}\forall P:\HProp,~\modal_j P = \lnot\lnot P.\end{mymath}
 % One can easily show that it defines a left exact modality.
 
 % The $\lnot\lnot$-modality allows to work with a propositional law of
@@ -1398,22 +1402,22 @@ sense of condition~\ref{cond:hprop}.
 Let $T : \Type_{n+1}$. We define $\separated T$ as the image (see
 Section~\ref{sec:epi-mono-fact}) of
 $\modal_n^T \circ \{\cdot\}_T$, as in
-$$\xymatrix{
+\begin{mymath}\xymatrix{
   T \ar[r]^{\{\cdot\}_T} \ar[d]_{\mu_T} & \Type_n^T \ar[d]^{\modal_n^T} \\
   \separated T \ar[r]& \left( \Type_n^\modal \right)^T
-}, $$
+}, \end{mymath}
 where $\{\cdot\}_T$ is the singleton map $\lambda (t:T),~\lambda
 (t':T),~t=t'$.
 %
 $\separated T$ can be given explicitly by
 %
-$$
+\begin{mymath}
 \begin{array}{rcl}
 \separated T &\defeq & \im (\lambda~t:T,~\lambda~ t',~ \modal_n (t = t')) \\
           & \defeq & \sum\limits_{u:T \to \Type_n^\modal} \left\| \sum_{a:T} 
             (\lambda t,~\modal_n (a=t)) = u\right\|.
 \end{array}
-$$
+\end{mymath}
 %
 This corresponds to the free separated object used in the topos-theoretic construction, but using $\Type_n^\modal$ instead of the
 $j$-subobject classifier $\Omega_j$.
@@ -1452,13 +1456,13 @@ the \v{C}ech nerve of $\mu_T$.
   \end{itemize}
 
   We view $\mathring T$ as the coequalizer of
-  $$\xymatrix{\sum_{a,b:\|X\|_{n+1}} \modal (a=b) \dar[r]{4pt}^-{\pi_1}_-{\pi_2}
-  & \|X\|_{n+1}}$$
+  \begin{mymath}\xymatrix{\sum_{a,b:\|X\|_{n+1}} \modal (a=b) \dar[r]{4pt}^-{\pi_1}_-{\pi_2}
+  & \|X\|_{n+1}}\end{mymath}
   preserving $\eta_{a=a} 1$.
 
   We consider the diagram $\mathring T$ :
-  $$\xymatrix{\|X\|_{n+1} \ar[r] & \|\mathring T_{X}\|_{n+1} \ar[r] & \|\mathring
-  T_{\mathring T_X} \|_{n+1} \ar[r] & \cdots} $$
+  \begin{mymath}\xymatrix{\|X\|_{n+1} \ar[r] & \|\mathring T_{X}\|_{n+1} \ar[r] & \|\mathring
+  T_{\mathring T_X} \|_{n+1} \ar[r] & \cdots} \end{mymath}
 \end{defi}
 
 
@@ -1481,13 +1485,13 @@ We will need the following lemma:
     \forall a,b:A,~f a = f b \simeq \modal (a=b),
   \end{equation}
   then
-  $$\forall a,b:\|T_f\|_{n+1},~|\tilde f|_{n+1} a = |\tilde f|_{n+1} b \simeq \modal (a=b).$$
+  \begin{mymath}\forall a,b:\|T_f\|_{n+1},~|\tilde f|_{n+1} a = |\tilde f|_{n+1} b \simeq \modal (a=b).\end{mymath}
 \end{lem}
 
 \begin{proof}[Sketch of proof]
   By induction on truncation, we need to show that 
-  $$\forall a,b:T_f,~\tilde f |a|_{n+1} = \tilde f |b|_{n+1} \simeq
-  \modal (|a|_{n+1}=|b|_{n+1}).$$
+  \begin{mymath}\forall a,b:T_f,~\tilde f |a|_{n+1} = \tilde f |b|_{n+1} \simeq
+  \modal (|a|_{n+1}=|b|_{n+1}).\end{mymath}
 
   We use the encode-decode~\cite[Section 8.9]{hottbook} method to characterize $\tilde f |a|_{n+1}
   = x$, and the result follows. We refer to the formalization for details.
@@ -1523,7 +1527,7 @@ We will need the following lemma:
   Then, by induction, we need to show that for any $A,B:\Type_{n+1}$ such
   that $\varphi:~A \simeq B$, with an arrow $f:A \to \separated T$
   satisfying~(\ref{eq:Omono}), 
-  $$T_f \simeq \mathring T_B.$$
+  \begin{mymath}T_f \simeq \mathring T_B.\end{mymath}
   For this, we use 
   \begin{align*}
     T_f &= \mathrm{Coeq}_1 \left( 
@@ -1548,18 +1552,18 @@ Thus, $T_f \simeq \mathring T$.
 Now, let $Q$ be any separated $\Type_{n+1}$, and $f:X \to Q$. Then the
 following diagram commutes
 
-$$\xymatrix{
+\begin{mymath}\xymatrix{
 \|X\|_{n+1} \ar[r] \ar[rd] & \|\mathring T_{X}\|_{n+1} \ar[r] \ar[d] & \|\mathring
   T_{\mathring T_X} \|_{n+1} \ar[ld]\cdots \\
   & Q &
-} $$ 
+} \end{mymath} 
 
-% $$\xymatrix @C=4em{ 
+% \begin{mymath}\xymatrix @C=4em{ 
 %     \cdots \overline{\Delta_3} \tar[r]{4pt} \ar[rd]_{f\circ \pi_1} & \overline{\Delta_2}
 %     \dar[r]{2pt} \ar[d]^{f\circ \pi_1} &
 %     \overline{\Delta_1} = T \ar[ld]^{f\circ \pi_1}\\
 %     & Q &
-%   }$$
+%   }\end{mymath}
 But we know (lemma~\ref{lem:sepiscolim}) that $\separated T$ is the
 $(n+1)$-colimit of the diagram $\mathring T$, thus there is an universal
 arrow $\separated T \to Q$.
@@ -1578,27 +1582,27 @@ be a type, and $\sum_{e:E} (\chi\,e)$ a dense $n$-subobject of E.
 
 Let $f,g$ be two maps from $\sum_{e:E} (\chi\,e)$ to $\sum_{x:A}
 (Bx)$, equal when precomposed with $\pi_1$.
-$$\xymatrix @R=4em @C=4em{
+\begin{mymath}\xymatrix @R=4em @C=4em{
   \sum_{e:E} (\chi\, e) \ar@<-2pt>[r]_{g\circ\pi_1} \ar@<2pt>[r]^{f\circ \pi_1} \ar[d]_{\mathrm{dense}}& \sum_{x :A} (Bx) \\
   E \ar@<-2pt>[ru]_{g} \ar@<2pt>[ru]^{f}&
-}$$
+}\end{mymath}
 We can restrict the previous diagram to 
-$$\xymatrix @R=4em @C=5em{
+\begin{mymath}\xymatrix @R=4em @C=5em{
   \sum_{e:E} (\chi\, e) \ar@<-2pt>[r]_{\pi_1\circ g\circ\pi_1} \ar@<2pt>[r]^{\pi_1\circ f\circ \pi_1} \ar[d]_{\mathrm{dense}}& \sum_{x :A} (Bx) \\
   E \ar@<-2pt>[ru]_{\pi_1\circ g} \ar@<2pt>[ru]^{\pi_1\circ f}&
-}$$
+}\end{mymath}
 and as $A$ is separated, $\pi_1\circ f = \pi_2 \circ g$.
 For the second components, let $x:E$. Notice that for any $x:E$,
 $\sum_{y:E} x = y$ has a dense $n$-subobject, $\sum_{y:\sum_{e:E} (\chi\,
   e)} x=y_1$:
 
-$$\xymatrix@C=8em@R=4em{
+\begin{mymath}\xymatrix@C=8em@R=4em{
   \sum_{y:\sum_{e:E} (\chi\,
   e)} x=y_1 \ar@<2pt>[r]^{\qquad \pi_2\circ f\circ\pi_1\circ \pi_1}
 \ar@<-2pt>[r]_{\qquad \pi_2\circ g\circ \pi_1\circ \pi_1}
 \ar[d]_{\mathrm{dense}}& B\,x \\
   \sum_{y:E} x = y \ar@<2pt>[ur]^{\pi_2\circ f\circ \pi_1} \ar@<-2pt>[ur]_{\pi_2\circ g\circ \pi_1}&
-}$$
+}\end{mymath}
 Using the sepatation property of $B\,x$, one can show that second
 components, transported correctly along the first components equality,
 are equal. The complete proof can be found in the formalization.
@@ -1620,10 +1624,10 @@ $\modal_{n+1}T$ is defined as the closure of $\separated T$,
 seen as a subobject of $T \to \Type_n^\modal$. 
 %
 $\modal_{n+1}T$ can be given explicitly by
-$$
+\begin{mymath}
 \modal_{n+1} T \ \defeq \sum_{u:T \to \Type_n^\modal} \modal_{-1}\left\| \sum_{a:T} 
             (\lambda t,~\modal_n (a=t)) = u\right\|.
-$$
+\end{mymath}
 
 To prove that $\modal_{n+1} T$ is a sheaf for any $T:\Type_{n+1}$, we
 use the following lemma.
@@ -1677,12 +1681,12 @@ compatible with $\modal_n$ on lower homotopy types.
     \end{align*}
     because the type inside the truncation is already in $\HProp$.
     Now, let define $\phi : \modal_{-1} T \to \modal_0T$ by
-    $$\phi t = (\lambda t',\, \modal_{-1}(t=t') ; \eta
-    (t;\mathrm{idpath}))$$
+    \begin{mymath}\phi t = (\lambda t',\, \modal_{-1}(t=t') ; \eta
+    (t;\mathrm{idpath}))\end{mymath}
     and $\psi : \modal_0T\to \modal_{-1} T$ by obtaining the
     witness $a:T$ (which is possible because we are trying to inhabit
     a modal proposition), and letting
-    $$\psi (u;x) = \eta_T a.$$
+    \begin{mymath}\psi (u;x) = \eta_T a.\end{mymath}
     These two maps form an equivalence (the section and retraction are
     trivial because the equivalence is between mere propositions).
   \item Suppose now that $\modal_{n+1}$ is compatible with all $\modal_k$ on
@@ -1805,10 +1809,10 @@ dynamically along a proof, and thus be increased as much as needed.
 
 Unfortunately, one lose canonicity when working in $\Type^\modal$;
 indeed, for example, the term 
-$$\left( \lambda P:\HProp,~\left\{\begin{array}{l} 0 \text{ if $P$ is
+\begin{mymath}\left( \lambda P:\HProp,~\left\{\begin{array}{l} 0 \text{ if $P$ is
                                     false} \\ 1 \text{ if $P$ is
                                     true} \end{array}\right. \right)
-                            P~:~\nat$$
+                            P~:~\nat\end{mymath}
 will not reduce to a numeral if the chosen property $P$ is not
 decidable. However, we keep canonicity for ``old'' terms, i.e. the
 ones constructed without using excluded middle.
@@ -1818,8 +1822,8 @@ ones constructed without using excluded middle.
 
 % Working in $\Type^\modal$, one can consider new objects. For example,
 % let $c:nat \to \nat$ implementing the Collatz function. Then, for any
-% $n:\nat$, the type $$C_n \defeq \sum_{k:\nat}\left( c^k(n) = 1 \land k\text{ is the
-%   smallest such $\nat$}\right)$$ is an $\HProp$.
+% $n:\nat$, the type \begin{mymath}C_n \defeq \sum_{k:\nat}\left( c^k(n) = 1 \land k\text{ is the
+%   smallest such $\nat$}\right)\end{mymath} is an $\HProp$.
 % Thus, for any $n$, one have $C_n + \lnot C_n$, and one can {\em
 %   constructively} build a map $\varphi:\nat \to \two$ such that
 % $\varphi(n) = \True$ if and only if $n$ satisfies the Collatz

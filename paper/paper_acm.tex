@@ -76,6 +76,8 @@
 
 \usepackage{enumerate}
 \usepackage{wasysym}
+\usepackage{microtype}
+
 \usepackage[all]{xy}
 \def\dar[#1]#2{\ar@<-#2>[#1]\ar@<#2>[#1]} %double arrows in xy
 \def\tar[#1]#2{\ar@<#2>[#1]\ar@<0pt>[#1]\ar@<-#2>[#1]} %triple arrows in xy
@@ -1159,7 +1161,7 @@ dense $n$-subobject comes with an additional coherence condition
   classified by $\chi$ is {\em dense} in $E$ when its $\modal_n$-closure
   is equivalent to $\chi_E$, \ie
   %
-  \begin{mymath}\prod_{e:E}~ \left(\sum_{e':E} e=e'\right) \simeq \modal_n
+  \begin{mymath}[-0.3em]\prod_{e:E}~ \left(\sum_{e':E} e=e'\right) \simeq \modal_n
   (\chi~e).\end{mymath}
   % 
   % and moreover, for any $x:A$, the following diagram 
@@ -1181,12 +1183,8 @@ their dense subobjects.
 
 \begin{defi}
   For any type $A$ and $E$, $\iota : A \to E$ and $F:\Type_{n+1}$, we define
-    \begin{mymath}
-    \Phi_E^\iota : (E \to F) \to (A \to F) 
-    \end{mymath}
-    %
-    as the map sending an
-    arrow $f:E\to F$ to its restriction $f \circ \iota$.
+    $\Phi_E^\iota \defeq \cdot \circ \iota : (E \to F) \to (A \to F) $
+    as the map sending an  arrow $f:E\to F$ to its restriction $f \circ \iota$.
   % \item if $A \to E$ with $n$-truncated homotopy fibers, $\Phi_E^\chi$ is the
   %   map sending $f:~E \to f$ to $\restriction f A$.
   % \end{itemize}
@@ -1278,12 +1276,12 @@ on $\modal_n$ in $\Type_n^\modal$ to ease the reading.}
   $\chi:E \to \HProp$, dense in $E$. Let $f:\sum_{e:E} \chi\, e \to
   \Type_n^\modal$. We want to extend $f$ to $E \to \Type_n^\modal$.
 
-  We define $g$ as 
-  \begin{mymath}g(e) = \modal_n \left( \fib \phi e \right), \end{mymath}
+  We define $g$ as $g(e) = \modal_n \left( \fib \phi e \right)$,
   where
-  \begin{mymath}\phi : \left(\sum_{b:\left(\sum_{e:E} (\chi\, e)\right)} (f\,
+  \begin{mymath}[0em]\phi : \left(\sum_{b:\left(\sum_{e:E} (\chi\, e)\right)} (f\,
     b)\right) \to E\end{mymath}
   defined by $\phi(x) = (x_1)_1$.
+\kq{Is it necessary to state the lemma ?}
   Using the following properties on fibers, we can prove that it
   defines an equivalence.
   \begin{lem}
@@ -1601,12 +1599,12 @@ Let $f,g$ be two maps from $\sum_{e:E} (\chi\,e)$ to $\sum_{x:A}
   \sum_{e:E} (\chi\, e) \ar@<-2pt>[r]_{g\circ\pi_1} \ar@<2pt>[r]^{f\circ \pi_1} \ar[d]_{\mathrm{dense}}& \sum_{x :A} (Bx) \\
   E \ar@<-2pt>[ru]_{g} \ar@<2pt>[ru]^{f}&
 }\end{mymath}
-We can restrict the previous diagram to 
-\begin{mymath}\xymatrix @R=4em @C=5em{
-  \sum_{e:E} (\chi\, e) \ar@<-2pt>[r]_{\pi_1\circ g\circ\pi_1} \ar@<2pt>[r]^{\pi_1\circ f\circ \pi_1} \ar[d]_{\mathrm{dense}}& \sum_{x :A} (Bx) \\
-  E \ar@<-2pt>[ru]_{\pi_1\circ g} \ar@<2pt>[ru]^{\pi_1\circ f}&
-}\end{mymath}
-and as $A$ is separated, $\pi_1\circ f = \pi_2 \circ g$.
+% We can restrict the previous diagram to 
+% \begin{mymath}\xymatrix @R=4em @C=5em{
+%   \sum_{e:E} (\chi\, e) \ar@<-2pt>[r]_{\pi_1\circ g\circ\pi_1} \ar@<2pt>[r]^{\pi_1\circ f\circ \pi_1} \ar[d]_{\mathrm{dense}}& \sum_{x :A} (Bx) \\
+%   E \ar@<-2pt>[ru]_{\pi_1\circ g} \ar@<2pt>[ru]^{\pi_1\circ f}&
+% }\end{mymath}
+As $A$ is separated, $\pi_1\circ f = \pi_2 \circ g$.
 For the second components, let $x:E$. Notice that for any $x:E$,
 $\sum_{y:E} x = y$ has a dense $n$-subobject, $\sum_{y:\sum_{e:E} (\chi\,
   e)} x=y_1$:
@@ -1707,7 +1705,7 @@ compatible with $\modal_n$ on lower homotopy types.
     $T:\Type_{n+1}$. Then, as $\modal_{n+1}$ is compatible with $\modal_{n}$, and
     $(a=t)$ is in $\Type_n$,
     \begin{mymath}
-      \modal_{n+2} \widehat = \hspace{-1em} \sum_{u:T \to
+      \modal_{n+2} \widehat T= \hspace{-1em} \sum_{u:T \to
         \Type_{n+1}^\modal} 
       \hspace{-1em} \modal_{-1}\left\| \sum_{a:T} 
         (\lambda t,~\modal_{n} (a=t)) = u\right\|.
@@ -1848,26 +1846,27 @@ particular the issues relative to universe polymorphism.
 \subsection{Content of the formalization}
 \label{sec:cont-form}
 
-We provide a more detailed insight of the structure of our formalization:
-\begin{itemize} 
-\item Colimits and iterated kernel pairs are formalized in
-\texttt{Limit}, \texttt{T.v}, \texttt{OT.v}v \texttt{OT\_Tf.v}, \texttt{T\_telescope.v},\\ \texttt{Tf\_Omono\_sep.v}.% (552 lines).
-\item
-Reflective subuniverses and modalities are formalized in\\
-\texttt{reflective\_subuniverse.v}, \texttt{modalities.v}. % (1053 lines).
-\item 
-%
-  The definition of the dense topology as a left exact modality on
-  $\HProp$ is given in \texttt{sheaf\_base\_case.v}. % (186 lines).
-\item
-Section~\ref{sec:sheaves} is formalized in
-\texttt{sheaf\_def\_and\_thm.v}. % (1029 lines).
-\item
-Section~\ref{sec:sheafification} is formalized in
-\texttt{sheaf\_induction.v}. % (2340 lines).
-\end{itemize}
+% We provide a more detailed insight of the structure of our formalization:
+% \begin{itemize} 
+% \item Colimits and iterated kernel pairs are formalized in
+% \texttt{Limit}, \texttt{T.v}, \texttt{OT.v}v \texttt{OT\_Tf.v}, \texttt{T\_telescope.v},\\ \texttt{Tf\_Omono\_sep.v}.% (552 lines).
+% \item
+% Reflective subuniverses and modalities are formalized in\\
+% \texttt{reflective\_subuniverse.v}, \texttt{modalities.v}. % (1053 lines).
+% \item 
+% %
+%   The definition of the dense topology as a left exact modality on
+%   $\HProp$ is given in \texttt{sheaf\_base\_case.v}. % (186 lines).
+% \item
+% Section~\ref{sec:sheaves} is formalized in
+% \texttt{sheaf\_def\_and\_thm.v}. % (1029 lines).
+% \item
+% Section~\ref{sec:sheafification} is formalized in
+% \texttt{sheaf\_induction.v}. % (2340 lines).
+% \end{itemize}
 
-Overall, with other files containing technical lemmas, the project
+Overall, % with other files containing technical lemmas,
+the project
 contains 8081 lines, and it could be reduced a bit by improving the
 way Coq tries to rewrite and apply lemmas automatically. 
 The \texttt{coqwc} tool counts 1750 lines of specifications

@@ -393,21 +393,21 @@ forcing in type theory~\cite{jaber2012extending}, it allows to reuse
 results derived for topos theory, such as independence results.
 
 To extend Lawvere-Tierney sheafification to homotopy type theory, the
-first thing to understand is that the construction can not be done in one
+first thing to understand is that the construction cannot be done in one
 single step anymore. It must rather be performed by induction on the
 level of homotopy types. More precisely, the first layer of
 sheafification is defined for $\Type_{0}$, given a topology on
-$\Type_{-1}$. This part corresponds to sheafification for toposes. Then,
+$\Type_{-1}$. This part corresponds to sheafification for topoï. Then,
 assuming that the sheafification has been constructed above level $n$,
 one can define the sheafification for $\Type_{n+1}$.
 %
 This inductive process in the definition of sheafification is similar
 to construction in the Grothendieck setting, where the
-sheafification is obtained by applying the plus-construction $n+1$
+sheafification is obtained by applying the plus-construction $n\!+\!1$
 times to
 $n$-types~\cite[Chapter~6]{lurie}. Unfortunately, some types does not
 have a finite homotopy level, hence this construction cannot reach
-every type.
+every type\looseness=-1.
 
 This inductive step requires to formalize the notion of left-exact
 reflective subuniverse, which corresponds to a stratified version of
@@ -436,8 +436,8 @@ embedding.
 
 Another technical difficulty is the fact that sheafification in topos
 theory uses the property that epimorphisms are coequalizers of their
-kernel pairs. This property does not hold anymore in higher toposes, but
-using Giraud-Rezk-Lurie axioms of $\infty$-toposes, the same property
+kernel pairs. This property does not hold anymore in higher topoï, but
+using Giraud-Rezk-Lurie axioms of $\infty$-topoï, the same property
 holds by replacing kernel pairs by \v{C}ech nerves in the statement.
 
 Finally, one of the main difficulty in our formalization is that many
@@ -471,7 +471,7 @@ Section~\ref{sec:formalization} discusses the details of the
 formalization in Coq using formal type theory, in particular issues
 concerning universe polymorphism.
 %
-Finally, Section~\ref{sec:future-works} concludes on future works.
+Finally, Section~\ref{sec:future-works} concludes on future works\looseness=-1.
 
 
 \section{Preliminaries on Homotopy Type Theory}
@@ -491,7 +491,7 @@ sheafification.
 % in homotopy type theory. 
 % %
 % And Section~\ref{sec:giraud-ax} defines an analogue of
-% Giraud-Rezk-Lurie axioms on higher toposes that we need in the
+% Giraud-Rezk-Lurie axioms on higher topoï that we need in the
 % definition of sheafification.
 % %
 The definitions of Section~\ref{ssec:hott} 
@@ -511,7 +511,7 @@ instead of type theory whenever it is possible, to ease the reading
 without making our statement imprecise. In particular, (higher)
 inductive types are defined using itemization to avoid an overhead of
 notation. In the rest of the paper, $\Type$ must be seen in an
-universe-polymorphic way.
+universe-polymorphic way\looseness=-1.
 
  
  \subsection{Homotopy Types and Classifying Objects}
@@ -1071,7 +1071,7 @@ paths.
 \label{sec:new-type-theory}
 
 As noticed in \cite{hottbook}, left exact modalities correspond
-to sub-$(\infty,1)$-toposes. Indeed, modal types defines a new type
+to sub-$(\infty,1)$-topoï. Indeed, modal types defines a new type
 theory as modality preserves all type former, such as dependent
 products or dependent sums.
 % or inductive types (\nt{double check that}). 
@@ -1089,7 +1089,7 @@ consistent theory.
 \begin{prop}\label{prop:consistent}
   A left exact modality $\modal$ induces a consistent type theory if
   and only if $\modal \zero$ can not be inhabited in the initial type
-  theory. In that case, the modality is said to be consistent.
+  theory. In that case, the modality is said to be consistent\looseness=-1.
 \end{prop}
 \begin{proof}
   By condition (iv) of Definition~\ref{sec:defin-basic-prop-1},
@@ -1155,7 +1155,7 @@ $n$ using sheafification, by induction on $n$.
 In this section, we suppose given a truncation index $n\geqslant -1$,
 and a left exact modality $\modal_n$ on $\Type_n$ and we introduce the
 definition of sheaves for $(n+1)$-types and basic properties of
-sheaves that will be useful in the next section. 
+sheaves that will be useful in the next section\looseness=-1. 
 
 % We will define sheaves by induction on the level of homotopy type:
 % the base case will be any left exact modality on $\HProp$, and we
@@ -1187,7 +1187,7 @@ Section~\ref{ssec:hott}.
 % The definition of a dense $n$-subobject requires more work as the
 % characteristic function $\chi_E$ of $E$ seen as an $n$-subobject of
 % itself is not the constant function equal to $\one$, as it is the case
-% for toposes, but rather the map 
+% for topoï, but rather the map 
 % %
 % \begin{mymath}\chi_E  = \lambda e . \ \sum_{e':E} e=e'.\end{mymath}
 % %
@@ -1225,7 +1225,7 @@ their dense subobjects.
 \begin{defi}
   For any type $E$, $\chi : E \to \Type$ and $F:\Type_{n+1}$, we define
     $\Phi_E^\chi : (E \to F) \to (\sum_{e:E} \chi\, e \to F) $
-    as the map sending an  arrow $f:E\to F$ to its restriction $f \circ \pi_1$.
+    as the map sending an  arrow $f:E\to F$ to its restriction $f \circ \pi_1$\looseness=-1.
   % \item if $A \to E$ with $n$-truncated homotopy fibers, $\Phi_E^\chi$ is the
   %   map sending $f:~E \to f$ to $\restriction f A$.
   % \end{itemize}
@@ -1283,7 +1283,7 @@ $(-1)$-subobjects.
 For higher topos theory, in the Grotehndieck setting, sheaves seems
 to correspond to the second part of our definition only (assuming that
 Lawvere-Tierney topologies can still be shown to subsume Grothendieck
-toplogies for $(\infty,1)$-toposes, which is beyond the scope of this paper).
+toplogies for $(\infty,1)$-topoï, which is beyond the scope of this paper).
 %
 
 A fundamental property in the construction of the sheafification
@@ -1414,7 +1414,7 @@ From a left exact modality on the internal logic (a Lawvere-Tierney
 topology), a new left exact modality is defined on the whole topos.
 %
 This construction may be seen as the first induction step between
-$\HProp$ and $\Type_0$. 
+$\HProp$ and $\Type_0$.\looseness=-1 
 
 % \kq{c'est une vision plutôt grothendieck en fait. La separation ``enlève''
 %   ce qui empêche à $T$ d'être un faisceau, et la sheafification
@@ -1477,7 +1477,7 @@ This corresponds to the free separated object used in the topos-theoretic constr
 $j$-subobject classifier $\Omega_j$.
 %
 \begin{prop}
-  For any $T:\Type_{n+1}$, $\separated T$ is separated.  
+  For any $T\!:\!\Type_{n+1}$, $\separated T$ is separated.  
 \end{prop}
 
 \begin{proof}
@@ -1660,7 +1660,7 @@ $\sum_{y:E} x = y$ has a dense $n$-subobject, $\sum_{y:\sum_{e:E} (\chi\,
 Using the separation property of $B\,x$, one can show that second
 components, transported correctly along the first components equality,
 are equal. The complete proof can be found in the formalization.
-This proves the following proposition
+This proves the following proposition\looseness=-1
 \begin{prop}\label{prop:sep-mod}
   $(\separated,\mu)$ defines a modality on $\Type_{n+1}$.
 \end{prop}
@@ -1737,8 +1737,7 @@ compatible with $\modal_n$ on lower homotopy types.
     (t;\mathrm{idpath}))\end{mymath}%
     and $\psi : \modal_0T\to \modal_{-1} T$ by obtaining the
     witness $a:T$ (which is possible because we are trying to inhabit
-    a modal proposition), and letting
-    \begin{mymath}\psi (u;x) = \eta_T a.\end{mymath}%
+    a modal proposition), and letting $\psi (u;x) = \eta_T a$.
     These two maps form an equivalence (the section and retraction are
     trivial because the equivalence is between mere propositions).
   \item Suppose now that $\modal_{n+1}$ is compatible with all $\modal_k$ on
@@ -1768,7 +1767,7 @@ The last step is the left-exactness of $\modal_{n+1}$. Let $T$ be in
 $\Type_{n+1}$ such that $\modal_{n+1} T$ is contractible.  Thanks to the just
 shown compatibility between $\modal_{n+1}$ and $\modal_n$ for
 $\Type_n$, left exactness means that for any $x,y: T$,
-$\modal_n(x=y)$ is contractible.
+$\modal_n(x=y)$ is contractible.\looseness=-1
 
 Using a proof by univalence as we have done for proving $\modal_n (a=b) = (\mu_T(a) =
 \mu_T (b))$ in Proposition~\ref{lem:sepiscolim}, we can show that:
@@ -1915,8 +1914,8 @@ This constitutes a significant amount of work but the part dedicated
 to sheaves and sheafification is only 2200 lines of proof script,
 which seems quite reasonable and encouraging, because it suggests
 that homotopy type theory provides a convenient tool to formalize some
-part of the theory of higher toposes. As a matter of comparison, this
-\TeX\xspace file contains approximatively 1800 lines.
+part of the theory of higher topoï. As a matter of comparison, this
+\TeX\xspace file contains approximatively 1800 lines\looseness=-1.
 
 % In our formalization, some things are admitted, either because they
 % are just an adaptation of a proposition already formalized
@@ -2025,7 +2024,6 @@ Beyond this result, our work is part of a more general line of work
 which aim to illustrate that homotopy type theory is a very promising
 theory for formalizing mathematics inside a proof assistant.
 
-
 As a future work, we would like to improve this construction in two
 ways:
 \begin{itemize}
@@ -2033,7 +2031,7 @@ ways:
   The extension to whole $\Type$ in lemma~\ref{lem:type} is not
   totally satisfactory, as every type is collapsed to a truncated
   one. But some types in homotopy type theory are not
-  truncated\cite[Example 8.8.6]{hottbook}.q
+  truncated~\cite[Example 8.8.6]{hottbook}.
   % At the moment, sheafification only works with truncated
   % types. This is fine from a programming point of view, 
   % but many important types in homotopy theory are not

@@ -194,7 +194,7 @@
   compatible with the full type-theoretic axiom of choice.
 \end{abstract}
 
-\category{CR-number}{subcategory}{third-level}
+\category{F}{8}{3}
 
 % general terms are not compulsory anymore,
 % you may leave them out
@@ -1133,7 +1133,7 @@ classical logic.
 In this paper, we use the double negation modality at level $-1$ only,
 and then extend it to higher homotopy types using sheafification. This
 way, we can add classical reasoning in the type theory without
-collapsing the theory to mere propositions.
+collapsing it to mere propositions.
 
 
 
@@ -1775,9 +1775,9 @@ Using a proof by univalence as we have done for proving $\modal_n (a=b) = (\mu_T
   For all $a,b:T$, $\modal_n(a=b) \!=\! (\nu_T a = \nu_T b)$.
 \end{prop}
 
-As $\modal_{n+1} T$ is contractible, any path space of $\modal_{n+1} T$ is
+As $\modal_{n+1} T$ is contractible, path spaces of $\modal_{n+1} T$ are
 contractible, in particular $(\nu_T a=\nu_T b)$, which proves left
-exactness. 
+exactness.
 
 \subsection{Summary}
 \label{ssec:summary}
@@ -1970,16 +1970,19 @@ One issue with universe polymorphism lies in the management of
 recursive definitions. Indeed, the following recursive definition of
 sheafification
 %
+\vspace{-0.05em}
 \[ \begin{array}{l}
    \modal : \forall \ (n : nat), \ \Type_n \to \Type_n 
    \\
     \modal_{-1\phantom{n}}(T) \defeq\lnot\lnot T \\
+
       \displaystyle{\modal_{n+1}(T)} \defeq  
       \displaystyle{\sum_{u:T \to \Type_n^\modal} \!\!\!\!\modal_{-1} 
       \left\|
       \sum_{a:T} u= (\lambda t,~\modal_n (a=t))
       \right\|}
     \end{array}
+\vspace{-0.3em}
 \]
 %
 is not allowed. 
@@ -2052,12 +2055,12 @@ remains true in higher topos theory.
 
 
 
-\section*{Acknowledgment}
+% \section*{Acknowledgment}
 
-We would like to thank all maintainers of the Coq/HoTT library, who
-have provided a very solid base for our formalization. 
-We also would like
-to thank Bas Spitters for helpful discussions on the subject.
+% We would like to thank all maintainers of the Coq/HoTT library, who
+% have provided a very solid base for our formalization. 
+% We also would like
+% to thank Bas Spitters for helpful discussions on the subject.
 
 \bibliographystyle{abbrvnat}
 \bibliography{sheaf_lics}

@@ -458,7 +458,7 @@ transformation to type theory, but they have been faced with the
 difficulty that the CPS transformation is incompatible with (full) dependent
 sums~\cite{barthe2002cps}, which puts emphasis on the tedious link
 between the axiom of choice and the law of excluded middle in type theory.
-
+%
 Nevertheless the axiom of choice has shown to be realizable by
 computational meaning in a classical setting by techniques turning
 around the notion of (modified) bar induction
@@ -466,15 +466,16 @@ around the notion of (modified) bar induction
 realizability~\cite{krivine2003dependent} and even more recently with
 restriction on elimination of dependent sums and lazy
 evaluation~\cite{herbelin2012constructive}.
-%
+
 All those works---although they provide very nice and sophisticated
 theoretical results---are not amenable to a direct integration into a
 proof assistant based on type theory such as Coq~\cite{coq:refman:8.4}
 or Agda~\cite{norell2007towards}.
 
-The work on forcing in type theory~\cite{jaber2012extending} lies in
-the same line as this paper as it also gives a computational meaning
-to a type theory enriched with new logical or computational principle.
+The work on forcing in type theory~\cite{jaber2012extending} also
+gives a computational meaning to a type theory enriched with new
+logical or computational principle, but for other kinds of principles
+as the ones interpreted by LT-sheafification.
 %
 Actually, forcing is entirely complementary to LT-sheafification as
 forcing corresponds to the presheaf construction while

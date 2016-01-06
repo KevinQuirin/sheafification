@@ -20,7 +20,7 @@
 %-----------------------------------------------------------------------------
 
 
-\documentclass[preprint,10pt,numbers]{sigplanconf}
+\documentclass[preprint,9pt,numbers]{sigplanconf}
 
 % The following \documentclass options may be useful:
 
@@ -81,7 +81,7 @@
 
 \usepackage{enumerate}
 \usepackage{wasysym}
-\usepackage{microtype}
+%usepackage{microtype}
 % \usepackage[subtle]{savetrees}
 
 \usepackage[all]{xy}
@@ -96,6 +96,7 @@
 \DeclareMathOperator{\id}{id}
 \DeclareMathOperator{\Contr}{Contr}
 \DeclareMathOperator{\IsContr}{IsContr}
+\DeclareMathOperator{\IsEquiv}{IsEquiv}
 \DeclareMathOperator{\precompose}{\mathrm{precompose}}
 
 \def\mymathhyphen{{\hbox{-}}}
@@ -121,7 +122,7 @@
 
 \newcommand{\cL}{{\cal L}}
 
-\newenvironment{mymath}[1][-0.7em]{%
+\newenvironment{mymath}[1][-0em]{%
   \newcommand\mymathaux{\vspace{#1}}%
   \vspace{#1}%
   \begin{equation*}%
@@ -194,7 +195,7 @@
   compatible with the full type-theoretic axiom of choice.
 \end{abstract}
 
-\category{F}{8}{3}
+\category{F}{4}{1}
 
 % general terms are not compulsory anymore,
 % you may leave them out
@@ -227,41 +228,7 @@ in presence of the axiom of choice (AC). The initial work of Cohen
 uses forcing but can be rephrased in terms of
 sheafification~\cite{maclanemoerdijk}.
 
-Even if similar questions have been considered around the Curry-Howard
-isomorphism, there is no canonical way to extend a programming
-language such as type theory with new logical or computational
-principle while keeping consistency automatically.
-%
-For instance, much efforts have been done to provide a computational
-content to the law of excluded middle in order to define a
-constructive version of classical logic. This has lead to various
-calculi, with most notably the $\lambda \mu$-calculus of
-Parigot~\cite{parigot1993classical}, but this line of work has not
-appeared to be fruitful to define a new version of type theory with
-classical principles.
-%
-Other works have tried to extend continuation-passing-style (CPS)
-transformation to type theory, but they have been faced with the
-difficulty that the CPS transformation is incompatible with (full) dependent
-sums~\cite{barthe2002cps}, which puts emphasis on the tedious link
-between the axiom of choice and the law of excluded middle in type theory\looseness=-1.
-
-Nevertheless the axiom of choice has shown to be realizable by
-computational meaning in a classical setting by techniques turning
-around the notion of (modified) bar induction
-\cite{berardi1998computational}, Krivine's
-realizability~\cite{krivine2003dependent} and even more recently with
-restriction on elimination of dependent sums and lazy
-evaluation~\cite{herbelin2012constructive}.
-%
-
-All those works---although they provide very nice and
-sophisticated theoretical results---are not as general as the process
-of sheafification in topos theory and are not amenable to a
-direct integration into a proof assistant based on type theory such as
-Coq~\cite{coq:refman:8.4} or Agda~\cite{norell2007towards}.  
-%
-However, type theory is known to be quite closed to topos theory so
+As type theory is known to be quite close to topos theory,
 one could wonder why similar techniques have not been developed in the
 field of type theory. 
 %
@@ -315,7 +282,7 @@ use a generalized notion of sheafification, called Lawvere-Tierney
 sheafification~\cite{tierney1972sheaf,maclanemoerdijk}, but this construction has not
 been considered yet in the setting of higher topos theory. This rises
 two issues that this paper addresses: (i) how to lift the notion of
-Lawvere-Tierney sheafification to higher topos theory and (ii) is it
+Lawvere-Tierney sheafification to a higher dimensional setting and (ii) is it
 possible to formalize this new definition in homotopy type theory.
 
 \subsection{Lawvere-Tierney Sheafification in Topos Theory}
@@ -353,30 +320,30 @@ dense subobjects. This idea is formalized by saying that for every
 dense subobject $A$ of $E$, the following canonical map is an
 isomorphism
 %
-\vspace{-0.7em}
+%\vspace{-0.7em}
 \begin{equation}\label{equ:sheaf_def}
 \Hom{\E}(E,F) \rightarrow \Hom{\E}(A,F).
-\vspace{-0.7em}
+%\vspace{-0.7em}
 \end{equation}%
 %
 One can show that $\Sh{\E}$, the full sub-category of $\E$ given by
 sheaves, is again a topos, with classifying object
 %
 \begin{mymath}
-\Omega_j = \{ P \in \E \ | \ j P  = P \}.
+\Omega_j = \{ P \in \Omega \ | \ j P  = P \}.
 \end{mymath}%
 %
 Thus, in case of the double negation, the resulting topos is boolean  
 and admits classical reasoning.
 
 Furthermore, one can define a left adjoint to the inclusion, the
-sheafification functor
+LT-sheafification functor
 %
 \begin{mymath}
 a_j : \E \rightarrow \Sh{\E}
 \end{mymath}%
 which exhibits $\Sh{\E}$ as a reflective
-subcategory of $\E$ (which is a particular case of localization). This
+subcategory (or reflective localization) of $\E$. This
 means that logical principles valid in $\E$ are still valid in
 $\Sh{\E}$.
 
@@ -384,7 +351,8 @@ $\Sh{\E}$.
 \subsection{Overview of the Result}
 
 The main contribution of this article is the development of a
-computer-checked definition of Lawvere-Tierney sheafification in the
+computer-checked definition of Lawvere-Tierney sheafification
+(LT-sheafification) in the
 setting of homotopy type theory.
 %
 This provides a way to give a meaning to the propositional law of
@@ -396,27 +364,27 @@ To extend Lawvere-Tierney sheafification to homotopy type theory, the
 first thing to understand is that the construction cannot be done in one
 single step anymore. It must rather be performed by induction on the
 level of homotopy types. More precisely, the first layer of
-sheafification is defined for $\Type_{0}$, given a topology on
-$\Type_{-1}$. This part corresponds to sheafification for topoï. Then,
-assuming that the sheafification has been constructed above level $n$,
-one can define the sheafification for $\Type_{n+1}$.
+LT-sheafification is defined for $\Type_{0}$, given a topology on
+$\Type_{-1}$. This part corresponds to LT-sheafification for topoï. Then,
+assuming that the LT-sheafification has been constructed above level $n$,
+one can define the LT-sheafification for $\Type_{n+1}$.
 %
-This inductive process in the definition of sheafification is similar
+This inductive process in the definition of LT-sheafification is similar
 to construction in the Grothendieck setting, where the
 sheafification is obtained by applying the plus-construction $n\!+\!1$
 times to
 $n$-types~\cite[Chapter~6]{lurie}. Unfortunately, some types does not
 have a finite homotopy level, hence this construction cannot reach
-every type\looseness=-1.
+every type.
 
 This inductive step requires to formalize the notion of left-exact
 reflective subuniverse, which corresponds to a stratified version of
 left-exact modality introduced in~\cite[Chapter~7]{hottbook}. A
 Lawvere-Tierney topology can thus be seen as a left-exact modality on
-$\Type_{-1}$ and sheafification as an inductive process that extends
+$\Type_{-1}$ and LT-sheafification as an inductive process that extends
 it as a left-exact modality on $\Type_{n}$ for any $n$.
 
-Compare to the definition of sheafification in topos theory, the main
+Compare to the definition of LT-sheafification in topos theory, the main
 change comes from the fact that in homotopy type theory, there is not
 a single object classifier but rather an $n$-object classifier for
 each $n\geq -2$ which classifies functions with $n$-truncated homotopy
@@ -425,7 +393,7 @@ fibers or embeddings (\ie $(-1)$-truncated homotopy
 fibers) depending on the purpose of the definition.
 
 For instance, the notion of separated objects (which is a technical
-notion used in the construction of the sheafification functor), \ie
+notion used in the construction of the LT-sheafification functor), \ie
 objects for which the morphism
 (\ref{equ:sheaf_def}) is just an embedding, is generalized in two
 different ways.  
@@ -434,7 +402,7 @@ The subobjects to be considered are given by $n$-truncated homotopy fibers,
 while the morphism (\ref{equ:sheaf_def}) is still required to be an
 embedding.
 
-Another technical difficulty is the fact that sheafification in topos
+Another technical difficulty is the fact that LT-sheafification in topos
 theory uses the property that epimorphisms are coequalizers of their
 kernel pairs. This property does not hold anymore in higher topoï, but
 using Giraud-Rezk-Lurie axioms of $\infty$-topoï, the same property
@@ -449,6 +417,45 @@ In what follows, we work in the context of homotopy type theory, seen
 as Martin-Löf type theory, with univalence axiom (thus functional
 extensionality) and higher inductive types.
 
+\subsection{Related Works}
+\label{sec:related-works}
+
+Even if similar questions have been considered around the Curry-Howard
+isomorphism, there is no canonical way to extend a programming
+language such as type theory with new logical or computational
+principle while keeping consistency automatically.
+%
+For instance, much efforts have been done to provide a computational
+content to the law of excluded middle in order to define a
+constructive version of classical logic. This has lead to various
+calculi, with most notably the $\lambda \mu$-calculus of
+Parigot~\cite{parigot1993classical}, but this line of work has not
+appeared to be fruitful to define a new version of type theory with
+classical principles.
+%
+Other works have tried to extend continuation-passing-style (CPS)
+transformation to type theory, but they have been faced with the
+difficulty that the CPS transformation is incompatible with (full) dependent
+sums~\cite{barthe2002cps}, which puts emphasis on the tedious link
+between the axiom of choice and the law of excluded middle in type theory.
+
+Nevertheless the axiom of choice has shown to be realizable by
+computational meaning in a classical setting by techniques turning
+around the notion of (modified) bar induction
+\cite{berardi1998computational}, Krivine's
+realizability~\cite{krivine2003dependent} and even more recently with
+restriction on elimination of dependent sums and lazy
+evaluation~\cite{herbelin2012constructive}.
+%
+
+All those works---although they provide very nice and
+sophisticated theoretical results---are not as general as the process
+of LT-sheafification in topos theory and are not amenable to a
+direct integration into a proof assistant based on type theory such as
+Coq~\cite{coq:refman:8.4} or Agda~\cite{norell2007towards}.  
+
+
+
 \subsection{Plan of the Paper}
 
 Section~\ref{sec:hott} presents the foundations of homotopy type theory
@@ -461,7 +468,7 @@ Section~\ref{sec:sheaves} defines Lawvere-Tierney sheaves in homotopy
 type theory.
 %
 Section~\ref{sec:sheafification} explains the construction of the
-sheafification functor.
+LT-sheafification functor.
 %
 The definitions of this paper uses an informal presentation of
 homotopy type theory, working entirely inside of Univalent
@@ -471,7 +478,7 @@ Section~\ref{sec:formalization} discusses the details of the
 formalization in Coq using formal type theory, in particular issues
 concerning universe polymorphism.
 %
-Finally, Section~\ref{sec:future-works} concludes on future works\looseness=-1.
+Finally, Section~\ref{sec:future-works} concludes on future works.
 
 
 \section{Preliminaries on Homotopy Type Theory}
@@ -479,7 +486,7 @@ Finally, Section~\ref{sec:future-works} concludes on future works\looseness=-1.
 
 In this section, we review some basic definitions in homotopy type
 theory that are central in our formalization but not specific to
-sheafification. 
+LT-sheafification. 
 % %
 % Section~\ref{ssec:hott} introduces the notion of homotopy types and
 % classifying objects as defined in~\cite{sets_in_hott}.
@@ -506,12 +513,13 @@ that we use so that the paper is sufficiently self-contained.
 Given a type $T$ and a type family $U : T \to \Type$, we note
 $\prod_{x:T} U x$ for the dependent product, $\sum_{x:T} U x$ for the dependent
 sum, and $\pi_1, \pi_2$ for the first and second projection of a
-dependent pair (noted $(a;b)$). We use informal mathematical language
+dependent pair (noted $(a;b)$). The identity path will be denoted
+$1$. We use informal mathematical language
 instead of type theory whenever it is possible, to ease the reading
 without making our statement imprecise. In particular, (higher)
 inductive types are defined using itemization to avoid an overhead of
 notation. In the rest of the paper, $\Type$ must be seen in an
-universe-polymorphic way\looseness=-1.
+universe-polymorphic way.
 
  
  \subsection{Homotopy Types and Classifying Objects}
@@ -898,7 +906,7 @@ in functional programming, except for the identity monad of course.
 
 The notion of left exact modalities plays a central role in this paper
 because Lawvere-Tierney topologies correspond exactly to left exact
-modalities at level $-1$ and sheafification is described as an inductive
+modalities at level $-1$ and LT-sheafification is described as an inductive
 process that produces a left exact modality at level $n+1$ from a
 level exact modality at level $n$. 
 
@@ -977,7 +985,7 @@ level $n$.
 \item For any $A,B:\Type_n$,
   $\modal (A\times B) = (\modal A) \times (\modal B)$. \\
 (from \cite[Corollary 7.7.2]{hottbook})
-\item For any $A:\Type_n^\modal$ and $x,y:X$, $P(x=y)$.
+\item For any $A:\Type_n^\modal$ and $x,y:A$, $P(x=y)$.
 \item 
   {\it (iv)} can be extended to dependent product, that is for any $A:\Type_n$, $B:\modal A \to
   \Type_n^\modal$ and
@@ -988,7 +996,7 @@ level $n$.
 \end{itemize}
 \end{prop}
 
-As the definition of sheafification is based on subobject classifiers
+As the definition of LT-sheafification is based on subobject classifiers
 and thus on homotopy fibers, we need to take a closer look at the way left
 exact modalities preserve homotopy fibers. The following is a part of
 the library~\cite{hottlib}.
@@ -1076,12 +1084,13 @@ theory as modality preserves all type former, such as dependent
 products or dependent sums.
 % or inductive types (\nt{double check that}). 
 
-Furthermore, when $A$ and $B$ are modal and $f : A \to B$, the mere
-proposition of $f$ being an equivalence is also modal. This means that
-univalence also holds in $\Type^\modal_p$, so it induces a good notion
-of homotopy type theory.
+% Furthermore, when $A$ and $B$ are modal and $f : A \to B$, the mere
+% proposition of $f$ being an equivalence is also modal. This means that
+% univalence also holds in $\Type^\modal_n$, so it induces a good notion
+% of homotopy type theory.
 
-Every left exact modality induces a new homotopy type theory, but with more
+Every left exact modality induces a new type theory, but with
+more
 properties, that can make it inconsistent. We now provide a simple
 characterization of left exact modalities that gives rise to a
 consistent theory.
@@ -1089,14 +1098,14 @@ consistent theory.
 \begin{prop}\label{prop:consistent}
   A left exact modality $\modal$ induces a consistent type theory if
   and only if $\modal \zero$ can not be inhabited in the initial type
-  theory. In that case, the modality is said to be consistent\looseness=-1.
+  theory. In that case, the modality is said to be consistent.
 \end{prop}
 \begin{proof}
   By condition (iv) of Definition~\ref{sec:defin-basic-prop-1},
-  $\modal \zero$ is an initial object of $\Type^\modal_p$, and thus
+  $\modal \zero$ is an initial object of $\Type^\modal_n$, and thus
   corresponds to false for modal mere proposition.
   % 
-  As $\modal \one = \one$, $\Type^\modal_p$ is consistent when
+  As $\modal \one = \one$, $\Type^\modal_n$ is consistent when
   $\modal \zero \neq \one$, that is when there is no proof of
   $\modal \zero$.
 \end{proof}
@@ -1118,7 +1127,7 @@ still a type in the original theory).
 % content to $P$, and the consistency of the modality corresponds to
 % the fact that $P \to \zero$ (or $\lnot P$) is not inhabited.
 
-Another example of a left exact modality for every level $p$ is the
+Another example of a left exact modality for every level $n$ is the
 double negation modality,
 $\modal_{\lnot\lnot} T = (T \to \zero) \to \zero$.
 %
@@ -1131,7 +1140,7 @@ universe is collapsed to an $\HProp$, ending up with propositional
 classical logic.
 
 In this paper, we use the double negation modality at level $-1$ only,
-and then extend it to higher homotopy types using sheafification. This
+and then extend it to higher homotopy types using LT-sheafification. This
 way, we can add classical reasoning in the type theory without
 collapsing it to mere propositions.
 
@@ -1145,17 +1154,17 @@ As explained in in Section~\ref{sec:lawv-tiern-sheaf}, a
 Lawvere-Tierney topology for a topos $\E$ corresponds to a left exact
 modality at level $-1$
 %
-and sheafification corresponds to lifting this modality to a left
+and LT-sheafification corresponds to lifting this modality to a left
 exact modality at level $0$.
 %
 In homotopy type theory, it is possible to use similar ideas to lift
 any left exact modality at level $-1$ to a left exact modality at level
-$n$ using sheafification, by induction on $n$.
+$n$ using LT-sheafification, by induction on $n$.
 
 In this section, we suppose given a truncation index $n\geqslant -1$,
 and a left exact modality $\modal_n$ on $\Type_n$ and we introduce the
 definition of sheaves for $(n+1)$-types and basic properties of
-sheaves that will be useful in the next section\looseness=-1. 
+sheaves that will be useful in the next section. 
 
 % We will define sheaves by induction on the level of homotopy type:
 % the base case will be any left exact modality on $\HProp$, and we
@@ -1181,7 +1190,7 @@ Section~\ref{ssec:hott}.
 
   An $n$-subobject of $E$ classified by $\chi$ is said to be {\em
     dense in $E$} if its closure is $E$, \ie
-  $\modal_n \circ \chi = \lambda e. 1$ 
+  $\modal_n \circ \chi = \lambda e, \one$ 
 \end{defi}
 
 % The definition of a dense $n$-subobject requires more work as the
@@ -1225,7 +1234,7 @@ their dense subobjects.
 \begin{defi}
   For any type $E$, $\chi : E \to \Type$ and $F:\Type_{n+1}$, we define
     $\Phi_E^\chi : (E \to F) \to (\sum_{e:E} \chi\, e \to F) $
-    as the map sending an  arrow $f:E\to F$ to its restriction $f \circ \pi_1$\looseness=-1.
+    as the map sending an  arrow $f:E\to F$ to its restriction $f \circ \pi_1$.
   % \item if $A \to E$ with $n$-truncated homotopy fibers, $\Phi_E^\chi$ is the
   %   map sending $f:~E \to f$ to $\restriction f A$.
   % \end{itemize}
@@ -1256,7 +1265,7 @@ Actually, there is a simpler characterisation:
 \begin{prop}
   A type $F$ is $\Type_{n+1}$ is separated if, and only if all its
   path types are $n$-modal, ie
-  \begin{mymath}\mathrm{separated}(F) = \prod_{x,y:F}~\modal_n(x=y) = (x=y).\end{mymath}%
+  \begin{mymath}[-0.3em]\prod_{x,y:F}~\modal_n(x=y) = (x=y).\end{mymath}%
 \end{prop}
 
 \begin{defi}[Sheaves]
@@ -1280,13 +1289,13 @@ in~\cite{maclanemoerdijk}. The main difference is that {separated}
 is defined for $n$-subobjects, while {sheaf} only for
 $(-1)$-subobjects.
 %
-For higher topos theory, in the Grotehndieck setting, sheaves seems
+For higher topos theory, in the Grothendieck setting, sheaves seems
 to correspond to the second part of our definition only (assuming that
 Lawvere-Tierney topologies can still be shown to subsume Grothendieck
 toplogies for $(\infty,1)$-topoï, which is beyond the scope of this paper).
 %
 
-A fundamental property in the construction of the sheafification
+A fundamental property in the construction of the LT-sheafification
 functor is the fact that the type of modal types at level $n$ defines
 a sheaf.
 %
@@ -1391,10 +1400,10 @@ sense that the following property holds.
 \end{cond}
 
 
-Note that once the first modality $\modal_{-1}$ is defined, its
+\label{sec:sheaf-left-exact}Note that once the first modality $\modal_{-1}$ is defined, its
 extension to all $\Type_n$ is automatic. This means that the new
 logical principles that can be added by the sheaf construction must be
-added in the first modality already. Sheafification is just a way
+added in the first modality already. LT-Sheafification is just a way
 to propagate those new principles to types that are not mere
 propositions.
 
@@ -1407,21 +1416,21 @@ propositions.
 
 
 
-The sheafification in topos theory described in
+The LT-sheafification in topos theory described in
 Section~\ref{sec:lawv-tiern-sheaf} works in the same way. 
 %
 From a left exact modality on the internal logic (a Lawvere-Tierney
 topology), a new left exact modality is defined on the whole topos.
 %
 This construction may be seen as the first induction step between
-$\HProp$ and $\Type_0$.\looseness=-1 
+$\HProp$ and $\Type_0$. 
 
 % \kq{c'est une vision plutôt grothendieck en fait. La separation ``enlève''
 %   ce qui empêche à $T$ d'être un faisceau, et la sheafification
 %   rajoute ce qui manque pour être un faisceau. Mais c'était plutôt mal
 %   dit, effectivement}
 
-For a given induction step, the sheafification is defined in two
+For a given induction step, the LT-sheafification is defined in two
 steps ; the first one construct, for any $T:\Type_{n+1}$ a separated
 type $\separated T$, and the second one construct a sheaf given any
 separated type.
@@ -1457,11 +1466,11 @@ Let $T : \Type_{n+1}$. We define $\separated T$ as the image (see
 Section~\ref{ssec:hott}) of
 $\modal_n^T \circ \{\cdot\}_T$, as in
 \begin{mymath}\xymatrix{
-  T \ar[r]^{\{\cdot\}_T} \ar[d]_{\mu_T} & \Type_n^T \ar[d]^{\modal_n^T} \\
+    T \ar[r]^{\{\cdot\}_T} \ar[d]_{\mu_T} & \left(\Type_n\right)^T \ar[d]^{\modal_n^T} \\
   \separated T \ar[r]& \left( \Type_n^\modal \right)^T
 }, \end{mymath}%
 where $\{\cdot\}_T$ is the singleton map $\lambda (t:T),~\lambda
-(t':T),~t=t'$.
+(t':T),~t=t'$. 
 %
 $\separated T$ can be given explicitly by
 %
@@ -1526,7 +1535,7 @@ the iterated kernel pair of $\mu_T$.
   diagram $\mathring T$.
 \end{lem}
 
-Again, this lemma is an adaptation of the sheafification process in
+Again, this lemma is an adaptation of the LT-sheafification process in
 topos theory, where the kernel pair of $\mu_T$
 is replaced by its iterated kernel pair.
 
@@ -1534,11 +1543,11 @@ We will need the following lemma:
 
 \begin{lem}
   Let $A,S:\Type_{n+1}$, $S$ separated, and $f:A \to S$. Then if 
-  \vspace{-0.7em}
+  % \vspace{-0.7em}
   \begin{equation}
     \label{eq:Omono}\tag{$\star$}
     \forall a,b:A,~f (a) = f (b) \simeq \modal (a=b),
-    \vspace{-0.7em}
+    % \vspace{-0.7em}
   \end{equation}
   then
   \begin{mymath}\forall a,b:\|T_f\|_{n+1},~|\tilde f|_{n+1} (a) = |\tilde f|_{n+1} (b) \simeq \modal (a=b).\end{mymath}%
@@ -1660,13 +1669,13 @@ $\sum_{y:E} x = y$ has a dense $n$-subobject, $\sum_{y:\sum_{e:E} (\chi\,
 Using the separation property of $B\,x$, one can show that second
 components, transported correctly along the first components equality,
 are equal. The complete proof can be found in the formalization.
-This proves the following proposition\looseness=-1
+This proves the following proposition
 \begin{prop}\label{prop:sep-mod}
   $(\separated,\mu)$ defines a modality on $\Type_{n+1}$.
 \end{prop}
 
 As this modality is just a step in the construction, we do not need to
-show that it is left exact, we will only do it for the sheafification
+show that it is left exact, we will only do it for the LT-sheafification
 modality.
 
 \subsection{From Separated Type to Sheaf}
@@ -1734,7 +1743,7 @@ compatible with $\modal_n$ on lower homotopy types.
     because the type inside the truncation is already in $\HProp$.
     Now, let define $\phi : \modal_{-1} T \to \modal_0T$ by
     \begin{mymath}\phi t = (\lambda t',\, \modal_{-1}(t=t') ; \eta
-    (t;\mathrm{idpath}))\end{mymath}%
+    (t;1))\end{mymath}%
     and $\psi : \modal_0T\to \modal_{-1} T$ by obtaining the
     witness $a:T$ (which is possible because we are trying to inhabit
     a modal proposition), and letting $\psi (u;x) = \eta_T a$.
@@ -1767,7 +1776,7 @@ The last step is the left-exactness of $\modal_{n+1}$. Let $T$ be in
 $\Type_{n+1}$ such that $\modal_{n+1} T$ is contractible.  Thanks to the just
 shown compatibility between $\modal_{n+1}$ and $\modal_n$ for
 $\Type_n$, left exactness means that for any $x,y: T$,
-$\modal_n(x=y)$ is contractible.\looseness=-1
+$\modal_n(x=y)$ is contractible.
 
 Using a proof by univalence as we have done for proving $\modal_n (a=b) = (\mu_T(a) =
 \mu_T (b))$ in Proposition~\ref{lem:sepiscolim}, we can show that:
@@ -1801,7 +1810,7 @@ negation topology is a boolean topos. In homotopy type theory, this
 result can be expressed as:
 
 \begin{prop}
-  $(\modal_{\lnot\lnot})_n$, the modality obtained by sheafification
+  $(\modal_{\lnot\lnot})_n$, the modality obtained by LT-sheafification
   of the double negation modality,
   %
   induces a type theory where the propositional excluded middle law holds.
@@ -1852,6 +1861,29 @@ indeed, for example, the function
 will not reduce to a numeral when applied to a undecidable
 property. However, we keep canonicity for ``old'' terms, i.e. the
 ones constructed without using excluded middle.
+
+By proposition~\ref{prop:consistent}, these left-exact modalities
+induces a consistent type theory. Furthermore, the univalence remains
+true in this new type theory in the following sense:
+\begin{prop}
+  Let $n$ be a given truncation index, and $\modal$ the modality
+  associated to $n+1$ as defined in lemma~\ref{lem:type}. Then, for
+  any type $A,B:\Type_n^\modal$, the canonical arrow
+  $$\varphi~:~A = B \to A\simeq B$$
+  is an equivalence.
+\end{prop}
+\begin{proof}
+  The first thing to notice is that, if $X$ and $Y$ are modal, and
+  $f:X \to Y$, then the mere proposition $\IsEquiv f$ is also modal.
+  Therefore, it suffices to show that both $A=B$ and $A\simeq B$ are
+  modal. As $\Type_n^\modal$ is modal, $A=B$ is modal. 
+  Moreover, $(A\simeq B) \simeq \sum_{f:A\to B} \IsEquiv
+  f$. Therefore, as $A$ and $B$ are modal, $A\simeq B$ is too. 
+
+  Hence, $\IsEquiv \varphi$ is modal, and then is true in the new type
+  theory, as it was in the original one.
+\end{proof}
+
 
 % \subsection{New objects}
 % \label{sec:new-objects}
@@ -1915,7 +1947,7 @@ to sheaves and sheafification is only 2200 lines of proof script,
 which seems quite reasonable and encouraging, because it suggests
 that homotopy type theory provides a convenient tool to formalize some
 part of the theory of higher topoï. As a matter of comparison, this
-\TeX\xspace file contains approximatively 1800 lines\looseness=-1.
+\TeX\xspace file contains approximatively 1800 lines.
 
 % In our formalization, some things are admitted, either because they
 % are just an adaptation of a proposition already formalized
@@ -1968,7 +2000,7 @@ the universe issues we faced.
 
 One issue with universe polymorphism lies in the management of
 recursive definitions. Indeed, the following recursive definition of
-sheafification
+LT-sheafification
 %
 \vspace{-0.05em}
 \[ \begin{array}{l}
@@ -1997,7 +2029,7 @@ $T \to \Type_n^\modal$ and equality on the return type of $\modal_n$.
 % \nt{explain why it is an issue.}
 %
 Thus, the induction step presented in this paper has been formalized,
-but the complete recursive sheafification can not be defined for the
+but the complete recursive LT-sheafification can not be defined for the
 moment.
 %
 Note that the same increasing in the universe levels occurs in the
@@ -2019,7 +2051,7 @@ In this paper, we have defined a way to extend homotopy type theory
 with new principles, leveraging Lawvere-Tierney sheafification to
 higher topos theory. 
 %
-Using sheafification, it is possible to add new logical principles to
+Using LT-sheafification, it is possible to add new logical principles to
 homotopy type theory, such as the law of excluded middle, and this
 without axiom.
 %

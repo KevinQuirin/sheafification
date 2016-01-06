@@ -279,14 +279,44 @@ construction in higher toposes is restricted to the initial Grothendieck
 setting which is still very topologically oriented, and not very
 amenable to formalization in type theory. It seems more promising to
 use a generalized notion of sheafification, called Lawvere-Tierney
-sheafification~\cite{tierney1972sheaf,maclanemoerdijk}, but this construction has not
+sheafification~\cite{tierney1972sheaf,maclanemoerdijk}
+(LT-sheafification), but this construction has not
 been considered yet in the setting of higher topos theory. This rises
 two issues that this paper addresses: (i) how to lift the notion of
-Lawvere-Tierney sheafification to a higher dimensional setting and (ii) is it
+LT-sheafification to a higher dimensional setting and (ii) is it
 possible to formalize this new definition in homotopy type theory.
+
+\paragraph*{Contributions.}
+
+The main contribution of this article is the development of a
+computer-checked definition of Lawvere-Tierney sheafification in the
+setting of homotopy type theory.
+%
+This provides a way to give a meaning to the propositional law of
+excluded middle, and more generally, combined with the previous work on
+forcing in type theory~\cite{jaber2012extending}, it allows to reuse
+results derived for topos theory, such as independence results.
+
+Technically, LT-sheafification in homotopy type theory allows to
+construct a model of homotopy type theory (restricted to finite homotopy
+types) with new logical principles (such as EM) from a model of
+homotopy type theory.
+
+That is, LT-sheafification can be seen as a model transformation that
+allows to justify new axioms in homotopy type theory. 
+%
+But as this transformation is internalized inside homotopy type theory
+itself, it also provides a computational content to the added axiom,
+making them more amenable to be used in practice inside a proof
+assistant. 
+
 
 \subsection{Lawvere-Tierney Sheafification in Topos Theory}
 \label{sec:lawv-tiern-sheaf}
+
+In order to understand the construction of LT-sheafification in homotopy
+type theory, we first briefly recall its corresponding construction in
+topos theory. 
 
 Lawvere-Tierney sheafification in a topos $\E$ is based on an abstract
 point of view on the topology to be considered, being simply defined by an
@@ -350,16 +380,6 @@ $\Sh{\E}$.
 
 \subsection{Overview of the Result}
 
-The main contribution of this article is the development of a
-computer-checked definition of Lawvere-Tierney sheafification
-(LT-sheafification) in the
-setting of homotopy type theory.
-%
-This provides a way to give a meaning to the propositional law of
-excluded middle, and more generally, combined with the previous work on
-forcing in type theory~\cite{jaber2012extending}, it allows to reuse
-results derived for topos theory, such as independence results.
-
 To extend Lawvere-Tierney sheafification to homotopy type theory, the
 first thing to understand is that the construction cannot be done in one
 single step anymore. It must rather be performed by induction on the
@@ -420,10 +440,10 @@ extensionality) and higher inductive types.
 \subsection{Related Works}
 \label{sec:related-works}
 
-Even if similar questions have been considered around the Curry-Howard
-isomorphism, there is no canonical way to extend a programming
-language such as type theory with new logical or computational
-principle while keeping consistency automatically.
+Similar questions have been considered around the Curry-Howard
+isomorphism, to extend a programming language closed to type theory
+with new logical or computational principle while keeping consistency
+automatically.
 %
 For instance, much efforts have been done to provide a computational
 content to the law of excluded middle in order to define a
@@ -447,14 +467,19 @@ realizability~\cite{krivine2003dependent} and even more recently with
 restriction on elimination of dependent sums and lazy
 evaluation~\cite{herbelin2012constructive}.
 %
+All those works---although they provide very nice and sophisticated
+theoretical results---are not amenable to a direct integration into a
+proof assistant based on type theory such as Coq~\cite{coq:refman:8.4}
+or Agda~\cite{norell2007towards}.
 
-All those works---although they provide very nice and
-sophisticated theoretical results---are not as general as the process
-of LT-sheafification in topos theory and are not amenable to a
-direct integration into a proof assistant based on type theory such as
-Coq~\cite{coq:refman:8.4} or Agda~\cite{norell2007towards}.  
-
-
+The work on forcing in type theory~\cite{jaber2012extending} lies in
+the same line as this paper as it also gives a computational meaning
+to a type theory enriched with new logical or computational principle.
+%
+Actually, forcing is entirely complementary to LT-sheafification as
+forcing corresponds to the presheaf construction while
+LT-sheafification corresponds to the topological transformation that
+allows to go from the presheaf to the sheaf construction.    
 
 \subsection{Plan of the Paper}
 

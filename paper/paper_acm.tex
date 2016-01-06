@@ -310,6 +310,79 @@ itself, it also provides a computational content to the added axiom,
 making them more amenable to be used in practice inside a proof
 assistant. 
 
+\subsection{Related Works}
+\label{sec:related-works}
+
+Similar questions have been considered around the Curry-Howard
+isomorphism, to extend a programming language closed to type theory
+with new logical or computational principle while keeping consistency
+automatically.
+%
+For instance, much efforts have been done to provide a computational
+content to the law of excluded middle in order to define a
+constructive version of classical logic. This has lead to various
+calculi, with most notably the $\lambda \mu$-calculus of
+Parigot~\cite{parigot1993classical}, but this line of work has not
+appeared to be fruitful to define a new version of type theory with
+classical principles.
+%
+Other works have tried to extend continuation-passing-style (CPS)
+transformation to type theory, but they have been faced with the
+difficulty that the CPS transformation is incompatible with (full) dependent
+sums~\cite{barthe2002cps}, which puts emphasis on the tedious link
+between the axiom of choice and the law of excluded middle in type theory.
+%
+Nevertheless the axiom of choice has shown to be realizable by
+computational meaning in a classical setting by techniques turning
+around the notion of (modified) bar induction
+\cite{berardi1998computational}, Krivine's
+realizability~\cite{krivine2003dependent} and even more recently with
+restriction on elimination of dependent sums and lazy
+evaluation~\cite{herbelin2012constructive}.
+
+All those works---although they provide very nice and sophisticated
+theoretical results---are not amenable to a direct integration into a
+proof assistant based on type theory such as Coq~\cite{coq:refman:8.4}
+or Agda~\cite{norell2007towards}.
+
+The work on forcing in type theory~\cite{jaber2012extending} also
+gives a computational meaning to a type theory enriched with new
+logical or computational principle, but for other kinds of principles
+as the ones interpreted by LT-sheafification.
+%
+Actually, forcing is entirely complementary to LT-sheafification as
+forcing corresponds to the presheaf construction while
+LT-sheafification corresponds to the topological transformation that
+allows to go from the presheaf to the sheaf construction.    
+
+\subsection{Plan of the Paper}
+
+Section~\ref{sec:lawv-tiern-nutshell} presents an overview of the construction. 
+% 
+Section~\ref{sec:hott} presents the foundations of homotopy type theory
+and present a analogous of~\cite[Corollary 6.2.3.5]{lurie}. 
+%
+Section~\ref{sec:lexmod} introduces the notion of left-exact stratified
+modalities, on which this paper is based.
+%
+Section~\ref{sec:sheaves} defines Lawvere-Tierney sheaves in homotopy
+type theory.
+%
+Section~\ref{sec:sheafification} explains the construction of the
+LT-sheafification functor.
+%
+The definitions of this paper uses an informal presentation of
+homotopy type theory, working entirely inside of Univalent
+Foundations. 
+ %
+Section~\ref{sec:formalization} discusses the details of the
+formalization in Coq using formal type theory, in particular issues
+concerning universe polymorphism.
+%
+Finally, Section~\ref{sec:future-works} concludes on future works.
+
+\section{Lawvere-Tierney Sheafification in a nutshell}
+\label{sec:lawv-tiern-nutshell}
 
 \subsection{Lawvere-Tierney Sheafification in Topos Theory}
 \label{sec:lawv-tiern-sheaf}
@@ -437,74 +510,6 @@ In what follows, we work in the context of homotopy type theory, seen
 as Martin-Löf type theory, with univalence axiom (thus functional
 extensionality) and higher inductive types.
 
-\subsection{Related Works}
-\label{sec:related-works}
-
-Similar questions have been considered around the Curry-Howard
-isomorphism, to extend a programming language closed to type theory
-with new logical or computational principle while keeping consistency
-automatically.
-%
-For instance, much efforts have been done to provide a computational
-content to the law of excluded middle in order to define a
-constructive version of classical logic. This has lead to various
-calculi, with most notably the $\lambda \mu$-calculus of
-Parigot~\cite{parigot1993classical}, but this line of work has not
-appeared to be fruitful to define a new version of type theory with
-classical principles.
-%
-Other works have tried to extend continuation-passing-style (CPS)
-transformation to type theory, but they have been faced with the
-difficulty that the CPS transformation is incompatible with (full) dependent
-sums~\cite{barthe2002cps}, which puts emphasis on the tedious link
-between the axiom of choice and the law of excluded middle in type theory.
-%
-Nevertheless the axiom of choice has shown to be realizable by
-computational meaning in a classical setting by techniques turning
-around the notion of (modified) bar induction
-\cite{berardi1998computational}, Krivine's
-realizability~\cite{krivine2003dependent} and even more recently with
-restriction on elimination of dependent sums and lazy
-evaluation~\cite{herbelin2012constructive}.
-
-All those works---although they provide very nice and sophisticated
-theoretical results---are not amenable to a direct integration into a
-proof assistant based on type theory such as Coq~\cite{coq:refman:8.4}
-or Agda~\cite{norell2007towards}.
-
-The work on forcing in type theory~\cite{jaber2012extending} also
-gives a computational meaning to a type theory enriched with new
-logical or computational principle, but for other kinds of principles
-as the ones interpreted by LT-sheafification.
-%
-Actually, forcing is entirely complementary to LT-sheafification as
-forcing corresponds to the presheaf construction while
-LT-sheafification corresponds to the topological transformation that
-allows to go from the presheaf to the sheaf construction.    
-
-\subsection{Plan of the Paper}
-
-Section~\ref{sec:hott} presents the foundations of homotopy type theory
-and present a analogous of~\cite[Corollary 6.2.3.5]{lurie}. 
-%
-Section~\ref{sec:lexmod} introduces the notion of left-exact stratified
-modalities, on which this paper is based.
-%
-Section~\ref{sec:sheaves} defines Lawvere-Tierney sheaves in homotopy
-type theory.
-%
-Section~\ref{sec:sheafification} explains the construction of the
-LT-sheafification functor.
-%
-The definitions of this paper uses an informal presentation of
-homotopy type theory, working entirely inside of Univalent
-Foundations. 
- %
-Section~\ref{sec:formalization} discusses the details of the
-formalization in Coq using formal type theory, in particular issues
-concerning universe polymorphism.
-%
-Finally, Section~\ref{sec:future-works} concludes on future works.
 
 
 \section{Preliminaries on Homotopy Type Theory}

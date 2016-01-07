@@ -273,18 +273,18 @@ homotopy type theory, this provides a new hope that tackling the
 problem of extending the power of homotopy type theory using
 sheafification is actually possible.
 
-Nevertheless, the adaptation of the sheafification in higher topos
-theory to homotopy type theory is not straightforward because the
-construction in higher toposes is restricted to the initial Grothendieck
-setting which is still very topologically oriented, and not very
-amenable to formalization in type theory. It seems more promising to
-use a generalized notion of sheafification, called Lawvere-Tierney
-sheafification~\cite{tierney1972sheaf,maclanemoerdijk}
-(LT-sheafification), but this construction has not
-been considered yet in the setting of higher topos theory. This rises
-two issues that this paper addresses: (i) how to lift the notion of
-LT-sheafification to a higher dimensional setting and (ii) is it
-possible to formalize this new definition in homotopy type theory.
+Nevertheless, the adaptation of the sheafification process in higher
+topos theory to homotopy type theory is not straightforward because
+the construction in higher toposes is restricted to the initial
+Grothendieck setting which is still very topologically oriented, and
+not very amenable to formalization in type theory. It seems more
+promising to use a generalized notion of sheafification, called
+Lawvere-Tierney sheafification~\cite{tierney1972sheaf,maclanemoerdijk}
+(LT-sheafification), but this construction has not been considered yet
+in the setting of higher topos theory. This rises two issues that this
+paper addresses: (i) how to lift the notion of LT-sheafification to a
+higher dimensional setting and (ii) is it possible to formalize this
+new definition in homotopy type theory.
 
 \paragraph*{Contributions.}
 
@@ -353,14 +353,15 @@ as the ones interpreted by LT-sheafification.
 Actually, forcing is entirely complementary to LT-sheafification as
 forcing corresponds to the presheaf construction while
 LT-sheafification corresponds to the topological transformation that
-allows to go from the presheaf to the sheaf construction.    
+allows to go from the presheaf construction to the sheaf construction.    
 
 \subsection{Plan of the Paper}
 
-Section~\ref{sec:lawv-tiern-nutshell} presents an overview of the construction. 
+Section~\ref{sec:lawv-tiern-nutshell} presents an overview of the
+construction.
 % 
 Section~\ref{sec:hott} presents the foundations of homotopy type theory
-and present a analogous of~\cite[Corollary 6.2.3.5]{lurie}. 
+and presents a analogous of~\cite[Corollary 6.2.3.5]{lurie}. 
 %
 Section~\ref{sec:lexmod} introduces the notion of left-exact stratified
 modalities, on which this paper is based.
@@ -371,10 +372,14 @@ type theory.
 Section~\ref{sec:sheafification} explains the construction of the
 LT-sheafification functor.
 %
-The definitions of this paper uses an informal presentation of
+The definitions of this paper use an informal presentation of
 homotopy type theory, working entirely inside of Univalent
 Foundations. 
  %
+Section~\ref{sec:extension-type} describes how to use this
+construction to define a modality on $\Type$ from a modality on
+$\HProp$.
+%
 Section~\ref{sec:formalization} discusses the details of the
 formalization in Coq using formal type theory, in particular issues
 concerning universe polymorphism.
@@ -384,12 +389,14 @@ Finally, Section~\ref{sec:future-works} concludes on future works.
 \section{Lawvere-Tierney Sheafification in a nutshell}
 \label{sec:lawv-tiern-nutshell}
 
+
+In order to understand the construction of LT-sheafification in homotopy
+type theory, we first briefly recall the corresponding construction in
+topos theory and then gives an overview of our construction.
+
 \subsection{Lawvere-Tierney Sheafification in Topos Theory}
 \label{sec:lawv-tiern-sheaf}
 
-In order to understand the construction of LT-sheafification in homotopy
-type theory, we first briefly recall its corresponding construction in
-topos theory. 
 
 Lawvere-Tierney sheafification in a topos $\E$ is based on an abstract
 point of view on the topology to be considered, being simply defined by an
@@ -2122,6 +2129,9 @@ without axiom.
 Beyond this result, our work is part of a more general line of work
 which aim to illustrate that homotopy type theory is a very promising
 theory for formalizing mathematics inside a proof assistant.
+
+\nt{Add something on the definition of a syntactic translation as it
+  has been done for forcing.}
 
 As a future work, we would like to improve this construction in two
 ways:

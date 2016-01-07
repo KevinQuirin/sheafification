@@ -76,7 +76,7 @@
 
 
 % correct bad hyphenation here
-\hyphenation{op-tical net-works semi-conduc-tor}
+\hyphenation{op-tical net-works semi-conduc-tor gro-then-dieck LT-sheafi-fi-ca-tion}
 
 
 \usepackage{enumerate}
@@ -476,6 +476,23 @@ left-exact modality introduced in~\cite[Chapter~7]{hottbook}. A
 Lawvere-Tierney topology can thus be seen as a left-exact modality on
 $\Type_{-1}$ and LT-sheafification as an inductive process that extends
 it as a left-exact modality on $\Type_{n}$ for any $n$.
+Our inductive definition of these modalities will be given by
+\[ \begin{array}{l}
+   \modal : \forall \ (n : nat), \ \Type_n \to \Type_n 
+   \\
+    \modal_{-1\phantom{n}}(T) \defeq\lnot\lnot T \\
+
+      \displaystyle{\modal_{n+1}(T)} \defeq  
+      \displaystyle{\sum_{u:T \to \Type_n^\modal} \!\!\!\!\modal_{-1} 
+      \left\|
+      \sum_{a:T} u= (\lambda t,~\modal_n (a=t))
+      \right\|}
+    \end{array}
+% \vspace{-0.3em}
+\]
+where $\Type_n^\modal$ is the type of modal types for $\modal_n$.
+The rest of the paper is an inductive proof that this definition produces a
+sequence of left-exact modalities.
 
 Compare to the definition of LT-sheafification in topos theory, the main
 change comes from the fact that in homotopy type theory, there is not
@@ -505,6 +522,15 @@ Finally, one of the main difficulty in our formalization is that many
 equalities which are trival (by proof irrelevance) in the topos-theoretic
 setting become relevant and require a lot of reasoning on equalities
 between paths.
+
+Such a construction can be thought in two ways:
+\begin{itemize}
+\item as a translation from one type theory into another type theory
+  satisfying new principles
+\item or as a transformation, taking a model of type theory, and
+  producing another model, where the desired principle is true. This
+  can lead to consistency results.
+\end{itemize}
 
 In what follows, we work in the context of homotopy type theory, seen
 as Martin-Löf type theory, with univalence axiom (thus functional
@@ -650,8 +676,8 @@ is in $\Type_n$ for any $b$.
 Again, we define some sugar. A function $f$ is 
 \begin{itemize}
 \item an {\em embedding} if $f$ is $(-1)$-truncated
-\item a {\em surjection} is every fiber of $f$ is merely inhabited
-  (\ie $\|\fib f y\|$ holds for all $y$).
+\item a {\em surjection} if every fiber of $f$ is merely inhabited
+  (i.e $\|\fib f y\|$ holds for all $y$).
 \end{itemize}
 Then one can show~\cite[Lemma 7.6.4]{hottbook} that any map $f$
 factors uniquely through $\im(f) \defeq \sum_{y:B} \|\fib f y\|$ as a
@@ -1326,7 +1352,7 @@ Lawvere-Tierney topologies can still be shown to subsume Grothendieck
 toplogies for $(\infty,1)$-topoï, which is beyond the scope of this paper).
 %
 
-A fundamental property in the construction of the LT-sheafification
+A fundamental property in the construction of the LT-sheafifica\-tion
 functor is the fact that the type of modal types at level $n$ defines
 a sheaf.
 %
@@ -1841,7 +1867,7 @@ negation topology is a boolean topos. In homotopy type theory, this
 result can be expressed as:
 
 \begin{prop}
-  $(\modal_{\lnot\lnot})_n$, the modality obtained by LT-sheafification
+  $(\modal_{\lnot\lnot})_n$, the modality obtained by LT-sheafifica\-tion
   of the double negation modality,
   %
   induces a type theory where the propositional excluded middle law holds.
@@ -1915,6 +1941,14 @@ true in this new type theory in the following sense:
   theory, as it was in the original one.
 \end{proof}
 
+We can view sheafification in terms of model of type theory ; let
+$\mathfrak M$ be a model of homotopy type theory. Using sheafification
+associated to a truncation index $n$, one can build a modality
+$\modal$, which is left-exact with respect to types at most
+$n$-truncated. Thus, there is a model $\modal \mathfrak M$ of type
+theory (using results in section~\ref{sec:new-type-theory}), where
+excluded middle is true, and which is univalent when restricted to $n$-types. 
+
 
 % \subsection{New objects}
 % \label{sec:new-objects}
@@ -1929,7 +1963,6 @@ true in this new type theory in the following sense:
 % conjecture.
 % Actually, one can defined such a map for any family of $\HProp$
 % indexed by $\nat$, for example with the family $C_n \defeq \text{«\,The $n$-th Turing Machine halts\,»}$.
-
 
 
 \section{Formalization} 
@@ -2033,7 +2066,7 @@ One issue with universe polymorphism lies in the management of
 recursive definitions. Indeed, the following recursive definition of
 LT-sheafification
 %
-\vspace{-0.05em}
+% \vspace{-0.05em}
 \[ \begin{array}{l}
    \modal : \forall \ (n : nat), \ \Type_n \to \Type_n 
    \\
@@ -2045,7 +2078,7 @@ LT-sheafification
       \sum_{a:T} u= (\lambda t,~\modal_n (a=t))
       \right\|}
     \end{array}
-\vspace{-0.3em}
+% \vspace{-0.3em}
 \]
 %
 is not allowed. 
@@ -2109,7 +2142,7 @@ ways:
   $\HProp$, in order to extend type theory with different principles
   than excluded middle.
 \end{itemize}
-Moreover, in topos theory, Lawvere-Tierney subsumes Gro\-thendieck~\cite[Section~V.4]{maclanemoerdijk} in the sense that any
+Moreover, in topos theory, Lawvere-Tierney subsumes Grothen\-dieck~\cite[Section~V.4]{maclanemoerdijk} in the sense that any
 Grothen\-dieck topology gives rise to a Lawvere-Tierney topology with
 the same notion of sheaves. Higher Lawvere-Tierney sheaves are
 presented here, and higher Grothendieck sheaves have been defined

@@ -233,7 +233,10 @@ one could wonder why similar techniques have not been developed in the
 field of type theory. 
 %
 The answer to this question has been given recently by the advent of
-homotopy type theory~\cite{hottbook}, which is an extension of
+homotopy type theory~\cite{hottbook}: type theory is not close {\em
+  enough} to topos theory for a straightforward adaptation. 
+%
+Homotopy type theory is an extension of
 Martin-Löf type theory with principles inspired by (higher) category
 theory and homotopy theory, such as higher inductive
 types~\cite{lumsdaine2011higher,lumsdaine2013higher} and
@@ -711,7 +714,11 @@ an equivalence
  (B \to \Type_n)
 \end{mymath}%
 %
- such that the usual (\cite[Theorem 4.8.4]{hottbook}) subobject classifier diagram is a pullback.
+ such that the usual (\cite[Theorem 4.8.4]{hottbook}) subobject
+ classifier diagram is a pullback.
+Therefore, in our construction, we will represent a subobject of a
+type $B$ with $n$-truncated homotopy fibers either as a map $f:A\to B$
+such that $\IsType n A$, either as a characteristic map $B\to \Type_n$.
 % \begin{mymath}
 % \xymatrix{
 %   A \ar[r]^{\hspace{-1em} t_f} \ar[d]_f & \Type_n^\bullet \ar[d]^{\pi_1}\\
@@ -1252,18 +1259,24 @@ using the $n$-subobject classifier $\Type_n$ introduced in
 Section~\ref{ssec:hott}.
 
 \begin{defi}
-  Let $E$ be a type. The {\em closure} of a subobject of $E$ with
+  Let $E$ be a type. 
+  \begin{itemize}
+
+  \item The {\em closure} of a subobject of $E$ with
   n-truncated homotopy fibers (or $n$-subobject of $E$, for short),
   classified by $\chi : E \to \Type_n$, is the subobject of $E$
   classified by $\modal_n \circ \chi$.
 
-  An $n$-subobject of $E$ classified by $\chi$ is said to be {\em
+  
+\item An $n$-subobject of $E$ classified by $\chi$ is said to be {\em
     closed in $E$} if it is equal to its closure, \ie
   $\chi = \modal_n \circ \chi$.
 
-  An $n$-subobject of $E$ classified by $\chi$ is said to be {\em
+  
+\item An $n$-subobject of $E$ classified by $\chi$ is said to be {\em
     dense in $E$} if its closure is $E$, \ie
   $\modal_n \circ \chi = \lambda e, \one$ 
+  \end{itemize}
 \end{defi}
 
 % The definition of a dense $n$-subobject requires more work as the
@@ -1533,6 +1546,9 @@ $n\geqslant -1$, and a left exact modality $\modal_n$ on $\Type_n$,
 compatible with a left exact modality $\modal_{-1}$ on $\HProp$ in the
 sense of condition~\ref{cond:hprop}.
 
+As many proofs are very technical, we only give here sketches, and
+often refer to formalization for all details.
+
 \subsection{From Type to Separated Type}
 \label{ssec:from-type-separated}
 
@@ -1723,12 +1739,12 @@ Let $f,g$ be two maps from $\sum_{e:E} (\chi\,e)$ to $\sum_{x:A}
   \sum_{e:E} (\chi\, e) \ar@<-2pt>[r]_{g\circ\pi_1} \ar@<2pt>[r]^{f\circ \pi_1} \ar[d]_{\mathrm{dense}}& \sum_{x :A} (Bx) \\
   E \ar@<-2pt>[ru]_{g} \ar@<2pt>[ru]^{f}&
 }\end{mymath}%
-% We can restrict the previous diagram to 
-% \begin{mymath}\xymatrix @R=4em @C=5em{
-%   \sum_{e:E} (\chi\, e) \ar@<-2pt>[r]_{\pi_1\circ g\circ\pi_1} \ar@<2pt>[r]^{\pi_1\circ f\circ \pi_1} \ar[d]_{\mathrm{dense}}& \sum_{x :A} (Bx) \\
-%   E \ar@<-2pt>[ru]_{\pi_1\circ g} \ar@<2pt>[ru]^{\pi_1\circ f}&
-% }\end{mymath}%
-As $A$ is separated, $\pi_1\circ f = \pi_2 \circ g$.
+We can restrict the previous diagram to 
+\begin{mymath}\xymatrix @R=4em @C=5em{
+  \sum_{e:E} (\chi\, e) \ar@<-2pt>[r]_{\pi_1\circ g\circ\pi_1} \ar@<2pt>[r]^{\pi_1\circ f\circ \pi_1} \ar[d]_{\mathrm{dense}}& \sum_{x :A} (Bx) \\
+  E \ar@<-2pt>[ru]_{\pi_1\circ g} \ar@<2pt>[ru]^{\pi_1\circ f}&
+}\end{mymath}%
+and as $A$ is separated, $\pi_1\circ f = \pi_1 \circ g$.
 For the second components, let $x:E$. Notice that 
 $\sum_{y:E} x = y$ has a dense $n$-subobject, $\sum_{y:\sum_{e:E} (\chi\,
   e)} x=y_1$:
@@ -1987,7 +2003,7 @@ $n$-types (in the sense of proposition~\ref{prop:univalence}).
 \label{sec:formalization}
 
 A Coq formalization based on the Coq/HoTT library~\cite{hottlib} is available at
-\url{github.com/KevinQuirin/sheafification}.
+\url{https://github.com/KevinQuirin/sheafification}.
 %
 % After reviewing the content and some statistics about the
 % formalization in Section~\ref{sec:cont-form}, we present the
@@ -2141,8 +2157,8 @@ Beyond this result, our work is part of a more general line of work
 which aim to illustrate that homotopy type theory is a very promising
 theory for formalizing mathematics inside a proof assistant.
 
-\nt{Add something on the definition of a syntactic translation as it
-  has been done for forcing.}
+% \nt{Add something on the definition of a syntactic translation as it
+  % has been done for forcing.}
 
 As a future work, we would like to improve this construction in two
 ways:
@@ -2162,6 +2178,10 @@ ways:
   We would like to have much more examples of left-exact modalities on
   $\HProp$, in order to extend type theory with different principles
   than excluded middle.
+\item It would be useful to give a syntactic translation of
+  sheafification,
+  as it has been done for forcing~\cite{jaber2012extending}, to be
+  able to work in the new type theory into a proof assistant.
 \end{itemize}
 Moreover, in topos theory, Lawvere-Tierney subsumes Grothen\-dieck~\cite[Section~V.4]{maclanemoerdijk} in the sense that any
 Grothen\-dieck topology gives rise to a Lawvere-Tierney topology with

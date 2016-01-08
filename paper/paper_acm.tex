@@ -279,10 +279,11 @@ the construction in higher toposes is restricted to the initial
 Grothendieck setting which is still very topologically oriented, and
 not very amenable to formalization in type theory. It seems more
 promising to use a generalized notion of sheafification, called
-Lawvere-Tierney sheafification~\cite{tierney1972sheaf,maclanemoerdijk}
-(LT-sheafification), but this construction has not been considered yet
+Lawvere-Tierney
+sheafification~\cite{tierney1972sheaf,maclanemoerdijk},
+ but this construction has not been considered yet
 in the setting of higher topos theory. This rises two issues that this
-paper addresses: (i) how to lift the notion of LT-sheafification to a
+paper addresses: (i) how to lift the notion of Lawvere-Tierney sheafification to a
 higher dimensional setting and (ii) is it possible to formalize this
 new definition in homotopy type theory.
 
@@ -297,12 +298,12 @@ excluded middle, and more generally, combined with the previous work on
 forcing in type theory~\cite{jaber2012extending}, it allows to reuse
 results derived for topos theory, such as independence results.
 
-Technically, LT-sheafification in homotopy type theory allows to
+Technically, Lawvere-Tienrey sheafification in homotopy type theory allows to
 construct a model of homotopy type theory (restricted to finite homotopy
 types) with new logical principles (such as EM) from a model of
 homotopy type theory.
 
-That is, LT-sheafification can be seen as a model transformation that
+That is, it can be seen as a model transformation that
 allows to justify new axioms in homotopy type theory. 
 %
 But as this transformation is internalized inside homotopy type theory
@@ -348,11 +349,11 @@ or Agda~\cite{norell2007towards}.
 The work on forcing in type theory~\cite{jaber2012extending} also
 gives a computational meaning to a type theory enriched with new
 logical or computational principle, but for other kinds of principles
-as the ones interpreted by LT-sheafification.
+as the ones interpreted by Lawvere-Tierney sheafification.
 %
-Actually, forcing is entirely complementary to LT-sheafification as
+Actually, forcing is entirely complementary to Lawvere-Tierney sheafification as
 forcing corresponds to the presheaf construction while
-LT-sheafification corresponds to the topological transformation that
+Lawvere-Tierney sheafification corresponds to the topological transformation that
 allows to go from the presheaf construction to the sheaf construction.    
 
 \subsection{Plan of the Paper}
@@ -370,7 +371,7 @@ Section~\ref{sec:sheaves} defines Lawvere-Tierney sheaves in homotopy
 type theory.
 %
 Section~\ref{sec:sheafification} explains the construction of the
-LT-sheafification functor.
+Lawvere-Tierney sheafification functor.
 %
 The definitions of this paper use an informal presentation of
 homotopy type theory, working entirely inside of Univalent
@@ -390,9 +391,12 @@ Finally, Section~\ref{sec:future-works} concludes on future works.
 \label{sec:lawv-tiern-nutshell}
 
 
-In order to understand the construction of LT-sheafification in homotopy
+In order to understand the construction of Lawvere-Tierney sheafification in homotopy
 type theory, we first briefly recall the corresponding construction in
 topos theory and then gives an overview of our construction.
+
+From now on, {\em sheafification} is to be understood as {\em
+  Lawvere-Tierney sheafification}.
 
 \subsection{Lawvere-Tierney Sheafification in Topos Theory}
 \label{sec:lawv-tiern-sheaf}
@@ -447,7 +451,7 @@ Thus, in case of the double negation, the resulting topos is boolean
 and admits classical reasoning.
 
 Furthermore, one can define a left adjoint to the inclusion, the
-LT-sheafification functor
+sheafification functor
 %
 \begin{mymath}
 a_j : \E \rightarrow \Sh{\E}
@@ -464,12 +468,12 @@ To extend Lawvere-Tierney sheafification to homotopy type theory, the
 first thing to understand is that the construction cannot be done in one
 single step anymore. It must rather be performed by induction on the
 level of homotopy types. More precisely, the first layer of
-LT-sheafification is defined for $\Type_{0}$, given a topology on
-$\Type_{-1}$. This part corresponds to LT-sheafification for topoï. Then,
-assuming that the LT-sheafification has been constructed above level $n$,
-one can define the LT-sheafification for $\Type_{n+1}$.
+sheafification is defined for $\Type_{0}$, given a topology on
+$\Type_{-1}$. This part corresponds to sheafification for topoï. Then,
+assuming that the sheafification has been constructed above level $n$,
+one can define the sheafification for $\Type_{n+1}$.
 %
-This inductive process in the definition of LT-sheafification is similar
+This inductive process in the definition of sheafification is similar
 to construction in the Grothendieck setting, where the
 sheafification is obtained by applying the plus-construction $n\!+\!1$
 times to
@@ -481,7 +485,7 @@ This inductive step requires to formalize the notion of left-exact
 reflective subuniverse, which corresponds to a stratified version of
 left-exact modality introduced in~\cite[Chapter~7]{hottbook}. A
 Lawvere-Tierney topology can thus be seen as a left-exact modality on
-$\Type_{-1}$ and LT-sheafification as an inductive process that extends
+$\Type_{-1}$ and sheafification as an inductive process that extends
 it as a left-exact modality on $\Type_{n}$ for any $n$.
 Our inductive definition of these modalities will be given by
 \[ \begin{array}{l}
@@ -501,7 +505,7 @@ where $\Type_n^\modal$ is the type of modal types for $\modal_n$.
 The rest of the paper is an inductive proof that this definition produces a
 sequence of left-exact modalities.
 
-Compare to the definition of LT-sheafification in topos theory, the main
+Compare to the definition of sheafification in topos theory, the main
 change comes from the fact that in homotopy type theory, there is not
 a single object classifier but rather an $n$-object classifier for
 each $n\geq -2$ which classifies functions with $n$-truncated homotopy
@@ -510,7 +514,7 @@ fibers or embeddings (\ie $(-1)$-truncated homotopy
 fibers) depending on the purpose of the definition.
 
 For instance, the notion of separated objects (which is a technical
-notion used in the construction of the LT-sheafification functor), \ie
+notion used in the construction of the sheafification functor), \ie
 objects for which the morphism
 (\ref{equ:sheaf_def}) is just an embedding, is generalized in two
 different ways.  
@@ -519,7 +523,7 @@ The subobjects to be considered are given by $n$-truncated homotopy fibers,
 while the morphism (\ref{equ:sheaf_def}) is still required to be an
 embedding.
 
-Another technical difficulty is the fact that LT-sheafification in topos
+Another technical difficulty is the fact that sheafification in topos
 theory uses the property that epimorphisms are coequalizers of their
 kernel pairs. This property does not hold anymore in higher topoï, but
 using Giraud-Rezk-Lurie axioms of $\infty$-topoï, the same property
@@ -535,8 +539,8 @@ Such a construction can be thought in two ways:
 \item as a translation from one type theory into another type theory
   satisfying new principles
 \item or as a transformation, taking a model of type theory, and
-  producing another model, where the desired principle is true. This
-  can lead to consistency results.
+  producing another model, where the desired principle is true. As in
+  set theory or topos theory, it could lead to independence results.
 \end{itemize}
 
 In what follows, we work in the context of homotopy type theory, seen
@@ -544,13 +548,13 @@ as Martin-Löf type theory, with univalence axiom (thus functional
 extensionality) and higher inductive types.
 
 
-
+ 
 \section{Preliminaries on Homotopy Type Theory}
 \label{sec:hott}
 
 In this section, we review some basic definitions in homotopy type
 theory that are central in our formalization but not specific to
-LT-sheafification. 
+sheafification. 
 % %
 % Section~\ref{ssec:hott} introduces the notion of homotopy types and
 % classifying objects as defined in~\cite{sets_in_hott}.
@@ -584,6 +588,11 @@ without making our statement imprecise. In particular, (higher)
 inductive types are defined using itemization to avoid an overhead of
 notation. In the rest of the paper, $\Type$ must be seen in an
 universe-polymorphic way.
+
+Section~\ref{ssec:hott} will present homotopy levels and object
+classifiers, section~\ref{ssec:colim-homot-type} introduces a theory
+of colimits in homotopy type theory, illustrated by an important
+example in section~\ref{ssec:giraud-ax}.
 
  
  \subsection{Homotopy Types and Classifying Objects}
@@ -749,10 +758,10 @@ an equivalence
 % at level  $-1$ in the definition of sheafification.
 
 \subsection{Colimits in Homotopy Type Theory }
-\label{sec:colim-homot-type}
+\label{ssec:colim-homot-type}
 
 One desired property we would like to consider concerns the colimits
-of \v{C}ech nerves (Section~\ref{sec:giraud-ax}). This section presents
+of \v{C}ech nerves (Section~\ref{ssec:giraud-ax}). This section presents
 a definition of colimits in a type theoretic setting.
 % In the definition of (a special case of) Giraud-Rezk-Lurie axiom given in
 % Section~\ref{sec:giraud-ax}, the colimit of the {\em \v{C}ech nerve}
@@ -841,7 +850,7 @@ behave with respect to truncations. An answer is given by the following:
 % of Giraud-Rezk-Lurie axioms.
 
 \subsection{On Giraud-Rezk-Lurie axioms}
-\label{sec:giraud-ax}
+\label{ssec:giraud-ax}
 
 The Giraud-Rezk-Lurie axioms are the $\infty$-version of Giraud's
 axioms that characterize a topos. Namely, there are 4 axioms on a
@@ -970,7 +979,7 @@ in functional programming, except for the identity monad of course.
 
 The notion of left exact modalities plays a central role in this paper
 because Lawvere-Tierney topologies correspond exactly to left exact
-modalities at level $-1$ and LT-sheafification is described as an inductive
+modalities at level $-1$ and sheafification is described as an inductive
 process that produces a left exact modality at level $n+1$ from a
 level exact modality at level $n$. 
 
@@ -1060,7 +1069,7 @@ level $n$.
 \end{itemize}
 \end{prop}
 
-As the definition of LT-sheafification is based on subobject classifiers
+As the definition of sheafification is based on subobject classifiers
 and thus on homotopy fibers, we need to take a closer look at the way left
 exact modalities preserve homotopy fibers. The following is a part of
 the library~\cite{hottlib}.
@@ -1204,7 +1213,7 @@ universe is collapsed to an $\HProp$, ending up with propositional
 classical logic.
 
 In this paper, we use the double negation modality at level $-1$ only,
-and then extend it to higher homotopy types using LT-sheafification. This
+and then extend it to higher homotopy types using sheafification. This
 way, we can add classical reasoning in the type theory without
 collapsing it to mere propositions.
 
@@ -1218,12 +1227,12 @@ As explained in in Section~\ref{sec:lawv-tiern-sheaf}, a
 Lawvere-Tierney topology for a topos $\E$ corresponds to a left exact
 modality at level $-1$
 %
-and LT-sheafification corresponds to lifting this modality to a left
+and sheafification corresponds to lifting this modality to a left
 exact modality at level $0$.
 %
 In homotopy type theory, it is possible to use similar ideas to lift
 any left exact modality at level $-1$ to a left exact modality at level
-$n$ using LT-sheafification, by induction on $n$.
+$n$ using sheafification, by induction on $n$.
 
 In this section, we suppose given a truncation index $n\geqslant -1$,
 and a left exact modality $\modal_n$ on $\Type_n$ and we introduce the
@@ -1480,7 +1489,7 @@ propositions.
 
 
 
-The LT-sheafification in topos theory described in
+The sheafification in topos theory described in
 Section~\ref{sec:lawv-tiern-sheaf} works in the same way. 
 %
 From a left exact modality on the internal logic (a Lawvere-Tierney
@@ -1494,9 +1503,10 @@ $\HProp$ and $\Type_0$.
 %   rajoute ce qui manque pour être un faisceau. Mais c'était plutôt mal
 %   dit, effectivement}
 
-For a given induction step, the LT-sheafification is defined in two
-steps ; the first one construct, for any $T:\Type_{n+1}$ a separated
-type $\separated T$, and the second one construct a sheaf given any
+For a given induction step, the sheafification is defined in two
+steps ; the first one (section~\ref{ssec:from-type-separated}) construct, for any $T:\Type_{n+1}$ a separated
+type $\separated T$, and the second one
+(section~\ref{ssec:separated-to-sheaf}) construct a sheaf given any
 separated type.
 % %
 % \begin{enumerate}[(i)]
@@ -1599,7 +1609,7 @@ the iterated kernel pair of $\mu_T$.
   diagram $\mathring T$.
 \end{lem}
 
-Again, this lemma is an adaptation of the LT-sheafification process in
+Again, this lemma is an adaptation of the sheafification process in
 topos theory, where the kernel pair of $\mu_T$
 is replaced by its iterated kernel pair.
 
@@ -1626,7 +1636,7 @@ We will need the following lemma:
 \end{proof}
 
 \begin{proof}[Proof of lemma~\ref{lem:sepiscolim}]
-  As $\mu_T$ is an surjection, using the theorem~\ref{cech} introduced in Section~\ref{sec:giraud-ax},
+  As $\mu_T$ is an surjection, using the theorem~\ref{cech} introduced in Section~\ref{ssec:giraud-ax},
   we know that $\separated T$ is the $(n+1)$-colimit of $\|C(\mu_T)\|_{n+1}$. 
   % 
   Thus the result follows from the fact that $\|C(\mu_T)\|_{n+1} =
@@ -1739,7 +1749,7 @@ This proves the following proposition
 \end{prop}
 
 As this modality is just a step in the construction, we do not need to
-show that it is left exact, we will only do it for the LT-sheafification
+show that it is left exact, we will only do it for the sheafification
 modality.
 
 \subsection{From Separated Type to Sheaf}
@@ -1929,7 +1939,7 @@ ones constructed without using excluded middle.
 By proposition~\ref{prop:consistent}, these left-exact modalities
 induces a consistent type theory. Furthermore, the univalence remains
 true in this new type theory in the following sense:
-\begin{prop}
+\begin{prop}\label{prop:univalence}
   Let $n$ be a given truncation index, and $\modal$ the modality
   associated to $n+1$ as defined in lemma~\ref{lem:type}. Then, for
   any type $A,B:\Type_n^\modal$, the canonical arrow
@@ -1954,7 +1964,8 @@ associated to a truncation index $n$, one can build a modality
 $\modal$, which is left-exact with respect to types at most
 $n$-truncated. Thus, there is a model $\modal \mathfrak M$ of type
 theory (using results in section~\ref{sec:new-type-theory}), where
-excluded middle is true, and which is univalent when restricted to $n$-types. 
+excluded middle is true, and which is univalent when restricted to
+$n$-types (in the sense of proposition~\ref{prop:univalence}).
 
 
 % \subsection{New objects}
@@ -2071,7 +2082,7 @@ the universe issues we faced.
 
 One issue with universe polymorphism lies in the management of
 recursive definitions. Indeed, the following recursive definition of
-LT-sheafification
+sheafification
 %
 % \vspace{-0.05em}
 \[ \begin{array}{l}
@@ -2100,7 +2111,7 @@ $T \to \Type_n^\modal$ and equality on the return type of $\modal_n$.
 % \nt{explain why it is an issue.}
 %
 Thus, the induction step presented in this paper has been formalized,
-but the complete recursive LT-sheafification can not be defined for the
+but the complete recursive sheafification can not be defined for the
 moment.
 %
 Note that the same increasing in the universe levels occurs in the
@@ -2122,7 +2133,7 @@ In this paper, we have defined a way to extend homotopy type theory
 with new principles, leveraging Lawvere-Tierney sheafification to
 higher topos theory. 
 %
-Using LT-sheafification, it is possible to add new logical principles to
+Using sheafification, it is possible to add new logical principles to
 homotopy type theory, such as the law of excluded middle, and this
 without axiom.
 %

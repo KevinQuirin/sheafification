@@ -4,7 +4,7 @@ Require Import HoTT HoTT.hit.Truncations Connectedness.
 Require Export Utf8_core.
 Require Import Forall_.
 Require Import epi_mono reflective_subuniverse modalities.
-Require Import sheaf_base_case.
+Require Import sheaf_base_case. 
 
 Set Universe Polymorphism.
 Global Set Primitive Projections.

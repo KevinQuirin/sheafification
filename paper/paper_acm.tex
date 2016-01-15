@@ -45,7 +45,7 @@
 %
 %\usepackage[cmex10]{amsmath}
 \usepackage{amssymb,amsthm,amsfonts}
-
+\usepackage{mathbbol}
 
 \newtheorem{thm}{Theorem}
 \newtheorem{cor}[thm]{Corollary}
@@ -166,7 +166,7 @@
 
 \authorinfo{Kevin Quirin}
            {\'Ecole des Mines de Nantes}
-           {kevin.quirin@inria.fr}
+           {kevin.quirin@mines-nantes.fr}
 \authorinfo{Nicolas Tabareau}
            {Inria}
            {nicolas.tabareau@inria.fr}
@@ -539,11 +539,12 @@ between paths.
 
 Such a construction can be thought in two ways:
 \begin{itemize}
-\item as a translation from one type theory into another type theory
-  satisfying new principles
-\item or as a transformation, taking a model of type theory, and
+\item As a translation from one type theory into another type theory
+  satisfying new principles, in the same way Gödel translation embeds
+  classical logic into  intuitionistic logic.
+\item Or as a transformation, taking a model of type theory, and
   producing another model, where the desired principle is true. As in
-  set theory or topos theory, it could lead to independence results.
+  set theory or topos theory, it leads to consistency results.
 \end{itemize}
 
 In what follows, we work in the context of homotopy type theory, seen
@@ -1932,15 +1933,29 @@ $\Type$ by composing with truncation:
 If $\modal_{-1}$ is the double negation modality on $\HProp$ and
 $i=-1$, $\modal$ is exactly the double negation modality on $\Type$
 described in~\ref{sec:examples-left-exact}.
-
 Chosing $i\geqslant 0$ is a refinement of this double negation
 modality on $\Type$: it will collapse every type to a $\Type_i$,
 instead of an $\HProp$.
 
-Taking $i$ as a non-fixed parameter, that would allow us to work in an
+Obviously, as truncation modalities are not left-exact~\cite[Exercise
+7.11]{hottbook}, $\modal$ isn't either. But in the following sense, when
+restricted to $i$-truncated types, it is:
+\begin{lem}
+  Let $A:\Type_i$. Then if $\modal(A)$ is contractible, for any $x,y:A$,
+  $\modal(x=y)$ is contractible.
+\end{lem}
+\begin{proof}
+  For $i$-truncated types, $\modal = \modal_i$, and $\modal_i$ is left-exact.
+\end{proof}
+
+The compatibility between the modalities $\modal_n$ and between the
+modalities $\|\cdot \|_n$ allow us to chose the truncation index as
+high as desired.
+Taking it as a non-fixed parameter allows to work in an
 universe where the new principle ({\em e.g.} mere excluded middle) is
 true for any explicit truncated type. Indeed, $i$ can be chosen
-dynamically along a proof, and thus be increased as much as needed.
+dynamically along a proof, and thus be increased as much as needed,
+without changing results for lower truncated types.
 
 Unfortunately, one lose canonicity when working in $\Type^\modal$;
 indeed, for example, the function 
@@ -1958,9 +1973,9 @@ true in this new type theory in the following sense:
 \begin{prop}\label{prop:univalence}
   Let $n$ be a given truncation index, and $\modal$ the modality
   associated to $n+1$ as defined in lemma~\ref{lem:type}. Then, for
-  any type $A,B:\Type_n^\modal$, the canonical arrow
-  $$\varphi~:~A = B \to A\simeq B$$
-  is an equivalence.
+  any type $A,B:\Type_n^\modal$, if $\varphi$ is the canonical arrow
+  $$A = B \to A\simeq B,$$
+  then $\modal(\IsEquiv(\varphi))$ is inhabited.
 \end{prop}
 \begin{proof}
   The first thing to notice is that, if $X$ and $Y$ are modal, and
@@ -1996,7 +2011,103 @@ $n$-types (in the sense of proposition~\ref{prop:univalence}).
 % $\varphi(n) = \True$ if and only if $n$ satisfies the Collatz
 % conjecture.
 % Actually, one can defined such a map for any family of $\HProp$
-% indexed by $\nat$, for example with the family $C_n \defeq \text{«\,The $n$-th Turing Machine halts\,»}$.
+% indexed by $\nat$, for example with the family $C_n \defeq
+% \text{«\,The $n$-th Turing Machine halts\,»}$.
+
+\section{Translation}
+\label{sec:translation}
+
+
+Let $n$ be a trunction index, and let $\modal = \modal_n \circ
+\|\cdot\|_n$ the constructed modality. We define the following
+translation
+\begin{itemize}
+\item For $\Type$
+\[
+\begin{array}{lcl}
+  \Lbrack \Type\Rbrack &\defeq& \Type_\modal
+\end{array}
+\]
+
+\item For dependent sums
+\[
+\begin{array}{lcl}
+\left[ \sum_{x:A} B \right] &\defeq&  \left( \sum_{x:\Lbrack A \Rbrack}
+                                  \Lbrack B\Rbrack ; \pi_\Sigma^{[A],[B]}
+                                \right)\\[0.5em]
+  \left[  (x;y)\right] &\defeq& ([x];[y]) \\[0.5em]
+  \left[  \pi_i t\right] &\defeq& \pi_i [t] \\[0.5em]
+\end{array}
+\]
+\item For dependent products
+\[
+\begin{array}{lcl}
+ \left[ \prod_{x:A} B \right] &\defeq& \left( \prod_{x:\Lbrack A \Rbrack}
+                                   \Lbrack B\Rbrack ; \pi_{\Pi}^{[A],[B]}
+                                  \right)\\[0.5em]
+\left[  \lambda\, x:A,~B \right] &\defeq&\lambda\,x:\Lbrack A
+                                     \Rbrack,~\Lbrack B\Rbrack
+  \\[0.5em]
+  \left[ t \, t' \right] &\defeq& [t] [t'] \\[0.5em]
+\end{array}
+\]
+\item For sums
+\[
+\begin{array}{lcl}
+\left[  A+B \right] &\defeq& \left( \modal(\Lbrack A \Rbrack + \Lbrack B
+                        \Rbrack); \pi_\modal(\Lbrack A \Rbrack + \Lbrack B
+                        \Rbrack)\right)\\[0.5em]
+\left[  \mathrm{in}_\ell t \right] &\defeq& \eta (\mathrm{in}_\ell [t]) \\[0.5em]
+\left[  \mathrm{in}_r t \right] &\defeq& \eta (\mathrm{in}_r [t]) \\[0.5em]
+\left[ \langle f ,g\rangle\right] &\defeq& \modal_{\mathrm{rec}}^{\Lbrack A\Rbrack +
+                                      \Lbrack B\Rbrack} \langle
+                                      [f],[g]\rangle\\[0.5em]
+\end{array}
+\]
+\item For paths
+\[
+\begin{array}{lcl}
+\left[  A=B \right] &\defeq& \left( \Lbrack A \Rbrack = \Lbrack B
+                             \Rbrack , \pi_=^{[A],[B]}
+                             \right)\\[0.5em]
+\left[ 1 \right] &\defeq& 1\\[0.5em]
+\end{array}
+\]
+\item For truncations ($i\leqslant n$)
+\[
+\begin{array}{lcl}
+  \left[  \|A\|_i \right] &\defeq& (\modal \| \Lbrack A\Rbrack  \|_i;
+                                   \pi_\modal(\| \Lbrack A\Rbrack
+                                   \|_i)) \\[0.5em]
+  \left[ |t|_i \right] &\defeq& \eta |[t]|_i \\[0.5em]
+  \left[ \|f\|_i \right] &\defeq& \modal_{\mathrm{rec}}^{\| \Lbrack
+                                  A\Rbrack  \|_i} \| [f] \|_i
+\end{array}
+\]
+
+\end{itemize}
+
+where $\pi_\Sigma^{A,B}$ (resp. $\pi_\Pi^{A,B}$, resp. $\pi_=^{A,B}$)
+is the proof that $\Sigma_{x:A} B$ (resp. $\prod_{x:A} B$, resp $A=B$)
+is modal as soon as $A$ and $B$ are, and $\pi_\modal^A$ a proof that
+$\modal(A)$ is always modal as described in section~\ref{sec:lexmod}.
+
+As in~\cite{jaber2012extending}, the main issue is that $\Lbrack
+U\{x/N\} \Rbrack$
+and $\Lbrack U \Rbrack\{x/[N]\}$ are equal, but not convertible. We
+therefore have to use $\mathrm{transport}$, the eliminator of the
+equality, in the conversion rule.
+
+
+The central theorem is
+\begin{prop}
+  Let $\Gamma$ be a valid context, $A$ a type and $t$ a term of type
+  $A$.
+  Then if $\Gamma \vdash t: A$, then $\Lbrack\Gamma\Rbrack \vdash [t]
+  : \Lbrack A\Rbrack$.
+\end{prop}
+
+
 
 
 \section{Formalization} 
@@ -2034,10 +2145,10 @@ A Coq formalization based on the Coq/HoTT library~\cite{hottlib} is available at
 
 Overall, % with other files containing technical lemmas,
 the project
-contains 8081 lines, and it could be reduced a bit by improving the
+contains 7914 lines, and it could be reduced a bit by improving the
 way Coq tries to rewrite and apply lemmas automatically. 
-The \texttt{coqwc} tool counts 1750 lines of specifications
-(definitions, lemmas, theorems, propositions) and 6330 lines of proof
+The \texttt{coqwc} tool counts 1611 lines of specifications
+(definitions, lemmas, theorems, propositions) and 5403 lines of proof
 script.
 %
 This constitutes a significant amount of work but the part dedicated
@@ -2160,7 +2271,7 @@ theory for formalizing mathematics inside a proof assistant.
 % \nt{Add something on the definition of a syntactic translation as it
   % has been done for forcing.}
 
-As a future work, we would like to improve this construction in two
+As a future work, we would like to improve this construction in three
 ways:
 \begin{itemize}
 \item 

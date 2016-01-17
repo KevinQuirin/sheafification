@@ -578,4 +578,72 @@ Section LexModality.
     hott_simpl.
   Qed.
 
+  Lemma path_subuniverse_type {n:trunc_index} (mod:Modality (trunc_S n)) (subU := underlying_subu (trunc_S n) mod) (islex : IsLex mod) (X Y:subuniverse_Type subU)
+    : IsSubu _ subU (BuildTruncType _ (X <~> Y)).
+  Proof.
+    rewrite <- subuniverse_iff_O; try assumption.
+    transparent assert (FF: (O subU
+     {| trunctype_type := X <~> Y; istrunc_trunctype_type := istrunc_equiv |}
+                             → X <~> Y)).
+    { intro p.
+      refine (equiv_adjointify _ _ _ _).
+      + intro x. revert p. apply O_rec.
+        intro e. exact (e x).
+      + intro y. revert p. apply O_rec.
+        intro e. exact (e^-1 y).
+      + intro y. cbn. revert p.
+        pose (Helper := ((O subU (BuildTruncType _ (X <~> Y))) -> subuniverse_Type subU)).
+        transparent assert (shf: Helper).
+        { subst Helper.
+          intro p.
+          refine (Build_subuniverse_Type _ _ (BuildTruncType _ (O_rec n.+1 subU
+                                                                      {| trunctype_type := X <~> Y; istrunc_trunctype_type := istrunc_equiv |}
+                                                                      Y
+                                                                      (λ e : X <~> Y,
+                                                                             e
+                                                                               (O_rec n.+1 subU
+                                                                                      {|
+                                                                                        trunctype_type := X <~> Y;
+                                                                                        istrunc_trunctype_type := istrunc_equiv |} X
+                                                                                      (λ e0 : X <~> Y, e0^-1 y) p)) p = y)) _). }
+        refine (O_rec_dep _ shf _).1.
+        subst Helper; subst shf; cbn.
+        intro e.
+        do 2 rewrite (λ P Q f, ap10 (O_rec_retr _ subU P Q f)).
+        apply eisretr.
+      + intro x. cbn. revert p.
+        pose (Helper := ((O subU (BuildTruncType _ (X <~> Y))) -> subuniverse_Type subU)).
+        transparent assert (shf: Helper).
+        { subst Helper.
+          intro p.
+          refine (Build_subuniverse_Type _ _ (BuildTruncType _ (O_rec n.+1 subU
+                                                                      {| trunctype_type := X <~> Y; istrunc_trunctype_type := istrunc_equiv |}
+                                                                      X
+                                                                      (λ e : X <~> Y,
+                                                                             e^-1
+                                                                              (O_rec n.+1 subU
+                                                                                     {|
+                                                                                       trunctype_type := X <~> Y;
+                                                                                       istrunc_trunctype_type := istrunc_equiv |} Y
+                                                                                     (λ e0 : X <~> Y, e0 x) p)) p = x)) _). }
+        refine (O_rec_dep _ shf _).1.
+        subst Helper; subst shf; cbn.
+        intro e.
+        do 2 rewrite (λ P Q f, ap10 (O_rec_retr _ subU P Q f)).
+        apply eissect. }
+    refine (isequiv_adjointify _ FF _ _).
+    - unfold Sect.
+      refine (O_rec_dep _ (λ x, Build_subuniverse_Type _ _ (BuildTruncType _ (O_unit subU
+     {| trunctype_type := X <~> Y; istrunc_trunctype_type := istrunc_equiv |}
+     (FF x) = x)) _) _).1.
+      cbn.
+      intro x. apply ap. subst FF. cbn.
+      apply path_equiv. cbn.
+      apply path_forall; intro y.
+      apply (λ P Q f, ap10 (O_rec_retr _ subU P Q f)).
+    - intro e.
+      apply path_equiv. cbn.
+      apply path_forall; intro y.
+      apply (λ P Q f, ap10 (O_rec_retr _ subU P Q f)).
+  Defined.
 End LexModality.

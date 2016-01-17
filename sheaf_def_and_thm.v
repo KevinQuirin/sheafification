@@ -24,22 +24,28 @@ Section Definitions.
   Context `{ua: Univalence}.
   Context `{fs: Funext}.
 
-  Parameter n0 : trunc_index.
-
+  
+  Definition n0 := -2.
+  
   Definition n := trunc_S n0.
 
-  Parameter mod_nj : Modality n.
-
+  Definition mod_nj : Modality n := modality_Prop.
+  Opaque mod_nj.
+  
   Definition nj := underlying_subu n mod_nj.
 
   (* The following two parameters are the hypothesis 26 *)
-  Parameter j_is_nj : forall P, trunctype_type (j P) = trunctype_type (@st _ _ (O nj (@BuildTruncType _ P (@trunc_leq -1 n tt _ _)))).
+  Definition j_is_nj : forall P, trunctype_type (j P) = trunctype_type (@st _ _ (O nj (@BuildTruncType _ P (@trunc_leq -1 n tt _ _)))).
+  Proof. intro P. reflexivity. Defined.
 
-  Parameter j_is_nj_unit : forall P x ,
-                          transport idmap (j_is_nj P) (Oj_unit P x) = O_unit nj (@BuildTruncType _ P (@trunc_leq -1 n tt _ _)) x.
+  Definition j_is_nj_unit : forall P x ,
+      transport idmap (j_is_nj P) (Oj_unit P x) = O_unit nj (@BuildTruncType _ P (@trunc_leq -1 n tt _ _)) x.
+  Proof. intros P x. reflexivity. Defined.
+  Opaque j_is_nj. Opaque j_is_nj_unit.
   
-  Parameter islex_mod_nj : IsLex mod_nj.
-
+  Definition islex_mod_nj : IsLex mod_nj := islex_modality_Prop.
+  Opaque islex_mod_nj.
+  
   Definition islex_nj := islex_to_hfibers_preservation mod_nj islex_mod_nj.
   Definition lex_compat := islex_to_hfibers_preservation_compat mod_nj islex_mod_nj.
 
@@ -167,7 +173,9 @@ Section Definitions.
   Defined.
 
 
-
+  Axiom proof_admitted : forall X, X.
+  Ltac admit := apply proof_admitted.
+  
   (* If T is a n-Type, then if T is a n-sheaf, then T is also a (S n)-sheaf *)
 
   Lemma nsheaf_to_Snsheaf (T:TruncType (trunc_S n)) (Trn : IsTrunc n T) (nsheaf : IsSubu _ nj (@BuildTruncType n T Trn))
@@ -219,8 +227,10 @@ Section Definitions.
         unfold E_to_χmono_map; simpl.
         assert ((χ x.1).2 = (Oj_unit (χ x.1).1 x.2)) by apply path_ishprop.
         rewrite X.
-        transparent assert (TrH: (IsTrunc n ((λ x : E, (χ x).1) x.1))).
+        pose (TTrH := (IsTrunc n ((λ x : E, (χ x).1) x.1))).
+        transparent assert (TrH: TTrH).
         intros x0 y. apply (@trunc_leq -1 n). exact tt. exact (istrunc_trunctype_type _).
+        subst TTrH.
         path_via (O_rec n nj
                         {|
                           trunctype_type := (χ x.1).1;
@@ -234,7 +244,7 @@ Section Definitions.
                           istrunc_trunctype_type := _ |}
                                 x.2)).
         
-        apply ap. exact (j_is_nj_unit (χ x.1).1 x.2).
+        (* apply ap. exact (j_is_nj_unit (χ x.1).1 x.2). *)
         exact (ap10 (O_rec_retr _ _ {| trunctype_type := (χ x.1).1; istrunc_trunctype_type := TrH |}
                                 {|
      st := {| trunctype_type := T; istrunc_trunctype_type := Trn |};
@@ -256,14 +266,18 @@ Section Definitions.
        subu_struct := nsheaf |}
        (λ xx : (χ x).1, E_to_χmono_map T χ f (x; xx))
        (transport (λ x0 : Type, x0) (j_is_nj (χ x).1) (χ x).2) = 
-     f x)) _). }          
+                              f x)) _).
+          admit. admit.
+        }          
         apply (O_rec _ _ _ sheaf).
         unfold sheaf; clear sheaf. simpl. intro xx.
         pose (j_is_nj_unit (χ x).1 xx).
         assert ((χ x).2 = (Oj_unit (χ x).1 xx)) by apply path_ishprop.
         rewrite X.
-        transparent assert (TrH: (IsTrunc n ((λ x : E, (χ x).1) x))).
+        pose (TTrH := (IsTrunc n ((λ x : E, (χ x).1) x))).        
+        transparent assert (TrH:TTrH).
         intros x0 y. apply (@trunc_leq -1 n). exact tt. exact (istrunc_trunctype_type _).
+        subst TTrH.
         path_via (O_rec n nj
                         {|
                           trunctype_type := (χ x).1;
@@ -276,7 +290,7 @@ Section Definitions.
                                 {|
                           trunctype_type := (χ x).1;
                           istrunc_trunctype_type := _|} xx)).
-        apply ap; exact p.
+        (* apply ap; exact p. *)
         exact (ap10 (O_rec_retr _ nj {| trunctype_type := (χ x).1; istrunc_trunctype_type := TrH |} {|
      st := {| trunctype_type := T; istrunc_trunctype_type := Trn |};
      subu_struct := nsheaf |} (λ xx0 : (χ x).1, E_to_χmono_map T χ f (x; xx0))) xx). }
@@ -385,14 +399,14 @@ Section Definitions.
                       x
          ).
 
-    etransitivity; try exact foo. clear foo.
-    apply (ap10 (O_rec_O_rec_dep_retr n nj
-                                      (BuildTruncType _ {a:A & (φ a)})
-                                      (λ a, (φ a .1))
-                                      (λ a b, (a.1;b))
-                                      (λ a, a.2)
-                                      (λ a, eta_sigma a))
-                x).
+    etransitivity; try exact foo. (* clear foo. *)
+    (* apply (ap10 (O_rec_O_rec_dep_retr n nj *)
+    (*                                   (BuildTruncType _ {a:A & (φ a)}) *)
+    (*                                   (λ a, (φ a .1)) *)
+    (*                                   (λ a b, (a.1;b)) *)
+    (*                                   (λ a, a.2) *)
+    (*                                   (λ a, eta_sigma a)) *)
+    (*             x). *)
   Defined.
 
   Definition nj_inter (A : TruncType n) (φ : A -> TruncType n) : 
@@ -506,7 +520,7 @@ Section Definitions.
     rewrite (O_modal n nj (φ x)).
     assert (Tr1: IsTruncMap n (λ x0 : ∃ e : ∃ e : E, φ e, (χ e.1).1, (x0.1).1)).
     refine (istruncmap_compose n pr1 pr1 _ _). 
-    intro e; exact (@trunc_leq -1 n tt _ (istruncmap_charn -1 (λ t, (χ t.1).1) e)).
+    (* intro e; exact (@trunc_leq -1 n tt _ (istruncmap_charn -1 (λ t, (χ t.1).1) e)). *)
 
     match goal with
     |[|- O nj ?XX = _] =>
@@ -703,8 +717,9 @@ Section Definitions.
            trunctype_type := φ1 x → φ1 x;
            istrunc_trunctype_type := trunc_arrow
                                        (istrunc_trunctype_type (φ1 x)) |};
-     subu_struct := subuniverse_arrow n nj (φ1 x) (φ1 x) |} idmap) (EnJ_is_nJ χ x)). 
-  Defined.
+     subu_struct := subuniverse_arrow n nj (φ1 x) (φ1 x) |} idmap) (EnJ_is_nJ χ x)).
+  Admitted.
+  (* Defined. *)
 
   (* Proposition 23 *)
   Lemma nType_j_Type_is_SnType_j_Type : Snsheaf_struct (@BuildTruncType _ (subuniverse_Type nj) (@subuniverse_Type_is_TruncTypeSn _ nj ua)).

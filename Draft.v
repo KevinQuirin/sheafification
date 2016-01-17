@@ -45,6 +45,14 @@ Section Sheafification.
   Definition O1 := underlying_subu _ mod_O1.
 
   Transparent n0.
+
+  Lemma nnem (P:hProp) : ~ ~ (P + ~ P).
+  Proof.
+    intros f; apply f.
+    apply inr. intro p.
+    apply f. apply inl. exact p.
+  Defined.
+    
   
   Lemma nnnn_nn (P:hProp) : (~ ~ ~ ~ P) -> ~ ~ P.
   Proof.
@@ -54,18 +62,231 @@ Section Sheafification.
     exact (nnp np).
   Defined.
 
+  Lemma O_to_nn (P:hProp) 
+    :good_sheafification_Type (BuildhSet P) -> (O subuniverse_Prop P).
+  Proof.
+    intros [u p].
+    revert p. apply O_rec. apply Trunc_rec.
+    intros [a p]. cbn in *.
+    apply O_unit. exact a.
+  Defined.
+
+  
+
   Lemma nn_to_O (P:hProp) 
     :(O subuniverse_Prop P) -> good_sheafification_Type (BuildhSet P).
   Proof.
-    intro Op.
-    
-    
-    
-    pose (O_rec _ O1 (BuildhSet P) (O O1 (BuildhSet P))). cbn in t.
-    
-
+    intro np.
+    refine (exist _ _ _).
+    - intro p.
+      unfold sheaf_induction.nj, sheaf_def_and_thm.nj. cbn.
+      refine (Build_subuniverse_Type _ subuniverse_Prop (BuildTruncType _ (O_unit subuniverse_Prop _ p = np)) _).
+      refine (istrunc_paths _ _ _).
+      refine (subuniverse_paths _ _ _ (O_unit subuniverse_Prop P p) np).
+    - cbn.
+      revert np.
+      transparent assert (sh: (O subuniverse_Prop P
+                               → subuniverse_Type subuniverse_Prop)).
+      { intro np.
+        refine (Build_subuniverse_Type _ subuniverse_Prop (BuildhProp (@trunctype_type (trunc_S minus_two)
+     (@st (trunc_S minus_two) (@subuniverse_Prop fs)
+        (@O (trunc_S minus_two) (@subuniverse_Prop fs)
+           (@BuildTruncType (trunc_S minus_two)
+              (Trunc (trunc_S minus_two)
+                 (@sig (@trunctype_type (trunc_S minus_two) P)
+                    (fun a : @trunctype_type (trunc_S minus_two) P =>
+                     @paths
+                       (forall _ : @trunctype_type (trunc_S minus_two) P,
+                        @subuniverse_Type sheaf_def_and_thm.n
+                          (@subuniverse_Prop fs))
+                       (fun t' : @trunctype_type (trunc_S minus_two) P =>
+                        @O sheaf_def_and_thm.n (@subuniverse_Prop fs)
+                          (@BTT
+                             (@paths (@trunctype_type (trunc_S minus_two) P)
+                                a t')
+                             (@istrunc_paths
+                                (@trunctype_type (trunc_S minus_two) P)
+                                sheaf_induction.n
+                                (fun
+                                   x
+                                    y : @trunctype_type (trunc_S minus_two) P
+                                 =>
+                                 @trunc_succ minus_two
+                                   (@paths
+                                      (@trunctype_type (trunc_S minus_two) P)
+                                      x y)
+                                   (@istrunc_paths
+                                      (@trunctype_type (trunc_S minus_two) P)
+                                      minus_two
+                                      (@istrunc_trunctype_type
+                                         (trunc_S minus_two) P) x y)) a t')))
+                       (fun p : @trunctype_type (trunc_S minus_two) P =>
+                        Build_subuniverse_Type (trunc_S minus_two)
+                          (@subuniverse_Prop fs)
+                          (@BuildTruncType (trunc_S minus_two)
+                             (@paths
+                                (@trunctype_type (trunc_S minus_two)
+                                   (@st (trunc_S minus_two)
+                                      (@subuniverse_Prop fs)
+                                      (@O (trunc_S minus_two)
+                                         (@subuniverse_Prop fs) P)))
+                                (@O_unit (trunc_S minus_two)
+                                   (@subuniverse_Prop fs) P p) np)
+                             (@istrunc_paths
+                                (@trunctype_type (trunc_S minus_two)
+                                   (@st (trunc_S minus_two)
+                                      (@subuniverse_Prop fs)
+                                      (@O (trunc_S minus_two)
+                                         (@subuniverse_Prop fs) P)))
+                                (trunc_S minus_two)
+                                (fun
+                                   x
+                                    y : @trunctype_type 
+                                          (trunc_S minus_two)
+                                          (@st (trunc_S minus_two)
+                                             (@subuniverse_Prop fs)
+                                             (@O (trunc_S minus_two)
+                                                (@subuniverse_Prop fs) P)) =>
+                                 @trunc_succ minus_two
+                                   (@paths
+                                      (@trunctype_type 
+                                         (trunc_S minus_two)
+                                         (@st (trunc_S minus_two)
+                                            (@subuniverse_Prop fs)
+                                            (@O (trunc_S minus_two)
+                                               (@subuniverse_Prop fs) P))) x
+                                      y)
+                                   (@istrunc_paths
+                                      (@trunctype_type 
+                                         (trunc_S minus_two)
+                                         (@st (trunc_S minus_two)
+                                            (@subuniverse_Prop fs)
+                                            (@O (trunc_S minus_two)
+                                               (@subuniverse_Prop fs) P)))
+                                      minus_two
+                                      (@istrunc_trunctype_type
+                                         (trunc_S minus_two)
+                                         (@st (trunc_S minus_two)
+                                            (@subuniverse_Prop fs)
+                                            (@O (trunc_S minus_two)
+                                               (@subuniverse_Prop fs) P))) x
+                                      y))
+                                (@O_unit (trunc_S minus_two)
+                                   (@subuniverse_Prop fs) P p) np))
+                          (@subuniverse_paths (trunc_S minus_two)
+                             (@subuniverse_Prop fs) ua fs
+                             (@O (trunc_S minus_two) (@subuniverse_Prop fs) P)
+                             (@O_unit (trunc_S minus_two)
+                                (@subuniverse_Prop fs) P p) np)))))
+              (istrunc_truncation (trunc_S minus_two)
+                 (@sig (@trunctype_type (trunc_S minus_two) P)
+                    (fun a : @trunctype_type (trunc_S minus_two) P =>
+                     @paths
+                       (forall _ : @trunctype_type (trunc_S minus_two) P,
+                        @subuniverse_Type sheaf_def_and_thm.n
+                          (@subuniverse_Prop fs))
+                       (fun t' : @trunctype_type (trunc_S minus_two) P =>
+                        @O sheaf_def_and_thm.n (@subuniverse_Prop fs)
+                          (@BTT
+                             (@paths (@trunctype_type (trunc_S minus_two) P)
+                                a t')
+                             (@istrunc_paths
+                                (@trunctype_type (trunc_S minus_two) P)
+                                sheaf_induction.n
+                                (fun
+                                   x
+                                    y : @trunctype_type (trunc_S minus_two) P
+                                 =>
+                                 @trunc_succ minus_two
+                                   (@paths
+                                      (@trunctype_type (trunc_S minus_two) P)
+                                      x y)
+                                   (@istrunc_paths
+                                      (@trunctype_type (trunc_S minus_two) P)
+                                      minus_two
+                                      (@istrunc_trunctype_type
+                                         (trunc_S minus_two) P) x y)) a t')))
+                       (fun p : @trunctype_type (trunc_S minus_two) P =>
+                        Build_subuniverse_Type (trunc_S minus_two)
+                          (@subuniverse_Prop fs)
+                          (@BuildTruncType (trunc_S minus_two)
+                             (@paths
+                                (@trunctype_type (trunc_S minus_two)
+                                   (@st (trunc_S minus_two)
+                                      (@subuniverse_Prop fs)
+                                      (@O (trunc_S minus_two)
+                                         (@subuniverse_Prop fs) P)))
+                                (@O_unit (trunc_S minus_two)
+                                   (@subuniverse_Prop fs) P p) np)
+                             (@istrunc_paths
+                                (@trunctype_type (trunc_S minus_two)
+                                   (@st (trunc_S minus_two)
+                                      (@subuniverse_Prop fs)
+                                      (@O (trunc_S minus_two)
+                                         (@subuniverse_Prop fs) P)))
+                                (trunc_S minus_two)
+                                (fun
+                                   x
+                                    y : @trunctype_type 
+                                          (trunc_S minus_two)
+                                          (@st (trunc_S minus_two)
+                                             (@subuniverse_Prop fs)
+                                             (@O (trunc_S minus_two)
+                                                (@subuniverse_Prop fs) P)) =>
+                                 @trunc_succ minus_two
+                                   (@paths
+                                      (@trunctype_type 
+                                         (trunc_S minus_two)
+                                         (@st (trunc_S minus_two)
+                                            (@subuniverse_Prop fs)
+                                            (@O (trunc_S minus_two)
+                                               (@subuniverse_Prop fs) P))) x
+                                      y)
+                                   (@istrunc_paths
+                                      (@trunctype_type 
+                                         (trunc_S minus_two)
+                                         (@st (trunc_S minus_two)
+                                            (@subuniverse_Prop fs)
+                                            (@O (trunc_S minus_two)
+                                               (@subuniverse_Prop fs) P)))
+                                      minus_two
+                                      (@istrunc_trunctype_type
+                                         (trunc_S minus_two)
+                                         (@st (trunc_S minus_two)
+                                            (@subuniverse_Prop fs)
+                                            (@O (trunc_S minus_two)
+                                               (@subuniverse_Prop fs) P))) x
+                                      y))
+                                (@O_unit (trunc_S minus_two)
+                                   (@subuniverse_Prop fs) P p) np))
+                          (@subuniverse_paths (trunc_S minus_two)
+                             (@subuniverse_Prop fs) ua fs
+                             (@O (trunc_S minus_two) (@subuniverse_Prop fs) P)
+                             (@O_unit (trunc_S minus_two)
+                                      (@subuniverse_Prop fs) P p) np)))))))))) _).
+        auto with typeclass_instances.
+        apply subu_struct. }
+      refine (O_rec_dep (mod := modality_Prop) _ sh _).1.
+      intro a; subst sh; cbn.
+      apply O_unit. cbn.
+      apply tr.
+      exists a.
+      cbn.
+      apply path_forall; intro t.
+      apply unique_subuniverse. apply path_trunctype. cbn.
+      Transparent O_unit. Transparent O. unfold O_unit, O; cbn; unfold Oj_unit; cbn.
+      refine (equiv_iff_hprop _ _).
+      + intro p. apply path_forall; intro np.
+        destruct (np a).
+      + intros p q.
+        exact (q (path_ishprop (A := P) a t)).
+  Defined.
+  
   Goal forall (P:hProp), Type.
   Proof.
+   
+    Transparent O_equiv.
+    
     intro P.
     assert (IsHSet (P+~P)).
     { apply trunc_succ. refine (ishprop_sum _ _ _).
@@ -78,191 +299,12 @@ Section Sheafification.
     { refine (ishprop_sum _ _ _).
       intros p np; exact (np p). }
 
-    assert (φ: (O subuniverse_Prop (BuildhProp (P + ~P))) -> good_sheafification_Type (BuildhSet (P + ~P))).
-    { cbn. intro t. 
-      unfold good_sheafification_Type; cbn.
-      refine (exist _ _ _).
-      intro t'.
-      refine (Build_subuniverse_Type _ _ _ _).
-      unfold subuniverse_Type.
-      assert ((λ T : Type, IsHProp T) (t = O_unit subuniverse_Prop (P ∨ ~ P; X0) t')).
-      apply istrunc_paths.
-      apply trunc_arrow.
-      apply trunc_succ. apply hprop_Empty.
-      exists (O subuniverse_Prop ((t = O_unit subuniverse_Prop ((P+~P;X0)) t');X1)).1.
-      exact (O subuniverse_Prop (t = O_unit subuniverse_Prop (P ∨ ~ P; X0) t'; X1)).2.
+    pose (O_rec _ O1 (BuildhSet (P+~P)) (O O1 (BuildhSet Bool)) f (nn_to_O (nnem P))).
+    unfold O_rec, O, O_equiv in t.
+    unfold sheaf_induction.n in t. unfold sheaf_def_and_thm.n in t. unfold sheaf_def_and_thm.n0 in t.
 
-      revert t. cbn.
-      pose (O_rec_dep (mod := modality_Prop) ((P+~P;X0))).
-      transparent assert (sh: (((O (underlying_subu (-1) modality_Prop) (P ∨ ~ P; X0)).1).1
-                               → subuniverse_Type (underlying_subu (-1) modality_Prop))).
-      { intro t. cbn in *.
-        refine (exist _ _ _). refine (exist _ _ _).
-        exact (not
-     (not
-        (Trunc (trunc_S minus_two)
-           (@sig
-              (sum (@trunctype_type (trunc_S minus_two) P)
-                 (not (@trunctype_type (trunc_S minus_two) P)))
-              (fun
-                 a : sum (@trunctype_type (trunc_S minus_two) P)
-                       (not (@trunctype_type (trunc_S minus_two) P)) =>
-               @paths
-                 (forall
-                    _ : sum (@trunctype_type (trunc_S minus_two) P)
-                          (not (@trunctype_type (trunc_S minus_two) P)),
-                  @sig (Trunk sheaf_def_and_thm.n)
-                    (fun T : Trunk sheaf_def_and_thm.n =>
-                     forall
-                       _ : not
-                             (not
-                                (@proj1_sig Type
-                                   (fun T0 : Type =>
-                                    IsTrunc sheaf_def_and_thm.n T0) T)),
-                     @proj1_sig Type
-                       (fun T0 : Type => IsTrunc sheaf_def_and_thm.n T0) T))
-                 (fun
-                    t' : sum (@trunctype_type (trunc_S minus_two) P)
-                           (not (@trunctype_type (trunc_S minus_two) P)) =>
-                  @Oj fs
-                    (@exist Type (IsTrunc sheaf_induction.n)
-                       (@paths
-                          (sum (@trunctype_type (trunc_S minus_two) P)
-                             (not (@trunctype_type (trunc_S minus_two) P))) a
-                          t')
-                       (@istrunc_paths
-                          (sum (@trunctype_type (trunc_S minus_two) P)
-                             (not (@trunctype_type (trunc_S minus_two) P)))
-                          sheaf_induction.n X a t')))
-                 (fun
-                    t' : sum (@trunctype_type (trunc_S minus_two) P)
-                           (not (@trunctype_type (trunc_S minus_two) P)) =>
-                  @exist (Trunk sheaf_def_and_thm.n)
-                    (fun T : Trunk sheaf_def_and_thm.n =>
-                     forall
-                       _ : not
-                             (not
-                                (@proj1_sig Type
-                                   (fun T0 : Type =>
-                                    IsTrunc sheaf_def_and_thm.n T0) T)),
-                     @proj1_sig Type
-                       (fun T0 : Type => IsTrunc sheaf_def_and_thm.n T0) T)
-                    (@j fs
-                       (@exist Type
-                          (fun T : Type => IsTrunc (trunc_S minus_two) T)
-                          (@paths
-                             (not
-                                (not
-                                   (sum
-                                      (@trunctype_type (trunc_S minus_two) P)
-                                      (not
-                                         (@trunctype_type 
-                                            (trunc_S minus_two) P))))) t
-                             (@Oj_unit fs
-                                (@exist Type (IsTrunc (trunc_S minus_two))
-                                   (sum
-                                      (@trunctype_type (trunc_S minus_two) P)
-                                      (not
-                                         (@trunctype_type 
-                                            (trunc_S minus_two) P))) X0) t'))
-                          (@istrunc_paths
-                             (not
-                                (not
-                                   (sum
-                                      (@trunctype_type (trunc_S minus_two) P)
-                                      (not
-                                         (@trunctype_type 
-                                            (trunc_S minus_two) P)))))
-                             (trunc_S minus_two)
-                             (@trunc_arrow fs
-                                (not
-                                   (sum
-                                      (@trunctype_type (trunc_S minus_two) P)
-                                      (not
-                                         (@trunctype_type 
-                                            (trunc_S minus_two) P)))) Empty
-                                (trunc_S (trunc_S minus_two))
-                                (@trunc_succ (trunc_S minus_two) Empty
-                                   hprop_Empty)) t
-                             (@Oj_unit fs
-                                (@exist Type (IsTrunc (trunc_S minus_two))
-                                   (sum
-                                      (@trunctype_type (trunc_S minus_two) P)
-                                      (not
-                                         (@trunctype_type 
-                                            (trunc_S minus_two) P))) X0) t'))))
-                    (fun
-                       (X1 : not
-                               (not
-                                  (not
-                                     (not
-                                        (@paths
-                                           (not
-                                              (not
-                                                 (sum
-                                                  (@trunctype_type
-                                                  (trunc_S minus_two) P)
-                                                  (not
-                                                  (@trunctype_type
-                                                  (trunc_S minus_two) P)))))
-                                           t
-                                           (@Oj_unit fs
-                                              (@exist Type
-                                                 (IsTrunc (trunc_S minus_two))
-                                                 (sum
-                                                  (@trunctype_type
-                                                  (trunc_S minus_two) P)
-                                                  (not
-                                                  (@trunctype_type
-                                                  (trunc_S minus_two) P))) X0)
-                                              t'))))))
-                       (X2 : not
-                               (@paths
-                                  (not
-                                     (not
-                                        (sum
-                                           (@trunctype_type
-                                              (trunc_S minus_two) P)
-                                           (not
-                                              (@trunctype_type
-                                                 (trunc_S minus_two) P))))) t
-                                  (@Oj_unit fs
-                                     (@exist Type
-                                        (IsTrunc (trunc_S minus_two))
-                                        (sum
-                                           (@trunctype_type
-                                              (trunc_S minus_two) P)
-                                           (not
-                                              (@trunctype_type
-                                                 (trunc_S minus_two) P))) X0)
-                                     t'))) =>
-                     X1
-                       (fun
-                          X3 : not
-                                 (not
-                                    (@paths
-                                       (not
-                                          (not
-                                             (sum
-                                                (@trunctype_type
-                                                  (trunc_S minus_two) P)
-                                                (not
-                                                  (@trunctype_type
-                                                  (trunc_S minus_two) P)))))
-                                       t
-                                       (@Oj_unit fs
-                                          (@exist Type
-                                             (IsTrunc (trunc_S minus_two))
-                                             (sum
-                                                (@trunctype_type
-                                                  (trunc_S minus_two) P)
-                                                (not
-                                                  (@trunctype_type
-                                                  (trunc_S minus_two) P))) X0)
-                                          t'))) => 
-                           X3 X2)))))))).
-        refine (trunc_arrow _).
-        cbn.
-        refine (nnnn_nn _).}
 
-      specialize (s sh).
+
+
+    
+    unfold O_rec, O, O_equiv in t.

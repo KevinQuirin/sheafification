@@ -1672,37 +1672,4 @@ Section Sheafification.
     - refine (Trunc_ind _ _).
       intro a; reflexivity.
   Defined.
-
-  Lemma trunc_sheafification_hProp (X:Type)
-    : 
-
-  Lemma trunc_sheafification (X:Type)
-    : Trunc n (good_sheafification (BuildTruncType _ (Trunc (n.+1) X))).1 <~> O nj (BuildTruncType _ (Trunc n X)).
-  Proof.
-    refine (equiv_adjointify _ _ _ _).
-    - refine (Trunc_rec _).
-      intros [u p]; cbn in *.
-      generalize (equiv_path _ _ (j_is_nj (BuildhProp (Trunc (-1) (∃ a : Trunc n.+1 X, (λ t' : Trunc n.+1 X, O nj (BTT (a = t'))) = u)))) p).
-      apply O_rec. intro q. cbn in *.
-      admit.
-    - intro p. apply tr. cbn. unfold good_sheafification_Type.
-      refine (exist _ _ _).
-      intro x.
-      refine (Build_subuniverse_Type _ _ (BuildTruncType _ (O_unit nj _ (tr x) = p) _)).
-      cbn.
-      match goal with
-      |[|- ~ ~ ?XX] =>
-       apply (equiv_path _ _ (j_is_nj (BuildhProp XX))^)
-      end.
-      revert p.
-      refine (O_rec_dep _ _ _).1; intro p; cbn in *.
-      apply O_unit. cbn. revert p.
-      refine (Trunc_ind _ _).
-      intro aa. admit.
-      intro p. apply tr. cbn.
-      exists p. apply path_forall; intro x.
-      apply unique_subuniverse. apply path_trunctype. cbn.
-      pose (e:= equiv_inverse (good_sheafification_unit_paths_are_nj_paths X p x)).
-      etransitivity; [exact e | clear e].
-      unfold good_sheafification_unit. cbn.
 End Sheafification.

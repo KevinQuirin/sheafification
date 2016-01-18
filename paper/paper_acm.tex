@@ -1959,16 +1959,6 @@ true for any explicit truncated type. Indeed, $i$ can be chosen
 dynamically along a proof, and thus be increased as much as needed,
 without changing results for lower truncated types.
 
-Unfortunately, one lose canonicity when working in $\Type^\modal$;
-indeed, for example, the function 
-\begin{mymath}\lambda P:\HProp,~\left\{\begin{array}{l} 0 \text{ if $P$ is
-                                    false} \\ 1 \text{ if $P$ is
-                                    true} \end{array}\right.~:~\HProp
-                              \to \nat\end{mymath}%
-will not reduce to a numeral when applied to a undecidable
-property. However, we keep canonicity for ``old'' terms, i.e. the
-ones constructed without using excluded middle.
-
 By proposition~\ref{prop:consistent}, these left-exact modalities
 induces a consistent type theory. Furthermore, the univalence remains
 true in this new type theory in the following sense:
@@ -2021,13 +2011,21 @@ $n$-types (in the sense of proposition~\ref{prop:univalence}).
 
 
 Let $n$ be a trunction index, and let $\modal = \modal_n \circ
-\|\cdot\|_n$ the constructed modality. We define the following
-translation
+\|\cdot\|_n$ the constructed modality. 
+%
+As this modality is not left exact, $\Type$ itself is not modal and we
+can only define the translation on a type thoery with only one
+universe. 
+%
+We define the translation on Martin-Löf type theory,
+but it could also be done for CIC.   
+%
 \begin{itemize}
-\item For $\Type$
+\item For types (assuming $A \neq \Type$) 
 \[
-\begin{array}{lcl}
-  \Lbrack \Type\Rbrack &\defeq& \Type_\modal
+\begin{array}{lcllcl}
+  \Lbrack \Type\Rbrack &\defeq& \Type^\modal & \qquad 
+  \Lbrack A \Rbrack &\defeq& \pi_1 \left[ A \right]
 \end{array}
 \]
 
@@ -2094,23 +2092,55 @@ is the proof that $\Sigma_{x:A} B$ (resp. $\prod_{x:A} B$, resp $A=B$)
 is modal as soon as $A$ and $B$ are, and $\pi_\modal^A$ a proof that
 $\modal(A)$ is always modal as described in section~\ref{sec:lexmod}.
 
-As in~\cite{jaber2012extending}, the main issue is that $\Lbrack
-U\{x/N\} \Rbrack$
-and $\Lbrack U \Rbrack\{x/[N]\}$ are equal, but not convertible. We
+As in the forcing translation~\cite{jaber2012extending}, the main
+issue is that $\Lbrack U\{x/N\} \Rbrack$ and
+$\Lbrack U \Rbrack\{x/[N]\}$ are equal, but not convertible. We
 therefore have to use $\mathrm{transport}$, the eliminator of the
-equality, in the conversion rule.
+equality, in the conversion rule. This requires to use a type theory
+with explicit conversion in the syntax. We have chosen to omit this
+technical details here to simplify the presentation.
 
 
-The central theorem is
-\begin{prop}
-  Let $\Gamma$ be a valid context, $A$ a type and $t$ a term of type
-  $A$.
-  Then if $\Gamma \vdash t: A$, then $\Lbrack\Gamma\Rbrack \vdash [t]
-  : \Lbrack A\Rbrack$.
-\end{prop}
+% The central theorem is
+% \begin{prop}
+%   Let $\Gamma$ be a valid context, $A$ a type and $t$ a term of type
+%   $A$.
+%   Then if $\Gamma \vdash t: A$, then $\Lbrack\Gamma\Rbrack \vdash [t]
+%   : \Lbrack A\Rbrack$.
+% \end{prop}
 
+Modulo this technical point, we have the usual property that if a term
+$t$ has type $A$ in context $\Gamma$, then $[t]$ has type $\Lbrack
+A\Rbrack$ in the translated context $\Lbrack \Gamma\Rbrack$.
+%
+Furthermore, depending the modality $\modal_{-1}$ under focus, we can
+add new constants in the type theory, and give them a meaning through
+the translation. 
 
+For instance, for the double negation modality, we can add the term
+$\mathop{EM}$ by defining 
+$$
+[\mathop{EM}] \defeq \lambda P, \lambda H : \lnot (P + \lnot P), H (\mathrm{in}_r (\lambda
+p : P, H (\mathrm{in}_\ell p)))
+$$
+of type 
+$$
+\Lbrack \forall P:\HProp, P + \lnot P \Rbrack \equiv \forall
+P:\Type^\modal_{-1}. \lnot (\lnot (P + \lnot P)).
+$$
 
+Unfortunately, one lose canonicity when working in $\Type^\modal$;
+indeed, for example, the translation of the function 
+% \begin{mymath}\lambda P:\HProp,~\left\{\begin{array}{l} 0 \text{ if $P$ is
+%                                     false} \\ 1 \text{ if $P$ is
+%                                     true} \end{array}\right.~:~\HProp
+%                               \to \nat\end{mymath}%
+\begin{mymath}
+\lambda P:\HProp, \langle 0 ,1\rangle (\mathop{EM} P)~:~\HProp
+                     \to \nat\end{mymath}%
+will not reduce to a numeral when applied to a given
+property. However, we keep canonicity for terms of Martin-Löf Type
+theory which do not make us of new constants.
 
 \section{Formalization} 
 \label{sec:formalization}

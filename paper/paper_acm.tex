@@ -1819,7 +1819,7 @@ It remains to show that $\modal_{n+1}$ is left exact and is compatible
 with $\modal_{-1}$. To do that, we need to extend the notion of
 compatibility and show that actually every modality $\modal_{n+1}$ is
 compatible with $\modal_n$ on lower homotopy types.
-\begin{prop}
+\begin{prop} \label{prop:compatibility}
   If $T:\Type_n$, then $\modal_{n+1} \widehat T = \modal_n T$, where $\widehat T$ is $T$ seen as a
   $\Type_{n+1}$.
 \end{prop}
@@ -1981,15 +1981,21 @@ true in this new type theory in the following sense:
   theory, as it was in the original one.
 \end{proof}
 
-We can view sheafification in terms of model of type theory ; let
-$\mathfrak M$ be a model of homotopy type theory. Using sheafification
-associated to a truncation index $n$, one can build a modality
-$\modal$, which is left-exact with respect to types at most
-$n$-truncated. Thus, there is a model $\modal \mathfrak M$ of type
-theory (using results in section~\ref{sec:new-type-theory}), where
-excluded middle is true, and which is univalent when restricted to
-$n$-types (in the sense of proposition~\ref{prop:univalence}).
-
+We can view sheafification in terms of model of type theory but
+because of the resulting modality on $\Type$ is not left exact, we
+need to restrict ourselves to a type theory with only one universe.
+%
+Let $\mathfrak M$ be a model of homotopy type theory with one
+universe.
+%
+Using the modality $\modal$ (for any level $n$) associated to the
+sheafification, there is a model $\modal \mathfrak M$ of type theory
+with one universe (using results in
+Section~\ref{sec:new-type-theory}), where excluded middle is true, and
+which is univalent (as shown in Proposition~\ref{prop:univalence}).
+%
+This model transformation can better be described as a program
+transformation, as done in the next section.  
 
 % \subsection{New objects}
 % \label{sec:new-objects}
@@ -2009,16 +2015,24 @@ $n$-types (in the sense of proposition~\ref{prop:univalence}).
 \section{Translation}
 \label{sec:translation}
 
+In this section, we present how to use the sheafification modality to
+define a transformation of Matrin-Löf type theory into
+itself\footnote{We define the translation on Martin-Löf type theory,
+  but it could also be done for CIC as well.} as it has been done for
+forcing~\cite{jaber2012extending}.
 
 Let $n$ be a trunction index, and let $\modal = \modal_n \circ
 \|\cdot\|_n$ the constructed modality. 
 %
 As this modality is not left exact, $\Type$ itself is not modal and we
 can only define the translation on a type thoery with only one
-universe. 
+universe.
 %
-We define the translation on Martin-Löf type theory,
-but it could also be done for CIC.   
+To explain the translation on positive types as well, we also
+translate the sum type $A+B$, with associated constructors
+$\mathrm{in}_\ell$
+and $\mathrm{in}_r$ and eliminator $\langle \_ , \_ \rangle$.
+%
 %
 \begin{itemize}
 \item For types (assuming $A \neq \Type$) 
@@ -2051,6 +2065,17 @@ but it could also be done for CIC.
   \left[ t \, t' \right] &\defeq& [t] [t'] \\[0.5em]
 \end{array}
 \]
+\item For paths
+\[
+\begin{array}{lcl}
+\left[  A=B \right] &\defeq& \left( \Lbrack A \Rbrack = \Lbrack B
+                             \Rbrack , \pi_=^{[A],[B]}
+                             \right)\\[0.5em]
+\left[ 1 \right] &\defeq& 1\\[0.5em]
+\left[ \mathtt{transport} \ A \ P \ x \ y \ e \right] &\defeq&\mathtt{transport}
+  \ \Lbrack A \Rbrack \ [P] \ [x] \ [y] \ [e] \\[0.5em]
+\end{array}
+\]
 \item For sums
 \[
 \begin{array}{lcl}
@@ -2062,15 +2087,6 @@ but it could also be done for CIC.
 \left[ \langle f ,g\rangle\right] &\defeq& \modal_{\mathrm{rec}}^{\Lbrack A\Rbrack +
                                       \Lbrack B\Rbrack} \langle
                                       [f],[g]\rangle\\[0.5em]
-\end{array}
-\]
-\item For paths
-\[
-\begin{array}{lcl}
-\left[  A=B \right] &\defeq& \left( \Lbrack A \Rbrack = \Lbrack B
-                             \Rbrack , \pi_=^{[A],[B]}
-                             \right)\\[0.5em]
-\left[ 1 \right] &\defeq& 1\\[0.5em]
 \end{array}
 \]
 \item For truncations ($i\leqslant n$)
@@ -2128,6 +2144,8 @@ $$
 \Lbrack \forall P:\HProp, P + \lnot P \Rbrack \equiv \forall
 P:\Type^\modal_{-1}. \lnot (\lnot (P + \lnot P)).
 $$
+where we have use an implicit rewriting with
+Proposition~\ref{prop:compatibility}.
 
 Unfortunately, one lose canonicity when working in $\Type^\modal$;
 indeed, for example, the translation of the function 
@@ -2140,7 +2158,8 @@ indeed, for example, the translation of the function
                      \to \nat\end{mymath}%
 will not reduce to a numeral when applied to a given
 property. However, we keep canonicity for terms of Martin-Löf Type
-theory which do not make us of new constants.
+theory which do not make us of new constants nor positive types. 
+%
 
 \section{Formalization} 
 \label{sec:formalization}
@@ -2304,10 +2323,10 @@ theory for formalizing mathematics inside a proof assistant.
   % has been done for forcing.}
 
 As a future work, we would like to improve this construction in three
-ways:
-\begin{itemize}
-\item 
-  The extension to whole $\Type$ in lemma~\ref{lem:type} is not
+ways.
+% \begin{itemize}
+% \item 
+(i) The extension to whole $\Type$ in lemma~\ref{lem:type} is not
   totally satisfactory, as every type is collapsed to a truncated
   one. But some types in homotopy type theory are not
   truncated~\cite[Example 8.8.6]{hottbook}.
@@ -2317,15 +2336,20 @@ ways:
   % truncated, \eg the circle $\mathbb S^2$.  Thus, we plan to extend
   % the sheafification to all types by using a
   % limit construction.
-\item 
+% \item 
+(ii) 
   We would like to have much more examples of left-exact modalities on
   $\HProp$, in order to extend type theory with different principles
   than excluded middle.
-\item It would be useful to give a syntactic translation of
-  sheafification,
-  as it has been done for forcing~\cite{jaber2012extending}, to be
-  able to work in the new type theory into a proof assistant.
-\end{itemize}
+% \item 
+(iii) It would be useful to improve the translation induced by the
+  sheafification modality to preserve more definitional equalities.
+  %
+  This could be done for instance by defining a higher inductive
+  isomorphic to the modality by with a better computational content. 
+  % able to work in the new type theory into a proof assistant.
+% \end{itemize}
+
 Moreover, in topos theory, Lawvere-Tierney subsumes Grothen\-dieck~\cite[Section~V.4]{maclanemoerdijk} in the sense that any
 Grothen\-dieck topology gives rise to a Lawvere-Tierney topology with
 the same notion of sheaves. Higher Lawvere-Tierney sheaves are
@@ -2335,12 +2359,15 @@ remains true in higher topos theory.
 
 
 
-% \section*{Acknowledgment}
+\section*{Acknowledgment}
 
-% We would like to thank all maintainers of the Coq/HoTT library, who
-% have provided a very solid base for our formalization. 
-% We also would like
-% to thank Bas Spitters for helpful discussions on the subject.
+We would like to thank all maintainers of the Coq/HoTT library, who
+have provided a very solid base for our formalization. 
+%
+We also would like to thank Bas Spitters for helpful discussions on
+the subject.
+%
+This work has been funded by the CoqHoTT ERC Grant 637339.
 
 \bibliographystyle{abbrvnat}
 \bibliography{sheaf_lics}

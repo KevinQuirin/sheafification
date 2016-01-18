@@ -755,23 +755,32 @@ Global Arguments isequiv_precompose {_} [A B] C f {_}.
       apply path_ishprop.
   Defined.
 
+  Definition sh_to_clsep (P:TruncType (n.+1)) (Q : TruncType (n.+1)) (modQ : (Snsheaf_struct Q))
+    : ((((good_sheafification P)).1 → Q) -> ({e:(good_sheafification_Type P) & (density_sheafification P e).1} → Q)).
+  Proof.
+    intros X Y.
+    apply X.
+    exact Y.1.
+  Defined.
+
+  Definition clsep_to_sep (P:TruncType (n.+1)) (Q : TruncType (n.+1)) (modQ : (Snsheaf_struct Q))
+    : (({e:(good_sheafification_Type P) & (density_sheafification P e).1} → Q) -> (separated_Type P -> Q)).
+  Proof.
+    apply equiv_functor_arrow'. symmetry;
+      apply density_sheafification_is_sep.
+    apply equiv_idmap.
+  Defined.
+
   Definition sheafification_equiv (P:TruncType (n.+1)) (Q : TruncType (n.+1)) (modQ : (Snsheaf_struct Q))
   : IsEquiv (fun f : (good_sheafification P).1 -> Q => f o (good_sheafification_unit P)).
-    destruct modQ as [sepQ sheafQ].
     match goal with |[|- IsEquiv ?X] => set (foo := X) end.
 
-    transparent assert (sh_to_clsep : ((((good_sheafification P)).1 → Q) -> ({e:(good_sheafification_Type P) & (density_sheafification P e).1} → Q))).
-    { intros X Y.
-      apply X.
-      exact Y.1. }
-    transparent assert (clsep_to_sep : (({e:(good_sheafification_Type P) & (density_sheafification P e).1} → Q) -> (separated_Type P -> Q))).
-    { apply equiv_functor_arrow'. symmetry;
-        apply density_sheafification_is_sep.
-    apply equiv_idmap. }
     pose (sep_f := (λ (f : separated_Type P → Q) 
          (x : P), f (separated_unit P x))).
-    assert (foo = sep_f o clsep_to_sep o sh_to_clsep) by reflexivity.
-    rewrite X.
+    transparent assert (X: (foo = sep_f o (clsep_to_sep P Q modQ) o (sh_to_clsep P Q modQ))). by reflexivity.
+    unfold clsep_to_sep, sh_to_clsep in X.
+    refine (transport (λ U, IsEquiv U) X^ _).
+    destruct modQ as [sepQ sheafQ].
     refine (isequiv_compose).
     - exact (separated_equiv P (existT (separated) Q sepQ)).
   Defined.

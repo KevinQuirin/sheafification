@@ -45,6 +45,9 @@ Section Sheafification.
   Definition O1 := underlying_subu _ mod_O1.
 
   Transparent n0.
+  Goal n0 = -2.
+              unfold n0.
+              unfold sheaf_def_and_thm.n0.
 
   Lemma nnem (P:hProp) : ~ ~ (P + ~ P).
   Proof.
@@ -282,10 +285,35 @@ Section Sheafification.
         exact (q (path_ishprop (A := P) a t)).
   Defined.
   
-  Goal forall (P:hProp), Type.
+  Goal forall (hSetNat: IsHSet nat), function_lift _ O1 (@BuildhSet nat hSetNat) (@BuildhSet nat hSetNat) S (O_unit _ _ 0) = (O_unit _ _ (S 0)).
   Proof.
-   
+    intro HH.
+    unfold function_lift.
+
+    
     Transparent O_equiv.
+    unfold function_lift, O_rec, O_equiv, O_unit, OO_unit.
+
+    match goal with
+    |[|- ?ff _ _ = _] => pose proof ff
+    end. cbn in X.
+
+    unfold equiv_inv. unfold OO_equiv. unfold O1.
+    unfold sheaf_induction.n, sheaf_def_and_thm.n, sheaf_def_and_thm.n0.
+    unfold underlying_subu. unfold mod_O1. unfold sheafification_modality.
+    unfold sheafification_subU. unfold sheafification_equiv. 
+    Arguments isequiv_compose {A B f} H {C g} H0.
+    
+unfold isequiv_compose. Opaque isequiv_compose good_sheafification_unit.
+    cbn. rewrite transport_1.
+ 
+    Set Printing All.
+
+    cbn.
+
+    
+
+    
     
     intro P.
     assert (IsHSet (P+~P)).
@@ -299,12 +327,72 @@ Section Sheafification.
     { refine (ishprop_sum _ _ _).
       intros p np; exact (np p). }
 
+    Arguments isequiv_compose {A B f} H {C g} H0.
+
+
+    pose (foo := (equiv_Snheaf_struct
+             {|
+             trunctype_type := sheafification_Type (BuildhSet Bool);
+             istrunc_trunctype_type := sheafification_istrunc
+                                         (BuildhSet Bool) |}
+             {|
+             trunctype_type := good_sheafification_Type (BuildhSet Bool);
+             istrunc_trunctype_type := trunc_sigma
+                                         (T_nType_j_Type_trunc Bool)
+                                         (λ
+                                          (a : Bool
+                                               → subuniverse_Type
+                                                  subuniverse_Prop)
+                                          (x
+                                           y : ~
+                                               ~
+                                               Trunc 
+                                                 (-1)
+                                                 (∃ 
+                                                  a0 : Bool,
+                                                  (λ 
+                                                  t' : Bool,
+                                                  O subuniverse_Prop
+                                                  (BTT (a0 = t'))) = a)),
+                                          trunc_succ
+                                            (istrunc_paths
+                                               (trunc_arrow hprop_Empty) x y)) |}
+             (good_sheafification_Type_is_sheafification_Type
+                (BuildhSet Bool)) (sheafification_ (BuildhSet Bool)))).
+
+    
+
+    assert (ψ := (@subu_struct _ _ (O O1 (BuildhSet Bool)))).
+
+    pose (sheafification_equiv (BuildhSet (P+~P)) (O O1 (BuildhSet Bool)) ψ).
+    unfold sheafification_equiv in i. cbn in i.
+
+    match goal with
+    |[ i := isequiv_compose (isequiv_compose ?ii0 ?ii1) ?ii2 : _ |- _] => set (i0 := ii0) in *; set (i1 := ii1) in *; set (i2 := ii2) in *
+    end.
+
+    Opaque sheafification_equiv.
+
+    pose (t0 := equiv_inv _ (IsEquiv := i0)).
+    cbn in t0.
+    pose (t1 := equiv_inv _ (IsEquiv := i1)).
+    cbn in t1.
+    pose (t2 := equiv_inv _ (IsEquiv := i2) f).
+    cbn in t2.
+
     pose (O_rec _ O1 (BuildhSet (P+~P)) (O O1 (BuildhSet Bool)) f (nn_to_O (nnem P))).
-    unfold O_rec, O, O_equiv in t.
-    unfold sheaf_induction.n in t. unfold sheaf_def_and_thm.n in t. unfold sheaf_def_and_thm.n0 in t.
 
-
-
+    Opaque separated_equiv.
+    Opaque sh_to_clsep.
+    Opaque clsep_to_sep.
 
     
     unfold O_rec, O, O_equiv in t.
+    unfold equiv_inv in t. cbn in t.
+    unfold equiv_Snheaf_struct in t. cbn in t.
+    unfold sheaf_induction.n in t. unfold sheaf_def_and_thm.n in t. unfold sheaf_def_and_thm.n0 in t.    
+    unfold O_rec, O, O_equiv in t.
+    unfold equiv_inv in t.
+    unfold OO_equiv in t. 
+                          
+    cbn in t.

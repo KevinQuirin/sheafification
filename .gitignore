@@ -3,6 +3,7 @@
 *.v.d
 *.aux
 *.log
+*.rel
 *.fdb_latexmk
 *.fls
 paper/IEEEtran.cls

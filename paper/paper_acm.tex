@@ -482,7 +482,7 @@ assuming that the sheafification has been constructed above level $n$,
 one can define the sheafification for $\Type_{n+1}$.
 %
 This inductive process in the definition of sheafification is similar
-to construction in the Grothendieck setting, where the
+to the construction in the Grothendieck setting, where the
 sheafification is obtained by applying the plus-construction $n\!+\!1$
 times to
 $n$-types~\cite[Chapter~6]{lurie}. Unfortunately, some types does not
@@ -492,14 +492,14 @@ every type.
 This inductive step requires to formalize the notion of left-exact
 reflective subuniverse, which corresponds to a stratified version of
 left-exact modality introduced in~\cite[Chapter~7]{hottbook}. A
-Lawvere-Tierney topology can thus be seen as a left-exact modality on
+Lawvere-Tierney topology $j$ can thus be seen as a left-exact modality on
 $\Type_{-1}$ and sheafification as an inductive process that extends
 it as a left-exact modality on $\Type_{n}$ for any $n$.
 Our inductive definition of these modalities will be given by
 \[ \begin{array}{l}
    \modal : \forall \ (n : nat), \ \Type_n \to \Type_n 
    \\
-    \modal_{-1\phantom{n}}(T) \defeq\lnot\lnot T \\
+    \modal_{-1\phantom{n}}(T) \defeq \mathop{j} T \\
 
       \displaystyle{\modal_{n+1}(T)} \defeq  
       \displaystyle{\sum_{u:T \to \Type_n^\modal} \!\!\!\!\modal_{-1} 

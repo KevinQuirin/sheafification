@@ -76,7 +76,7 @@
 
 
 % correct bad hyphenation here
-\hyphenation{op-tical net-works semi-conduc-tor gro-then-dieck LT-sheafi-fi-ca-tion}
+\hyphenation{op-tical net-works semi-conduc-tor gro-then-dieck sheafi-fi-ca-tion}
 
 
 \usepackage{enumerate}
@@ -837,7 +837,7 @@ behave with respect to truncations. An answer is given by the following:
 
 \begin{lem}
   Let $D$ be a diagram, $m$ a truncation index, and
-  $P:\Type_{m}$. 
+  $P:\Type_{m}$ a colimit of $D$. 
   Then, if $\|D\|_m$ is the same diagram as $D$, but where every type
   is $m$-truncated, $P$ is a $m$-colimit\footnote{$P$ is a $m$-colimit
     if $P$ satisfies the same property as in~\ref{def:colimit} when
@@ -865,7 +865,7 @@ behave with respect to truncations. An answer is given by the following:
 \label{ssec:giraud-ax}
 
 The Giraud-Rezk-Lurie axioms are the $\infty$-version of Giraud's
-axioms that characterize a topos. Namely, there are 4 axioms on a
+axioms that characterize a topos. Namely, there are four axioms on a
 $(\infty,1)$-category that have been shown to be equivalent to
 $(\infty,1)$-topos~\cite[Chapter 6]{lurie}.
 %
@@ -993,7 +993,7 @@ The notion of left exact modalities plays a central role in this paper
 because Lawvere-Tierney topologies correspond exactly to left exact
 modalities at level $-1$ and sheafification is described as an inductive
 process that produces a left exact modality at level $n+1$ from a
-level exact modality at level $n$. 
+left exact modality at level $n$. 
 
 % Section~\ref{sec:definition} presents the definition and basic
 % properties of left exact modalities. 
@@ -1386,7 +1386,7 @@ Lawvere-Tierney topologies can still be shown to subsume Grothendieck
 toplogies for $(\infty,1)$-topoï, which is beyond the scope of this paper).
 %
 
-A fundamental property in the construction of the LT-sheafifica\-tion
+A fundamental property in the construction of the sheafifica\-tion
 functor is the fact that the type of modal types at level $n$ defines
 a sheaf.
 %
@@ -1494,7 +1494,7 @@ sense that the following property holds.
 \label{sec:sheaf-left-exact}Note that once the first modality $\modal_{-1}$ is defined, its
 extension to all $\Type_n$ is automatic. This means that the new
 logical principles that can be added by the sheaf construction must be
-added in the first modality already. LT-Sheafification is just a way
+added in the first modality already. Sheafification is just a way
 to propagate those new principles to types that are not mere
 propositions.
 
@@ -1907,7 +1907,7 @@ negation topology is a boolean topos. In homotopy type theory, this
 result can be expressed as:
 
 \begin{prop}
-  $(\modal_{\lnot\lnot})_n$, the modality obtained by LT-sheafifica\-tion
+  $(\modal_{\lnot\lnot})_n$, the modality obtained by sheafifica\-tion
   of the double negation modality,
   %
   induces a type theory where the propositional excluded middle law holds.
@@ -1916,7 +1916,7 @@ result can be expressed as:
 Combined with forcing in type theory~\cite{jaber2012extending}, it
 should be possible to lift the proof of independence of the continuum
 hypothesis to a classical setting, which is where the continuum hypothesis is
-really meaningful.  However, we haven't work out the details and left
+really meaningful.  However, we haven't worked out the details and left
 this for future work.
 
 % \nt{Recap what has been done, and give the final result about EM with
@@ -2028,7 +2028,7 @@ Let $n$ be a trunction index, and let $\modal = \modal_n \circ
 \|\cdot\|_n$ the constructed modality. 
 %
 As this modality is not left exact, $\Type$ itself is not modal and we
-can only define the translation on a type thoery with only one
+can only define the translation on a type theory with only one
 universe.
 %
 To explain the translation on positive types as well, we also
@@ -2147,7 +2147,7 @@ $$
 \Lbrack \forall P:\HProp, P + \lnot P \Rbrack \equiv \forall
 P:\Type^\modal_{-1}. \lnot (\lnot (P + \lnot P)).
 $$
-where we have use an implicit rewriting with
+where we have uses an implicit rewriting with
 Proposition~\ref{prop:compatibility}.
 
 Unfortunately, one lose canonicity when working in $\Type^\modal$;
@@ -2157,7 +2157,7 @@ indeed, for example, the translation of the function
 %                                     true} \end{array}\right.~:~\HProp
 %                               \to \nat\end{mymath}%
 \begin{mymath}
-\lambda P:\HProp, \langle 0 ,1\rangle (\mathop{EM} P)~:~\HProp
+\lambda P:\HProp, \langle \lambda x,\,0 ,\lambda x,\,1\rangle (\mathop{EM} P)~:~\HProp
                      \to \nat\end{mymath}%
 will not reduce to a numeral when applied to a given
 property. However, we keep canonicity for terms of Martin-Löf Type
@@ -2210,7 +2210,7 @@ to sheaves and sheafification is only 2200 lines of proof script,
 which seems quite reasonable and encouraging, because it suggests
 that homotopy type theory provides a convenient tool to formalize some
 part of the theory of higher topoï. As a matter of comparison, this
-\TeX\xspace file contains approximatively 1800 lines.
+\TeX\xspace file contains approximatively 2000 lines.
 
 % In our formalization, some things are admitted, either because they
 % are just an adaptation of a proposition already formalized
@@ -2348,8 +2348,8 @@ ways.
 (iii) It would be useful to improve the translation induced by the
   sheafification modality to preserve more definitional equalities.
   %
-  This could be done for instance by defining a higher inductive
-  isomorphic to the modality by with a better computational content. 
+  This could be done for instance by defining a higher inductive type
+  isomorphic to the modality but with a better computational content. 
   % able to work in the new type theory into a proof assistant.
 % \end{itemize}
 

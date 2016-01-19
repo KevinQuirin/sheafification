@@ -246,7 +246,7 @@ says that for any types $T$ and $U$, the canonical map
 (T = U) \to (T \simeq U)
 \end{mymath}%
 %
-which transports equalities to equivalences is an equivalence.
+which transports equalities between types to equivalences is an equivalence.
 %
 This new point of view on type theory has revealed the homotopy
 structure of types where for instance mere propositions (or
@@ -301,9 +301,9 @@ excluded middle, and more generally, combined with the previous work on
 forcing in type theory~\cite{jaber2012extending}, it allows to reuse
 results derived for topos theory, such as independence results.
 
-Technically, Lawvere-Tienrey sheafification in homotopy type theory allows to
-construct a model of homotopy type theory (restricted to finite homotopy
-types) with new logical principles (such as EM) from a model of
+Technically, Lawvere-Tienrey sheafification in homotopy type theory
+allows to construct a model of homotopy type theory (with only one
+universe) with new logical principles (such as EM) from a model of
 homotopy type theory.
 
 That is, it can be seen as a model transformation that
@@ -318,7 +318,7 @@ assistant.
 \label{sec:related-works}
 
 Similar questions have been considered around the Curry-Howard
-isomorphism, to extend a programming language closed to type theory
+isomorphism, to extend a programming language close to type theory
 with new logical or computational principle while keeping consistency
 automatically.
 %
@@ -354,8 +354,8 @@ gives a computational meaning to a type theory enriched with new
 logical or computational principle, but for other kinds of principles
 as the ones interpreted by Lawvere-Tierney sheafification.
 %
-Actually, forcing is entirely complementary to Lawvere-Tierney sheafification as
-forcing corresponds to the presheaf construction while
+Actually, this version of forcing is entirely complementary to Lawvere-Tierney sheafification as
+it corresponds to the presheaf construction while
 Lawvere-Tierney sheafification corresponds to the topological transformation that
 allows to go from the presheaf construction to the sheaf construction.    
 
@@ -365,7 +365,8 @@ Section~\ref{sec:lawv-tiern-nutshell} presents an overview of the
 construction.
 % 
 Section~\ref{sec:hott} presents the foundations of homotopy type theory
-and presents a analogous of~\cite[Corollary 6.2.3.5]{lurie}. 
+and an analogue of a theorem in higher toposes that is crucial
+in our construction~\cite[Corollary 6.2.3.5]{lurie}. 
 %
 Section~\ref{sec:lexmod} introduces the notion of left-exact stratified
 modalities, on which this paper is based.

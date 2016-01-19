@@ -1060,7 +1060,7 @@ formalization. We do not recall the proofs as they are not specific to
 our presentation (also the setting using truncated types provides
 minor changes), but they can be found in our Coq formalization. 
  
-\begin{prop}
+\begin{prop}\label{prop:mod_prop}
 
 The following property holds for any left-exact modality $\modal$ at
 level $n$.
@@ -1076,6 +1076,7 @@ level $n$.
   $\modal (A\times B) = (\modal A) \times (\modal B)$. \\
 (from \cite[Corollary 7.7.2]{hottbook})
 \item For any $A:\Type_n^\modal$ and $x,y:A$, $P(x=y)$.
+\item For any $A,B:\Type_n^\modal$, $P(A=B)$.
 \item 
   {\it (iv)} can be extended to dependent product, that is for any $A:\Type_n$, $B:\modal A \to
   \Type_n^\modal$ and
@@ -1973,7 +1974,7 @@ induces a consistent type theory. Furthermore, the univalence remains
 true in this new type theory in the following sense:
 \begin{prop}\label{prop:univalence}
   Let $n$ be a given truncation index, and $\modal$ the modality
-  associated to $n+1$ as defined in lemma~\ref{lem:type}. Then, for
+  associated to $n$ as defined in lemma~\ref{lem:type}. Then, for
   any type $A,B:\Type_n^\modal$, if $\varphi$ is the canonical arrow
   $$A = B \to A\simeq B,$$
   then $\IsEquiv(\varphi)$ is modal.
@@ -1982,7 +1983,7 @@ true in this new type theory in the following sense:
   The first thing to notice is that, if $X$ and $Y$ are modal, and
   $f:X \to Y$, then the mere proposition $\IsEquiv f$ is also modal.
   Therefore, it suffices to show that both $A=B$ and $A\simeq B$ are
-  modal. As $\Type_n^\modal$ is modal, $A=B$ is modal. 
+  modal. By proposition~\ref{prop:mod_prop}, $A=B$ is modal. 
   Moreover, $(A\simeq B) \simeq \sum_{f:A\to B} \IsEquiv
   f$. Therefore, as $A$ and $B$ are modal, $A\simeq B$ is too. 
 

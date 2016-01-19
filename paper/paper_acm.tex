@@ -2036,6 +2036,8 @@ translate the sum type $A+B$, with associated constructors
 $\mathrm{in}_\ell$
 and $\mathrm{in}_r$ and eliminator $\langle \_ , \_ \rangle$.
 %
+We note $J$ the eliminator of the identity type. 
+%
 %
 \begin{itemize}
 \item For types (assuming $A \neq \Type$) 
@@ -2075,8 +2077,7 @@ and $\mathrm{in}_r$ and eliminator $\langle \_ , \_ \rangle$.
                              \Rbrack , \pi_=^{[A],[B]}
                              \right)\\[0.5em]
 \left[ 1 \right] &\defeq& 1\\[0.5em]
-\left[ \mathtt{transport} \ A \ P \ x \ y \ e \right] &\defeq&\mathtt{transport}
-  \ \Lbrack A \Rbrack \ [P] \ [x] \ [y] \ [e] \\[0.5em]
+\left[ J \right] &\defeq& J \\[0.5em]
 \end{array}
 \]
 \item For sums

@@ -2071,8 +2071,8 @@ We note $J$ the eliminator of the identity type.
  \left[ \prod_{x:A} B \right] &\defeq& \left( \prod_{x:\Lbrack A \Rbrack}
                                    \Lbrack B\Rbrack ; \pi_{\Pi}^{[A],[B]}
                                   \right)\\[0.5em]
-\left[  \lambda\, x:A,~B \right] &\defeq&\lambda\,x:\Lbrack A
-                                     \Rbrack,~\Lbrack B\Rbrack
+\left[  \lambda\, x:A,~M \right] &\defeq&\lambda\,x:\Lbrack A
+                                     \Rbrack,~[ B ]
   \\[0.5em]
   \left[ t \, t' \right] &\defeq& [t] [t'] \\[0.5em]
 \end{array}
@@ -2080,8 +2080,7 @@ We note $J$ the eliminator of the identity type.
 \item For paths
 \[
 \begin{array}{lcl}
-\left[  A=B \right] &\defeq& \left( \Lbrack A \Rbrack = \Lbrack B
-                             \Rbrack , \pi_=^{[A],[B]}
+\left[  A=B \right] &\defeq& \left( [A] = [ B] , \pi_=^{[A],[B]}
                              \right)\\[0.5em]
 \left[ 1 \right] &\defeq& 1\\[0.5em]
 \left[ J \right] &\defeq& J \\[0.5em]

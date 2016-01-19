@@ -836,7 +836,8 @@ Using higher inductive types, every diagram $D$ on a graph $G$ admits a
 colimit in homotopy type theory. 
 
 In~\ref{ssec:from-type-separated}, we will need to know how colimits
-behave with respect to truncations. An answer is given by the following:
+behave with respect to truncations. An answer is given by the
+following lemma. 
 
 \begin{lem}
   Let $D$ be a diagram, $m$ a truncation index, and
@@ -877,7 +878,7 @@ The consequence we want to use here is the fact that a surjection
 nerve.
 %
 In~\cite{boulier}, the authors propose an analogue of this property~:
-they give, for any map $f$, a diagram $D_f$ whose colimit is $\im(f)$.
+they give, for any map $f$, a diagram $C(f)$ whose colimit is $\im(f)$.
 
 \begin{defi}
   Let $f:X \to Y$ be a map. The kernel pair $T_f$ of $f$ is the higher inductive type given
@@ -896,7 +897,7 @@ they give, for any map $f$, a diagram $D_f$ whose colimit is $\im(f)$.
   We call $\tilde f$ the map $T_f \to Y$ given by induction.
 \end{defi}
 
-Then, the desired diagram is the mapping telescope of the iterations
+Then, the considered diagram $C(f)$  is the mapping telescope of the iterations
 of $T$.
 \begin{defi}
   Let $f$ be a map from $X$ to $Y$. Then the iterated kernel pair of
@@ -909,7 +910,8 @@ of $T$.
 
 Let's recall the main theorem:
 \begin{thm}[Colimit of $C(f)$~\cite{boulier}]\label{cech}
-  For any surjection $f : X \to Y$, the colimit of $C(f)$ is $Y$.
+  For any morphism $f : X \to Y$, the colimit of $C(f)$ is $\im(f)$,
+  the image of $f$.
 \end{thm}
 
 % \subsection{On Giraud-Rezk-Lurie axioms}

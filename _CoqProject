@@ -1,4 +1,5 @@
 -R . ""
+-arg -type-in-type
 COQC = ../HoTT/hoqc
 COQDEP = ../HoTT/hoqdep
 

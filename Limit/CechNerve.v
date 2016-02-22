@@ -98,7 +98,7 @@ Section CechNerve.
   Defined.
   
   Let auxT (y: Y) (n: nat) : Type   (* := T^n (hfiber f y) *)
-    := (nat_rec Type (hfiber f y) (λ _ X, T X) n).
+    := (nat_rect (λ _, Type) (hfiber f y) (λ _ X, T X) n).
 
   Definition SlicedCechNerve2 (y: Y) : diagram mappingtelescope_graph.
     refine (Build_diagram _ _ _).

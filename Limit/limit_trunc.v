@@ -1,4 +1,4 @@
-Require Import Basics Types MyLemmas Diagram limit MyTacs hit.Truncations.
+Require Import Basics Types MyLemmas Diagram Colimit MyTacs hit.Truncations.
 
 Section TruncatedColimit.
 

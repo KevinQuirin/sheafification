@@ -221,9 +221,7 @@ theory and homotopy theory, such as higher inductive
 types~\cite{lumsdaine2011higher,lumsdaine2013higher} and
 Voevodsky's univalence principle~\cite{kapulkin2012simplicial}, which
 says that for any types $T$ and $U$, the canonical map 
-\begin{mymath}
-(T = U) \to (T \simeq U)
-\end{mymath}%
+$(T = U) \to (T \simeq U)$
 %
 which transports equalities between types to equivalences is an equivalence.
 %
@@ -365,7 +363,7 @@ construction to define a modality on $\Type$ from a modality on
 $\HProp$.
 %
 %
-Section~\ref{sec:translation} defines the translation of Matin-Löf
+Section~\ref{ssec:translation} defines the translation of Matin-Löf
 type theory into itself based on this modality. 
 %
 Section~\ref{sec:formalization} discusses the details of the
@@ -380,8 +378,7 @@ Finally, Section~\ref{sec:future-works} concludes on future works.
 
 In order to understand the construction of Lawvere-Tierney sheafification in homotopy
 type theory, we first briefly recall the corresponding construction in
-topos theory and then gives an overview of our construction.
-
+topos theory and then give an overview of our construction.
 From now on, {\em sheafification} is to be understood as {\em
   Lawvere-Tierney sheafification}.
 
@@ -393,9 +390,9 @@ Lawvere-Tierney sheafification in a topos $\E$ is based on an abstract
 point of view on the topology to be considered, being simply defined by an
 endomorphism on the classifying object $\Omega$ of $\E$  
 %
-\begin{mymath}
+$
 j : \Omega \rightarrow \Omega
-\end{mymath}%
+$
 %
 that is required to preserve $\True$ ($j \ \True = \True$), to be
 idempotent ($j \circ j = j$) and compatible with products ($j \circ
@@ -407,11 +404,9 @@ Every Lawvere-Tierney topology $j$ induces a closure operator
 $A \mapsto \closure{A}$ on subobjects. If we see a subobject $A$ of $E$
 as a characteristic function $\Char{A}$, the closure $\closure{A}$
 corresponds to the subobject of $E$ whose characteristic function is 
-%
-\begin{mymath}
+$
 \Char{\closure{A}} = j \circ \Char{A}.
-\end{mymath}%
-%
+$
 A subobject $A$ of $E$ is said to
 be dense when $\closure{A} = E$.
 
@@ -429,20 +424,17 @@ isomorphism
 %
 One can show that $\Sh{\E}$, the full sub-category of $\E$ given by
 sheaves, is again a topos, with classifying object
-%
-\begin{mymath}
+$
 \Omega_j = \{ P \in \Omega \ | \ j P  = P \}.
-\end{mymath}%
-%
+$
 Thus, in case of the double negation, the resulting topos is boolean  
 and admits classical reasoning.
 
 Furthermore, one can define a left adjoint to the inclusion, the
 sheafification functor
-%
-\begin{mymath}
+$
 a_j : \E \rightarrow \Sh{\E}
-\end{mymath}%
+$
 which exhibits $\Sh{\E}$ as a reflective
 subcategory (or reflective localization) of $\E$. This
 means that logical principles valid in $\E$ are still valid in
@@ -475,7 +467,7 @@ Lawvere-Tierney topology $j$ can thus be seen as a left-exact modality on
 $\Type_{-1}$ and sheafification as an inductive process that extends
 it as a left-exact modality on $\Type_{n}$ for any $n$.
 Our inductive definition of these modalities will be given by
-\begin{mymath} \begin{array}{l}
+\begin{equation}\label{eq:induction} \begin{array}{l}
    \modal : \forall \ (n : nat), \ \Type_n \to \Type_n 
    \\
     \modal_{-1\phantom{n}}(T) \defeq \mathop{j} T \\
@@ -487,7 +479,7 @@ Our inductive definition of these modalities will be given by
       \right\|}
     \end{array}
 % \vspace{-0.3em}
-\end{mymath}
+\end{equation}
 where $\Type_n^\modal$ is the type of modal types for $\modal_n$.
 The rest of the paper is an inductive proof that this definition produces a
 sequence of left-exact modalities.
@@ -798,18 +790,15 @@ Let $G$ be a graph, and $D$ be a diagram on $G$.
 Let $P:\Type$ together with
 \begin{itemize}
 \item a map $q_i : D_0(i) \to P$ for any
-vertex $i:G_0$, \ie \begin{mymath}[0em]q : \prod_{i:G_0} D_0(i) \to P\end{mymath}%
+vertex $i:G_0$, \ie $q : \prod_{i:G_0} D_0(i) \to P$
 \item for any vertices $i,j:G_0$ and all edges $\phi:G_1(i,j)$, a path
   $p_{i,j}^\phi : q_j \circ D_1(\phi) = q_i$, \ie
-  \begin{mymath}[0em]p : \prod_{i,j:G_0} \prod_{\phi:G_1(i,j)} q_j \circ D_1(\phi) = q_i.\end{mymath}%
+  $p : \prod_{i,j:G_0} \prod_{\phi:G_1(i,j)} q_j \circ D_1(\phi) = q_i.$
 \end{itemize}
 
-Then $P$ is the {\em colimit} of $D$ if for any other $X:\Type$, the
-map
-\begin{mymath}\lambda f:P \to X, \left( \lambda i,~f \circ q_i\, ;\, \lambda i\, j\,
-  \phi,\, f (p_{i, j}^\phi)) \right)\end{mymath}%
-% where $\precompose_f : \phi = \psi \to \phi \circ f = \psi \circ f$,
-is an equivalence.
+Then $P$ is the {\em colimit} of $D$ if for any other $X:\Type$, 
+\begin{mymath}[-0.5em]\IsEquiv\left(\lambda f:P \to X, \left( \lambda i,~f \circ q_i\, ;\, \lambda i\, j\,
+  \phi,\, f (p_{i, j}^\phi)) \right)\right).\end{mymath}
 \end{defi}
 Using higher inductive types, every diagram $D$ on a graph $G$ admits a
 colimit in homotopy type theory. 
@@ -868,11 +857,10 @@ they give, for any map $f$, a diagram $C(f)$ whose colimit is $\im(f)$.
   \item $\alpha_1:~\forall a:X,~\alpha(a, a, 1) = 1$
   \end{itemize}
   We view $T_f$ as the coequalizer of
-  \begin{mymath}\xymatrix{
+  $\xymatrix{
     \sum_{a,b:X} f(a) = f(b) \dar[r]{4pt}^-{\pi_1}_-{\pi_2} & X
-  }\end{mymath}%
+  }$
   preserving the identity.
-
   We call $\tilde f$ the map $T_f \to Y$ given by induction.
 \end{defi}
 
@@ -882,9 +870,9 @@ of $T$.
   Let $f$ be a map from $X$ to $Y$. Then the iterated kernel pair of
   $f$ $C(f)$
   is given by the diagram
-  \begin{mymath}\xymatrix{
+  $\xymatrix{
     C(f) := X \ar[r]^-t & T_f \ar[r]^-t & T_{\tilde f} \ar[r] &\cdots
-  }\end{mymath}%
+  }$
 \end{defi}
 
 Let's recall the main theorem:
@@ -1050,10 +1038,10 @@ level $n$.
 \item $\one$ seen as an $n$-type is modal, ie $\modal \one =\one$.
 \item 
   For any  $A:\Type$ and $B:A \to \Type_n^\modal$,  $P\left(\prod_{a:A} (B\,
-  a)\right)$. \\
+  a)\right)$. 
 (from \cite[Lemma 7.7.2]{hottbook})
 \item For any $A,B:\Type_n$,
-  $\modal (A\times B) = (\modal A) \times (\modal B)$. \\
+  $\modal (A\times B) = (\modal A) \times (\modal B)$. 
 (from \cite[Corollary 7.7.2]{hottbook})
 \item For any $A:\Type_n^\modal$ and $x,y:A$, $P(x=y)$.
 \item For any $A,B:\Type_n^\modal$, $P(A=B)$.
@@ -1061,7 +1049,7 @@ level $n$.
   {\it (iv)} can be extended to dependent product, that is for any $A:\Type_n$, $B:\modal A \to
   \Type_n^\modal$ and
   $g:\prod_{a:A} B(\eta_A(a))$, there exists a map $f:\prod_{z:\modal
-    A} (B\, z)$ such that for all $a:A$, $f(\eta_A(a)) = g(a)$. \\
+    A} (B\, z)$ such that for all $a:A$, $f(\eta_A(a)) = g(a)$. 
  (from \cite[Theorem
  7.7.4]{hottbook})
 \end{itemize}
@@ -1081,13 +1069,13 @@ is the fiber of $\modal f$ above $\eta_Y y$:
 (\modal f(x) = \eta_Y(y)),\end{mymath}%
 where $\modal f:\modal X \to \modal Y$ is defined via the equivalence {\it (iv)} and $\eta_Y$.
 
-Moreover the following diagram commute
-\begin{mymath}[-0.3em]\xymatrix{
-  \sum_{x:X} (f(x) = y) \ar[r]^\eta \ar[d]_\gamma & \modal \left(\sum_{x:X}  (f(x) = y)\right) \ar@{=}[dl]\\
-  \sum_{x:\modal X} (\modal f(x) = \eta_Y(y)) & }\end{mymath}%
-where $\pi_1 \circ \gamma = \eta_X \circ \pi_1$, and
-$\pi_2 \circ \gamma$ is given by the modalisation of
-paths.
+% Moreover the following diagram commute
+% \begin{mymath}[-0.3em]\xymatrix{
+%   \sum_{x:X} (f(x) = y) \ar[r]^\eta \ar[d]_\gamma & \modal \left(\sum_{x:X}  (f(x) = y)\right) \ar@{=}[dl]\\
+%   \sum_{x:\modal X} (\modal f(x) = \eta_Y(y)) & }\end{mymath}%
+% where $\pi_1 \circ \gamma = \eta_X \circ \pi_1$, and
+% $\pi_2 \circ \gamma$ is given by the modalisation of
+% paths.
 \end{prop}
 % \begin{proof}
 % % \nt{ça a du sens de mettre une preuve, non ? c'est non trivial et
@@ -1385,47 +1373,7 @@ choice of their precise statements.
 \begin{prop}\label{prop:sheaf-is-sheaf}
   $\Type_n^\modal$ is a sheaf.
 \end{prop}
-\begin{proof}
-  First, we prove that $\Type_n^\modal$ is separated. Let $E:\Type$
-  and $\chi:E \to \Type_n$, dense in $E$. Let $\phi_1,\phi_2:E \to
-  \Type_n^\modal$, such that $\phi_1 \circ \pi_1 = \phi_2 \circ
-  \pi_1$ and let $x:E$. We show $\phi_1(x) = \phi_2(x)$ using
-  univalence.
 
-  As $\chi$ is dense, we have a term $m_x : \modal_n(\chi\, x)$.
-  But as $\phi_2(x)$ is modal, we can obtain a term $h_x : \chi\,
-  x$. 
-  As $\phi_1$ and $\phi_2$ are equal on $\sum_{e:E}\chi\, e$, we
-  have an arrow $\phi_1(x) \to \phi_2(x)$.
-  The same method leads to an arrow $\phi_2 (x) \to \phi_1 (x)$, and we
-  prove they are each other inverse.
-
-  Now, we prove that $\Type_n^\modal$ is a sheaf. Let $E:\Type$ and
-  $\chi:E \to \HProp$, dense in $E$. Let $f:\sum_{e:E} \chi\, e \to
-  \Type_n^\modal$. We want to extend $f$ to $E \to \Type_n^\modal$.
-
-  We define $g$ as $g(e) = \modal_n \left( \fib \phi {e} \right)$,
-  where
-  \begin{mymath}[0em]\phi : \sum_{b:\left(\sum_{e:E} (\chi\, e)\right)} (f\,
-    b) \to E\end{mymath}%
-  defined by $\phi(x) = (x_1)_1$.
-% \kq{Is it necessary to state the lemma ?}
-Using a modal analogous of the characterization of fibers of composition, we can prove that it
-defines an equivalence.
-  % \begin{lem}
-  %   Let $A,B,C:\Type_n$, $f:A\to B$ and $g:B\to C$.
-  %   Then
-  %   \begin{itemize}
-  %   \item If $g$ is an embedding, then 
-  %     \begin{mymath}\prod_{b:B}\fib f b = \fib {g\circ f} {g\, b}.\end{mymath}
-  %   \item If all fibers of $f$ and $g$ are $n$-truncated, then
-  %     \begin{mymath}\prod_{c:C}\modal_n(\fib {g \circ f} c) =
-  %     \modal_n \left(  
-  %       \sum_{w:\fib g c} \modal_n (\fib f {w_1})
-  %     \right).\end{mymath}
-  %   \end{itemize}
-  % \end{lem}
-\end{proof}
 % \vspace{-1em}
 Another fundamental property on sheaves is that the type of (dependent)
 functions is a sheaf as soon as its codomain is a sheaf.
@@ -1434,24 +1382,7 @@ functions is a sheaf as soon as its codomain is a sheaf.
   If $A:\Type_{n+1}$ and $B:A \to \Type_{n+1}$ such that for any
   $a:A$, $(B~a)$ is a sheaf, then $\prod_{a:A}B~a$ is a sheaf.
 \end{prop}
-\begin{proof}
-  \begin{itemize}
-  \item {\em Separation:} Let $E:\Type$, $\chi:E \to \Type_n$ dense
-    and $\phi_1,\phi_2:E\to \prod_{a:A} (B\, a)$ equal on
-    $\sum_{e:E}(\chi\, e)$ \ie $\phi_1\circ \pi_1 = \phi_2\circ
-    \pi_1$.
-    Then for any $a:A$, $(\lambda x:E,~\phi_1(x, a))$
-    and $(\lambda x:E,~\phi_2(x,a))$
-    coincide on $\sum_{e:E}(\chi\, e)$, and as $B\, a$ is separated,
-    they coincide also on all $E$.
-  \item {\em Sheaf:} Let $E:\Type$, $\chi:E\to \HProp$ dense and
-    $f:\sum_{e:E} (\chi\, e)\to \prod_{a:A} (B\,a)$. Let $a:A$ ; the
-    map $(\lambda x,~f(x,a))$ is valued in the sheaf $B\, a$, so it
-    can be extended to all $E$, allowing $f$ to be extended to all
-    $E$. \qedhere
-  \end{itemize}
-%  \nt{add a short proof here}
-\end{proof}
+
 
 \section{Sheafification of Left Exact Modalities}
 \label{sec:sheafification}
@@ -1598,19 +1529,29 @@ the iterated kernel pair of $\mu_T$.
   \item $\mathring \alpha_1:~\forall a:\|X\|_{n+1},~
     \mathring \alpha(a , a, \eta_{a=a} 1) = 1$
   \end{itemize}
-
-  We view $\mathring T$ as the coequalizer of
-  \begin{mymath}\xymatrix{\sum_{a,b:\|X\|_{n+1}} \modal (a=b) \dar[r]{4pt}^-{\pi_1}_-{\pi_2}
-  & \|X\|_{n+1}}\end{mymath}%
-  preserving $\eta_{a=a} 1$.
-
-  We consider the diagram $\mathring T$ :
-  \begin{mymath}\xymatrix{\|X\|_{n+1} \ar[r] & \|\mathring T_{X}\|_{n+1} \ar[r] & \|\mathring
-  T_{\mathring T_X} \|_{n+1} \ar[r] & \cdots} \end{mymath}%
 \end{defi}
+We view $\mathring T$ as the coequalizer of
+$\xymatrix{\sum_{a,b:\|X\|_{n+1}} \modal (a=b) \dar[r]{4pt}^-{\pi_1}_-{\pi_2}
+  & \|X\|_{n+1}}$
+preserving $\eta_{a=a} 1$.
 
+We consider the diagram $\mathring T :=
+\xymatrix{\|X\|_{n+1} \ar[r] & \|\mathring T_{X}\|_{n+1} \ar[r] & \|\mathring
+  T_{\mathring T_X} \|_{n+1} \ar[r] & \cdots}$
 
-
+We already know that $\separated T$ is the $(n+1)$-colimit of
+$\|C(\mu_T)\|_{n+1}$. We can show, with an encode-decode method, that
+a embedding-like property is preserved by $\widetilde\cdot$: 
+\begin{equation}\label{eq:Omono}
+  \mathrm{if}~\forall a,b:A,~f (a) = f (b) \simeq \modal (a=b),
+\end{equation} 
+\vspace{-2em}
+\begin{mymath}
+  \mathrm{then}~\forall a,b:\|T_f\|_{n+1},~|\tilde f|_{n+1} (a) = |\tilde
+  f|_{n+1} (b) \simeq \modal (a=b)
+\end{mymath}
+This can be used to show that the two diagrams $\|C(\mu_T)\|_{n+1}$ and
+$\mathring T$ are equivalent, and thus
 \begin{lem}\label{lem:sepiscolim}
   Let $T:\Type_{n+1}$. Then $\separated T$ is the $(n+1)$-colimit of the
   diagram $\mathring T$.
@@ -1618,86 +1559,36 @@ the iterated kernel pair of $\mu_T$.
 
 Again, this lemma is an adaptation of the sheafification process in
 topos theory, where the kernel pair of $\mu_T$
-is replaced by its iterated kernel pair.
+is replaced by its iterated kernel pair. 
 
-We will need the following lemma:
+% We know that $\separated T$ is the $(n+1)$-colimit of the iterated
+% kernel pair of $\mu_T$.
 
-\begin{lem}
-  Let $A,S:\Type_{n+1}$, $S$ separated, and $f:A \to S$. Then if 
-  % \vspace{-0.7em}
-  \begin{equation}
-    \label{eq:Omono}\tag{$\star$}
-    \forall a,b:A,~f (a) = f (b) \simeq \modal (a=b),
-    % \vspace{-0.7em}
-  \end{equation}
-  then
-  \begin{mymath}\forall a,b:\|T_f\|_{n+1},~|\tilde f|_{n+1} (a) = |\tilde f|_{n+1} (b) \simeq \modal (a=b).\end{mymath}%
-\end{lem}
+% We will need the following lemma:
 
-\begin{proof}[Sketch of proof]
-  By induction on truncation, we need to show that 
-  \begin{mymath}\forall a,b:T_f,~\tilde f (|a|_{n+1}) = \tilde f (|b|_{n+1} )\simeq
-  \modal (|a|_{n+1}=|b|_{n+1}).\end{mymath}%
-  We use the encode-decode~\cite[Section 8.9]{hottbook} method to characterize $\tilde f (|a|_{n+1})
-  = x$, and the result follows. We refer to the formalization for details.
-\end{proof}
+% \begin{lem}
+%   Let $A,S:\Type_{n+1}$, $S$ separated, and $f:A \to S$. Then if 
+%   % \vspace{-0.7em}
+%   \begin{equation}
+%     \label{eq:Omono}\tag{$\star$}
+%     \forall a,b:A,~f (a) = f (b) \simeq \modal (a=b),
+%     % \vspace{-0.7em}
+%   \end{equation}
+%   then
+%   \begin{mymath}\forall a,b:\|T_f\|_{n+1},~|\tilde f|_{n+1} (a) = |\tilde f|_{n+1} (b) \simeq \modal (a=b).\end{mymath}%
+% \end{lem}
 
-\begin{proof}[Proof of lemma~\ref{lem:sepiscolim}]
-  As $\mu_T$ is an surjection, using the theorem~\ref{cech} introduced in Section~\ref{ssec:giraud-ax},
-  we know that $\separated T$ is the $(n+1)$-colimit of $\|C(\mu_T)\|_{n+1}$. 
-  % 
-  Thus the result follows from the fact that $\|C(\mu_T)\|_{n+1} =
-  \mathring T$,
-  which we now show.
-
-  First, we show that $\mu_T$ satisfies condition~(\ref{eq:Omono}),
-  \ie{} $\forall a,b:T$, $\modal_n (a=b) = (\mu_T a =
-  \mu_T b)$. By univalence, we want arrows in both ways, forming an
-  equivalence.
-  \begin{itemize}
-  \item Suppose $p : (\mu_T a = \mu_T b)$. Then projecting $p$ along
-    first components yields $q : \prod_{t:T} \modal_n(a=t) = \modal_n (b=t)
-    $.
-    Taking for example $t=b$, we deduce $\modal_n (a=b) = \modal_n(b=b)$,
-    and the latter is inhabited by $\eta_{b=b} 1$.
-  \item Suppose now $p : \modal_n(a=b)$. Let $\iota$ be the first
-    projection from $\separated T \to (T \to \Type_n^\modal)$. $\iota$ is
-    an embedding, thus it suffices to prove $\iota (\mu_T a) = \iota
-    (\mu_T b)$, \ie $\prod_{t:T}\modal_n (a=t) = \modal_n (b=t)$. The latter
-    remains true by univalence.
-  \end{itemize}
-  The fact that these two form an equivalence is technical, we refer to
-  the formalization for an explicit proof.
-
-  Then, by induction, we need to show that for any $A,B:\Type_{n+1}$ such
-  that $\varphi:~A \simeq B$, with an arrow $f:A \to \separated T$
-  satisfying~(\ref{eq:Omono}), 
-  \begin{mymath}T_f \simeq \mathring T_B.\end{mymath}%
-  For this, we use 
-  \begin{align*}
-    T_f &= \mathrm{Coeq}_1 \left( 
-          \xymatrix{
-          \sum_{a,b:A} f a = f b \dar[r]{4pt}^-{\pi_1}_-{\pi_2} & A
-  }
-                                                                  \right)
-    \\
-    \mathring T_B &= \mathrm{Coeq}_1 \left( 
-                    \xymatrix{\sum_{a,b:B} \modal (a=b) \dar[r]{4pt}^-{\pi_1}_-{\pi_2}
-                                                                & B}
-                                                                  \right)
-  \end{align*}
-
-  By~(\ref{eq:Omono}), $\sum_{a,b:A} f a = f b \simeq \sum_{a,b:A} \modal
-  (a=b)$, and by $\varphi$, $\sum_{a,b:A} f a = f b \simeq
-  \sum_{a,b:B} \modal ( a = b)$.
-
-Thus, $T_f \simeq \mathring T$.
-\end{proof}
+% \begin{proof}[Sketch of proof]
+%   By induction on truncation, we need to show that 
+%   \begin{mymath}\forall a,b:T_f,~\tilde f (|a|_{n+1}) = \tilde f (|b|_{n+1} )\simeq
+%   \modal (|a|_{n+1}=|b|_{n+1}).\end{mymath}%
+%   We use the encode-decode~\cite[Section 8.9]{hottbook} method to characterize $\tilde f (|a|_{n+1})
+%   = x$, and the result follows. We refer to the formalization for details.
+% \end{proof}
 
 Now, let $Q$ be any separated $\Type_{n+1}$, and $f:X \to Q$. Then the
 following diagram commutes
-
-\begin{mymath}\xymatrix{
+\begin{mymath}[-0.5em]\xymatrix{
 \|X\|_{n+1} \ar[r] \ar[rd] & \|\mathring T_{X}\|_{n+1} \ar[r] \ar[d] & \|\mathring
   T_{\mathring T_X} \|_{n+1} \ar[ld]\cdots \\
   & Q &
@@ -1712,45 +1603,9 @@ But we know (lemma~\ref{lem:sepiscolim}) that $\separated T$ is the
 $(n+1)$-colimit of the diagram $\mathring T$, thus there is an universal
 arrow $\separated T \to Q$.
 %
-This is enough to state the following proposition.
-\begin{prop}\label{prop:sep-subu}
-  $(\separated,\mu)$ defines a reflective subuniverse on $\Type_{n+1}$.
-\end{prop}
-
-To show that $\separated$ is a modality, it remains to show point
-{\it (v)} of the definition.
-%
-Let $A:\Type_{n+1}$ be a separated type and $B:A \to \Type_{n+1}$ be a
-family of separated types. We want to show that $\sum_{x:A} (Bx)$ is separated. Let $E$
-be a type, and $\sum_{e:E} (\chi\,e)$ a dense $n$-subobject of E.
-
-Let $f,g$ be two maps from $\sum_{e:E} (\chi\,e)$ to $\sum_{x:A}
-(Bx)$, equal when precomposed with $\pi_1$.
-\begin{mymath}\xymatrix @R=4em @C=4em{
-  \sum_{e:E} (\chi\, e) \ar@<-2pt>[r]_{g\circ\pi_1} \ar@<2pt>[r]^{f\circ \pi_1} \ar[d]_{\mathrm{dense}}& \sum_{x :A} (B\,x) \\
-  E \ar@<-2pt>[ru]_{g} \ar@<2pt>[ru]^{f}&
-}\end{mymath}%
-We can restrict the previous diagram to 
-\begin{mymath}\xymatrix @R=4em @C=5em{
-  \sum_{e:E} (\chi\, e) \ar@<-2pt>[r]_{\pi_1\circ g\circ\pi_1} \ar@<2pt>[r]^{\pi_1\circ f\circ \pi_1} \ar[d]_{\mathrm{dense}}& A \\
-  E \ar@<-2pt>[ru]_{\pi_1\circ g} \ar@<2pt>[ru]^{\pi_1\circ f}&
-}\end{mymath}%
-and as $A$ is separated, $\pi_1\circ f = \pi_1 \circ g$.
-For the second components, let $x:E$. Notice that 
-$\sum_{y:E} x = y$ has a dense $n$-subobject, $\sum_{y:\sum_{e:E} (\chi\,
-  e)} x=y_1$:
-
-\begin{mymath}\xymatrix@C=8em@R=4em{
-  \sum_{y:\sum_{e:E} (\chi\,
-  e)} x=y_1 \ar@<2pt>[r]^{\qquad \pi_2\circ f\circ\pi_1\circ \pi_1}
-\ar@<-2pt>[r]_{\qquad \pi_2\circ g\circ \pi_1\circ \pi_1}
-\ar[d]_{\mathrm{dense}}& B\,x \\
-  \sum_{y:E} x = y \ar@<2pt>[ur]^{\pi_2\circ f\circ \pi_1} \ar@<-2pt>[ur]_{\pi_2\circ g\circ \pi_1}&
-}\end{mymath}%
-Using the separation property of $B\,x$, one can show that second
-components, transported correctly along the first components equality,
-are equal. The complete proof can be found in the formalization.
-This proves the following proposition
+This is enough to prove that $(\separated,\mu)$ defines a reflective
+subuniverse on $\Type_{n+1}$.
+We can now state
 \begin{prop}\label{prop:sep-mod}
   $(\separated,\mu)$ defines a modality on $\Type_{n+1}$.
 \end{prop}
@@ -1782,26 +1637,9 @@ use the following lemma.
 
 As $T\to \Type_n^\modal$ is a sheaf, and $\modal_{n+1}T$ is closed in
 $T\to \Type_n^\modal$, $\modal_{n+1}T$ is a sheaf. We now prove that
-it forms a reflective subuniverse.
+it forms a modality.
 
-\begin{prop}
-  $(\modal_{n+1},\nu)$ defines a reflective subuniverse.
-\end{prop}
-\begin{proof}
-  Let $T,Q:\Type_{n+1}$ such that $Q$ is a sheaf. Let $f:T\to Q$.
-  Because $Q$ is a sheaf, it is in particular separated;
-  % 
-  thus we can extend $f$ to $\separated f:\separated T\to Q$.
-
-  But as $\modal_{n+1} T$ is the closure of $\separated T$, $\separated T$ is dense
-  into $\modal_{n+1} T$, so the sheaf property of $Q$ allows to extend
-  $\separated f$ to $\modal_{n+1} f:\modal_{n+1} T \to Q$.
-
-  As all these steps are universal, the composition is.
-\end{proof}
-
-Using the same technique as in proposition~\ref{prop:sep-mod}, we have
-\begin{prop}
+\begin{prop}\label{prop:Sn-modality}
   $(\modal_{n+1},\nu)$ defines a modality.
 \end{prop}
 
@@ -1813,45 +1651,7 @@ compatible with $\modal_n$ on lower homotopy types.
   If $T:\Type_n$, then $\modal_{n+1} \widehat T = \modal_n T$, where $\widehat T$ is $T$ seen as a
   $\Type_{n+1}$.
 \end{prop}
-\begin{proof}
-  We prove it by induction on $n$:
-  \begin{itemize}
-  \item For $n=-1$: Let $T:\HProp$. Then
-    \begin{mymath}
-      \modal_{0} \widehat T = \sum_{u:T \to \Type_n^\modal} \modal_{-1}\left( \sum_{a:T} 
-      (\lambda t,~\modal_{-1} (a=t)) = u\right)
-    \end{mymath}%
-    because the type inside the truncation is already in $\HProp$.
-    Now, let define $\phi : \modal_{-1} T \to \modal_0T$ by
-    \begin{mymath}\phi t = (\lambda t',\, \one
-      ;\kappa)\end{mymath}%
-    where $\kappa$ is defined by $\modal_{-1}$-induction on
-    $t$. Indeed, as $T$ is an $\HProp$, $(a=t) \simeq \one$. 
-    Let $\psi : \modal_0T\to \modal_{-1} T$ by obtaining the
-    witness $a:T$ (which is possible because we are trying to inhabit
-    a modal proposition), and letting $\psi (u;x) = \eta_T a$.
-    These two maps form an equivalence (the section and retraction are
-    trivial because the equivalence is between mere propositions).
-  \item Suppose now that $\modal_{n+1}$ is compatible with all $\modal_k$ on
-    lower homotopy types. Let $\modal_{n+2}$ be as above, and let
-    $T:\Type_{n+1}$. Then, as $\modal_{n+1}$ is compatible with $\modal_{n}$, and
-    $(a=t)$ is in $\Type_n$,
-    \begin{mymath}
-      \modal_{n+2} \widehat T= \hspace{-1em} \sum_{u:T \to
-        \Type_{n+1}^\modal} 
-      \hspace{-1em} \modal_{-1}\left\| \sum_{a:T} 
-        (\lambda t,~\modal_{n} (a=t)) = u\right\|.
-    \end{mymath}%
-    It remains to prove that for every $(u,x)$ inhabiting the
-    $\Sigma$-type above, $u$ is in $T\to\Type_n^\modal$, \ie that for
-    every $t:T$, $\IsType n (u\, t)$.  But for any truncation index
-    $p$,
-    the type $\IsType p X:\HProp$ is a sheaf as soon as $X$ is, so we can get rid
-    of $\modal_{-1}$ and of the truncation, which tells us that for
-    every 
-    $t:T$, $u\, t = \modal_n(a=t) : \Type_n$. \qedhere
-  \end{itemize}
-\end{proof}
+
 This proves in particular that $\modal_{n+1}$ is compatible with
 $\modal_{-1}$ in the sense of condition~\ref{cond:hprop}.
 
@@ -1930,15 +1730,12 @@ modality on $\Type$: it will collapse every type to a $\Type_i$,
 instead of an $\HProp$.
 
 Obviously, as truncation modalities are not left-exact~\cite[Exercise
-7.11]{hottbook}, $\modal$ isn't either. But in the following sense, when
-restricted to $i$-truncated types, it is:
+7.11]{hottbook}, $\modal$ isn't either. But when
+restricted to $i$-truncated types, $\modal = \modal_i$, so:
 \begin{lem}
   Let $A:\Type_i$. Then if $\modal(A)$ is contractible, for any $x,y:A$,
   $\modal(x=y)$ is contractible.
 \end{lem}
-\begin{proof}
-  For $i$-truncated types, $\modal = \modal_i$, and $\modal_i$ is left-exact.
-\end{proof}
 
 The compatibility between the modalities $\modal_n$ and between the
 modalities $\|\cdot \|_n$ allow us to chose the truncation index as
@@ -1956,19 +1753,9 @@ true in this new type theory in the following sense:
   Let $n$ be a given truncation index, and $\modal$ the modality
   associated to $n$ as defined in lemma~\ref{lem:type}. Then, for
   any type $A,B:\Type_n^\modal$, if $\varphi$ is the canonical arrow
-  \begin{mymath}A = B \to A\simeq B,\end{mymath}
+  $A = B \to A\simeq B$,
   then $\IsEquiv(\varphi)$ is modal.
 \end{prop}
-\begin{proof}
-  The first thing to notice is that, if $X$ and $Y$ are modal, and
-  $f:X \to Y$, then the mere proposition $\IsEquiv f$ is also modal.
-  Therefore, it suffices to show that both $A=B$ and $A\simeq B$ are
-  modal. By proposition~\ref{prop:mod_prop}, $A=B$ is modal. 
-  Moreover, $(A\simeq B) \simeq \sum_{f:A\to B} \IsEquiv
-  f$. Therefore, as $A$ and $B$ are modal, $A\simeq B$ is too. 
-
-  Hence, $\IsEquiv \varphi$ is modal.
-\end{proof}
 
 We can view sheafification in terms of model of type theory but
 because of the resulting modality on $\Type$ is not left exact, we
@@ -2001,154 +1788,7 @@ transformation, as done in the next section.
 % indexed by $\nat$, for example with the family $C_n \defeq
 % \text{«\,The $n$-th Turing Machine halts\,»}$.
 
-\section{Translation}
-\label{sec:translation}
 
-In this section, we present how to use the sheafification modality to
-define a transformation of Martin-Löf type theory into
-itself\footnote{We define the translation on Martin-Löf type theory,
-  but it could also be done for CIC as well.} as it has been done for
-forcing~\cite{jaber2012extending}.
-
-Let $n$ be a trunction index, and let $\modal = \modal_n \circ
-\|\cdot\|_n$ the constructed modality. 
-%
-As this modality is not left exact, $\Type$ itself is not modal and we
-can only define the translation on a type theory with only one
-universe.
-%
-To explain the translation on positive types as well, we also
-translate the sum type $A+B$, with associated constructors
-$\mathrm{in}_\ell$
-and $\mathrm{in}_r$ and eliminator $\langle \_ , \_ \rangle$.
-%
-We note $J$ the eliminator of the identity type. 
-%
-%
-\begin{itemize}
-\item For types (assuming $A \neq \Type$) 
-\begin{mymath}
-\begin{array}{lcllcl}
-  \Lbrack \Type\Rbrack &\defeq& \Type^\modal & \qquad 
-  \Lbrack A \Rbrack &\defeq& \pi_1 \left[ A \right]
-\end{array}
-\end{mymath}
-
-\item For dependent sums
-\begin{mymath}
-\begin{array}{lcl}
-\left[ \sum_{x:A} B \right] &\defeq&  \left( \sum_{x:\Lbrack A \Rbrack}
-                                  \Lbrack B\Rbrack ; \pi_\Sigma^{[A],[B]}
-                                \right)\\begin{mymath}0.5em]
-  \left[  (x;y)\right] &\defeq& ([x];[y]) \\begin{mymath}0.5em]
-  \left[  \pi_i t\right] &\defeq& \pi_i [t] \\begin{mymath}0.5em]
-\end{array}
-\end{mymath}
-\item For dependent products
-\begin{mymath}
-\begin{array}{lcl}
- \left[ \prod_{x:A} B \right] &\defeq& \left( \prod_{x:\Lbrack A \Rbrack}
-                                   \Lbrack B\Rbrack ; \pi_{\Pi}^{[A],[B]}
-                                  \right)\\begin{mymath}0.5em]
-\left[  \lambda\, x:A,~M \right] &\defeq&\lambda\,x:\Lbrack A
-                                     \Rbrack,~[ M ]
-  \\begin{mymath}0.5em]
-  \left[ t \, t' \right] &\defeq& [t] [t'] \\begin{mymath}0.5em]
-\end{array}
-\end{mymath}
-\item For paths
-\begin{mymath}
-\begin{array}{lcl}
-\left[  A=B \right] &\defeq& \left( [A] = [ B] , \pi_=^{[A],[B]}
-                             \right)\\begin{mymath}0.5em]
-\left[ 1 \right] &\defeq& 1\\begin{mymath}0.5em]
-\left[ J \right] &\defeq& J \\begin{mymath}0.5em]
-\end{array}
-\end{mymath}
-\item For sums
-\begin{mymath}
-\begin{array}{lcl}
-\left[  A+B \right] &\defeq& \left( \modal(\Lbrack A \Rbrack + \Lbrack B
-                        \Rbrack); \pi_\modal(\Lbrack A \Rbrack + \Lbrack B
-                        \Rbrack)\right)\\begin{mymath}0.5em]
-\left[  \mathrm{in}_\ell t \right] &\defeq& \eta (\mathrm{in}_\ell [t]) \\begin{mymath}0.5em]
-\left[  \mathrm{in}_r t \right] &\defeq& \eta (\mathrm{in}_r [t]) \\begin{mymath}0.5em]
-\left[ \langle f ,g\rangle\right] &\defeq& \modal_{\mathrm{rec}}^{\Lbrack A\Rbrack +
-                                      \Lbrack B\Rbrack} \langle
-                                      [f],[g]\rangle\\begin{mymath}0.5em]
-\end{array}
-\end{mymath}
-\item For truncations ($i\leqslant n$)
-\begin{mymath}
-\begin{array}{lcl}
-  \left[  \|A\|_i \right] &\defeq& (\modal \| \Lbrack A\Rbrack  \|_i;
-                                   \pi_\modal(\| \Lbrack A\Rbrack
-                                   \|_i)) \\begin{mymath}0.5em]
-  \left[ |t|_i \right] &\defeq& \eta |[t]|_i \\begin{mymath}0.5em]
-  \left[ \|f\|_i \right] &\defeq& \modal_{\mathrm{rec}}^{\| \Lbrack
-                                  A\Rbrack  \|_i} \| [f] \|_i
-\end{array}
-\end{mymath}
-
-\end{itemize}
-
-where $\pi_\Sigma^{A,B}$ (resp. $\pi_\Pi^{A,B}$, resp. $\pi_=^{A,B}$)
-is the proof that $\Sigma_{x:A} B$ (resp. $\prod_{x:A} B$, resp $A=B$)
-is modal as soon as $A$ and $B$ are, and $\pi_\modal^A$ a proof that
-$\modal(A)$ is always modal as described in section~\ref{sec:lexmod}.
-
-As in the forcing translation~\cite{jaber2012extending}, the main
-issue is that $\Lbrack U\{x/N\} \Rbrack$ and
-$\Lbrack U \Rbrack\{x/[N]\}$ are equal, but not convertible. We
-therefore have to use $J$, the eliminator of the
-equality, in the conversion rule. This requires to use a type theory
-with explicit conversion in the syntax. We have chosen to omit this
-technical details here to simplify the presentation.
-
-
-% The central theorem is
-% \begin{prop}
-%   Let $\Gamma$ be a valid context, $A$ a type and $t$ a term of type
-%   $A$.
-%   Then if $\Gamma \vdash t: A$, then $\Lbrack\Gamma\Rbrack \vdash [t]
-%   : \Lbrack A\Rbrack$.
-% \end{prop}
-
-Modulo this technical point, we have the usual property that if a term
-$t$ has type $A$ in context $\Gamma$, then $[t]$ has type $\Lbrack
-A\Rbrack$ in the translated context $\Lbrack \Gamma\Rbrack$.
-%
-Furthermore, depending the modality $\modal_{-1}$ under focus, we can
-add new constants in the type theory, and give them a meaning through
-the translation. 
-
-For instance, for the double negation modality, we can add the term
-$\mathop{EM}$ by defining 
-\[
-[\mathop{EM}] \defeq \lambda P, \lambda H : \lnot (P + \lnot P), H (\mathrm{in}_r (\lambda
-p : P, H (\mathrm{in}_\ell p)))
-\]
-of type 
-\begin{mymath}
-\Lbrack \forall P:\HProp, P + \lnot P \Rbrack \equiv \forall
-P:\Type^\modal_{-1}. \lnot (\lnot (P + \lnot P)).
-\end{mymath}
-where we have used an implicit rewriting with
-Proposition~\ref{prop:compatibility}.
-
-Unfortunately, one lose canonicity when working in $\Type^\modal$;
-indeed, for example, the translation of the function 
-% \begin{mymath}\lambda P:\HProp,~\left\{\begin{array}{l} 0 \text{ if $P$ is
-%                                     false} \\ 1 \text{ if $P$ is
-%                                     true} \end{array}\right.~:~\HProp
-%                               \to \nat\end{mymath}%
-\begin{mymath}
-\lambda P:\HProp, \langle \lambda x,\,0 ,\lambda x,\,1\rangle (\mathop{EM} P)~:~\HProp
-                     \to \nat\end{mymath}%
-will not reduce to a numeral when applied to a given
-property. However, we keep canonicity for terms of Martin-Löf Type
-theory which do not make us of new constants nor positive types. 
-%
 
 \section{Formalization} 
 \label{sec:formalization}
@@ -2248,26 +1888,8 @@ the universe issues we faced.
 % % the universe levels we wanted, like in the Coq/HoTT library\cite{hottlib}.
 
 One issue with universe polymorphism lies in the management of
-recursive definitions. Indeed, the following recursive definition of
-sheafification
-%
-% \vspace{-0.05em}
-\begin{mymath} \begin{array}{l}
-   \modal : \forall \ (n : nat), \ \Type_n \to \Type_n 
-   \\
-    \modal_{-1\phantom{n}}(T) \defeq\lnot\lnot T \\
-
-      \displaystyle{\modal_{n+1}(T)} \defeq  
-      \displaystyle{\sum_{u:T \to \Type_n^\modal} \!\!\!\!\modal_{-1} 
-      \left\|
-      \sum_{a:T} u= (\lambda t,~\modal_n (a=t))
-      \right\|}
-    \end{array}
-% \vspace{-0.3em}
-\end{mymath}
-%
-is not allowed. 
-%
+recursive definitions. Indeed, the recursive definition of
+sheafification~\ref{eq:induction} is not allowed. 
 This is because Coq forces the universe of the first $\Type_n$
 occurring in the definition to be the same for every $n$, whereas the
 universe of the first $\Type_{n+1}$ occurring in $\modal_{n+1}$ should be at
@@ -2348,19 +1970,386 @@ remains true in higher topos theory.
 
 
 
-\section*{Acknowledgments}
+% \section*{Acknowledgments}
 
-We would like to thank all maintainers of the Coq/HoTT library, who
-have provided a very solid base for our formalization. 
-%
-We also would like to thank Bas Spitters for helpful discussions on
-the subject.
-%
-This work has been funded by the CoqHoTT ERC Grant 637339.
+% We would like to thank all maintainers of the Coq/HoTT library, who
+% have provided a very solid base for our formalization. 
+% %
+% We also would like to thank Bas Spitters for helpful discussions on
+% the subject.
+% %
+% This work has been funded by the CoqHoTT ERC Grant 637339.
 
 %\bibliographystyle{abbrvnat}
 \bibliography{sheaf_lics}
 
+\newpage
+\section*{Appendix}
+
+\begin{proof}[Proof of Proposition~\ref{prop:sheaf-is-sheaf}]
+  First, we prove that $\Type_n^\modal$ is separated. Let $E:\Type$
+  and $\chi:E \to \Type_n$, dense in $E$. Let $\phi_1,\phi_2:E \to
+  \Type_n^\modal$, such that $\phi_1 \circ \pi_1 = \phi_2 \circ
+  \pi_1$ and let $x:E$. We show $\phi_1(x) = \phi_2(x)$ using
+  univalence.
+
+  As $\chi$ is dense, we have a term $m_x : \modal_n(\chi\, x)$.
+  But as $\phi_2(x)$ is modal, we can obtain a term $h_x : \chi\,
+  x$. 
+  As $\phi_1$ and $\phi_2$ are equal on $\sum_{e:E}\chi\, e$, we
+  have an arrow $\phi_1(x) \to \phi_2(x)$.
+  The same method leads to an arrow $\phi_2 (x) \to \phi_1 (x)$, and we
+  prove they are each other inverse.
+
+  Now, we prove that $\Type_n^\modal$ is a sheaf. Let $E:\Type$ and
+  $\chi:E \to \HProp$, dense in $E$. Let $f:\sum_{e:E} \chi\, e \to
+  \Type_n^\modal$. We want to extend $f$ to $E \to \Type_n^\modal$.
+
+  We define $g$ as $g(e) = \modal_n \left( \fib \phi {e} \right)$,
+  where
+  \begin{mymath}[0em]\phi : \sum_{b:\left(\sum_{e:E} (\chi\, e)\right)} (f\,
+    b) \to E\end{mymath}%
+  defined by $\phi(x) = (x_1)_1$.
+% \kq{Is it necessary to state the lemma ?}
+Using a modal analogous of the characterization of fibers of composition, we can prove that it
+defines an equivalence.
+  % \begin{lem}
+  %   Let $A,B,C:\Type_n$, $f:A\to B$ and $g:B\to C$.
+  %   Then
+  %   \begin{itemize}
+  %   \item If $g$ is an embedding, then 
+  %     \begin{mymath}\prod_{b:B}\fib f b = \fib {g\circ f} {g\, b}.\end{mymath}
+  %   \item If all fibers of $f$ and $g$ are $n$-truncated, then
+  %     \begin{mymath}\prod_{c:C}\modal_n(\fib {g \circ f} c) =
+  %     \modal_n \left(  
+  %       \sum_{w:\fib g c} \modal_n (\fib f {w_1})
+  %     \right).\end{mymath}
+  %   \end{itemize}
+  % \end{lem}
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:sheaf-forall}]
+  \begin{itemize}
+  \item {\em Separation:} Let $E:\Type$, $\chi:E \to \Type_n$ dense
+    and $\phi_1,\phi_2:E\to \prod_{a:A} (B\, a)$ equal on
+    $\sum_{e:E}(\chi\, e)$ \ie $\phi_1\circ \pi_1 = \phi_2\circ
+    \pi_1$.
+    Then for any $a:A$, $(\lambda x:E,~\phi_1(x, a))$
+    and $(\lambda x:E,~\phi_2(x,a))$
+    coincide on $\sum_{e:E}(\chi\, e)$, and as $B\, a$ is separated,
+    they coincide also on all $E$.
+  \item {\em Sheaf:} Let $E:\Type$, $\chi:E\to \HProp$ dense and
+    $f:\sum_{e:E} (\chi\, e)\to \prod_{a:A} (B\,a)$. Let $a:A$ ; the
+    map $(\lambda x,~f(x,a))$ is valued in the sheaf $B\, a$, so it
+    can be extended to all $E$, allowing $f$ to be extended to all
+    $E$. \qedhere
+  \end{itemize}
+%  \nt{add a short proof here}
+\end{proof}
+
+\begin{proof}[Proof of lemma~\ref{lem:sepiscolim}]
+  As $\mu_T$ is an surjection, using the theorem~\ref{cech} introduced in Section~\ref{ssec:giraud-ax},
+  we know that $\separated T$ is the $(n+1)$-colimit of $\|C(\mu_T)\|_{n+1}$. 
+  % 
+  Thus the result follows from the fact that $\|C(\mu_T)\|_{n+1} =
+  \mathring T$,
+  which we now show.
+
+  First, we show that $\mu_T$ satisfies condition~(\ref{eq:Omono}),
+  \ie{} $\forall a,b:T$, $\modal_n (a=b) = (\mu_T a =
+  \mu_T b)$. By univalence, we want arrows in both ways, forming an
+  equivalence.
+  \begin{itemize}
+  \item Suppose $p : (\mu_T a = \mu_T b)$. Then projecting $p$ along
+    first components yields $q : \prod_{t:T} \modal_n(a=t) = \modal_n (b=t)
+    $.
+    Taking for example $t=b$, we deduce $\modal_n (a=b) = \modal_n(b=b)$,
+    and the latter is inhabited by $\eta_{b=b} 1$.
+  \item Suppose now $p : \modal_n(a=b)$. Let $\iota$ be the first
+    projection from $\separated T \to (T \to \Type_n^\modal)$. $\iota$ is
+    an embedding, thus it suffices to prove $\iota (\mu_T a) = \iota
+    (\mu_T b)$, \ie $\prod_{t:T}\modal_n (a=t) = \modal_n (b=t)$. The latter
+    remains true by univalence.
+  \end{itemize}
+  The fact that these two form an equivalence is technical, we refer to
+  the formalization for an explicit proof.
+
+  Then, by induction, we need to show that for any $A,B:\Type_{n+1}$ such
+  that $\varphi:~A \simeq B$, with an arrow $f:A \to \separated T$
+  satisfying~(\ref{eq:Omono}), 
+  \begin{mymath}T_f \simeq \mathring T_B.\end{mymath}%
+  For this, we use 
+  \begin{align*}
+    T_f &= \mathrm{Coeq}_1 \left( 
+          \xymatrix{
+          \sum_{a,b:A} f a = f b \dar[r]{4pt}^-{\pi_1}_-{\pi_2} & A
+  }
+                                                                  \right)
+    \\
+    \mathring T_B &= \mathrm{Coeq}_1 \left( 
+                    \xymatrix{\sum_{a,b:B} \modal (a=b) \dar[r]{4pt}^-{\pi_1}_-{\pi_2}
+                                                                & B}
+                                                                  \right)
+  \end{align*}
+
+  By~(\ref{eq:Omono}), $\sum_{a,b:A} f a = f b \simeq \sum_{a,b:A} \modal
+  (a=b)$, and by $\varphi$, $\sum_{a,b:A} f a = f b \simeq
+  \sum_{a,b:B} \modal ( a = b)$.
+
+Thus, $T_f \simeq \mathring T$.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:sep-mod}]
+  Only point {\it (v)} of the definition remains to be checked.
+
+  Let $A:\Type_{n+1}$ be a separated type and $B:A \to \Type_{n+1}$ be a
+family of separated types. We want to show that $\sum_{x:A} (Bx)$ is separated. Let $E$
+be a type, and $\sum_{e:E} (\chi\,e)$ a dense $n$-subobject of E.
+
+Let $f,g$ be two maps from $\sum_{e:E} (\chi\,e)$ to $\sum_{x:A}
+(Bx)$, equal when precomposed with $\pi_1$.
+\begin{mymath}\xymatrix @R=4em @C=4em{
+  \sum_{e:E} (\chi\, e) \ar@<-2pt>[r]_{g\circ\pi_1} \ar@<2pt>[r]^{f\circ \pi_1} \ar[d]_{\mathrm{dense}}& \sum_{x :A} (B\,x) \\
+  E \ar@<-2pt>[ru]_{g} \ar@<2pt>[ru]^{f}&
+}\end{mymath}%
+We can restrict the previous diagram to 
+\begin{mymath}\xymatrix @R=4em @C=5em{
+  \sum_{e:E} (\chi\, e) \ar@<-2pt>[r]_{\pi_1\circ g\circ\pi_1} \ar@<2pt>[r]^{\pi_1\circ f\circ \pi_1} \ar[d]_{\mathrm{dense}}& A \\
+  E \ar@<-2pt>[ru]_{\pi_1\circ g} \ar@<2pt>[ru]^{\pi_1\circ f}&
+}\end{mymath}%
+and as $A$ is separated, $\pi_1\circ f = \pi_1 \circ g$.
+For the second components, let $x:E$. Notice that 
+$\sum_{y:E} x = y$ has a dense $n$-subobject, $\sum_{y:\sum_{e:E} (\chi\,
+  e)} x=y_1$:
+
+\begin{mymath}\xymatrix@C=8em@R=4em{
+  \sum_{y:\sum_{e:E} (\chi\,
+  e)} x=y_1 \ar@<2pt>[r]^{\qquad \pi_2\circ f\circ\pi_1\circ \pi_1}
+\ar@<-2pt>[r]_{\qquad \pi_2\circ g\circ \pi_1\circ \pi_1}
+\ar[d]_{\mathrm{dense}}& B\,x \\
+  \sum_{y:E} x = y \ar@<2pt>[ur]^{\pi_2\circ f\circ \pi_1} \ar@<-2pt>[ur]_{\pi_2\circ g\circ \pi_1}&
+}\end{mymath}%
+Using the separation property of $B\,x$, one can show that second
+components, transported correctly along the first components equality,
+are equal. The complete proof can be found in the formalization.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:Sn-modality}]
+  Let $T,Q:\Type_{n+1}$ such that $Q$ is a sheaf. Let $f:T\to Q$.
+  Because $Q$ is a sheaf, it is in particular separated;
+  % 
+  thus we can extend $f$ to $\separated f:\separated T\to Q$.
+
+  But as $\modal_{n+1} T$ is the closure of $\separated T$, $\separated T$ is dense
+  into $\modal_{n+1} T$, so the sheaf property of $Q$ allows to extend
+  $\separated f$ to $\modal_{n+1} f:\modal_{n+1} T \to Q$.
+
+  As all these steps are universal, the composition is.
+
+  Using the same technique as in proposition~\ref{prop:sep-mod}, we
+  can prove that $\modal_{n+1}$ preserves dependent sums.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:compatibility}]
+  We prove it by induction on $n$:
+  \begin{itemize}
+  \item For $n=-1$: Let $T:\HProp$. Then
+    \begin{mymath}
+      \modal_{0} \widehat T = \sum_{u:T \to \Type_n^\modal} \modal_{-1}\left( \sum_{a:T} 
+      (\lambda t,~\modal_{-1} (a=t)) = u\right)
+    \end{mymath}%
+    because the type inside the truncation is already in $\HProp$.
+    Now, let define $\phi : \modal_{-1} T \to \modal_0T$ by
+    $\phi(t) = (\lambda t',\, \one
+      ;\kappa)$
+    where $\kappa$ is defined by $\modal_{-1}$-induction on
+    $t$. Indeed, as $T$ is an $\HProp$, $(a=t) \simeq \one$. 
+    Let $\psi : \modal_0T\to \modal_{-1} T$ by obtaining the
+    witness $a:T$ (which is possible because we are trying to inhabit
+    a modal proposition), and letting $\psi (u;x) = \eta_T a$.
+    These two maps form an equivalence (the section and retraction are
+    trivial because the equivalence is between mere propositions).
+  \item Suppose now that $\modal_{n+1}$ is compatible with all $\modal_k$ on
+    lower homotopy types. Let $\modal_{n+2}$ be as above, and let
+    $T:\Type_{n+1}$. Then, as $\modal_{n+1}$ is compatible with $\modal_{n}$, and
+    $(a=t)$ is in $\Type_n$,
+    \begin{mymath}
+      \modal_{n+2} \widehat T= \hspace{-1em} \sum_{u:T \to
+        \Type_{n+1}^\modal} 
+      \hspace{-1em} \modal_{-1}\left\| \sum_{a:T} 
+        (\lambda t,~\modal_{n} (a=t)) = u\right\|.
+    \end{mymath}%
+    It remains to prove that for every $(u,x)$ inhabiting the
+    $\Sigma$-type above, $u$ is in $T\to\Type_n^\modal$, \ie that for
+    every $t:T$, $\IsType n (u\, t)$.  But for any truncation index
+    $p$,
+    the type $\IsType p X:\HProp$ is a sheaf as soon as $X$ is, so we can get rid
+    of $\modal_{-1}$ and of the truncation, which tells us that for
+    every 
+    $t:T$, $u\, t = \modal_n(a=t) : \Type_n$. \qedhere
+  \end{itemize}
+\end{proof}
+
+
+\begin{proof}[Proof of Proposition~\ref{prop:univalence}]
+  The first thing to notice is that, if $X$ and $Y$ are modal, and
+  $f:X \to Y$, then the mere proposition $\IsEquiv f$ is also modal.
+  Therefore, it suffices to show that both $A=B$ and $A\simeq B$ are
+  modal. By proposition~\ref{prop:mod_prop}, $A=B$ is modal. 
+  Moreover, $(A\simeq B) \simeq \sum_{f:A\to B} \IsEquiv
+  f$. Therefore, as $A$ and $B$ are modal, $A\simeq B$ is too. 
+
+  Hence, $\IsEquiv \varphi$ is modal.
+\end{proof}
+
+\subsection{Translation}
+\label{ssec:translation}
+
+In this section, we present how to use the sheafification modality to
+define a transformation of Martin-Löf type theory into
+itself\footnote{We define the translation on Martin-Löf type theory,
+  but it could also be done for CIC as well.} as it has been done for
+forcing~\cite{jaber2012extending}.
+
+Let $n$ be a trunction index, and let $\modal = \modal_n \circ
+\|\cdot\|_n$ the constructed modality. 
+%
+As this modality is not left exact, $\Type$ itself is not modal and we
+can only define the translation on a type theory with only one
+universe.
+%
+To explain the translation on positive types as well, we also
+translate the sum type $A+B$, with associated constructors
+$\mathrm{in}_\ell$
+and $\mathrm{in}_r$ and eliminator $\langle \_ , \_ \rangle$.
+%
+We note $J$ the eliminator of the identity type. 
+%
+%
+\begin{itemize}
+\item For types (assuming $A \neq \Type$) 
+\begin{mymath}
+\begin{array}{lcllcl}
+  \Lbrack \Type\Rbrack &\defeq& \Type^\modal & \qquad 
+  \Lbrack A \Rbrack &\defeq& \pi_1 \left[ A \right]
+\end{array}
+\end{mymath}
+
+\item For dependent sums
+\begin{mymath}
+\begin{array}{lcl}
+\left[ \sum_{x:A} B \right] &\defeq&  \left( \sum_{x:\Lbrack A \Rbrack}
+                                  \Lbrack B\Rbrack ; \pi_\Sigma^{[A],[B]}
+                                \right)\\
+  \left[  (x;y)\right] &\defeq& ([x];[y]) \\
+  \left[  \pi_i t\right] &\defeq& \pi_i [t] \\
+\end{array}
+\end{mymath}
+\item For dependent products
+\begin{mymath}
+\begin{array}{lcl}
+ \left[ \prod_{x:A} B \right] &\defeq& \left( \prod_{x:\Lbrack A \Rbrack}
+                                   \Lbrack B\Rbrack ; \pi_{\Pi}^{[A],[B]}
+                                  \right)\\
+\left[  \lambda\, x:A,~M \right] &\defeq&\lambda\,x:\Lbrack A
+                                     \Rbrack,~[ M ]
+  \\
+  \left[ t \, t' \right] &\defeq& [t] [t'] \\
+\end{array}
+\end{mymath}
+\item For paths
+\begin{mymath}
+\begin{array}{lcl}
+\left[  A=B \right] &\defeq& \left( [A] = [ B] , \pi_=^{[A],[B]}
+                             \right)\\
+\left[ 1 \right] &\defeq& 1\\
+\left[ J \right] &\defeq& J \\
+\end{array}
+\end{mymath}
+\item For sums
+\begin{mymath}
+\begin{array}{lcl}
+\left[  A+B \right] &\defeq& \left( \modal(\Lbrack A \Rbrack + \Lbrack B
+                        \Rbrack); \pi_\modal(\Lbrack A \Rbrack + \Lbrack B
+                        \Rbrack)\right)\\
+\left[  \mathrm{in}_\ell t \right] &\defeq& \eta (\mathrm{in}_\ell [t]) \\
+\left[  \mathrm{in}_r t \right] &\defeq& \eta (\mathrm{in}_r [t]) \\
+\left[ \langle f ,g\rangle\right] &\defeq& \modal_{\mathrm{rec}}^{\Lbrack A\Rbrack +
+                                      \Lbrack B\Rbrack} \langle
+                                      [f],[g]\rangle\\
+\end{array}
+\end{mymath}
+\item For truncations ($i\leqslant n$)
+\begin{mymath}
+\begin{array}{lcl}
+  \left[  \|A\|_i \right] &\defeq& (\modal \| \Lbrack A\Rbrack  \|_i;
+                                   \pi_\modal(\| \Lbrack A\Rbrack
+                                   \|_i)) \\
+  \left[ |t|_i \right] &\defeq& \eta |[t]|_i \\
+  \left[ \|f\|_i \right] &\defeq& \modal_{\mathrm{rec}}^{\| \Lbrack
+                                  A\Rbrack  \|_i} \| [f] \|_i
+\end{array}
+\end{mymath}
+
+\end{itemize}
+
+where $\pi_\Sigma^{A,B}$ (resp. $\pi_\Pi^{A,B}$, resp. $\pi_=^{A,B}$)
+is the proof that $\Sigma_{x:A} B$ (resp. $\prod_{x:A} B$, resp $A=B$)
+is modal as soon as $A$ and $B$ are, and $\pi_\modal^A$ a proof that
+$\modal(A)$ is always modal as described in section~\ref{sec:lexmod}.
+
+As in the forcing translation~\cite{jaber2012extending}, the main
+issue is that $\Lbrack U\{x/N\} \Rbrack$ and
+$\Lbrack U \Rbrack\{x/[N]\}$ are equal, but not convertible. We
+therefore have to use $J$, the eliminator of the
+equality, in the conversion rule. This requires to use a type theory
+with explicit conversion in the syntax. We have chosen to omit this
+technical details here to simplify the presentation.
+
+
+% The central theorem is
+% \begin{prop}
+%   Let $\Gamma$ be a valid context, $A$ a type and $t$ a term of type
+%   $A$.
+%   Then if $\Gamma \vdash t: A$, then $\Lbrack\Gamma\Rbrack \vdash [t]
+%   : \Lbrack A\Rbrack$.
+% \end{prop}
+
+Modulo this technical point, we have the usual property that if a term
+$t$ has type $A$ in context $\Gamma$, then $[t]$ has type $\Lbrack
+A\Rbrack$ in the translated context $\Lbrack \Gamma\Rbrack$.
+%
+Furthermore, depending the modality $\modal_{-1}$ under focus, we can
+add new constants in the type theory, and give them a meaning through
+the translation. 
+
+For instance, for the double negation modality, we can add the term
+$\mathop{EM}$ by defining 
+\[
+[\mathop{EM}] \defeq \lambda P, \lambda H : \lnot (P + \lnot P), H (\mathrm{in}_r (\lambda
+p : P, H (\mathrm{in}_\ell p)))
+\]
+of type 
+\begin{mymath}
+\Lbrack \forall P:\HProp, P + \lnot P \Rbrack \equiv \forall
+P:\Type^\modal_{-1}. \lnot (\lnot (P + \lnot P)).
+\end{mymath}
+where we have used an implicit rewriting with
+Proposition~\ref{prop:compatibility}.
+
+Unfortunately, one lose canonicity when working in $\Type^\modal$;
+indeed, for example, the translation of the function 
+% \begin{mymath}\lambda P:\HProp,~\left\{\begin{array}{l} 0 \text{ if $P$ is
+%                                     false} \\ 1 \text{ if $P$ is
+%                                     true} \end{array}\right.~:~\HProp
+%                               \to \nat\end{mymath}%
+\begin{mymath}
+\lambda P:\HProp, \langle \lambda x,\,0 ,\lambda x,\,1\rangle (\mathop{EM} P)~:~\HProp
+                     \to \nat\end{mymath}%
+will not reduce to a numeral when applied to a given
+property. However, we keep canonicity for terms of Martin-Löf Type
+theory which do not make us of new constants nor positive types. 
+%
 \end{document}
 
 

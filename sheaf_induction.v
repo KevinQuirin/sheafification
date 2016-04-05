@@ -1,11 +1,8 @@
-(* -*- coq-prog-args: ("-emacs" "-indices-matter" "-type-in-type" "-bt") -*- *)
 
 Require Export Utf8_core.
 Require Import HoTT HoTT.hit.Truncations Connectedness.
 Require Import PathGroupoid_ Forall_ Equivalences_ epi_mono reflective_subuniverse modalities.
 Require Import nat_lemmas.
-(* Require Import colimit. *)
-(* Require Import VD_truncation gpd. *)
 Require Import sheaf_base_case.
 Require Import sheaf_def_and_thm.
 Require Import OPaths T T_telescope Tf_Omono_sep OT OT_Tf.
@@ -16,7 +13,6 @@ Set Universe Polymorphism.
 Global Set Primitive Projections. 
 
 Local Open Scope path_scope.
-(* Local Open Scope equiv_scope. *)
 Local Open Scope type_scope.
 
 (* Readability *)

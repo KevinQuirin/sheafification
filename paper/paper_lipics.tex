@@ -1914,6 +1914,16 @@ generalizing the management of universe polymorphism for recursive definition
 %
 or by the use of general ``resizing axiom'' which is still under
 discussion in the community.
+%
+We note that for this solution to work, we need to have a slighlty
+weaker definition of modalities than the one in~\cite{hottlib}. We
+usually ask the reflector $\modal$ to map a universe $\Type^i$ to
+itself, while here, we need $\modal T$, when $T:\Type^i$ to live in a
+possibly higher universe $\Type^j$. For modalities on whole $\Type$,
+we checked that all properties are still satisfied (see
+\url{https://github.com/KevinQuirin/HoTT/extended_modalities/} for the
+formalization).
+
 
 \section{Conclusion and Future Works}
 \label{sec:future-works}

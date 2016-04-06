@@ -136,16 +136,16 @@
     % \vspace{#1}
   \end{equation*}}
 
-\let\oldthebibliography=\thebibliography
-  \let\endoldthebibliography=\endthebibliography
-  \renewenvironment{thebibliography}[1]{%
-    \begin{oldthebibliography}{#1}%
-      \setlength{\parskip}{0ex}%
-      \setlength{\itemsep}{0ex}%
-  }%
-  {%
-    \end{oldthebibliography}%
-  }
+% \let\oldthebibliography=\thebibliography
+%   \let\endoldthebibliography=\endthebibliography
+%   \renewenvironment{thebibliography}[1]{%
+%     \begin{oldthebibliography}{#1}%
+%       \setlength{\parskip}{0ex}%
+%       \setlength{\itemsep}{0ex}%
+%   }%
+%   {%
+%     \end{oldthebibliography}%
+%   }
 
 \begin{document}
 
@@ -413,14 +413,12 @@ be dense when $\closure{A} = E$.
 The idea is then to define sheaves in $\E$ as objects of $\E$ for
 which it is impossible to make a distinction between objects and their
 dense subobjects. This idea is formalized by saying that for every
-dense subobject $A$ of $E$, the following canonical map is an
-isomorphism
+dense subobject $A$ of $E$, the canonical map $\Hom{\E}(E,F) \rightarrow \Hom{\E}(A,F)$ is an
+isomorphism.
 %
-%\vspace{-0.7em}
-\begin{equation}\label{equ:sheaf_def}
-\Hom{\E}(E,F) \rightarrow \Hom{\E}(A,F).
-%\vspace{-0.7em}
-\end{equation}%
+%\begin{equation}\label{equ:sheaf_def}
+%\Hom{\E}(E,F) \rightarrow \Hom{\E}(A,F).
+%\end{equation}%
 %
 One can show that $\Sh{\E}$, the full sub-category of $\E$ given by
 sheaves, is again a topos, with classifying object
@@ -478,7 +476,6 @@ Our inductive definition of these modalities will be given by
       \sum_{a:T} u= (\lambda t,~\modal_n (a=t))
       \right\|}
     \end{array}
-% \vspace{-0.3em}
 \end{equation}
 where $\Type_n^\modal$ is the type of modal types for $\modal_n$.
 The rest of the paper is an inductive proof that this definition produces a
@@ -492,14 +489,16 @@ fibers~\cite{sets_in_hott}. This means that when monomorphisms are used in topos
 fibers or embeddings (\ie $(-1)$-truncated homotopy
 fibers) depending on the purpose of the definition.
 
-For instance, the notion of separated objects (which is a technical
-notion used in the construction of the sheafification functor), \ie
-objects for which the morphism
-(\ref{equ:sheaf_def}) is just an embedding, is generalized in two
+For instance, in the notion of separated objects defined in section~\ref{sec:sheafification},
+%(which is a technical
+%notion used in the construction of the sheafification functor), \ie
+%objects for which the morphism
+%(\ref{equ:sheaf_def}) is just an embedding, 
+subobjects are generalized in two
 different ways.  
 %
 The subobjects to be considered are given by $n$-truncated homotopy fibers,
-while the morphism (\ref{equ:sheaf_def}) is still required to be an
+while the morphism $\Hom{\E}(E,F) \rightarrow \Hom{\E}(A,F)$ is still required to be an
 embedding.
 
 Another technical difficulty is the fact that sheafification in topos
@@ -686,7 +685,7 @@ homotopy level $n$ and any type $B$, $\Type_n$ classifies subobjects
 of $B$ with $n$-truncated homotopy fibers in the sense that there is
 an equivalence
 %
-\begin{mymath}[0em]
+\begin{mymath}[-0em]
   \chi : \sum_{A:\Type} \sum_{f:A \to B} \prod_{b\in B}
 \IsType n\
 \fib{f}{b} \xrightarrow{\sim} 
@@ -797,7 +796,7 @@ vertex $i:G_0$, \ie $q : \prod_{i:G_0} D_0(i) \to P$
 \end{itemize}
 
 Then $P$ is the {\em colimit} of $D$ if for any other $X:\Type$, 
-\begin{mymath}[-0.5em]\IsEquiv\left(\lambda f:P \to X, \left( \lambda i,~f \circ q_i\, ;\, \lambda i\, j\,
+\begin{mymath}[-0em]\IsEquiv\left(\lambda f:P \to X, \left( \lambda i,~f \circ q_i\, ;\, \lambda i\, j\,
   \phi,\, f (p_{i, j}^\phi)) \right)\right).\end{mymath}
 \end{defi}
 Using higher inductive types, every diagram $D$ on a graph $G$ admits a
@@ -996,7 +995,7 @@ left exact modality at level $n$.
   \begin{enumerate}[(i)]
     \setcounter{enumi}{3}
   \item For every $n$-truncated types $A$ and $B$, if $P(B)$ then
-    \begin{mymath}\left\{
+    \begin{mymath}[-0em]\left\{
       \begin{array}{rcl}
         (\modal A \to B) & \to & (A \to B) \\
         f & \mapsto & f \circ \eta_A
@@ -1014,7 +1013,7 @@ left exact modality at level $n$.
 The type of all modal $n$-types, \ie types for which $P$ holds, is
 defined as \footnote{Note that we omit the $n$
 on $\modal_n$ in $\Type_n^\modal$ to ease the reading.} %$\Type^\modal_p$, so 
-\begin{mymath}
+\begin{mymath}[-0em]
 \Type_n^\modal \ \defeq \sum_{T : \Type_n} P (T).
 \end{mymath}%
 %
@@ -1065,7 +1064,7 @@ the library~\cite{hottlib}.
 For any $n$-truncated types $X$ and $Y$,
 and any map $f:X \to Y$, the modalisation of fiber of $f$ above any element $y:Y$
 is the fiber of $\modal f$ above $\eta_Y y$:
-\begin{mymath}[-0.3em]\modal \left(\sum_{x:X}  (f(x) = y)\right) = \sum_{x:\modal X}
+\begin{mymath}[-0em]\modal \left(\sum_{x:X}  (f(x) = y)\right) = \sum_{x:\modal X}
 (\modal f(x) = \eta_Y(y)),\end{mymath}%
 where $\modal f:\modal X \to \modal Y$ is defined via the equivalence {\it (iv)} and $\eta_Y$.
 
@@ -1204,8 +1203,6 @@ way, we can add classical reasoning in the type theory without
 collapsing it to mere propositions.
 
 
-
-
 \section{Sheaves}
 \label{sec:sheaves}
 
@@ -1219,6 +1216,9 @@ exact modality at level $0$.
 In homotopy type theory, it is possible to use similar ideas to lift
 any left exact modality at level $-1$ to a left exact modality at level
 $n$ using sheafification, by induction on $n$.
+
+For space reason, the main ideas of the proofs are given in the
+appendix, and we refer the reader to the formalization for all details.
 
 In this section, we suppose given a truncation index $n\geqslant -1$,
 and a left exact modality $\modal_n$ on $\Type_n$ and we introduce the
@@ -1325,13 +1325,14 @@ of separated types.
 With topos theory point of view, it means that given a map $\sum_{e:E}
 \chi\, e \to F$,
 if there is an extension $\tilde f:E\to F$, then it is unique.
-Actually, there is a simpler characterisation:
+Equivalently, it can be checked that a type is separated if, and only if all its path types
+are $n$-modal. 
 
-\begin{prop}
-  A type $F$ is $\Type_{n+1}$ is separated if, and only if all its
-  path types are $n$-modal, ie
-  \begin{mymath}[-0.3em]\prod_{x,y:F}~\left( \modal_n(x=y) \right) = (x=y).\end{mymath}%
-\end{prop}
+% \begin{prop}
+%   A type $F$ is $\Type_{n+1}$ is separated if, and only if all its
+%   path types are $n$-modal, ie
+%   \begin{mymath}[-0.3em]\prod_{x,y:F}~\left( \modal_n(x=y) \right) = (x=y).\end{mymath}%
+% \end{prop}
 
 \begin{defi}[Sheaves]
   A type $F$ of $\Type_{n+1}$ is a {\em $(n+1)$-sheaf} if it is
@@ -1399,9 +1400,9 @@ sense that the following property holds.
 % with $\modal_{-1}$, \ie we want the property
 \begin{cond}\label{cond:hprop}
   For any mere proposition $P$ (where $\widehat P$ is $P$ seen as a
-  $\Type_n$),  $\modal_n \widehat P = \modal_{-1} P$ and the
+  $\Type_n$),  $\modal_n \widehat P \simeq \modal_{-1} P$ and the
   following coherence diagram commutes
-  \begin{mymath}\xymatrix{
+  \begin{mymath}[-0em]\xymatrix{
     P \ar@{->}^{\sim}[r] \ar[d]_{\eta_{-1}} & \widehat P \ar[d]^{\eta_n} \\
     \modal_{-1} P \ar@{->}^{\sim}[r] & \modal_n \widehat P 
   }\end{mymath}%
@@ -1468,16 +1469,13 @@ $n\geqslant -1$, and a left exact modality $\modal_n$ on $\Type_n$,
 compatible with a left exact modality $\modal_{-1}$ on $\HProp$ in the
 sense of condition~\ref{cond:hprop}.
 
-As many proofs are very technical, we only give here sketches, and
-often refer to formalization for all details.
-
 \subsection{From Type to Separated Type}
 \label{ssec:from-type-separated}
 
 Let $T : \Type_{n+1}$. We define $\separated T$ as the image (see
 Section~\ref{ssec:hott}) of
 $\modal_n^T \circ \{\cdot\}_T$, as in
-\begin{mymath}\xymatrix{
+\begin{mymath}[-0em]\xymatrix{
     T \ar[r]^{\{\cdot\}_T} \ar[d]_{\mu_T} & \left(\Type_n\right)^T \ar[d]^{\modal_n^T} \\
   \separated T \ar[r]& \left( \Type_n^\modal \right)^T
 }, \end{mymath}%
@@ -1486,7 +1484,7 @@ where $\{\cdot\}_T$ is the singleton map $\lambda (t:T),~\lambda
 %
 $\separated T$ can be given explicitly by
 %
-\begin{mymath}
+\begin{mymath}[-0em]
 %\begin{array}{rclcl}
 \separated T \defeq  \im (\lambda~t:T,~\lambda~ t',~ \modal_n (t = t')).
  %          \left( =  \sum\limits_{u:T \to \Type_n^\modal} \left\| \sum_{a:T} 
@@ -1586,13 +1584,17 @@ is replaced by its iterated kernel pair.
 %   = x$, and the result follows. We refer to the formalization for details.
 % \end{proof}
 
-Now, let $Q$ be any separated $\Type_{n+1}$, and $f:X \to Q$. Then this
- diagram commutes
-\begin{mymath}[-0.5em]\xymatrix{
-\|X\|_{n+1} \ar[r] \ar[rd]_{|f|_{n+1}} & \|\mathring T_{X}\|_{n+1} \ar[r] \ar[d] & \|\mathring
-  T_{\mathring T_X} \|_{n+1} \ar[ld]\cdots \\
-  & Q &
-} \end{mymath}% 
+Now, let $Q$ be any separated $\Type_{n+1}$, and $f:X \to Q$. 
+Then $|f|_{n+1}$ can be extended to build a cocone over $\mathring
+T$ into $Q$.
+
+% Then this
+%  diagram commutes
+% \begin{mymath}[-0.5em]\xymatrix{
+% \|X\|_{n+1} \ar[r] \ar[rd]_{|f|_{n+1}} & \|\mathring T_{X}\|_{n+1} \ar[r] \ar[d] & \|\mathring
+%   T_{\mathring T_X} \|_{n+1} \ar[ld]\cdots \\
+%   & Q &
+% } \end{mymath}% 
 % \begin{mymath}\xymatrix @C=4em{ 
 %     \cdots \overline{\Delta_3} \tar[r]{4pt} \ar[rd]_{f\circ \pi_1} & \overline{\Delta_2}
 %     \dar[r]{2pt} \ar[d]^{f\circ \pi_1} &
@@ -1605,7 +1607,7 @@ arrow $\separated T \to Q$.
 %
 This is enough to prove that $(\separated,\mu)$ defines a reflective
 subuniverse on $\Type_{n+1}$.
-We can now state
+As $(\separated,\mu)$ is a modality and closure is universal, we can state
 \begin{prop}\label{prop:sep-mod}
   $(\separated,\mu)$ defines a modality on $\Type_{n+1}$.
 \end{prop}
@@ -1623,7 +1625,7 @@ $\modal_{n+1}T$ is defined as the closure of $\separated T$,
 seen as a subobject of $T \to \Type_n^\modal$. 
 %
 $\modal_{n+1}T$ can be given explicitly by
-\begin{mymath}
+\begin{mymath}[-0em]
 \modal_{n+1} T \ \defeq \sum_{u:T \to \Type_n^\modal} \modal_{-1}\left\| \sum_{a:T} 
             (\lambda t,~\modal_n (a=t)) = u\right\|.
 \end{mymath}%
@@ -1636,8 +1638,7 @@ use the following lemma.
 \end{lem}
 
 As $T\to \Type_n^\modal$ is a sheaf, and $\modal_{n+1}T$ is closed in
-$T\to \Type_n^\modal$, $\modal_{n+1}T$ is a sheaf. We now prove that
-it forms a modality.
+$T\to \Type_n^\modal$, $\modal_{n+1}T$ is a sheaf. We can now state:
 
 \begin{prop}\label{prop:Sn-modality}
   $(\modal_{n+1},\nu)$ defines a modality.
@@ -1794,71 +1795,78 @@ transformation, as done in the appendix (section~\ref{ssec:translation}).
 \label{sec:formalization}
 
 A Coq formalization based on the Coq/HoTT library~\cite{hottlib} is available at
-\url{https://github.com/KevinQuirin/sheafification}.
+\url{https://github.com/KevinQuirin/sheafification}. This development
+contains 7914 lines, with approximatively 20\% lines of
+definitions, which seems quite reasonable and encouraging, because it
+suggests that homotopy type theory provides a convenient tool to
+formalize some part of the theory of higher topoï.
 %
 % After reviewing the content and some statistics about the
 % formalization in Section~\ref{sec:cont-form}, we present the
 % limitations of our formalization in Section~\ref{sec:limit-form}, in
 % particular the issues relative to universe polymorphism. 
 
-\subsection{Content of the formalization}
-\label{sec:cont-form}
+% \subsection{Content of the formalization}
+% \label{sec:cont-form}
 
-% We provide a more detailed insight of the structure of our formalization:
-% \begin{itemize} 
-% \item Colimits and iterated kernel pairs are formalized in
-% \texttt{Limit}, \texttt{T.v}, \texttt{OT.v}v \texttt{OT\_Tf.v}, \texttt{T\_telescope.v},\\ \texttt{Tf\_Omono\_sep.v}.% (552 lines).
-% \item
-% Reflective subuniverses and modalities are formalized in\\
-% \texttt{reflective\_subuniverse.v}, \texttt{modalities.v}. % (1053 lines).
-% \item 
+% % We provide a more detailed insight of the structure of our formalization:
+% % \begin{itemize} 
+% % \item Colimits and iterated kernel pairs are formalized in
+% % \texttt{Limit}, \texttt{T.v}, \texttt{OT.v}v \texttt{OT\_Tf.v}, \texttt{T\_telescope.v},\\ \texttt{Tf\_Omono\_sep.v}.% (552 lines).
+% % \item
+% % Reflective subuniverses and modalities are formalized in\\
+% % \texttt{reflective\_subuniverse.v}, \texttt{modalities.v}. % (1053 lines).
+% % \item 
+% % %
+% %   The definition of the dense topology as a left exact modality on
+% %   $\HProp$ is given in \texttt{sheaf\_base\_case.v}. % (186 lines).
+% % \item
+% % Section~\ref{sec:sheaves} is formalized in
+% % \texttt{sheaf\_def\_and\_thm.v}. % (1029 lines).
+% % \item
+% % Section~\ref{sec:sheafification} is formalized in
+% % \texttt{sheaf\_induction.v}. % (2340 lines).
+% % \end{itemize}
+
+% Overall, % with other files containing technical lemmas,
+% the project
+% contains 7914 lines, and it could be reduced a bit by improving the
+% way Coq tries to rewrite and apply lemmas automatically. 
+% The \texttt{coqwc} tool counts 1611 lines of specifications
+% (definitions, lemmas, theorems, propositions) and 5403 lines of proof
+% script.
 % %
-%   The definition of the dense topology as a left exact modality on
-%   $\HProp$ is given in \texttt{sheaf\_base\_case.v}. % (186 lines).
-% \item
-% Section~\ref{sec:sheaves} is formalized in
-% \texttt{sheaf\_def\_and\_thm.v}. % (1029 lines).
-% \item
-% Section~\ref{sec:sheafification} is formalized in
-% \texttt{sheaf\_induction.v}. % (2340 lines).
-% \end{itemize}
+% This constitutes a significant amount of work but the part dedicated
+% to sheaves and sheafification is only 2200 lines of proof script,
+% which seems quite reasonable and encouraging, because it suggests
+% that homotopy type theory provides a convenient tool to formalize some
+% part of the theory of higher topoï. As a matter of comparison, this
+% \TeX\xspace file contains approximatively 2000 lines.
 
-Overall, % with other files containing technical lemmas,
-the project
-contains 7914 lines, and it could be reduced a bit by improving the
-way Coq tries to rewrite and apply lemmas automatically. 
-The \texttt{coqwc} tool counts 1611 lines of specifications
-(definitions, lemmas, theorems, propositions) and 5403 lines of proof
-script.
-%
-This constitutes a significant amount of work but the part dedicated
-to sheaves and sheafification is only 2200 lines of proof script,
-which seems quite reasonable and encouraging, because it suggests
-that homotopy type theory provides a convenient tool to formalize some
-part of the theory of higher topoï. As a matter of comparison, this
-\TeX\xspace file contains approximatively 2000 lines.
+% % In our formalization, some things are admitted, either because they
+% % are just an adaptation of a proposition already formalized
+% % in~\cite{hottbook}, either because they are true, but very technical:
+% % \begin{itemize}
+% % \item in \texttt{modalities.v}, an equality is admitted in the proof
+% %   of proposition~\ref{sec:defin-basic-prop}.
+% % \item in \texttt{nat\_lemmas.v}, the proof that $\IsHProp (n\leqslant
+% %   m)$ is admitted.
+% % \item in \texttt{sheaf\_induction.v}, in the proof that
+% %   $C(\mu_T)=(C\id)$ (see lemma~\ref{lem:sepiscolim}), we admit the proof
+% %   of equality of projections.
+% % \item in \texttt{sheaf\_induction.v}, we admit some very technical
+% %   proofs in proofs that $\square$ and $\star$ are modalities.
+% % \item in \texttt{sheaf\_induction.v}, cumulativity is an axiom,
+% %   because of universes issues.
+% % \end{itemize}
 
-% In our formalization, some things are admitted, either because they
-% are just an adaptation of a proposition already formalized
-% in~\cite{hottbook}, either because they are true, but very technical:
-% \begin{itemize}
-% \item in \texttt{modalities.v}, an equality is admitted in the proof
-%   of proposition~\ref{sec:defin-basic-prop}.
-% \item in \texttt{nat\_lemmas.v}, the proof that $\IsHProp (n\leqslant
-%   m)$ is admitted.
-% \item in \texttt{sheaf\_induction.v}, in the proof that
-%   $C(\mu_T)=(C\id)$ (see lemma~\ref{lem:sepiscolim}), we admit the proof
-%   of equality of projections.
-% \item in \texttt{sheaf\_induction.v}, we admit some very technical
-%   proofs in proofs that $\square$ and $\star$ are modalities.
-% \item in \texttt{sheaf\_induction.v}, cumulativity is an axiom,
-%   because of universes issues.
-% \end{itemize}
+\paragraph*{On the use of universe polymorphism}
+%\subsection{Limitations of the formalization}
+%\label{sec:limit-form}
 
-\subsection{Limitations of the formalization}
-\label{sec:limit-form}
-
-In the formalization, we had to use the \texttt{type-in-type} option, to handle
+The development uses the new universe polymorphism feature of
+Coq~\cite{sozeau2014universe}. However, it still lacks some features, and
+in the formalization, we had to use the \texttt{type-in-type} option, to handle
 the universe issues we faced.
 
 % Universes are used in type theory to ensure consistency by checking
@@ -1912,16 +1920,18 @@ which is similar to our use of characteristic functions.
 This restriction in our formalization may be solved by
 generalizing the management of universe polymorphism for recursive definition
 %
-or by the use of general ``resizing axiom'' which is still under
+and by the use of general ``resizing axiom'' which is still under
 discussion in the community.
 %
-We note that for this solution to work, we need to have a slighlty
-weaker definition of modalities than the one in~\cite{hottlib}. We
-usually ask the reflector $\modal$ to map a universe $\Type^i$ to
-itself, while here, we need $\modal T$, when $T:\Type^i$ to live in a
-possibly higher universe $\Type^j$. For modalities on whole $\Type$,
-we checked that all properties are still satisfied (see
-\url{https://github.com/KevinQuirin/HoTT/extended_modalities/} for the
+We note that for this solution to work, we need to have a more general 
+definition of modalities than the one in~\cite{hottlib}, which ask the
+reflector $\modal$ to map a universe $\Type^i$ to
+itself. Here, we relax this constraint by allowing the reflector to
+map a universe $\Type^i$ to a
+possibly higher universe $\Type^j$. 
+We have checked that the library~\cite{hottlib} still works with this
+generalized definition (see
+\url{https://github.com/KevinQuirin/HoTT/tree/extended_modalities/} for the
 formalization).
 
 
@@ -1970,8 +1980,8 @@ ways.
 %   isomorphic to the modality but with a better computational content. 
   % able to work in the new type theory into a proof assistant.
 % \end{itemize}
-
-Moreover, in topos theory, Lawvere-Tierney subsumes Grothen\-dieck~\cite[Section~V.4]{maclanemoerdijk} in the sense that any
+%
+(iii) In topos theory, Lawvere-Tierney subsumes Grothen\-dieck~\cite[Section~V.4]{maclanemoerdijk} in the sense that any
 Grothen\-dieck topology gives rise to a Lawvere-Tierney topology with
 the same notion of sheaves. Higher Lawvere-Tierney sheaves are
 presented here, and higher Grothendieck sheaves have been defined
@@ -1991,10 +2001,12 @@ remains true in higher topos theory.
 % This work has been funded by the CoqHoTT ERC Grant 637339.
 
 %\bibliographystyle{abbrvnat}
+\newpage
 \bibliography{sheaf_lics}
 
 \newpage
-\section*{Appendix}
+\appendix
+\section{Proofs}
 
 \begin{proof}[Proof of Proposition~\ref{prop:sheaf-is-sheaf}]
   First, we prove that $\Type_n^\modal$ is separated. Let $E:\Type$
@@ -2212,7 +2224,7 @@ are equal. The complete proof can be found in the formalization.
   Hence, $\IsEquiv \varphi$ is modal.
 \end{proof}
 
-\subsection{Translation}
+\section{Translation}
 \label{ssec:translation}
 
 In this section, we present how to use the sheafification modality to

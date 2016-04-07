@@ -1464,7 +1464,7 @@ separated type.
 % The $\lnot\lnot$-modality allows to work with a propositional law of
 % excluded middle. 
 
-In the rest of the section, we suppose given a truncation index
+In the rest of this section, we suppose given a truncation index
 $n\geqslant -1$, and a left exact modality $\modal_n$ on $\Type_n$,
 compatible with a left exact modality $\modal_{-1}$ on $\HProp$ in the
 sense of condition~\ref{cond:hprop}.
@@ -1869,6 +1869,8 @@ Coq~\cite{sozeau2014universe}. However, it still lacks some features, and
 in the formalization, we had to use the \texttt{type-in-type} option, to handle
 the universe issues we faced.
 
+\nt{explain why it is acceptable}
+
 % Universes are used in type theory to ensure consistency by checking
 % that definitions are well-stratified according to a certain hierarchy.
 % %
@@ -1920,7 +1922,7 @@ which is similar to our use of characteristic functions.
 This restriction in our formalization may be solved by
 generalizing the management of universe polymorphism for recursive definition
 %
-and by the use of general ``resizing axiom'' which is still under
+and by the use of general ``resizing axioms'' which are still under
 discussion in the community.
 %
 We note that for this solution to work, we need to have a more general 
@@ -1930,7 +1932,7 @@ itself. Here, we relax this constraint by allowing the reflector to
 map a universe $\Type^i$ to a
 possibly higher universe $\Type^j$. 
 We have checked that the library~\cite{hottlib} still works with this
-generalized definition (see
+generalized definition after minor modifications (see
 \url{https://github.com/KevinQuirin/HoTT/tree/extended_modalities/} for the
 formalization).
 

@@ -440,6 +440,7 @@ $\Sh{\E}$.
 
 
 \subsection{Overview of the Result}
+\label{ssec:overview}
 
 To extend Lawvere-Tierney sheafification to homotopy type theory, the
 first thing to understand is that the construction cannot be done in one
@@ -1867,9 +1868,11 @@ formalize some part of the theory of higher topoï.
 The development uses the new universe polymorphism feature of
 Coq~\cite{sozeau2014universe}. However, it still lacks some features, and
 in the formalization, we had to use the \texttt{type-in-type} option, to handle
-the universe issues we faced.
-
-\nt{explain why it is acceptable}
+the universe issues we faced. If not totally satisfactory, this option
+is a convenient way to write the Coq code, the following
+universes issues being checked on paper, like in the library
+Unimath\footnote{\url{https://github.com/UniMath}, {Vladimir
+    Voevodsky, Benedikt Ahrens, Daniel Grayson and others}}.
 
 % Universes are used in type theory to ensure consistency by checking
 % that definitions are well-stratified according to a certain hierarchy.
@@ -2009,6 +2012,11 @@ remains true in higher topos theory.
 \newpage
 \appendix
 \section{Proofs}
+As said in section~\ref{sec:sheafification}, some proofs were ommited
+in the paper, due to space reason. The reader can find the key points
+here, and see the complete proofs in the Coq formalization, at
+\url{https://github.com/KevinQuirin/sheafification}.
+
 
 \begin{proof}[Proof of Proposition~\ref{prop:sheaf-is-sheaf}]
   First, we prove that $\Type_n^\modal$ is separated. Let $E:\Type$
@@ -2229,11 +2237,12 @@ are equal. The complete proof can be found in the formalization.
 \section{Translation}
 \label{ssec:translation}
 
-In this section, we present how to use the sheafification modality to
-define a transformation of Martin-Löf type theory into
-itself\footnote{We define the translation on Martin-Löf type theory,
-  but it could also be done for CIC as well.} as it has been done for
-forcing~\cite{jaber2012extending}.
+In section~\ref{ssec:overview}, we announce that sheafification can be
+seen a translation of type theories\footnote{We define the translation on Martin-Löf type theory,
+  but it could also be done for CIC as well.}, as it has been done for
+forcing~\cite{jaber2012extending}. Actually, this is not a specific
+property of sheafification, but something shared by all modalities. We
+hence don't explicit it in the paper, but we do in this appendix.
 
 Let $n$ be a trunction index, and let $\modal = \modal_n \circ
 \|\cdot\|_n$ the constructed modality. 

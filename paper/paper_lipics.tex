@@ -1868,11 +1868,13 @@ formalize some part of the theory of higher topoï.
 The development uses the new universe polymorphism feature of
 Coq~\cite{sozeau2014universe}. However, it still lacks some features, and
 in the formalization, we had to use the \texttt{type-in-type} option, to handle
-the universe issues we faced. If not totally satisfactory, this option
-is a convenient way to write the Coq code, the following
-universes issues being checked on paper, like in the library
-Unimath\footnote{\url{https://github.com/UniMath}, {Vladimir
-    Voevodsky, Benedikt Ahrens, Daniel Grayson and others}}.
+the universe issues we faced. If not entirely satisfactory, this option
+is a convenient way to check the whole construction in Coq, but for
+universes.
+%
+The following universe issues have being checked on paper, like in the
+Unimath
+library.\footnote{\url{https://github.com/UniMath}, {Vladimir Voevodsky, Benedikt Ahrens, Daniel Grayson and others}}
 
 % Universes are used in type theory to ensure consistency by checking
 % that definitions are well-stratified according to a certain hierarchy.
@@ -1922,10 +1924,10 @@ completion, they use the Yoneda embedding and representable functors,
 which is similar to our use of characteristic functions.
  
 %
-This restriction in our formalization may be solved by
+So universe issues in our formalization may be solved by
 generalizing the management of universe polymorphism for recursive definition
 %
-and by the use of general ``resizing axioms'' which are still under
+and also by using of general ``resizing axioms'' which are still under
 discussion in the community.
 %
 We note that for this solution to work, we need to have a more general 
@@ -1952,7 +1954,7 @@ homotopy type theory, such as the law of excluded middle, and this
 without axiom.
 %
 Beyond this result, our work is part of a more general line of work
-which aim to illustrate that homotopy type theory is a very promising
+which aims to illustrate that homotopy type theory is a very promising
 theory for formalizing mathematics inside a proof assistant.
 
 % \nt{Add something on the definition of a syntactic translation as it

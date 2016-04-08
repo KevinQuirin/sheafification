@@ -849,7 +849,7 @@ In~\cite{boulier}, the authors propose an analogue of this property~:
 they give, for any map $f$, a diagram $C(f)$ whose colimit is $\im(f)$.
 
 \begin{defi}
-  Let $f:X \to Y$ be a map. The kernel pair $T_f$ of $f$ is the higher inductive type given
+  Let $f:X \to Y$ be a map. The coequalizer $T_f$ of the kernel pair of $f$ is the higher inductive type given
   by
   \begin{itemize}
   \item $t:~X \to T_f$
@@ -867,8 +867,8 @@ they give, for any map $f$, a diagram $C(f)$ whose colimit is $\im(f)$.
 Then, the considered diagram $C(f)$  is the mapping telescope of the iterations
 of $T$.
 \begin{defi}
-  Let $f$ be a map from $X$ to $Y$. Then the iterated kernel pair of
-  $f$ $C(f)$
+  Let $f$ be a map from $X$ to $Y$. Then the {\em iterated kernel pair} of
+  $f$ 
   is given by the diagram
   $\xymatrix{
     C(f) := X \ar[r]^-t & T_f \ar[r]^-t & T_{\tilde f} \ar[r] &\cdots
@@ -2242,7 +2242,7 @@ seen a translation of type theories\footnote{We define the translation on Martin
   but it could also be done for CIC as well.}, as it has been done for
 forcing~\cite{jaber2012extending}. Actually, this is not a specific
 property of sheafification, but something shared by all modalities. We
-hence don't explicit it in the paper, but we do in this appendix.
+hence don't explicit it in the paper, but only here in this appendix.
 
 Let $n$ be a trunction index, and let $\modal = \modal_n \circ
 \|\cdot\|_n$ the constructed modality. 

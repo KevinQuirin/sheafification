@@ -85,8 +85,8 @@ Section DiagramMap.
                              & forall (i j:G), forall x:G i j, (path_type j) o (diagram1 D1 x) == (diagram1 D2 x) o (path_type i) } -> diagram_equiv D1 D2.
   Proof.
     intros [p pp].
-    refine (Build_diagram_equiv _ _).
-    refine (Build_diagram_map _ _).
+    simple refine (Build_diagram_equiv _ _).
+    simple refine (Build_diagram_map _ _).
     intro x; apply (p x).
     intros i j g x; cbn.
     exact (pp i j g x)^.
@@ -106,7 +106,7 @@ Section DiagramMap.
   : diagram_comp w (diagram_equiv_inv w) = diagram_idmap D2.
     destruct w as [[w_obj w_comm] is_eq_w]. simpl in *.
     set (we i := BuildEquiv (is_eq_w i)).
-    refine (path_diagram_map _ _).
+    simple refine (path_diagram_map _ _).
     exact (fun i => eisretr (we i)). simpl.
     intros i j f x. apply (concatR (concat_p1 _)^).
     apply (comm_square_inverse_is_retr (we i) (we j) _ x).
@@ -116,7 +116,7 @@ Section DiagramMap.
   : diagram_comp (diagram_equiv_inv w) w = diagram_idmap D1.
     destruct w as [[w_obj w_comm] is_eq_w]. simpl in *.
     set (we i := BuildEquiv (is_eq_w i)).
-    refine (path_diagram_map _ _).
+    simple refine (path_diagram_map _ _).
     exact (fun i => eissect (we i)). simpl.
     intros i j f x. apply (concatR (concat_p1 _)^).
     apply (comm_square_inverse_is_sect (we i) (we j) _ x).

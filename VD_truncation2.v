@@ -44,7 +44,7 @@ Definition T_rec {A B:Type} {f:A -> B} (P:Type)
            (tp_1' : forall a, tp' a a 1 = 1)
   : T f -> P.
 Proof.
-  refine (T_ind _ t' (fun a b p => transport_const _ _ @ tp' a b p)  _).
+  simple refine (T_ind _ t' (fun a b p => transport_const _ _ @ tp' a b p)  _).
   intro a.
   exact ((concat_p_pp (transport2 (λ _ : T f, P) (tp_1 a) (t' a))^  (transport_const (tp a a 1) (t' a)) (tp' a a 1))                                                                                                 @ whiskerR (moveR_Vp _ _ _ (transport2_const (A:=T f) (B:= P) (tp_1 a) (t' a))) (tp' a a 1)                                                                                                         @ concat_1p _                                                                                     @ (tp_1' a)).
 Defined.
@@ -63,7 +63,7 @@ Section Gpd.
 
   Definition Gpd_graph_ : graph.
   Proof.
-    refine (Build_graph _ _).
+    simple refine (Build_graph _ _).
     exact nat.
     intros n m. exact (S n = m).
   Defined.
@@ -77,7 +77,7 @@ Section Gpd.
   
   Definition Gpd_ (X:Type) : diagram Gpd_graph_.
   Proof.
-    refine (Build_diagram _ _ _).
+    simple refine (Build_diagram _ _ _).
     - intros i. exact (Gpd_aux_ X i).
     - intros i j q; destruct q; simpl.
       exact t.
@@ -293,11 +293,11 @@ We first show that the colimit is [hProp].
       assert (Contr Q).
       exists x. exact H.
       apply trunc_forall. }
-    refine (colimit_rect _ _ _ _ _).
+    simple refine (colimit_rect _ _ _ _ _).
     2:intros; apply path_ishprop.
     clear hp.
     intros i x; cbn.
-    refine (colimit_rect _ _ _ _ _).
+    simple refine (colimit_rect _ _ _ _ _).
     - intros j y.
       cbn in *.
       destruct (gt_lt_cases i j).
@@ -370,18 +370,18 @@ We first show that the colimit is [hProp].
     
   Theorem VD_truncation : Q <~> Trunc -1 X.
   Proof.
-    refine (equiv_adjointify _ _ _ _).
+    simple refine (equiv_adjointify _ _ _ _).
     3:intro; apply path_ishprop.
     3:intro; apply (path_ishprop (H:=HPropQ)).
-    - refine (colimit_rectnd _ _ _ _ _).
+    - simple refine (colimit_rectnd _ _ _ _ _).
       2:intros i j f x; apply path_ishprop.
       induction i.
       exact tr. simpl.
-      refine (T_ind _ _ _ _).
+      simple refine (T_ind _ _ _ _).
       exact IHi.
       intros; apply path_ishprop.
       intros; apply path_ishprop.
-    - refine (Trunc_rec _). exact HPropQ.
+    - simple refine (Trunc_rec _). exact HPropQ.
       exact (colim (D:=Gpd_ X) (i:=0)).
   Defined.
   

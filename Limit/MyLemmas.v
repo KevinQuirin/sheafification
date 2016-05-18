@@ -39,9 +39,9 @@ Lemma path_sig_hfiber `{f: A -> B} (x y : sig (hfiber f)) (q : x.2.1 = y.2.1) : 
   destruct x as [b [a e]].
   destruct y as [b' [a' e']].
   simpl in q.
-  refine (path_sigma' _ _ _). exact (e^ @ (ap f q) @ e').
+  simple refine (path_sigma' _ _ _). exact (e^ @ (ap f q) @ e').
   etransitivity. exact (transport_sigma _ _). simpl.
-  refine (path_sigma' _ _ _).
+  simple refine (path_sigma' _ _ _).
   etransitivity. apply transport_const. exact q.
   path_induction. reflexivity.
 Defined.

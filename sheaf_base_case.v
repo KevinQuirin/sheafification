@@ -38,17 +38,17 @@ Section Reflective_Subuniverse_base_case.
   
   Definition subuniverse_Prop : subuniverse_struct -1.
   Proof.
-    refine (Build_subuniverse_struct -1 is_classical Oj Oj_unit _).
+    simple refine (Build_subuniverse_struct -1 is_classical Oj Oj_unit _).
     intros P Q.
-    refine (isequiv_iff_hprop _ _).
+    simple refine (isequiv_iff_hprop _ _).
     exact (Oj_equiv _).
   Defined.
 
   Definition modality_Prop : Modality -1.
-    refine (Build_Modality _ subuniverse_Prop _).
+    simple refine (Build_Modality _ subuniverse_Prop _).
     apply subuniverse_sigma. exact ua. exact fs.
     intros A B g; simpl in *.
-    refine (exist _ _ _).
+    simple refine (exist _ _ _).
     intro z. apply (equiv_inv (IsEquiv := O_modal_equiv _ _ _)).
     Transparent O. cbn in *. Opaque O.
     intro nBz.
@@ -60,7 +60,7 @@ Section Reflective_Subuniverse_base_case.
     exact (transport (λ x, ~ (B x)) (path_ishprop (Oj_unit A a) z)^ nBz).
 
     intro a; simpl.
-    refine (path_ishprop _ _).
+    simple refine (path_ishprop _ _).
   Defined.
 
   Definition islex_modality_Prop : IsLex modality_Prop.
@@ -71,7 +71,7 @@ Section Reflective_Subuniverse_base_case.
     apply path_forall; intro u.
     destruct (p u).
     Transparent O. cbn in *. Opaque O.
-    intro p. apply p. refine (path_ishprop x y). 
+    intro p. apply p. simple refine (path_ishprop x y). 
   Defined.
 
 End Reflective_Subuniverse_base_case.
@@ -87,7 +87,7 @@ Section Formalization.
 
   Let helper_trunc0 : forall (T:hSet), IsHSet (T -> subuniverse_Type OP).
   Proof.
-    intro T. refine (trunc_arrow _).
+    intro T. simple refine (trunc_arrow _).
     apply subuniverse_Type_is_TruncTypeSn.
     exact ua.
   Qed.             
@@ -105,9 +105,9 @@ Section Formalization.
   Definition OP_to_O0 (P:hProp)
     : O OP P -> O0 (BuildhSet P).
   Proof.
-    intro nnp. refine (exist _ _ _).
+    intro nnp. simple refine (exist _ _ _).
     intro p.
-    refine (Build_subuniverse_Type _ _ (BuildhProp Unit) _).
+    simple refine (Build_subuniverse_Type _ _ (BuildhProp Unit) _).
     revert nnp; apply O_rec; intro p.
     apply O_unit, tr. exists p.
     apply path_forall; intro x. cbn in *.
@@ -128,7 +128,7 @@ Section Formalization.
   Definition equiv_OP_O0 (P:hProp)
     : O OP P <~> O0 (BuildhSet P).
   Proof.
-    refine (equiv_iff_hprop (@OP_to_O0 P) (@O0_to_OP P)).
+    simple refine (equiv_iff_hprop (@OP_to_O0 P) (@O0_to_OP P)).
     (** Here should be the proof that [O0] defines a modality, combined with [hprop_stability] *)
   Admitted.
     

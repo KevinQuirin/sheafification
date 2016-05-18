@@ -52,7 +52,7 @@ Definition T_rec {A B:Type} {f:A -> B} (P:Type)
            (tp_1' : forall a, tp' a a 1 = 1)
   : T f -> P.
 Proof.
-  refine (T_ind _ t' (fun a b p => transport_const _ _ @ tp' a b p)  _).
+  simple refine (T_ind _ t' (fun a b p => transport_const _ _ @ tp' a b p)  _).
   intro a.
   pose (p:=whiskerR (transport2_const (A:=T f) (B:= P) (tp_1 a) (t' a) @ concat_p1 _)^ (tp' a a 1)). cbn in p.
   pose (p1:=(whiskerL (transport2 (λ _ : T f, P) (tp_1 a) (t' a)) (tp_1' a) @ concat_p1 _)^).
@@ -66,7 +66,7 @@ Definition T_rec_beta_tp {A B:Type} {f:A -> B} (P:Type)
            a b p
   : ap (T_rec P t' tp' tp_1') (tp a b p) = tp' a b p.
 Proof.
-  refine (cancelL (transport_const (tp a b p) (t' a)) _ _ _).
+  simple refine (cancelL (transport_const (tp a b p) (t' a)) _ _ _).
   pose (e1:= T_ind_beta_tp (λ _ : T f, P) t'
         (λ (a0 b0 : A) (p1 : f a0 = f b0),
          transport_const (tp a0 b0 p1) (t' a0) @ tp' a0 b0 p1)
@@ -104,7 +104,7 @@ Proof.
   apply (cancelL (apD_const (T_rec P t' tp' tp_1') (tp a a 1))).
   apply (cancelR _ _ (concat_p_pp _ (transport_const _ _) _)^).
   apply (cancelR _ _ (whiskerL (transport2 _ (tp_1 a) (t' a)) (apD_const (T_rec P t' tp' tp_1') 1)^)).
-  refine ((apD02_const (T_rec P t' tp' tp_1') (tp_1 a) )^ @ _).
+  simple refine ((apD02_const (T_rec P t' tp' tp_1') (tp_1 a) )^ @ _).
   apply (cancelR _ _ (concat_p1 (transport2 (λ _ : T f, P) (tp_1 a) (t' a)))).
   apply (cancelR _ _ ((whiskerL (transport2 (λ _ : T f, P) (tp_1 a) (t' a)) (tp_1' a) @
                                 concat_p1 (transport2 (λ _ : T f, P) (tp_1 a) (t' a)))^ @
@@ -113,7 +113,7 @@ Proof.
                                                                                                                concat_p1 (transport2 (λ _ : T f, P) (tp_1 a) (t' a)))^
                       (tp' a a 1))).
   Opaque concat_p_pp.
-  refine (T_ind_beta_tp_1 _ _ _ _ _ @ _); cbn.
+  simple refine (T_ind_beta_tp_1 _ _ _ _ _ @ _); cbn.
   apply (cancelL (apD_const
                     (T_ind (λ _ : T f, P) t'
                            (λ (a0 b0 : A) (p2 : f a0 = f b0),
@@ -156,7 +156,7 @@ Proof.
   rewrite concat_concat2. cbn.
   rewrite (concat_1p (transport2_const (tp_1 a) (t' a))).
   rewrite (concat_p1 (T_rec_beta_tp P t' tp' tp_1' a a 1)).
-  refine ((concat_p1 _)^ @ _). rewrite !concat_pp_p.
+  simple refine ((concat_p1 _)^ @ _). rewrite !concat_pp_p.
   match goal with
   |[|- _ = (?P @@ ?Q) @ ?R] => path_via (((P @ 1) @@ Q) @ R)
   end.
@@ -164,7 +164,7 @@ Proof.
   rewrite <- concat_concat2.
   rewrite !concat_pp_p. apply whiskerL.
   rewrite !concat_p_pp. apply moveL_pV. rewrite concat_1p.
-  rewrite !concat_pp_p. refine ((concat_p1 _)^@ _).
+  rewrite !concat_pp_p. simple refine ((concat_p1 _)^@ _).
   apply whiskerL. cbn.
   pose (rew:= @triangulator _ _ _ _ (transport2 (λ _ : T f, P) (tp_1 a) (t' a)) 1).
   apply moveL_Vp in rew. rewrite rew; clear rew. cbn.
@@ -353,7 +353,7 @@ Proof.
   repeat rewrite concat_pp_p.
   unfold  P19, P6, P32, P1, P12, P13, P2, P16.
   clear P19; clear P6; clear P32; clear P1; clear P12; clear P13; clear P2; clear P16.
-  rewrite inv_V.
+  (* rewrite inv_V. *)
   rewrite (concat_p1 (concat_1p p)).
   match goal with
   |[|- ?PP1 @ (?PP2 @ (?PP3 @ (?PP4 @ (?PP5 @ (?PP6 @ (?PP7 @ (?PP8 @ (?PP9 @ (?PP10 @ (?PP11 @ (?PP12 @ (?PP13 @ (?PP14 @ (?PP15 @ (?PP16)))))))))))))))
@@ -497,22 +497,22 @@ Lemma path_T {A A' B:Type} (f: A -> A')
                       = transport (λ U, eq1 a @ ap β U = ap α U @ eq1 a) (tp_1 a)^ (concat_p1 (eq1 a) @ (concat_1p (eq1 a))^))
   : α == β.
 Proof.
-  refine (T_ind _ _ _ _).
+  simple refine (T_ind _ _ _ _).
   - exact eq1.
   - intros a b p.
-    refine (transport_paths_FlFr _ _ @ _).
+    simple refine (transport_paths_FlFr _ _ @ _).
     etransitivity; try apply concat_pp_p.
     apply (cancelL (ap α (tp a b p))).
     etransitivity; try apply eq2.
     apply concat_p_Vp.
-  - apply path_T_lemma. exact eq3.
+  - simple refine (path_T_lemma _ _ _ _ _ _). exact eq3.
 Defined.
 
 Lemma T_trunc_fun `{fs: Funext} (m:trunc_index) (A:Type) (B:TruncType m) (f:A -> B)
   : Trunc m (T f) -> Trunc m (T (Trunc_rec (n:=m) f)).
 Proof.
-  refine (Trunc_rec _).
-  refine (T_rec _ _ _ _).
+  simple refine (Trunc_rec _).
+  simple refine (T_rec _ _ _ _).
   intro a. exact (tr (t (tr a))).
   intros a b p; cbn. apply ap. apply tp. exact p.
   intros a; cbn.
@@ -524,15 +524,15 @@ Defined.
 Lemma T_trunc_inv `{fs: Funext} (m:trunc_index) (A:Type) (B:TruncType m) (f:A -> B)
   : Trunc m (T (Trunc_rec (n:=m) f)) -> Trunc m (T f).
 Proof.
-  refine (Trunc_rec _).
-  refine (T_rec _ _ _ _).
-  refine (Trunc_rec _).
+  simple refine (Trunc_rec _).
+  simple refine (T_rec _ _ _ _).
+  simple refine (Trunc_rec _).
   intro a; exact (tr (t a)).
-  refine (Trunc_ind _ _). intro a. 
-  refine (Trunc_ind _ _). intros b p.
+  simple refine (Trunc_ind _ _). intro a. 
+  simple refine (Trunc_ind _ _). intros b p.
   cbn in *.
   apply ap. apply tp. exact p.
-  refine (Trunc_ind _ _).
+  simple refine (Trunc_ind _ _).
   intro a. cbn.
   match goal with |[|- ap ?ff ?pp =_] => path_via (ap (x:=t a) ff 1) end.
   apply ap. apply tp_1.
@@ -542,31 +542,31 @@ Lemma T_trunc_retr `{fs: Funext} (m:trunc_index) (A:Type) (B:TruncType m) (f:A -
   : Sect (T_trunc_inv m A B f) (T_trunc_fun m A B f).
 Proof.
   unfold T_trunc_inv, T_trunc_fun.
-  refine (Trunc_ind _ _).
-  refine (path_T _ _ _ _ _ _).
-  refine (Trunc_ind _ _). intro a; reflexivity.
-  refine (Trunc_ind _ _). intro a.
-  refine (Trunc_ind _ _). intros b p.
+  simple refine (Trunc_ind _ _).
+  simple refine (path_T _ _ _ _ _ _).
+  simple refine (Trunc_ind _ _). intro a; reflexivity.
+  simple refine (Trunc_ind _ _). intro a.
+  simple refine (Trunc_ind _ _). intros b p.
   cbn in *.
-  refine (concat_1p _ @ _). refine (_ @ (concat_p1 _)^).
+  simple refine (concat_1p _ @ _). simple refine (_ @ (concat_p1 _)^).
   match goal with
   |[|- _ = ap (λ x, Trunc_rec ?ff (?gg x)) ?pp]
-   => refine (_ @ (ap_compose gg (Trunc_rec ff) pp)^)
+   => simple refine (_ @ (ap_compose gg (Trunc_rec ff) pp)^)
   end.
   match goal with
   |[|- _ = ap ?ff (ap (T_rec ?X1 ?X2 ?X3 ?X4) (tp ?aa ?bb ?pp)) ]
-   => refine (_ @ (ap02 ff (T_rec_beta_tp X1 X2 X3 X4 aa bb pp)^))
+   => simple refine (_ @ (ap02 ff (T_rec_beta_tp X1 X2 X3 X4 aa bb pp)^))
   end. cbn.
   match goal with
   |[|- _ = ap ?ff (ap ?gg ?pp)]
-   => refine (_ @ (ap_compose gg ff pp))
+   => simple refine (_ @ (ap_compose gg ff pp))
   end. cbn.
   match goal with
   |[|- _ = (ap (λ x, T_rec ?X1 ?X2 ?X3 ?X4 x) (tp ?aa ?bb ?pp)) ]
-   => refine ((T_rec_beta_tp X1 X2 X3 X4 aa bb pp)^)
+   => simple refine ((T_rec_beta_tp X1 X2 X3 X4 aa bb pp)^)
   end.
 
-  refine (Trunc_ind _ _). cbn.
+  simple refine (Trunc_ind _ _). cbn.
   intro a. rewrite transport_paths_FlFr.
   repeat rewrite ap_V. repeat rewrite inv_V.
   match goal with
@@ -592,10 +592,11 @@ Proof.
     cbn in *. rewrite rew; clear rew.
     rewrite ap02_is_ap. reflexivity. }
   rewrite rr; clear rr.
-  repeat rewrite inv_pp.
+  do 4 rewrite inv_pp.
+  do 3 rewrite inv_V.
   repeat rewrite concat_pp_p.
-  repeat rewrite inv_V.
-  apply whiskerL. cbn. rewrite concat_p1.
+  apply whiskerL. cbn.
+  rewrite concat_p1.
   rewrite ap02_V. rewrite inv_V.
   match goal with
   |[|- _ = ap02 (λ x, Trunc_rec ?ff (?gg x)) ?pp]
@@ -604,16 +605,17 @@ Proof.
   apply whiskerL.
   rewrite T_rec_beta_tp_1. cbn. rewrite concat_p1.
   rewrite ap02_pp. apply whiskerL.
-  rewrite ap02_pp. cbn. rewrite concat_p1.        
+  rewrite ap02_pp. cbn. rewrite concat_p1.
   rewrite <- ap02_is_ap. apply moveR_Vp.
   match goal with
   |[|- _ = _ @ (ap02 ?ff (ap02 ?gg ?pp))] =>
    pose (rew := ap02_compose _ _ _ gg ff _ _ _ _ pp)
   end.
-  cbn in rew. rewrite concat_p1 in rew. rewrite <- rew; clear rew.
-  rewrite T_rec_beta_tp_1.
-  apply whiskerL. 
-  rewrite concat_ap_pFq. apply moveL_pM.
+  cbn in rew. rewrite concat_p1 in rew. repeat rewrite concat_pp_p.
+  rewrite <- rew; clear rew.
+  rewrite T_rec_beta_tp_1. cbn.
+  rewrite concat_ap_pFq.
+  rewrite concat_V_pp. apply moveL_Mp. apply moveL_pM.
   match goal with
   |[|- (_ @ whiskerL _ ?hh) @ _ = _] => exact (whiskerL_1p hh)
   end.
@@ -623,26 +625,26 @@ Lemma T_trunc_sect `{fs: Funext} (m:trunc_index) (A:Type) (B:TruncType m) (f:A -
   : Sect (T_trunc_fun m A B f) (T_trunc_inv m A B f).
 Proof.
   unfold T_trunc_fun, T_trunc_inv.
-  refine (Trunc_ind _ _).
-  refine (path_T _ _ _ _ _ _).
+  simple refine (Trunc_ind _ _).
+  simple refine (path_T _ _ _ _ _ _).
   intro a; reflexivity.
   intros a b p; cbn.
-  refine (concat_1p _ @ _). refine (_ @ (concat_p1 _)^).
+  simple refine (concat_1p _ @ _). simple refine (_ @ (concat_p1 _)^).
   match goal with
   |[|- _ = ap (λ x, Trunc_rec ?ff (?gg x)) ?pp]
-   => refine (_ @ (ap_compose gg (Trunc_rec ff) pp)^)
+   => simple refine (_ @ (ap_compose gg (Trunc_rec ff) pp)^)
   end.
   match goal with
   |[|- _ = ap ?ff (ap (T_rec ?X1 ?X2 ?X3 ?X4) (tp ?aa ?bb ?pp)) ]
-   => refine (_ @ (ap02 ff (T_rec_beta_tp X1 X2 X3 X4 aa bb pp)^))
+   => simple refine (_ @ (ap02 ff (T_rec_beta_tp X1 X2 X3 X4 aa bb pp)^))
   end. cbn.
   match goal with
   |[|- _ = ap ?ff (ap ?gg ?pp)]
-   => refine (_ @ (ap_compose gg ff pp))
+   => simple refine (_ @ (ap_compose gg ff pp))
   end. cbn.
   match goal with
   |[|- _ = (ap (λ x, T_rec ?X1 ?X2 ?X3 ?X4 x) (tp ?aa ?bb ?pp)) ]
-   => refine ((T_rec_beta_tp X1 X2 X3 X4 aa bb pp)^)
+   => simple refine ((T_rec_beta_tp X1 X2 X3 X4 aa bb pp)^)
   end.
 
   intro a. rewrite transport_paths_FlFr.
@@ -671,9 +673,9 @@ Proof.
     cbn in *. rewrite rew; clear rew.
     rewrite ap02_is_ap. reflexivity. }
   rewrite rr; clear rr.
-  repeat rewrite inv_pp.
-  repeat rewrite concat_pp_p.
+  do 5 rewrite inv_pp.
   repeat rewrite inv_V.
+  repeat rewrite concat_pp_p.
   apply whiskerL. cbn. rewrite concat_p1.
   rewrite ap02_V. rewrite inv_V.
   match goal with
@@ -691,6 +693,7 @@ Proof.
   end.
   cbn in rew. rewrite concat_p1 in rew. rewrite <- rew; clear rew.
   rewrite (T_rec_beta_tp_1 (f:= Trunc_rec f)).
+  rewrite inv_pp. rewrite inv_V. rewrite concat_pp_p.
   apply whiskerL. 
   rewrite concat_ap_pFq. apply moveL_pM.
   match goal with
@@ -701,7 +704,7 @@ Qed.
 Lemma T_trunc `{fs: Funext} (m:trunc_index) (A:Type) (B:TruncType m) (f:A -> B)
   : Trunc m (T f) <~> Trunc m (T (Trunc_rec (n:=m) f)).
 Proof.
-  refine (equiv_adjointify _ _ _ _).
+  simple refine (equiv_adjointify _ _ _ _).
   - apply T_trunc_fun.
   - apply T_trunc_inv.
   - apply T_trunc_retr.
@@ -715,14 +718,14 @@ Definition T_equiv_fun `{ua: Univalence} {A B C:Type}
            (e: g o α = f)
   : T f -> T g.
 Proof.
-  refine (T_rec _ _ _ _).
+  simple refine (T_rec _ _ _ _).
   intro a; apply t. exact (α a).
   intros a b p; cbn.
   apply tp. exact (ap10 e a @ p @ (ap10 e b)^).
   intro a; cbn.
   path_via (tp (f:=g) (α a) (α a) 1).
   apply ap.
-  refine ((concat_p1 _ @@ 1) @ _).
+  simple refine ((concat_p1 _ @@ 1) @ _).
   apply concat_pV.
   apply tp_1.
 Defined.
@@ -739,14 +742,14 @@ Proof.
   assert ((T_rec (T g) (λ a : A, t a)
         (λ (a b : A) (p : g a = g b), tp a b ((1 @ p) @ 1))
         (λ a : A, 1 @ tp_1 a)) == idmap).
-  { refine (path_T _ _ _ _ _ _).
+  { simple refine (path_T _ _ _ _ _ _).
     intro; reflexivity.
     intros a b p; cbn.
-    refine (concat_1p _ @ _ @ (concat_p1 _)^).
-    refine (_ @ (T_rec_beta_tp _ _ _ _ _ _ _)^).
-    refine (ap_idmap _ @ _).
+    simple refine (concat_1p _ @ _ @ (concat_p1 _)^).
+    simple refine (_ @ (T_rec_beta_tp _ _ _ _ _ _ _)^).
+    simple refine (ap_idmap _ @ _).
     apply ap.
-    refine (_ @ (concat_p1 _)^). exact (concat_1p _)^.
+    simple refine (_ @ (concat_p1 _)^). exact (concat_1p _)^.
     intro a; cbn.
     rewrite transport_paths_FlFr. cbn.
     rewrite ap_V. rewrite inv_V.
@@ -786,7 +789,7 @@ Proof.
     rewrite T_rec_beta_tp_1.
     rewrite ap_idmap. rewrite (concat_1p (tp_1 a)).
     rewrite inv_pp.  reflexivity. }
-  refine (isequiv_homotopic idmap  _).
+  simple refine (isequiv_homotopic idmap  _).
   exact (λ x, (X x)^).
 Defined.
 
@@ -806,7 +809,7 @@ Proof.
     apply ap.
     cbn. rewrite transport_paths_Fl. apply moveL_Vp.
     rewrite inv_V. reflexivity. }
-  refine (isequiv_homotopic _ (λ x, ap10 X^ x)).
+  simple refine (isequiv_homotopic _ (λ x, ap10 X^ x)).
   exact (isequiv_T_equiv_fun_path f g ((path_universe_uncurried α)) (ap (λ (u : A → C) (x : A), g (u x))
                                                                        (ap (equiv_fun (B:=C)) (equiv_path_path_universe_uncurried α)) @ e)).
 Qed.

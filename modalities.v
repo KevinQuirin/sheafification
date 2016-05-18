@@ -45,8 +45,8 @@ Section Preliminary.
              (A:TruncType n) (x y : O subU A)
     : IsEquiv (O_unit subU (BuildTruncType _ (x = y))).
   Proof.
-    refine (isequiv_adjointify _ _ _ _).
-    - refine (O_rec _ _ _ (Build_subuniverse_Type _ _ (BuildTruncType _ (x=y)) _) _).
+    simple refine (isequiv_adjointify _ _ _ _).
+    - simple refine (O_rec _ _ _ (Build_subuniverse_Type _ _ (BuildTruncType _ (x=y)) _) _).
       exact idmap.
     - unfold Sect.
       intro u.
@@ -54,7 +54,7 @@ Section Preliminary.
       |[|- ?ff (?gg u) = _] => set (F := ff); set (G := gg)
       end.
       revert u.
-      refine (O_rec_dep _ (λ u, Build_subuniverse_Type _ _ (BuildTruncType _ (F (G u) = u)) _) _).1.
+      simple refine (O_rec_dep _ (λ u, Build_subuniverse_Type _ _ (BuildTruncType _ (F (G u) = u)) _) _).1.
       intro u; unfold F; clear F; unfold G; clear G. cbn.
       rewrite (λ P Q f, ap10 (O_rec_retr _ subU P Q f)).
       reflexivity.
@@ -70,22 +70,22 @@ Section Preliminary.
     intros x.
     transparent assert (modf : ((O subU (@BuildTruncType n P t)) -> subuniverse_Type subU)).
     { intro y.
-      refine (Build_subuniverse_Type _ subU (BuildTruncType n (x=y)) _). }
-    refine (O_rec_dep _ modf _).1.
+      simple refine (Build_subuniverse_Type _ subU (BuildTruncType n (x=y)) _). }
+    simple refine (O_rec_dep _ modf _).1.
     intro y. unfold modf; clear modf; simpl.
     revert x.
     transparent assert (modf : ((O subU (@BuildTruncType n P t)) -> subuniverse_Type subU)).
     { intro x.
-      refine (Build_subuniverse_Type _ subU (BuildTruncType n (x=O_unit subU _ y)) _). }
-    refine (O_rec_dep _ modf _).1.
+      simple refine (Build_subuniverse_Type _ subU (BuildTruncType n (x=O_unit subU _ y)) _). }
+    simple refine (O_rec_dep _ modf _).1.
     intros x. unfold modf; clear modf; simpl in *.
-    apply ap. refine (path_ishprop x y). 
+    apply ap. simple refine (path_ishprop x y). 
   Defined.
   
   (* Lemma 13 *)
   Definition modal_contr_modal_is_equiv n (mod : Modality n.+1) (subU := underlying_subu n.+1 mod) (X:TruncType n.+1) (Y : subuniverse_Type subU) (f : X -> Y) (mod_contr_f : forall y, Contr (O subU (BuildTruncType (n.+1) (hfiber f y))))
   : (O subU X) <~> Y.
-    refine (equiv_adjointify _ _ _ _).
+    simple refine (equiv_adjointify _ _ _ _).
     - apply O_rec; exact f.
     - intro y.
       destruct (mod_contr_f y) as [c _]. 
@@ -99,7 +99,7 @@ Section Preliminary.
                    (O_rec (n.+1) subU 
                       (BuildTruncType (n.+1) (hfiber f x)) 
                       (O subU X) (λ X0 : hfiber f x, O_unit subU X X0.1) c) = x)) _)).
-      refine (O_rec_dep (BuildTruncType (n.+1) (hfiber f x)) sheaf_family _).1.
+      simple refine (O_rec_dep (BuildTruncType (n.+1) (hfiber f x)) sheaf_family _).1.
       unfold sheaf_family; clear sheaf_family.
       intros [c p]. simpl.
       assert (p0 := ap10 (O_rec_retr (n.+1) subU (BuildTruncType (n.+1) (hfiber f x)) (O subU X) (λ X0 : hfiber f x, O_unit subU X X0.1)) (c;p)).
@@ -113,7 +113,7 @@ Section Preliminary.
         pose proof (@O_rec_dep (n.+1) mod X (λ x, (O subU
                (BuildTruncType (n.+1) (hfiber f (O_rec (n.+1) subU X Y f x)))))).
         simpl in X0.
-        refine (X0 _).1.
+        simple refine (X0 _).1.
         intro x. simpl.
         apply O_unit. exists x.
         exact (ap10 (O_rec_retr (n.+1) subU X Y f) x)^. }
@@ -160,7 +160,7 @@ Section Preliminary.
                                            (O_rec n.+1 subU X Y f
                                               (O_unit subU X x0))) |}
             (x0; (ap10 (O_rec_retr n.+1 subU X Y f) x0)^))).1 x) = x)) _)).
-      refine (O_rec_dep X sheaf_family _).1.
+      simple refine (O_rec_dep X sheaf_family _).1.
       unfold sheaf_family in *; simpl in *; clear sheaf_family.
       intro x. simpl. 
       rewrite ((O_rec_dep X
@@ -196,7 +196,7 @@ Section Preliminary.
   Lemma O_unit_O_contr_fibers {n:trunc_index} (mod:Modality (trunc_S n)) (subU := underlying_subu (trunc_S n) mod) (X:TruncType n.+1) (Tr : forall x, IsTrunc n.+1 (hfiber (O_unit subU X) x))
   : forall x, Contr (O subU (@BuildTruncType (n.+1) (hfiber (O_unit subU X) x) (Tr x))).
     intros x.
-    refine (BuildContr _ _ _).
+    simple refine (BuildContr _ _ _).
     revert x.
     apply O_rec_dep.
     Opaque O_rec_dep.
@@ -205,7 +205,7 @@ Section Preliminary.
     revert y.
     transparent assert (shf : ((((O subU (@BuildTruncType (n.+1) (hfiber (O_unit subU X) x) (Tr x)))) -> subuniverse_Type subU))).
     { intro y.
-      refine (Build_subuniverse_Type _ subU (BuildTruncType _ ((O_rec_dep X
+      simple refine (Build_subuniverse_Type _ subU (BuildTruncType _ ((O_rec_dep X
       (λ z : O (underlying_subu n.+1 mod) X,
        O subU
          {|
@@ -218,7 +218,7 @@ Section Preliminary.
                              (O_unit (underlying_subu n.+1 mod) X a);
          istrunc_trunctype_type := Tr (O_unit (underlying_subu n.+1 mod) X a) |}
          (a; 1))).1 x = y)) _). }
-    refine (O_rec_dep (@BuildTruncType (n.+1) (hfiber (O_unit subU X) x) (Tr x)) shf _).1.
+    simple refine (O_rec_dep (@BuildTruncType (n.+1) (hfiber (O_unit subU X) x) (Tr x)) shf _).1.
     unfold shf; clear shf; simpl.
     intros [y p]. destruct p.
     match goal with
@@ -238,9 +238,9 @@ Section Preliminary.
     induction p.
     - intros T.
       rewrite <- subuniverse_iff_O; [idtac | exact ua | exact fs].
-      refine (isequiv_adjointify _ _ _ _).
+      simple refine (isequiv_adjointify _ _ _ _).
       + intro X.
-        refine (@contr_inhabited_hprop T _ _).
+        simple refine (@contr_inhabited_hprop T _ _).
         apply hprop_allpath. intros x y.
         pose (sheaf := Build_subuniverse_Type (n.+1) subU (BuildTruncType _ (x=y)) _).
         revert X.
@@ -252,16 +252,16 @@ Section Preliminary.
         simpl.
         intros. exact (center _ X).
       + intro X. simpl.
-        refine (path_ishprop _ _).
+        simple refine (path_ishprop _ _).
         transparent assert (hp : hProp).
         { exists (Contr (T)).
           apply hprop_trunc. }
         apply (hprop_stability (mod:=mod) hp (trunc_prop T)).
       + intro X. simpl.
-        refine (path_ishprop _ _).
+        simple refine (path_ishprop _ _).
     - simpl in *. intros T.
       rewrite <- subuniverse_iff_O.
-      refine (isequiv_adjointify _ _ _ _).
+      simple refine (isequiv_adjointify _ _ _ _).
       + intro X.
         assert (trunc_pr : ∀ T : subuniverse_Type subU,
                              IsTrunc n.+1 (IsTrunc p T)).
@@ -277,13 +277,13 @@ Section Preliminary.
         revert X. apply O_rec.
         intros X. apply O_unit. exact (X x y). exact ua. exact fs.
       + intro X. simpl.
-        refine (path_ishprop _ _).
+        simple refine (path_ishprop _ _).
         transparent assert (hp : hProp).
         { exists (IsTrunc p.+1 T).
           apply hprop_trunc. }
         apply (hprop_stability (mod:=mod) hp (trunc_prop T)).
       + intro X. simpl.
-        refine (path_ishprop _ _).
+        simple refine (path_ishprop _ _).
       + exact ua.
       + exact fs.
   Defined.
@@ -297,9 +297,9 @@ Section Preliminary.
   : forall (A B : subuniverse_Type subU) (f: A -> B), IsSubu (n.+1) subU (BuildTruncType (n.+1) (IsEquiv f)).
     intros A B f.
     rewrite <- subuniverse_iff_O.
-    refine (isequiv_adjointify _ _ _ _).
+    simple refine (isequiv_adjointify _ _ _ _).
     - intro H.
-      refine (isequiv_adjointify _ _ _ _).
+      simple refine (isequiv_adjointify _ _ _ _).
       + intro x. revert H.
         apply O_rec. intro H. simpl in H.
         exact (f^-1 x).
@@ -311,7 +311,7 @@ Section Preliminary.
         trunctype_type := IsEquiv f;
         istrunc_trunctype_type := trunc_prop A B f |} A
         (λ H0 : IsEquiv f, f^-1 X) H) = X)) _).
-        refine (O_rec_dep _ shf _).1.
+        simple refine (O_rec_dep _ shf _).1.
         unfold shf; clear shf; simpl.
         intro H.
         pose (rew := λ P Q f, ap10 (O_rec_retr (n.+1) subU P Q f)).
@@ -324,18 +324,18 @@ Section Preliminary.
                                                                                              istrunc_trunctype_type := trunc_prop A B f |} A
                                                                                            (λ H0 : IsEquiv f, f^-1 (f X)) H = X)) _).
         
-        refine (O_rec_dep _ shf _).1.
+        simple refine (O_rec_dep _ shf _).1.
         unfold shf; clear shf; simpl.
         intro H.
         pose (rew := λ P Q f, ap10 (O_rec_retr (n.+1) subU P Q f)).
         rewrite rew. rewrite eissect. reflexivity.
     - intro X.
-      refine (path_ishprop _ _).
+      simple refine (path_ishprop _ _).
       transparent assert (hp : hProp).
       { exists (IsEquiv f). apply hprop_isequiv. }
       exact (hprop_stability (mod := mod) hp (trunc_prop A B f)).
     - intro X.
-      refine (path_ishprop _ _).
+      simple refine (path_ishprop _ _).
     - exact ua. - exact fs.
   Qed.
   
@@ -353,7 +353,7 @@ Section LexModality.
 
   Lemma IsHProp_IsLex {n:trunc_index} (mod:Modality (trunc_S n)) (subU := underlying_subu (trunc_S n) mod)
   : IsHProp (IsLex mod).
-    refine trunc_forall.
+    simple refine trunc_forall.
   Defined.
 
   Lemma O_contr_sigma {n:trunc_index} (mod:Modality (trunc_S n)) (subU := underlying_subu (trunc_S n) mod) {A : TruncType n.+1} {B : A -> TruncType n.+1}
@@ -361,7 +361,7 @@ Section LexModality.
         (contrB : forall a, Contr (O subU (B a)))
         (trΣ : IsTrunc n.+1 {a:A & (B a)})
   : Contr (O subU (BuildTruncType _ {a:A & (B a)})).
-    refine (BuildContr _ _ _).
+    simple refine (BuildContr _ _ _).
     - generalize (center (O subU A)).
       apply O_rec; intro a.
       generalize (center (O subU (B a))).
@@ -369,7 +369,7 @@ Section LexModality.
       apply O_unit.
       exists a. exact b.
     - transparent assert (shf : ((O subU (BuildTruncType _ {a:A & (B a)})) -> subuniverse_Type subU)).
-      { intro y. refine (Build_subuniverse_Type _ subU (BuildTruncType _ (O_rec n.+1 subU A
+      { intro y. simple refine (Build_subuniverse_Type _ subU (BuildTruncType _ (O_rec n.+1 subU A
      (O subU
         {| trunctype_type := ∃ a : A, B a; istrunc_trunctype_type := trΣ |})
      (λ a : A,
@@ -384,7 +384,7 @@ Section LexModality.
            trunctype_type := ∃ a0 : A, B a0;
            istrunc_trunctype_type := trΣ |} (a; b)) 
         (center (O subU (B a)))) (center (O subU A)) = y))  _). }
-      refine (O_rec_dep _ shf _).1.
+      simple refine (O_rec_dep _ shf _).1.
       unfold shf; clear shf; intros [a b]; simpl.
 
       assert (X : (center (O subU A)) = O_unit subU A a) by apply contr.
@@ -403,7 +403,7 @@ Section LexModality.
   : forall y:B, Contr (O subU (BuildTruncType (n.+1) (hfiber f y))).
   Proof.
     intro y.
-    refine (@O_contr_sigma _ mod A (λ x, (BuildTruncType _ (f x = y))) _ _ _).
+    simple refine (@O_contr_sigma _ mod A (λ x, (BuildTruncType _ (f x = y))) _ _ _).
     (* exact contrA. *)
     intro a.
     (* assert (rew : trunc_succ (istrunc_paths B.2 (f a) y) = istrunc_paths (trunc_succ B.2) (f a) y) by apply path_ishprop. *)
@@ -423,7 +423,7 @@ Section LexModality.
   : forall (X Y:TruncType n.+1) (f : X -> Y) (y:Y), trunctype_type (@st _ subU (O subU (BuildTruncType _ (hfiber f y)))) = {rx : (O subU X) & function_lift _ subU X Y f rx = O_unit subU Y y}.
     intros X Y f y.
     apply path_universe_uncurried.
-    refine (modal_contr_modal_is_equiv _
+    simple refine (modal_contr_modal_is_equiv _
                                        mod
                                        (BuildTruncType _ (hfiber f y))
                                        (Build_subuniverse_Type _ subU (BuildTruncType (n.+1) (∃ rx : O subU X, function_lift n.+1 subU X Y f rx = O_unit subU Y y)) _)
@@ -450,10 +450,10 @@ Section LexModality.
                                     rx) z = (y;p^)}).
       assert (TrT': IsTrunc n.+1 T').
       { unfold T'.
-        refine (trunc_sigma (n:=n.+1) _ _). }
+        simple refine (trunc_sigma (n:=n.+1) _ _). }
 
       pose (oT' := O subU (BuildTruncType _ T')).
-      refine (contr_equiv' oT' _).
+      simple refine (contr_equiv' oT' _).
       apply function_lift_equiv'. exact fs. apply equiv_inverse. simpl.
       unfold T', hfiber, functor_hfiber; simpl.
       apply equiv_path.
@@ -542,11 +542,11 @@ Section LexModality.
                                                   rx a) 
                                                (y; p^)) = TrT') by apply path_ishprop.
       rewrite <- rew; clear rew.
-      refine (IsLex_contr_fibers mod
+      simple refine (@IsLex_contr_fibers _ mod
                                  islex
                                  (BuildTruncType _ (hfiber (O_unit subU X) rx))
-                                 (B := BuildTruncType _ (hfiber (O_unit subU Y) (O_rec _ subU X (O subU Y) (O_unit subU Y o f) rx)))
-                                 (f:= functor_hfiber
+                                 (BuildTruncType _ (hfiber (O_unit subU Y) (O_rec _ subU X (O subU Y) (O_unit subU Y o f) rx)))
+                                 (functor_hfiber
                                         (λ a : X,
                                                ap10
                                                  (O_rec_retr n.+1 subU X 
@@ -586,7 +586,7 @@ Section LexModality.
      {| trunctype_type := X <~> Y; istrunc_trunctype_type := istrunc_equiv |}
                              → X <~> Y)).
     { intro p.
-      refine (equiv_adjointify _ _ _ _).
+      simple refine (equiv_adjointify _ _ _ _).
       + intro x. revert p. apply O_rec.
         intro e. exact (e x).
       + intro y. revert p. apply O_rec.
@@ -596,7 +596,7 @@ Section LexModality.
         transparent assert (shf: Helper).
         { subst Helper.
           intro p.
-          refine (Build_subuniverse_Type _ _ (BuildTruncType _ (O_rec n.+1 subU
+          simple refine (Build_subuniverse_Type _ _ (BuildTruncType _ (O_rec n.+1 subU
                                                                       {| trunctype_type := X <~> Y; istrunc_trunctype_type := istrunc_equiv |}
                                                                       Y
                                                                       (λ e : X <~> Y,
@@ -606,7 +606,7 @@ Section LexModality.
                                                                                         trunctype_type := X <~> Y;
                                                                                         istrunc_trunctype_type := istrunc_equiv |} X
                                                                                       (λ e0 : X <~> Y, e0^-1 y) p)) p = y)) _). }
-        refine (O_rec_dep _ shf _).1.
+        simple refine (O_rec_dep _ shf _).1.
         subst Helper; subst shf; cbn.
         intro e.
         do 2 rewrite (λ P Q f, ap10 (O_rec_retr _ subU P Q f)).
@@ -616,7 +616,7 @@ Section LexModality.
         transparent assert (shf: Helper).
         { subst Helper.
           intro p.
-          refine (Build_subuniverse_Type _ _ (BuildTruncType _ (O_rec n.+1 subU
+          simple refine (Build_subuniverse_Type _ _ (BuildTruncType _ (O_rec n.+1 subU
                                                                       {| trunctype_type := X <~> Y; istrunc_trunctype_type := istrunc_equiv |}
                                                                       X
                                                                       (λ e : X <~> Y,
@@ -626,14 +626,14 @@ Section LexModality.
                                                                                        trunctype_type := X <~> Y;
                                                                                        istrunc_trunctype_type := istrunc_equiv |} Y
                                                                                      (λ e0 : X <~> Y, e0 x) p)) p = x)) _). }
-        refine (O_rec_dep _ shf _).1.
+        simple refine (O_rec_dep _ shf _).1.
         subst Helper; subst shf; cbn.
         intro e.
         do 2 rewrite (λ P Q f, ap10 (O_rec_retr _ subU P Q f)).
         apply eissect. }
-    refine (isequiv_adjointify _ FF _ _).
+    simple refine (isequiv_adjointify _ FF _ _).
     - unfold Sect.
-      refine (O_rec_dep _ (λ x, Build_subuniverse_Type _ _ (BuildTruncType _ (O_unit subU
+      simple refine (O_rec_dep _ (λ x, Build_subuniverse_Type _ _ (BuildTruncType _ (O_unit subU
      {| trunctype_type := X <~> Y; istrunc_trunctype_type := istrunc_equiv |}
      (FF x) = x)) _) _).1.
       cbn.

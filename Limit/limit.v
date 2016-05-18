@@ -32,7 +32,7 @@ Section Cone.
              (eq2 : forall i j g x, qq C1 i j g x @ eq1 j x = ap (D _f g) (eq1 i x) @ qq C2 i j g x)
   : C1 = C2.
     destruct C1 as [q pp_q], C2 as [r pp_r].
-    refine (path_cone_naive (path_forall (λ i, path_forall (eq1 i))) _). simpl.
+    simple refine (path_cone_naive (path_forall (λ i, path_forall (eq1 i))) _). simpl.
     funext4 i j f x.
     unfold pointwise_paths.
     repeat rewrite transport_forall_constant.
@@ -46,7 +46,7 @@ Section Cone.
 
   Definition postcompose_cone (C: cone D X) {Y: Type} : (Y -> X) -> cone D Y.
     intros f.
-    refine (Build_cone _ _).
+    simple refine (Build_cone _ _).
     - intros i. exact ((C i) o f).
     - intros i j g x. exact (qq _ i j g (f x)).
   Defined.
@@ -83,7 +83,7 @@ Section limit_sigma.
 
   Definition cone_limit {G:graph} (D:diagram G) : cone D (limit D).
   Proof.
-    refine (Build_cone _ _).
+    simple refine (Build_cone _ _).
     - intros i x. exact (x.1 i).
     - intros i j g x; cbn. apply x.2.
   Defined.
@@ -91,18 +91,18 @@ Section limit_sigma.
   Definition is_limit_limit {G:graph} (D:diagram G)
     : is_limit D (limit D).
   Proof.
-    refine (Build_is_limit (cone_limit D) _).
+    simple refine (Build_is_limit (cone_limit D) _).
     intro Y.
-    refine (isequiv_adjointify _ _ _).
+    simple refine (isequiv_adjointify _ _ _).
     - intros C y.
-      refine (exist _ _ _).
+      simple refine (exist _ _ _).
       intro i. exact (C i y).
       intros i j f; cbn. apply (qq C).
     - intro C.
-      refine (path_cone _ _).
+      simple refine (path_cone _ _).
       + intros i x; reflexivity.
-      + intros i j g x; cbn. refine (concat_p1 _ @ _).
-        refine (concat_1p _)^.
+      + intros i j g x; cbn. simple refine (concat_p1 _ @ _).
+        simple refine (concat_1p _)^.
     - intro f; reflexivity.
   Defined.
       
@@ -114,14 +114,14 @@ Section FunctorialityCone.
   (* postcompose *)
   Definition postcompose_cone_identity {D: diagram G} `(C: cone D X)
   : postcompose_cone C idmap = C.
-    refine (path_cone _ _).
+    simple refine (path_cone _ _).
     intros i x; reflexivity.
     intros i j g x; simpl; hott_simpl.
   Defined.
 
   Definition postcompose_cone_comp  {D: diagram G} `(f: X -> Y) `(g: Y -> Z) (C: cone D Z)
   : postcompose_cone C (g o f) = postcompose_cone (postcompose_cone C g) f.
-    refine (path_cone _ _).
+    simple refine (path_cone _ _).
     intros i x; reflexivity.
     intros i j h x; simpl; hott_simpl. 
   Defined.
@@ -129,7 +129,7 @@ Section FunctorialityCone.
   (* precompose *)
   Definition precompose_cone {D1 D2: diagram G} (m: diagram_map D1 D2) {X: Type}
   : (cone D1 X) -> (cone D2 X).
-    intros C. refine (Build_cone _ _).
+    intros C. simple refine (Build_cone _ _).
     intros i x. exact (m i (C i x)).
     intros i j g x; simpl.
     etransitivity; [apply diagram_map_comm |].
@@ -139,14 +139,14 @@ Section FunctorialityCone.
 
   Definition precompose_cone_identity (D: diagram G) (X: Type)
   : precompose_cone (X:=X) (diagram_idmap D) == idmap.
-    intros C; simpl. refine (path_cone _ _).
+    intros C; simpl. simple refine (path_cone _ _).
     intros i x. reflexivity. intros; simpl. hott_simpl.
   Defined.
 
   Definition precompose_cone_comp {D1 D2 D3: diagram G} (m2: diagram_map D2 D3) (m1: diagram_map D1 D2) (X: Type):
      (precompose_cone (X:=X) m2) o (precompose_cone m1) == precompose_cone (diagram_comp m2 m1).
     intro C; simpl.
-    refine (path_cone _ _).
+    simple refine (path_cone _ _).
     intros i x. reflexivity.
     intros i j g x. simpl. hott_simpl.
     unfold CommutativeSquares.comm_square_comp.
@@ -158,7 +158,7 @@ Section FunctorialityCone.
   (* precompose and postcompose *)
   Definition precompose_postcompose_cone {D1 D2: diagram G} (m: diagram_map D1 D2) `(f: Y -> X) (C: cone D1 X)
   : postcompose_cone (precompose_cone m C) f = precompose_cone m (postcompose_cone C f).
-    refine (path_cone _ _).
+    simple refine (path_cone _ _).
     - intros i x; reflexivity.
     - intros i j g x; simpl; hott_simpl.
   Defined.
@@ -166,7 +166,7 @@ Section FunctorialityCone.
   (* compose with equivalences *)
   Definition precompose_cone_equiv {D1 D2: diagram G} (m: D1 ≃ D2) (X: Type)
   : IsEquiv (precompose_cone (X:=X) m).
-    refine (isequiv_adjointify (precompose_cone (diagram_equiv_inv m)) _ _).
+    simple refine (isequiv_adjointify (precompose_cone (diagram_equiv_inv m)) _ _).
     - intros C. etransitivity. apply precompose_cone_comp.
       rewrite diagram_inv_is_section. apply precompose_cone_identity.
     - intros C. etransitivity. apply precompose_cone_comp.
@@ -175,7 +175,7 @@ Section FunctorialityCone.
 
   Definition postcompose_cone_equiv {D: diagram G} `(f: X <~> Y)
   : IsEquiv (λ C: cone D Y, postcompose_cone C f).
-    refine (isequiv_adjointify _ _ _).
+    simple refine (isequiv_adjointify _ _ _).
     - exact (λ C, postcompose_cone C f^-1).
     - intros C. etransitivity. symmetry. apply postcompose_cone_comp.
       etransitivity. 2:apply postcompose_cone_identity. apply ap.
@@ -191,7 +191,7 @@ Section FunctorialityCone.
     unfold is_universal.
     intros H Y.
     rewrite (path_forall (λ f, precompose_postcompose_cone m f C)).
-    refine isequiv_compose. apply precompose_cone_equiv.
+    simple refine isequiv_compose. apply precompose_cone_equiv.
   Defined.
 
   Definition postcompose_equiv_universality {D: diagram G} `(f: X <~> Y) `(C: cone D Y)
@@ -199,19 +199,19 @@ Section FunctorialityCone.
     unfold is_universal.
     intros H Z.
     pose (path_forall (λ g:Z -> X, postcompose_cone_comp g f C)).
-    refine (isequiv_homotopic (λ g : Z → X, postcompose_cone C (f o g)) _).
+    simple refine (isequiv_homotopic (λ g : Z → X, postcompose_cone C (f o g)) _).
     intro g. apply postcompose_cone_comp. 
   Defined.
 
   Definition precompose_equiv_is_colimit {D1 D2: diagram G} (m: D1 ≃ D2) {Q: Type}
   : is_limit D1 Q -> is_limit D2 Q.
-    intros HQ. refine (Build_is_limit (precompose_cone m (is_limit_C HQ)) _).
+    intros HQ. simple refine (Build_is_limit (precompose_cone m (is_limit_C HQ)) _).
     apply precompose_equiv_universality. apply HQ.
   Defined.
 
   Definition postcompose_equiv_is_colimit {D: diagram G} `(f: Q <~> Q')
   : is_limit D Q' -> is_limit D Q.
-    intros HQ. refine (Build_is_limit (postcompose_cone HQ f) _).
+    intros HQ. simple refine (Build_is_limit (postcompose_cone HQ f) _).
     apply postcompose_equiv_universality. apply HQ.
   Defined.
 End FunctorialityCone.
@@ -237,7 +237,7 @@ Section FunctorialityLimit.
   Definition functoriality_limit_eissect
   : Sect (functoriality_limit (diagram_equiv_inv m) HQ2 HQ1) (functoriality_limit m HQ1 HQ2).
     unfold functoriality_limit. apply ap10.
-    refine (equiv_inj (postcompose_cone HQ2) _). apply HQ2.
+    simple refine (equiv_inj (postcompose_cone HQ2) _). apply HQ2.
     etransitivity. 2:symmetry; apply postcompose_cone_identity.
     etransitivity. apply postcompose_cone_comp.
     unfold postcompose_cone_inv. rewrite eisretr.
@@ -249,7 +249,7 @@ Section FunctorialityLimit.
   Definition functoriality_limit_eisretr
   : Sect (functoriality_limit m HQ1 HQ2) (functoriality_limit (diagram_equiv_inv m) HQ2 HQ1).
     unfold functoriality_limit.  apply ap10.
-    refine (equiv_inj (postcompose_cone HQ1) _). apply HQ1.
+    simple refine (equiv_inj (postcompose_cone HQ1) _). apply HQ1.
     etransitivity. 2:symmetry; apply postcompose_cone_identity.
     etransitivity. apply postcompose_cone_comp.
     unfold postcompose_cone_inv. rewrite eisretr.
@@ -271,8 +271,8 @@ End FunctorialityLimit.
 Section LimitUnicity.
   Lemma limit_unicity {G: graph} {D: diagram G} {Q1 Q2: Type} (HQ1: is_limit D Q1) (HQ2: is_limit D Q2)
   : Q1 <~> Q2.
-    refine (functoriality_limit_equiv _ HQ1 HQ2).
-    refine (Build_diagram_equiv (diagram_idmap D) _).
+    simple refine (functoriality_limit_equiv _ HQ1 HQ2).
+    simple refine (Build_diagram_equiv (diagram_idmap D) _).
   Defined.
 End LimitUnicity.
 

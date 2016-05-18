@@ -45,9 +45,9 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
   Lemma OT_Cover (A B:TruncType (n.+1)) (sepB : separated B) (f:A -> B) (Omono_f : Omono_sep A B sepB f) (a:A)
     : Trunc (n.+1) (T f) -> subuniverse_Type nj.
   Proof.
-    refine (Trunc_rec _).
+    simple refine (Trunc_rec _).
     apply subuniverse_Type_is_TruncTypeSn. exact ua. 
-    refine (T_rec _ _ _ _).
+    simple refine (T_rec _ _ _ _).
     intro e; exact (O nj (BuildTruncType _ (a=e))).
     intros x y p. cbn.
     generalize (equiv_inv _ (IsEquiv := Omono_f x y) p).
@@ -55,7 +55,7 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
     intro q.
     apply unique_subuniverse.
     apply path_trunctype.
-    refine (equiv_adjointify (λ r, r °@ q) (λ r, r °@ q°^) _ _).
+    simple refine (equiv_adjointify (λ r, r °@ q) (λ r, r °@ q°^) _ _).
     abstract (intro u; rewrite Oconcat_pp_p; rewrite Oconcat_Vp; apply Oconcat_p1).
     abstract (intro u; rewrite Oconcat_pp_p; rewrite Oconcat_pV; apply Oconcat_p1).
 
@@ -75,7 +75,7 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
     match goal with
     |[|- ?ff r = r °@ ?gg] =>
      revert r;
-       refine (O_rec_dep _ (λ r, Build_subuniverse_Type n nj
+       simple refine (O_rec_dep _ (λ r, Build_subuniverse_Type n nj
                                                         (BuildTruncType _ (ff r = r °@ gg))
                                                         _) _).1
     end.
@@ -129,7 +129,7 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
      generalize (i' p).
      match goal with
      |[|- forall _, transport ?PP _ ?xx ?uu = ?yy] =>
-      refine (O_rec_dep _ (λ q, Build_subuniverse_Type n nj (BuildTruncType _ (transport PP (tp x y (i q)) xx uu = yy)) _) _).1
+      simple refine (O_rec_dep _ (λ q, Build_subuniverse_Type n nj (BuildTruncType _ (transport PP (tp x y (i q)) xx uu = yy)) _) _).1
      end.
      intro q; destruct q.
      Opaque OT_Cover.
@@ -195,9 +195,9 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
        match goal with
        |[|- ?ff = ?gg] =>
         apply path_forall;
-          refine (O_rec_dep _ (λ u, Build_subuniverse_Type n nj (BuildTruncType _ (ff u = gg u)) _) _).1
+          simple refine (O_rec_dep _ (λ u, Build_subuniverse_Type n nj (BuildTruncType _ (ff u = gg u)) _) _).1
        end.
-       refine (subuniverse_paths _ _ (Build_subuniverse_Type n nj _ _) _ _).
+       simple refine (subuniverse_paths _ _ (Build_subuniverse_Type n nj _ _) _ _).
        intro u; cbn.
        match goal with
        |[|- _ = pr1 _ ?xx] => transparent assert (r: (xx = °1))
@@ -287,9 +287,9 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
      Lemma OT_decode (A B:TruncType (n.+1)) (sepB : separated B) (f:A -> B) (Omono_f : Omono_sep A B sepB f) (a:A)
     : forall e:Trunc (n.+1) (T f), (OT_Cover A B sepB f Omono_f a) e -> O nj (BuildTruncType _ ((tr o t) a = e)).
   Proof.
-    refine (Trunc_ind _ _).
-    refine (T_ind _ _ _ _).
-    - apply OT_decode_fun. 
+    simple refine (Trunc_ind _ _).
+    simple refine (T_ind _ _ _ _).
+    - simple refine (OT_decode_fun _ _ _ _ _ _). 
     - apply OT_decode_coh1.      
     - apply OT_decode_coh2.
   Defined.
@@ -298,14 +298,14 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
     : (forall e, IsEquiv (OT_encode A B sepB f Omono_f a e)).
   Proof.
     intro e.
-    refine (isequiv_adjointify _ _ _).
+    simple refine (isequiv_adjointify _ _ _).
     - exact (OT_decode A B sepB f Omono_f a e).
     - revert e.
-      refine (Trunc_ind _ _).
-      refine (T_ind _ _ _ _).
+      simple refine (Trunc_ind _ _).
+      simple refine (T_ind _ _ _ _).
       + intros e.
         unfold Sect.
-        refine (O_rec_dep _ (λ x, Build_subuniverse_Type n nj (BuildTruncType _ (OT_encode A B sepB f Omono_f a (tr (t e))
+        simple refine (O_rec_dep _ (λ x, Build_subuniverse_Type n nj (BuildTruncType _ (OT_encode A B sepB f Omono_f a (tr (t e))
                                                                                 (OT_decode A B sepB f Omono_f a (tr (t e)) x) = x)) _) _).1.
         intro x; destruct x; cbn.
         unfold OT_decode_fun.
@@ -321,16 +321,16 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
         match goal with
         |[|- transport ?PP (?ff p) ?gg = _] =>
          path_via (transport PP (ff (i (i' p))) gg);
-           [ refine (transport2 PP _ _); apply ap; symmetry; apply eisretr |]
+           [ simple refine (transport2 PP _ _); apply ap; symmetry; apply eisretr |]
         end.
         generalize (i' p).
         intro q.
         unfold OT_decode_fun, OT_decode_coh1.
         match goal with
         |[|- transport ?PP (?ff (i q)) ?gg = ?hh] =>
-         refine ((O_rec_dep _ (λ q, Build_subuniverse_Type n nj (BuildTruncType _ (transport PP (ff (i q)) gg = hh)) _) _).1 q)
+         simple refine ((O_rec_dep _ (λ q, Build_subuniverse_Type n nj (BuildTruncType _ (transport PP (ff (i q)) gg = hh)) _) _).1 q)
         end.
-        { abstract (refine (istrunc_paths _ _ _)). }
+        { abstract (simple refine (istrunc_paths _ _ _)). }
         { abstract (
               match goal with
               |[|- IsSubu _ _ (BuildTruncType _ (?fooo = ?baar)) ] =>
@@ -340,7 +340,7 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
               |[ bar : ?XX |- _] =>
                assert (X: IsSubu n nj (BuildTruncType _ XX))
               end;
-              [refine (subuniverse_forall n nj _ _ _) |
+              [simple refine (subuniverse_forall n nj _ _ _) |
                pose (i0:= subuniverse_paths n nj (Build_subuniverse_Type n nj _ X) foo bar);
                  match goal with
                  |[i0 : IsSubu n nj ?XX |- IsSubu n nj ?YY]
@@ -363,7 +363,7 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
                                  (BuildTruncType _ (x = x)) 1))) = 1).
         { match goal with |[|- ?xx _ = 1] => path_via (xx 1) end.
           apply ap.
-          refine (ap10 (O_rec_retr n nj (BuildTruncType _ (x=x)) {|st := BuildTruncType _ (f x = f x); subu_struct := separated_nj_paths B sepB (f x) (f x) |} (ap f)) 1).
+          simple refine (ap10 (O_rec_retr n nj (BuildTruncType _ (x=x)) {|st := BuildTruncType _ (f x = f x); subu_struct := separated_nj_paths B sepB (f x) (f x) |} (ap f)) 1).
           apply tp_1.
         }
 
@@ -453,7 +453,7 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
          => path_via (transport2 P (ap ff (X1 @ X2^)) foo)
         end.
         Focus 2.
-        refine (apD10 _ foo).
+        simple refine (apD10 _ foo).
         apply (ap (x:= (ap (tp x x)
                            (eisretr (IsEquiv := Omono_f x x)
                                     (O_rec n nj (BuildTruncType _ (x = x))
@@ -513,7 +513,7 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
         rewrite ap_apply_l.
 
         rewrite <- (@transport2_is_ap10 _ P).
-        refine (apD10 _ foo).
+        simple refine (apD10 _ foo).
         apply ap.
         unfold r; clear r.
         rewrite (ap_compose (O_rec n nj (BuildTruncType _ (x = x))
@@ -575,7 +575,7 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
                                           (ap f) (O_unit nj (BuildTruncType _ (x = x)) 1))).
         rewrite concat_Vp. reflexivity.
     - unfold Sect.
-      refine (O_rec_dep _ (λ x, Build_subuniverse_Type n nj (BuildTruncType _ (OT_decode A B sepB f Omono_f a e (OT_encode A B sepB f Omono_f a e x) =
+      simple refine (O_rec_dep _ (λ x, Build_subuniverse_Type n nj (BuildTruncType _ (OT_decode A B sepB f Omono_f a e (OT_encode A B sepB f Omono_f a e x) =
                                                                   x
                                                             )) _) _).1.
       intro x; destruct x; cbn.
@@ -596,22 +596,22 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
   Lemma OT_Omono_sep (A B:TruncType (n.+1)) (sepB : separated B) (f:A -> B) (Omono_f : Omono_sep A B sepB f)
     : Omono_sep (BuildTruncType _ (Trunc (n.+1) (T f))) B sepB (Trunc_rec (T_rec B f (λ a b, idmap) (λ a, 1))).
   Proof.
-    refine (Trunc_ind _ _).
-    intro aa; refine trunc_forall.
+    simple refine (Trunc_ind _ _).
+    intro aa; simple refine trunc_forall.
     intro a. apply (@trunc_leq -1 (n.+1) tt _ _).
     intro a.
-    refine (Trunc_ind _ _).
+    simple refine (Trunc_ind _ _).
     intro bb. apply (@trunc_leq -1 (n.+1) tt _ _).    
     intro b.
     
     revert a b.
     
-    refine (T_ind _ _ _ _).
+    simple refine (T_ind _ _ _ _).
     2: intros; apply path_ishprop.
     2: intro a; cbn. 
     
     intro a.
-    refine (T_ind _ _ _ _).
+    simple refine (T_ind _ _ _ _).
     2: intros; apply path_ishprop.
     2: intro b; cbn.
     intro b.
@@ -633,7 +633,7 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
       match goal with
       |[|- ?FF = ?GG ] =>
        apply path_forall;
-         refine (O_rec_dep _ (λ u, Build_subuniverse_Type n nj (BuildTruncType _ (FF u = GG u)) _) _).1
+         simple refine (O_rec_dep _ (λ u, Build_subuniverse_Type n nj (BuildTruncType _ (FF u = GG u)) _) _).1
       end.
       intro u; cbn in *; destruct u; cbn.
       unfold function_lift.
@@ -641,7 +641,7 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
       reflexivity. }
           
     destruct X.
-    refine isequiv_compose.
+    simple refine isequiv_compose.
     exact (Omono_f a b).
 
     apply path_ishprop. apply path_ishprop.
@@ -666,8 +666,8 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
                                           (f (φ x)) 
                                           (f (φ y)) |};
         subu_struct := separated_nj_paths B sepB (f (φ x)) (f (φ y)) |} (ap f) (ap φ)).
-    refine (isequiv_compose).
-    refine (function_lift_equiv _ _ _ _ _ _).
+    simple refine (isequiv_compose).
+    simple refine (function_lift_equiv _ _ _ _ _ _).
     exact (H (φ x) (φ y)).
   Qed.
   
@@ -678,7 +678,7 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
     : forall i, TrTtelescope f i -> Y.
   Proof.
     intro i.
-    refine (Trunc_rec _).
+    simple refine (Trunc_rec _).
     exact (Ttelescope_aux f i).2.
   Defined.
 
@@ -686,8 +686,8 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
              (f:X -> Y)
     : Trunc (n.+1) (T (Trunc_rec (n:=n.+1) f)) -> Y.
   Proof.
-    refine (Trunc_rec _). refine (T_rec _ _ _ _).
-    refine (Trunc_rec _). exact f.
+    simple refine (Trunc_rec _). simple refine (T_rec _ _ _ _).
+    simple refine (Trunc_rec _). exact f.
     intros a b. exact idmap.
     intro a; reflexivity.
   Defined.
@@ -701,22 +701,22 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
       (T_trunc_T_coh_fun1 X Y sepY f) o (T_trunc (n.+1) _ _ f).
   Proof.
     unfold T_trunc_T_coh_fun1, T_trunc, T_trunc_fun. cbn.
-    apply path_forall; refine (Trunc_ind _ _). 
-    refine (path_T _ _ _ _ _ _).
+    apply path_forall; simple refine (Trunc_ind _ _). 
+    simple refine (path_T _ _ _ _ _ _).
     - intro x; reflexivity.
     - intros a b p; cbn.
-      refine (concat_1p _ @ _ @ (concat_p1 _)^).
+      simple refine (concat_1p _ @ _ @ (concat_p1 _)^).
       match goal with
       |[|- ap (λ x, ?G (?F x)) ?P = _] =>
-       refine (ap_compose F G P @ _); cbn;
-         refine (ap02 G (T_rec_beta_tp (Trunc n.+1 (T (Trunc_rec f))) (tr o t o tr) _ _ a b p) @ _)
+       simple refine (ap_compose F G P @ _); cbn;
+         simple refine (ap02 G (T_rec_beta_tp (Trunc n.+1 (T (Trunc_rec f))) (tr o t o tr) _ _ a b p) @ _)
       end.
-      refine (_ @ (T_rec_beta_tp Y f (λ (a0 b0 : X) (x0 : f a0 = f b0), x0) (λ a0 : X, 1) _ _ _)^).
-      refine ((ap_compose tr _ _)^ @ _); cbn.
-      refine (T_rec_beta_tp _ _ _ _ _ _ _).
+      simple refine (_ @ (T_rec_beta_tp Y f (λ (a0 b0 : X) (x0 : f a0 = f b0), x0) (λ a0 : X, 1) _ _ _)^).
+      simple refine ((ap_compose tr _ _)^ @ _); cbn.
+      simple refine (T_rec_beta_tp _ _ _ _ _ _ _).
     - intro a; cbn. rewrite transport_paths_FlFr.
       rewrite concat_ap_Fpq, concat_ap_pFq.
-      apply moveR_pV. rewrite !concat_pp_p.
+      apply moveR_pV. do 3 rewrite concat_pp_p.
       match goal with
       |[|- _ = _ @ (_ @ (whiskerR ?hh 1 @ _))] =>
        pose (rew:= whiskerR_p1 hh);
@@ -724,7 +724,7 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
          apply moveL_Vp in rew;
          rewrite rew; clear rew
       end.
-      apply moveL_Vp. rewrite !concat_p_pp.
+      apply moveL_Vp. do 6 rewrite concat_p_pp.
       match goal with
       |[|- (((((whiskerL 1 ?hh @ _)@_)@_)@_)@_)@_ = _]
        => pose (rew:= whiskerL_1p hh);
@@ -743,7 +743,7 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
          rewrite ap02_compose; cbn
       end.
       rewrite (T_rec_beta_tp_1 _ _ _ _ _).
-      rewrite inv_pp. rewrite concat_p1. rewrite !concat_pp_p.
+      rewrite inv_pp. rewrite concat_p1. do 4 rewrite concat_pp_p.
       apply moveR_Vp.
       rewrite concat_V_pp. rewrite !concat_p1.
       rewrite ap02_pp. apply whiskerL.
@@ -769,15 +769,15 @@ Local Definition lex_compat := sheaf_def_and_thm.lex_compat.
     - unfold TrTtelescope_to_Y. cbn.
       pose (isequiv_tr (n.+1) A).
       assert (Trunc_rec (n:=n.+1) f = f o tr^-1).
-      { apply path_forall; refine (Trunc_ind _ _).
-        intro a. auto. }
+      { apply path_forall; simple refine (Trunc_ind _ _).
+        intro a. cbn. auto. }
       rewrite X.
       exact (Omono_sep_compose_equiv A B (BuildTruncType _ (Trunc (n.+1) A)) sepB f (tr^-1) _ Omono_f).
     - pose (e:= OT_Omono_sep _ _ sepB _ IHi).
       pose (H := T_trunc_T_coh _ _ sepB (pr2 (Ttelescope_aux f i))).
       unfold TrTtelescope_to_Y. simpl.
       rewrite H.
-      vm_cast_no_check (Omono_sep_compose_equiv _ B _ sepB (T_trunc_T_coh_fun1 (pr1 (Ttelescope_aux f i)) B sepB
+      exact (Omono_sep_compose_equiv _ B _ sepB (T_trunc_T_coh_fun1 (pr1 (Ttelescope_aux f i)) B sepB
         (pr2 (Ttelescope_aux f i))) (T_trunc n.+1 (pr1 (Ttelescope_aux f i)) B (pr2 (Ttelescope_aux f i))) _ e).
   Defined.
 

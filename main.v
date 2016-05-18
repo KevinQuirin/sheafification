@@ -45,8 +45,8 @@ Module NNModality <: EasyModalities.
     pose (fs := fsNN foo).
     intros f z.
     revert z.
-    refine (O_rec_dep _ _ _).1.
-    refine (Trunc_ind _ _).
+    simple refine (O_rec_dep _ _ _).1.
+    simple refine (Trunc_ind _ _).
     intro a; cbn.
     apply f.
   Defined.
@@ -70,14 +70,14 @@ Module NNModality <: EasyModalities.
     pose (ua := uaNN foo).
     pose (fs := fsNN foo).
     unfold to.
-    (* refine (isequiv_compose (f := tr) (g:= O_unit _ _)). *)
+    (* simple refine (isequiv_compose (f := tr) (g:= O_unit _ _)). *)
 
-    refine (isequiv_adjointify _ _ _ _).
+    simple refine (isequiv_adjointify _ _ _ _).
     -
       match goal with
       |[|- _ -> ?XX] => assert (IsSubu _ (rs i0) (BuildTruncType _ XX))
       end.
-      refine (subuniverse_paths _ _ (Build_subuniverse_Type _ _ (BuildTruncType _ (O_reflector foo A)) _) z z').
+      simple refine (subuniverse_paths _ _ (Build_subuniverse_Type _ _ (BuildTruncType _ (O_reflector foo A)) _) z z').
       unfold O_reflector.
       match goal with
       |[|- IsSubu ?ii ?oo ?XX] => assert (@st _ _ (O (rs i0)
@@ -88,15 +88,15 @@ Module NNModality <: EasyModalities.
       apply path_trunctype. apply equiv_idmap.
       destruct X.
       apply subu_struct.
-      refine (O_rec _ _ _ (Build_subuniverse_Type _ _ _ X) _).
-      cbn. refine (Trunc_rec _).
+      simple refine (O_rec _ _ _ (Build_subuniverse_Type _ _ _ X) _).
+      cbn. simple refine (Trunc_rec _).
       exact idmap.
     - cbn.
       match goal with
       |[|- Sect ?ff ?gg] => set (F := ff); set (G := gg)
       end.
-      refine (O_rec_dep _ (λ u, Build_subuniverse_Type _ _ (BuildTruncType _ (G (F u) = u)) _) _).1.
-      refine (Trunc_ind _ _).
+      simple refine (O_rec_dep _ (λ u, Build_subuniverse_Type _ _ (BuildTruncType _ (G (F u) = u)) _) _).1.
+      simple refine (Trunc_ind _ _).
       intro x; unfold F; clear F; unfold G; clear G; cbn.
       rewrite (λ P Q f, ap10 (O_rec_retr _ (rs i0) P Q f)).
       reflexivity.

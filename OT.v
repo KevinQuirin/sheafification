@@ -73,7 +73,7 @@ Definition OTid_rec (A:TruncType (n.+1)) (P:Type)
            (Otp_1' : forall a, Otp' a a °1 = 1)
   : OTid A -> P.
 Proof.
-  refine (OTid_ind _ _ Ot' (fun a b p => transport_const _ _ @ Otp' a b p)  _).
+  simple refine (OTid_ind _ _ Ot' (fun a b p => transport_const _ _ @ Otp' a b p)  _).
   intro a.
   pose (p:=whiskerR (transport2_const (A:=OTid A) (B:= P) (Otp_1 a) (Ot' a) @ concat_p1 _)^ (Otp' a a °1)). cbn in p.
   pose (p1:=(whiskerL (transport2 (λ _ : OTid A, P) (Otp_1 a) (Ot' a)) (Otp_1' a) @ concat_p1 _)^).
@@ -87,7 +87,7 @@ Definition OT_rec_beta_Otp (A:TruncType (n.+1)) (P:Type)
            a b p
   : ap (OTid_rec A P Ot' Otp' Otp_1') (Otp a b p) = Otp' a b p.
 Proof.
-  refine (cancelL (transport_const (Otp a b p) (Ot' a)) _ _ _).
+  simple refine (cancelL (transport_const (Otp a b p) (Ot' a)) _ _ _).
   pose (e1:= OTid_ind_beta_Otp A (λ _ : OTid A, P) Ot'
         (λ (a0 b0 : A) (p1 : O nj (BuildTruncType _ (a0 = b0))),
          transport_const (Otp a0 b0 p1) (Ot' a0) @ Otp' a0 b0 p1)
@@ -125,7 +125,7 @@ Proof.
   apply (cancelL (apD_const (OTid_rec A P Ot' Otp' Otp_1') (Otp a a °1))).
   apply (cancelR _ _ (concat_p_pp (q:=transport_const _ _))^).
   apply (cancelR _ _ (whiskerL (transport2 _ (Otp_1 a) (Ot' a)) (apD_const (OTid_rec A P Ot' Otp' Otp_1') 1)^)).
-  refine ((apD02_const (OTid_rec A P Ot' Otp' Otp_1') (Otp_1 a) )^ @ _).
+  simple refine ((apD02_const (OTid_rec A P Ot' Otp' Otp_1') (Otp_1 a) )^ @ _).
   apply (cancelR _ _ (concat_p1 (transport2 (λ _ : OTid A, P) (Otp_1 a) (Ot' a)))).
   apply (cancelR _ _ ((whiskerL (transport2 (λ _ : OTid A, P) (Otp_1 a) (Ot' a)) (Otp_1' a) @
                                 concat_p1 (transport2 (λ _ : OTid A, P) (Otp_1 a) (Ot' a)))^ @
@@ -134,7 +134,7 @@ Proof.
                                                                                                                concat_p1 (transport2 (λ _ : OTid A, P) (Otp_1 a) (Ot' a)))^
                       (Otp' a a °1))).
   Opaque concat_p_pp.
-  refine (OTid_ind_beta_Otp_1 _ _ _ _ _ _ @ _); cbn.
+  simple refine (OTid_ind_beta_Otp_1 _ _ _ _ _ _ @ _); cbn.
   apply (cancelL (apD_const
                     (OTid_ind A (λ _ : OTid A, P) Ot'
                            (λ (a0 b0 : A) (p2 : O nj (BuildTruncType _ (a0 = b0))),
@@ -177,7 +177,7 @@ Proof.
   rewrite concat_concat2. cbn.
   rewrite (concat_1p (transport2_const (Otp_1 a) (Ot' a))).
   rewrite (concat_p1 (OT_rec_beta_Otp A P Ot' Otp' Otp_1' a a °1)).
-  refine ((concat_p1 _)^ @ _). rewrite !concat_pp_p.
+  simple refine ((concat_p1 _)^ @ _). rewrite !concat_pp_p.
   match goal with
   |[|- _ = (?P @@ ?Q) @ ?R] => path_via (((P @ 1) @@ Q) @ R)
   end.
@@ -185,7 +185,7 @@ Proof.
   rewrite <- concat_concat2.
   rewrite !concat_pp_p. apply whiskerL.
   rewrite !concat_p_pp. apply moveL_pV. rewrite concat_1p.
-  rewrite !concat_pp_p. refine ((concat_p1 _)^@ _).
+  rewrite !concat_pp_p. simple refine ((concat_p1 _)^@ _).
   apply whiskerL. cbn.
   pose (rew:= @triangulator _ _ _ _ (transport2 (λ _ : OTid A, P) (Otp_1 a) (Ot' a)) 1).
   apply moveL_Vp in rew. rewrite rew; clear rew. cbn.
@@ -375,7 +375,7 @@ Proof.
   repeat rewrite concat_pp_p.
   unfold  P19, P6, P32, P1, P12, P13, P2, P16.
   clear P19; clear P6; clear P32; clear P1; clear P12; clear P13; clear P2; clear P16.
-  rewrite inv_V.
+  (* rewrite inv_V. *)
   rewrite (concat_p1 (concat_1p p)).
   match goal with
   |[|- ?PP1 @ (?PP2 @ (?PP3 @ (?PP4 @ (?PP5 @ (?PP6 @ (?PP7 @ (?PP8 @ (?PP9 @ (?PP10 @ (?PP11 @ (?PP12 @ (?PP13 @ (?PP14 @ (?PP15 @ (?PP16)))))))))))))))
@@ -519,15 +519,15 @@ Lemma path_OT (A:(n.+1)-Type) (B:Type)
                       = transport (λ U, eq1 a @ ap β U = ap α U @ eq1 a) (Otp_1 a)^ (concat_p1 (eq1 a) @ (concat_1p (eq1 a))^))
   : α == β.
 Proof.
-  refine (OTid_ind _ _ _ _ _).
+  simple refine (OTid_ind _ _ _ _ _).
   - exact eq1.
   - intros a b p.
-    refine (transport_paths_FlFr _ _ @ _).
+    simple refine (transport_paths_FlFr _ _ @ _).
     etransitivity; try apply concat_pp_p.
     apply (cancelL (ap α (Otp a b p))).
     etransitivity; try apply eq2.
     apply concat_p_Vp.
-  - apply path_OT_lemma. exact eq3.
+  - rapply path_OT_lemma. exact eq3.
 Defined.
 
 Lemma path_OT_compute (A:(n.+1)-Type) (B:Type)
@@ -544,7 +544,7 @@ Defined.
 Lemma equiv_ap_OTid_fun {X Y:TruncType (n.+1)} (e: X -> Y)
   : OTid X -> OTid Y.
 Proof.
-  refine (OTid_rec _ _ _ _ _).
+  simple refine (OTid_rec _ _ _ _ _).
   intro x; apply Ot; exact (e x).
   intros a b p; cbn. apply Otp.
   exact (Oap e p).
@@ -557,22 +557,23 @@ Proof.
   destruct X as [X tX], Y as [Y tY]; cbn in *.
   destruct e; cbn in *.
   assert (r: tX = tY) by apply path_ishprop. destruct r.
-  refine (isequiv_homotopic idmap _).
+  simple refine (isequiv_homotopic idmap _).
   
-  refine (path_OT _ _ _ _ _ _ _).
+  simple refine (path_OT _ _ _ _ _ _ _).
   - intro x; reflexivity.
   - intros a b p; cbn.
-    refine (concat_1p _ @ _ @ (concat_p1 _)^).
+    simple refine (concat_1p _ @ _ @ (concat_p1 _)^).
     unfold equiv_ap_OTid_fun. cbn.
-    refine (OT_rec_beta_Otp _ _ _ _ _ _ _ _ @ _ @ (ap_idmap _)^).
+    simple refine (OT_rec_beta_Otp _ _ _ _ _ _ _ _ @ _ @ (ap_idmap _)^).
+    cbn.
     apply ap.
     apply Oap_idmap.
   - intro a; cbn. rewrite transport_paths_FlFr.
     rewrite concat_ap_Fpq; rewrite concat_ap_pFq.
-    apply moveR_pV. rewrite !concat_pp_p.
+    apply moveR_pV. do 3 rewrite concat_pp_p.
     pose (rew:= whiskerR_p1 (ap (ap idmap) (Otp_1 a)^)).
     rewrite concat_pp_p in rew; apply moveL_Vp in rew; rewrite rew; clear rew.
-    cbn. apply moveL_Vp. rewrite !concat_p_pp.
+    cbn. apply moveL_Vp. do 4 rewrite concat_p_pp.
     pose (rew:= whiskerL_1p (ap (ap (equiv_ap_OTid_fun idmap)) (Otp_1 a)^)).
     rewrite concat_pp_p in rew; apply moveL_Vp in rew; rewrite rew; clear rew.
     cbn. rewrite !concat_1p. rewrite !ap_V.
@@ -582,19 +583,19 @@ Proof.
     rewrite <- (apD (λ U, ap_idmap U) (Otp_1 a)^).
     rewrite transport_paths_FlFr. cbn. rewrite !ap_V.
     rewrite (ap_idmap (Otp_1 a)). rewrite concat_p1. rewrite !inv_pp.
-    rewrite !inv_V. rewrite concat_p_pp. refine (_ @ concat_1p _). apply whiskerR.
-    apply moveR_pM. rewrite concat_1p. refine (_ @ concat_p1 _).
+    rewrite !inv_V. rewrite concat_p_pp. simple refine (_ @ concat_1p _). apply whiskerR.
+    apply moveR_pM. rewrite concat_1p. simple refine (_ @ concat_p1 _).
     rewrite !concat_pp_p. apply whiskerL.
     rewrite <- ap_V. rewrite <- ap_pp.
     path_via ((ap (Otp a a) (idpath °1))).
-    apply ap. apply moveR_Vp. refine (_ @ (concat_p1 _)^).
+    apply ap. apply moveR_Vp. simple refine (_ @ (concat_p1 _)^).
     apply (Oap_idmap_Oap_1 a).
 Qed.
 
 Lemma isequiv_ap_OTid `{ua: Univalence} {X Y:TruncType (n.+1)} (e: X <~> Y)
   : IsEquiv (equiv_ap_OTid_fun e).
 Proof.
-  refine (isequiv_homotopic (equiv_ap_OTid_fun (equiv_path _ _ (path_universe_uncurried e))) _).
+  simple refine (isequiv_homotopic (equiv_ap_OTid_fun (equiv_path _ _ (path_universe_uncurried e))) _).
   exact ua.
   apply (isequiv_ap_OTid_path (path_universe_uncurried e)).
   rewrite equiv_path_path_universe_uncurried. intro; reflexivity.
@@ -621,7 +622,7 @@ Section OT_telescope.
 
   Definition OTtelescope (X:TruncType (n.+1)) 
   : diagram mappingtelescope_graph.
-    refine (Build_diagram _ _ _).
+    simple refine (Build_diagram _ _ _).
     - intros m. exact (OTtelescope_aux X m).
     - intros n m q; destruct q; simpl.
       intro x. apply tr. apply Ot. exact x.

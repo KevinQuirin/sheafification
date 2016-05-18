@@ -4,35 +4,36 @@ Context `{Funext}.
   
 Section Coequalizer.
   Definition coequalizer_graph : graph.
-    refine (Build_graph _ _).
+    simple refine (Build_graph _ _).
     - exact Bool.
     - intros i j; exact (if i then if j then Empty else Bool else Empty).
   Defined.
+  
 
   Context {B A: Type} (f g: B -> A).
   
   Definition coequalizer_diag : diagram coequalizer_graph.
-    refine (Build_diagram _ _ _).
+    simple refine (Build_diagram _ _ _).
     - intro x; destruct x.
       exact B. exact A.
     - intros i j; destruct i, j; intro H; destruct H. exact f. exact g.
   Defined.
   
   Definition Coeq_cocone : cocone coequalizer_diag (Coeq f g).
-    refine (Build_cocone _ _).
+    simple refine (Build_cocone _ _).
     - intros i x; destruct i; simpl in *. exact (coeq (g x)). exact (coeq x).
     - intros i j φ x; destruct i, j, φ; simpl. exact (cp x). reflexivity.
   Defined.
 
   Lemma is_coequalizer_Coeq : is_colimit coequalizer_diag (Coeq f g).
-    refine (Build_is_colimit Coeq_cocone _).
+    simple refine (Build_is_colimit Coeq_cocone _).
     intros X.
-    refine (isequiv_adjointify _ _ _).
-    - intros C. refine (Coeq_rec _ _ _). exact (q C false).
+    simple refine (isequiv_adjointify _ _ _).
+    - intros C. simple refine (Coeq_rec _ _ _). exact (q C false).
       intros b. etransitivity.
       exact (qq C true false true b).
       exact (qq C true false false b)^.
-    - intros C. refine (path_cocone _ _).
+    - intros C. simple refine (path_cocone _ _).
       + intros i x; destruct i; simpl. exact (qq C true false false x). reflexivity.
       + intros i j φ x; destruct i, j, φ; simpl.
         * hott_simpl.
@@ -42,7 +43,7 @@ Section Coequalizer.
         * reflexivity.
     - intros F. apply path_forall.
       match goal with
-        | [|- ?G == _ ] => refine (Coeq_ind (fun w => G w = F w) _ _)
+        | [|- ?G == _ ] => simple refine (Coeq_ind (fun w => G w = F w) _ _)
       end.
       + simpl. reflexivity.
       + intros b. simpl.

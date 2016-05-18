@@ -78,7 +78,7 @@ Section Reflective_Subuniverse.
     : {T : TruncType n & IsSubu T} <~>  subuniverse_Type.
   Proof.
     (* Why does [issig] tactic doesn't work ? *)
-    refine (equiv_adjointify _ _ _ _).
+    simple refine (equiv_adjointify _ _ _ _).
     intros [T s]. exists T. exact s.
     intros T. exists (st T). exact subu_struct.
     intro; reflexivity.
@@ -87,10 +87,10 @@ Section Reflective_Subuniverse.
   
   Instance subuniverse_Type_is_TruncTypeSn : IsTrunc (trunc_S n) subuniverse_Type.
   Proof.
-    refine (trunc_equiv' _ subuniverse_Type_sigma_equiv).
-    refine trunc_sigma.
+    simple refine (trunc_equiv' _ subuniverse_Type_sigma_equiv).
+    simple refine trunc_sigma.
     intro T.
-    refine (@trunc_leq -1 (n.+1) tt _ _).
+    simple refine (@trunc_leq -1 (n.+1) tt _ _).
   Defined.
   
   Definition O_rec (P : TruncType n) (Q : subuniverse_Type)
@@ -114,7 +114,7 @@ Section Reflective_Subuniverse.
   
   Definition O_unit_retract_equiv (T:TruncType n) (μ : (O T) -> T) (η := O_unit T) : Sect η μ -> IsEquiv η.
   Proof.
-    intros H. refine (isequiv_adjointify _ μ _ _).
+    intros H. simple refine (isequiv_adjointify _ μ _ _).
     - assert (η o μ o η = idmap o η).
       apply (ap (fun x => η o x)).
       apply path_forall; intro y.
@@ -143,7 +143,7 @@ Section Reflective_Subuniverse.
   Definition isequiv_unique_subuniverse (T T':subuniverse_Type)
     : IsEquiv (unique_subuniverse T T').
   Proof.
-    refine (isequiv_adjointify _ _ _ _).
+    simple refine (isequiv_adjointify _ _ _ _).
     - intro p. apply (ap st p).
     - intro p; destruct p.
       unfold unique_subuniverse; simpl.
@@ -186,7 +186,7 @@ Section Reflective_Subuniverse.
     IsEquiv (O_unit T) = IsSubu T.
   Proof.
     apply path_universe_uncurried. apply equiv_iff_hprop.
-    - refine (fun X => subuniverse_struct_transport _ _ (BuildEquiv _ _ _ (isequiv_inverse _ (feq:=X))) _).
+    - simple refine (fun X => subuniverse_struct_transport _ _ (BuildEquiv _ _ _ (isequiv_inverse _ (feq:=X))) _).
       apply subu_struct.
     - exact (fun X => O_modal_equiv (Build_subuniverse_Type T X)).
   Defined.
@@ -525,7 +525,7 @@ Section Reflective_Subuniverse.
     apply (@equiv_compose' _ (A -> B -> C) _).
     Focus 2.
     exists (λ f, λ u v, f (u,v)).
-    refine (@isequiv_adjointify _ _ _ (λ u, λ x, u (fst x) (snd x)) _ _).
+    simple refine (@isequiv_adjointify _ _ _ (λ u, λ x, u (fst x) (snd x)) _ _).
     intro x. apply path_forall; intro u; apply path_forall; intro v. reflexivity.
     intro x. apply path_forall; intro u. apply (transport (λ U, x U = x u) (eta_prod u)). reflexivity.
 
@@ -555,7 +555,7 @@ Section Reflective_Subuniverse.
   (* Proposition 11 *)
 
   Definition subuniverse_product_equiv' (A B : TruncType n) (TrP : IsTrunc n (A*B)) : (O (@BuildTruncType n (A*B) TrP)) <~> ((O A)*(O B)).
-    refine (equiv_adjointify _ _ _ _).
+    simple refine (equiv_adjointify _ _ _ _).
     - intros x.
       econstructor.
       revert x; apply O_rec; intro x; apply O_unit; exact (fst x).
@@ -569,8 +569,8 @@ Section Reflective_Subuniverse.
       pose (s := Build_subuniverse_Type s0 (subuniverse_product (O A) (O B))).
 
       pose (p := λ (A:TruncType n) (f g : O A -> s) pp, ap10 (@equal_fun_modal A s f g pp)).
-      revert oa; refine (p _ _ _ _); apply path_forall; intro a.
-      revert ob; refine (p _ _ _ _); apply path_forall; intro b.
+      revert oa; simple refine (p _ _ _ _); apply path_forall; intro a.
+      revert ob; simple refine (p _ _ _ _); apply path_forall; intro b.
 
 
       assert (rew := λ P Q f, ap10 (O_rec_retr P Q f)).
@@ -578,7 +578,7 @@ Section Reflective_Subuniverse.
       repeat rewrite rew. reflexivity.
     - simpl.
       pose (p := λ (X:TruncType n) (f g : (O X) -> (O (@BuildTruncType n (A∧B) TrP))) pp, ap10 (@equal_fun_modal X (O (@BuildTruncType n (A ∧ B) TrP)) f g pp)).
-      refine (p _ _ _ _). apply path_forall.
+      simple refine (p _ _ _ _). apply path_forall.
       intros [a b]. simpl.
       assert (rew := λ P Q f, ap10 (O_rec_retr P Q f)).
 
@@ -595,15 +595,15 @@ Section Reflective_Subuniverse.
   (*   simpl. unfold subuniverse_product'. unfold equiv_adjointify. *)
   (*   rewrite transport_path_universe_uncurried. *)
   (*   (* unfold compose; simpl. *) *)
-  (*   refine (path_prod _ _ _ _). *)
+  (*   simple refine (path_prod _ _ _ _). *)
   (*   - simpl. *)
   (*     (* rewrite O_rec_retr. *) *)
-  (*     refine (@apD10 _ _ ( O_rec (A.1 ∧ B.1; TrP) (O A) *)
+  (*     simple refine (@apD10 _ _ ( O_rec (A.1 ∧ B.1; TrP) (O A) *)
   (*                                (λ x0 : A.1 ∧ B.1, O_unit A (fst x0)) o (O_unit (A.1 ∧ B.1; TrP))) ((O_unit A) o fst) _ x). *)
   (*     simpl. *)
   (*     apply (O_rec_retr (A.1 ∧ B.1; TrP) (O A) (λ x0 : A.1 ∧ B.1, O_unit A (fst x0))). *)
   (*   - simpl. *)
-  (*     refine (@apD10 _ _ ( O_rec (A.1 ∧ B.1; TrP) (O B) *)
+  (*     simple refine (@apD10 _ _ ( O_rec (A.1 ∧ B.1; TrP) (O B) *)
   (*                                (λ x0 : A.1 ∧ B.1, O_unit B (snd x0)) o (O_unit (A.1 ∧ B.1; TrP))) ((O_unit B) o snd) _ x). *)
   (*     apply O_rec_retr. *)
   (* Defined. *)
@@ -683,7 +683,7 @@ Section Reflective_Subuniverse.
   Global Instance subuniverse_paths (A : subuniverse_Type) (x y:A)
   : IsSubu (BuildTruncType n (x = y)).
     rewrite <- subuniverse_iff_O.
-    refine (O_unit_retract_equiv (BuildTruncType n (x=y)) _ _).
+    simple refine (O_unit_retract_equiv (BuildTruncType n (x=y)) _ _).
     - intros u.
       assert (p : (fun _:(O (BuildTruncType n (x = y))) => x) = (fun _=> y)).
       { apply (equiv_inv (IsEquiv := isequiv_ap
@@ -719,7 +719,7 @@ Section Reflective_Subuniverse.
   Lemma O_rec_inv_equiv (T:TruncType (trunc_S n)) (a b:T)
     : IsEquiv (O_rec_inv T a b).
   Proof.
-    refine (isequiv_adjointify _ _ _ _);
+    simple refine (isequiv_adjointify _ _ _ _);
     [ exact (O_rec_inv _ b a) | |];
     intro x; unfold O_rec_inv;
     rewrite <- (ap10 (function_lift_compose _ _ _ _ _)); cbn;

@@ -174,14 +174,14 @@ Section Definitions.
   : Snsheaf_struct T.
     split.
     { intros E χ u v.
-      refine (isequiv_adjointify _ _ _ _).
+      simple refine (isequiv_adjointify _ _ _ _).
       - unfold E_to_χ_map; simpl; intro p.
         apply path_forall; intro x.
         destruct χ as [χ χeq χdiag]. simpl in *.
         pose proof (transport idmap (χeq x) (x;1)). simpl in X.
         revert X.
         transparent assert (modal_family : (subuniverse_Type nj)).
-        { refine (Build_subuniverse_Type _ nj (BuildTruncType _ (u x = v x)) _).
+        { simple refine (Build_subuniverse_Type _ nj (BuildTruncType _ (u x = v x)) _).
           apply istrunc_paths. apply trunc_succ. exact Trn.
           exact (subuniverse_paths _ nj (Build_subuniverse_Type _ nj (@BuildTruncType _ T Trn) nsheaf) (u x) (v x)). }
         apply (O_rec _ nj (χ x) modal_family); unfold modal_family; clear modal_family.
@@ -208,7 +208,7 @@ Section Definitions.
         { apply path_forall; intro x. rewrite O_rec_const. reflexivity. }
         rewrite X. apply path_forall_1. }
     { intros E χ.
-      refine (isequiv_adjointify _ _ _ _).
+      simple refine (isequiv_adjointify _ _ _ _).
       - intros f x.
         unfold J in χ; simpl in *.
         assert (p := transport idmap (j_is_nj (χ x).1) (χ x).2).
@@ -246,7 +246,7 @@ Section Definitions.
         assert (p := transport idmap (j_is_nj (χ x).1) (χ x).2).
         revert p. simpl.
         transparent assert (sheaf : (subuniverse_Type nj)).
-        { refine (Build_subuniverse_Type n nj
+        { simple refine (Build_subuniverse_Type n nj
            (BuildTruncType _ (O_rec n nj
        {|
        trunctype_type := (χ x).1;
@@ -411,15 +411,15 @@ Section Definitions.
   Proof.
     intros Hf Hg.
     intro x.
-    refine (trunc_equiv' _ (hfiber_compose f g x)^-1).
+    simple refine (trunc_equiv' _ (hfiber_compose f g x)^-1).
   Defined.
 
   Instance istruncmap_charn n {B:Type} (P: B -> TruncType n)
     : IsTruncMap n (pr1: sig P -> B).
   Proof.
     intro b. unfold hfiber.
-    refine (@trunc_equiv (P b) _ (λ x:P b, ((b;x);1)) _ _ _).
-    refine (isequiv_adjointify _ _ _ _).
+    simple refine (@trunc_equiv (P b) _ (λ x:P b, ((b;x);1)) _ _ _).
+    simple refine (isequiv_adjointify _ _ _ _).
     exact (fun X => transport (λ b, P b) (X.2) (X.1.2)).
     intros [[b' P'] eqb']; cbn in *. destruct eqb'.
     reflexivity.
@@ -429,12 +429,12 @@ Section Definitions.
   Lemma hfiber_compose_mono {A B C:Type} (f : A -> B) (g : B -> C) (Mg: IsMono g) b
     : hfiber f b <~> hfiber (g o f) (g b).
   Proof.
-    refine (equiv_adjointify _ _ _ _).
+    simple refine (equiv_adjointify _ _ _ _).
     - intros [x p]. exact (x; ap g p).
     - intros [x p]. exact (x; (equiv_inv (IsEquiv := Mg (f x) b)) p).
-    - intros [x p]. refine (path_sigma' _ 1 _); cbn.
+    - intros [x p]. simple refine (path_sigma' _ 1 _); cbn.
       apply eisretr.
-    - intros [x p]. refine (path_sigma' _ 1 _); simpl.
+    - intros [x p]. simple refine (path_sigma' _ 1 _); simpl.
       apply eissect.
   Defined.
       
@@ -476,8 +476,8 @@ Section Definitions.
   hfiber (λ t : {b : {b : E & χ b} & φ (pr1 b)}, pr1 (pr1 t)) x <~>
   hfiber (λ t : {b : {b : E & φ b} & χ (pr1 b)}, pr1 (pr1 t)) x.
     unfold hfiber. cbn.
-    refine (equiv_functor_sigma' _ _).
-    refine (equiv_adjointify _ _ _ _).
+    simple refine (equiv_functor_sigma' _ _).
+    simple refine (equiv_adjointify _ _ _ _).
     - intros [[a b] c]. exact ((a;c);b).
     - intros [[a b] c]. exact ((a;c);b).
     - intros a. reflexivity.
@@ -492,11 +492,9 @@ Section Definitions.
     unfold type_j_inv. simpl. 
     apply path_forall; intro x.
     rewrite (O_modal n nj (φ x)).
-    repeat apply ap.
-    apply path_trunctype.
-    pose (hfiber_fibration x (trunctype_type o (@st n nj) o φ)).
-    cbn in e.
-    etransitivity; try exact (hfiber_fibration x (trunctype_type o (@st n nj) o φ))^-1.
+    apply ap.
+    apply path_trunctype. cbn.
+    etransitivity; [| exact (equiv_inverse (hfiber_fibration x (trunctype_type o (@st n nj) o φ)))].
     symmetry. apply (hfiber_compose_mono pr1 pr1).
     intros X Y.
     apply isequiv_pr1_path_hprop.
@@ -505,7 +503,7 @@ Section Definitions.
     apply path_forall; intro x.
     rewrite (O_modal n nj (φ x)).
     assert (Tr1: IsTruncMap n (λ x0 : ∃ e : ∃ e : E, φ e, (χ e.1).1, (x0.1).1)).
-    refine (istruncmap_compose n pr1 pr1 _ _). 
+    simple refine (istruncmap_compose n pr1 pr1 _ _). 
     intro e; exact (@trunc_leq -1 n tt _ (istruncmap_charn -1 (λ t, (χ t.1).1) e)).
 
     match goal with
@@ -517,10 +515,10 @@ Section Definitions.
     exact (inter_symm _ (fun b => (χ b).1) (fun b => φ b) x).
     pose (X := nj_fibers_compose (∃ e : ∃ e : E, φ e, (χ e.1).1) {e:E & φ e} E pr1 pr1 x).
     assert (HB : IsTruncMap n (λ s : ∃ e : ∃ e : E, φ e, (χ e.1).1, s.1)).
-    intro e. refine (@trunc_leq -1 n tt _ _).
+    intro e. simple refine (@trunc_leq -1 n tt _ _).
     assert (HC : IsTruncMap n
                             (λ s : ∃ e : E, φ e, let (proj1_sig, _) := s in proj1_sig)).
-    intro e. refine (istruncmap_charn _ _ _).
+    intro e. simple refine (istruncmap_charn _ _ _).
     cbn in *.
     specialize (X HB HC).
     match goal with
@@ -556,7 +554,7 @@ Section Definitions.
   :  (φ1 x) -> (φ2 x).
     unfold E_to_χ_map in p.
     generalize dependent (EnJ_is_nJ χ x).
-    refine (O_rec n nj (χ x) (Build_subuniverse_Type n nj (BuildTruncType _ (φ1 x -> φ2 x)) _) _).
+    simple refine (O_rec n nj (χ x) (Build_subuniverse_Type n nj (BuildTruncType _ (φ1 x -> φ2 x)) _) _).
     intro v.
     exact (transport (λ U, U) (ap (trunctype_type) (ap (@st n nj) (ap10 p (x;v))))).
   Defined.
@@ -757,7 +755,7 @@ Section Definitions.
   Proof.
     intro H; simpl in H.
     funext u a .
-    refine (@ap10 _ _ (λ u, x u a) (λ u, y u a) _ u).
+    simple refine (@ap10 _ _ (λ u, x u a) (λ u, y u a) _ u).
     pose ((fst (B a).2) E χ (λ v, x v a) (λ v, y v a)).
     exact (equiv_inv (IsEquiv := i) (path_forall _ _ (λ t, apD10 ((apD10 H) t) a))).
   Defined.
@@ -857,7 +855,7 @@ Section Definitions.
 
   (* Definition of diagonals *)
   Definition δ (T:TruncType (trunc_S n)) : T * T-> TruncType n.
-    intros x. exists (fst x = snd x). refine (istrunc_paths _ _ _).
+    intros x. exists (fst x = snd x). simple refine (istrunc_paths _ _ _).
   Defined.
 
   Definition Δ (T:TruncType (trunc_S n)) := {x:T*T & δ T x}.
@@ -981,7 +979,7 @@ Section Definitions.
   (* Any object seen as a subobject of its closure is closed *)
   Definition dense_into_cloture (E:Type) (φ:E -> TruncType n) (A:={e:E & φ e}) (clA := {e:E & (O nj (φ e))})
   : EnJ clA.
-    refine (Build_EnJ _ _ (dense_into_cloture_dense_eq φ)).
+    simple refine (Build_EnJ _ _ (dense_into_cloture_dense_eq φ)).
   Defined.
 
   (*** CHECK IF THAT IS NEEDED *)
@@ -992,7 +990,7 @@ Section Definitions.
   (*   assert (χdiag := dense_diag e). *)
   (*   destruct e as [χ χeq]. *)
   (*   intros X p. *)
-  (*   refine (Build_EnJ _ _). *)
+  (*   simple refine (Build_EnJ _ _). *)
   (*   - intro x. apply χ. *)
   (*     apply (equiv_path _ _ p). *)
   (*     exact x. *)
@@ -1019,7 +1017,7 @@ Section Definitions.
   (* Definition path_sigma_transport' (E:Type) (φ χ : E -> Type) (eq : χ == φ) (x y : {e:E & φ e}) *)
   (* : (x = y) <~> ((x.1 ; transport idmap (eq x.1)^ x.2) = (y.1 ; transport idmap (eq y.1)^ y.2)). *)
   (*   transitivity ((x.1; transport idmap (ap10 (path_forall _ _ eq) x.1)^ x.2) = (y.1; transport idmap (ap10 (path_forall _ _ eq) y.1)^ y.2)). *)
-  (*   refine (path_sigma_transport _ _ _). *)
+  (*   simple refine (path_sigma_transport _ _ _). *)
   (*   unfold ap10, path_forall. rewrite eisretr.  *)
   (*   apply equiv_idmap. *)
   (* Defined. *)
@@ -1046,7 +1044,7 @@ Section Definitions.
   (*   pose (e := dense_into_cloture φ); simpl in e. *)
   (*   assert (χdiag := dense_diag e). *)
   (*   destruct e as [χ χeq]. *)
-  (*   refine (Build_EnJ _ _). *)
+  (*   simple refine (Build_EnJ _ _). *)
   (*   - intro x. apply χ. *)
   (*     exists x.1. *)
   (*     apply (equiv_path _ _ (p x.1)). *)
@@ -1056,7 +1054,7 @@ Section Definitions.
   (*     pose (eq := χeq (e.1; transport idmap (p e.1)^ e.2)). *)
   (*     etransitivity; try exact eq. clear eq. *)
   (*     apply path_universe_uncurried. *)
-  (*     refine (equiv_functor_sigma' _ _). *)
+  (*     simple refine (equiv_functor_sigma' _ _). *)
   (*     apply (equiv_functor_sigma_id). *)
   (*     intro a. *)
   (*     apply equiv_path. exact (p a)^. *)
@@ -1070,7 +1068,7 @@ Section Definitions.
   Proof.
     intros sepT x y.
     rewrite <- (subuniverse_iff_O n nj _).
-    refine (O_unit_retract_equiv n nj _ _ _).
+    simple refine (O_unit_retract_equiv n nj _ _ _).
     intro p.
     specialize (sepT _ (dense_into_cloture (T*T) (λ x, BuildTruncType _ (fst x = snd x))) (fst o pr1) (snd o pr1)).
     apply (λ C, ap10 (equiv_inv (IsEquiv := sepT) C) ((x,y);p)).
@@ -1083,7 +1081,7 @@ Section Definitions.
                  O_unit nj
                    (BuildTruncType _ (fst (pr1 x) = snd (pr1 x))) π = 
                  pr2 x)).
-    { refine (exist _  _ _).
+    { simple refine (exist _  _ _).
       exists (x,x).
       apply O_unit. reflexivity.
       simpl. exists 1. reflexivity. }
@@ -1119,7 +1117,7 @@ Section Definitions.
     : (forall x y:T, IsSubu n nj (BuildTruncType _ (x=y))) -> separated T.
   Proof.
     intros H F χ f g.
-    refine (isequiv_adjointify _ _ _ _).
+    simple refine (isequiv_adjointify _ _ _ _).
     - intro p. apply path_forall; intro x.
       specialize (H (f x) (g x)).
       unfold E_to_χ_map in *.
@@ -1146,7 +1144,7 @@ Section Definitions.
       apply path_forall; intro x. simpl.
       generalize (equiv_path _ _ (dense_eq χ x) (x;1)).
       transparent assert (sh : (subuniverse_Type nj)).
-      { refine (Build_subuniverse_Type n nj
+      { simple refine (Build_subuniverse_Type n nj
                  (BuildTruncType _ (O_rec n nj (χ x)
                              {| st := BuildTruncType _ (f x = g x); subu_struct := H (f x) (g x) |}
                              (λ w : χ x, ap10 (ap (E_to_χ_map T χ) p) (x; w))

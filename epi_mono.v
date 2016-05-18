@@ -35,22 +35,22 @@ Section Embeddings.
     - intros H x y.
       apply isequiv_fcontr. intro q.
       pose (Y := equiv_path_hfiber (x;1) (y;q^)); cbn in Y.
-      refine (contr_equiv' (∃ q0 : x = y, 1 = ap f q0 @ q^) _).
-      refine (equiv_functor_sigma_id _); intro a.
+      simple refine (contr_equiv' (∃ q0 : x = y, 1 = ap f q0 @ q^) _).
+      simple refine (equiv_functor_sigma_id _); intro a.
       pose (ff:= (equiv_inverse (BuildEquiv _ _ _ (isequiv_moveL_pV q 1 (ap f a))))).
       rewrite concat_1p in ff.
       exact (equiv_compose' (equiv_path_inverse q (ap f a)) ff).
-      refine (@contr_equiv' ((x; 1) = (y; q^)) _ (equiv_inverse Y) _).
+      simple refine (@contr_equiv' ((x; 1) = (y; q^)) _ (equiv_inverse Y) _).
     - intros H b x y; simpl. pose (Y:=equiv_path_hfiber x y).
-      refine (@contr_equiv' _ _ Y _).
+      simple refine (@contr_equiv' _ _ Y _).
       pose (fcontr_isequiv (ap f) (H x.1 y.1) (x.2@y.2^)).
       match goal with
       |[ i : Contr ?AA |- Contr ?BB ] => assert (X: AA <~> BB)
       end.
-      refine (equiv_functor_sigma_id _); intro a.
+      simple refine (equiv_functor_sigma_id _); intro a.
       pose (ff:= (equiv_inverse (BuildEquiv _ _ _ (isequiv_moveL_pV y.2 (ap f a) x.2)))).
       exact (equiv_compose' (equiv_path_inverse (ap f a @ y.2) x.2) ff).
-      refine (@contr_equiv' _ _ X _).
+      simple refine (@contr_equiv' _ _ X _).
   Qed.
   
   Definition IsMonof_to_isMono {A B : Type} (f : A -> B) : IsMonof f -> IsMono f.
@@ -58,9 +58,9 @@ Section Embeddings.
     unfold IsMonof in H.
     specialize (H A). specialize (H (fun _ => x) (fun _ => y)).
     destruct H as [inv retr sect _]. 
-    refine (isequiv_adjointify _ _ _ _).
+    simple refine (isequiv_adjointify _ _ _ _).
     - intro H.
-      refine (apD10 (f := λ _, x) (g := λ _, y) (inv _) _).
+      simple refine (apD10 (f := λ _, x) (g := λ _, y) (inv _) _).
       apply path_forall; intro u; exact H. exact x.
     - intro u.
       etransitivity; try exact (ap10_ap_postcompose f (g:=(λ _ : A, x)) (g' := (λ _ : A, y)) (inv (path_forall (λ _ : A, f x) (λ _ : A, f y) (λ _ : A, u))) x)^.

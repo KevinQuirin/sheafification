@@ -49,8 +49,8 @@ Section Sheafification.
   Definition separated_Type_is_TruncType_Sn (T:TruncType (trunc_S n)) : IsTrunc (trunc_S n) (separated_Type T).
     unfold separated_Type; simpl.
     (* destruct T as [T TrT]; simpl in *. *)
-    refine trunc_sigma.
-    refine trunc_forall. intro t.
+    simple refine trunc_sigma.
+    simple refine trunc_forall. intro t.
     exact (@subuniverse_Type_is_TruncTypeSn _ nj ua).
   Defined.
 
@@ -81,12 +81,12 @@ Section Sheafification.
   (* Lemma 28 *)
   Definition separated_mono_is_separated (T U:TruncType (trunc_S n)) (H:separated U) (f: T -> U) (fMono : IsMonof f) : separated T.
     intros E χ x y.
-    refine (separated_mono_is_separated_ _ _ _ _ (H E χ (f o x) (f o y)) fMono).
+    simple refine (separated_mono_is_separated_ _ _ _ _ (H E χ (f o x) (f o y)) fMono).
   Defined.
 
   Definition T_nType_j_Type_trunc (T:Type) : IsTrunc (trunc_S n) (T -> subuniverse_Type nj).
   Proof.
-    refine trunc_forall. intro t.
+    simple refine trunc_forall. intro t.
     exact (@subuniverse_Type_is_TruncTypeSn _ nj ua).
   Defined.
 
@@ -94,7 +94,7 @@ Section Sheafification.
     : forall T, Snsheaf_struct (@BuildTruncType _ (T -> subuniverse_Type nj) (T_nType_j_Type_trunc T)).
   Proof.
     intro T.
-    refine (dep_prod_SnType_j_Type T (λ _, ((BuildTruncType _ (subuniverse_Type nj)); nType_j_Type_is_SnType_j_Type))).
+    simple refine (dep_prod_SnType_j_Type T (λ _, ((BuildTruncType _ (subuniverse_Type nj)); nType_j_Type_is_SnType_j_Type))).
   Defined.
 
   (* For any type [T], [T -> subuniverse_Type] is modal *)
@@ -164,7 +164,7 @@ Section Sheafification.
     split.
     - intro x.
       unfold mu_modal_paths_func_univ_inv, mu_modal_paths_func_univ_func, δ; simpl. unfold clδ, δ in p; simpl in p.
-      refine (ap10 (f:= (O_rec n nj (BTT (a = t))
+      simple refine (ap10 (f:= (O_rec n nj (BTT (a = t))
                                (O nj (BTT (b = t)))
                                (λ u : a = t,
                                       O_rec n nj (BTT (a = b))
@@ -192,7 +192,7 @@ Section Sheafification.
       (*                p *)
       (*            ); simpl in foo. *)
 
-      refine (ap10 (f:= (O_rec n nj (BTT (b = t))
+      simple refine (ap10 (f:= (O_rec n nj (BTT (b = t))
                                (O nj (BTT (a = t)))
                                (λ u : b = t,
                                       O_rec n nj (BTT (a = b))
@@ -287,7 +287,7 @@ Section Sheafification.
     revert x.
     transparent assert (sh : ((O nj (BTT (a = b))) -> subuniverse_Type nj)).
     { intro x.
-      refine (Build_subuniverse_Type _ nj (BTT (O_unit nj (BTT (b = b)) 1 =
+      simple refine (Build_subuniverse_Type _ nj (BTT (O_unit nj (BTT (b = b)) 1 =
    O_rec sheaf_def_and_thm.n nj (BTT (a = b)) (O nj (BTT (b = b)))
      (λ u : a = b,
       O_rec sheaf_def_and_thm.n nj
@@ -296,7 +296,7 @@ Section Sheafification.
         istrunc_trunctype_type := istrunc_paths a b |} 
         (O nj (BTT (b = b))) (λ v : a = b, O_unit nj (BTT (b = b)) (v^ @ u))
         x) x)) _). }
-      refine (O_rec_dep _ sh _).1.
+      simple refine (O_rec_dep _ sh _).1.
       unfold sh; clear sh; intro x; simpl.
               
       pose (foo := λ P Q f, ap10 (O_rec_retr n nj P Q f)).
@@ -350,7 +350,7 @@ Section Sheafification.
   (* For any [x,y:T], [(μ x = μ y) = ○ (x = y)] : in proof of Lemma 29 *)
   (* Theorem separated_unit_paths_are_nj_paths (T:(n.+1)-Type) (a b:T) : (separated_unit T a = separated_unit T b) <~> (O nj (BTT (a=b))). *)
   (* Proof. *)
-  (*   refine (equiv_adjointify _ _ _ _). *)
+  (*   simple refine (equiv_adjointify _ _ _ _). *)
   (*   - apply separated_unit_paths_are_nj_paths_fun. *)
   (*   - apply separated_unit_paths_are_nj_paths_inv. *)
   (*   - apply separated_unit_paths_are_nj_paths_retr. *)
@@ -360,7 +360,7 @@ Section Sheafification.
   Theorem separated_unit_paths_are_nj_paths (T:(n.+1)-Type) (a b:T)
     : IsEquiv (separated_unit_paths_are_nj_paths_inv T a b).
   Proof.
-      refine (isequiv_adjointify _ _ _).
+      simple refine (isequiv_adjointify _ _ _).
     - apply separated_unit_paths_are_nj_paths_fun.
     - apply separated_unit_paths_are_nj_paths_sect.
     - apply separated_unit_paths_are_nj_paths_retr.
@@ -371,7 +371,7 @@ Section Sheafification.
     : Omono_sep T _ (separated_Type_is_separated T) (separated_unit T).
   Proof.
     intros x y.
-    refine (isequiv_homotopic (separated_unit_paths_are_nj_paths_inv T x y) _).
+    simple refine (isequiv_homotopic (separated_unit_paths_are_nj_paths_inv T x y) _).
     apply separated_unit_paths_are_nj_paths.
     
     intro p. unfold separated_unit_paths_are_nj_paths_inv.
@@ -414,7 +414,7 @@ Section Sheafification.
     end.
     path_via (G p).
     revert p.
-    refine (O_rec_dep _ (λ p, Build_subuniverse_Type n nj (BuildTruncType _ (F p = G p)) _) _).1.
+    simple refine (O_rec_dep _ (λ p, Build_subuniverse_Type n nj (BuildTruncType _ (F p = G p)) _) _).1.
     intro p; cbn. unfold F; clear F; unfold G; clear G.
     repeat rewrite (λ P Q f, ap10 (O_rec_retr n nj P Q f)).
     destruct p; cbn. reflexivity.
@@ -424,10 +424,10 @@ Section Sheafification.
         (oT := Trunc (n.+1) (OTid E)) 
   : oT -> S.
   Proof.
-    refine (Trunc_rec _).
-    refine (OTid_rec _ _ _ _ _).
+    simple refine (Trunc_rec _).
+    simple refine (OTid_rec _ _ _ _ _).
     exact f.
-    intros a b. refine (O_rec n nj _ (Build_subuniverse_Type n nj _ (separated_nj_paths S sepS (f a) (f b))) _).
+    intros a b. simple refine (O_rec n nj _ (Build_subuniverse_Type n nj _ (separated_nj_paths S sepS (f a) (f b))) _).
     exact (ap f).
     intro a; cbn.
     exact (ap10 (O_rec_retr n nj
@@ -451,8 +451,8 @@ Section Sheafification.
   Proof.
     unfold f1, OT_to_sep. clear f1.
     apply path_forall.
-    refine (Trunc_ind _ _); cbn.
-    refine (path_OT _ _ _ _ _ _ _); cbn.
+    simple refine (Trunc_ind _ _); cbn.
+    simple refine (path_OT _ _ _ _ _ _ _); cbn.
     
     intro x.
     path_via (g x). exact (ap10 eq x).    
@@ -466,14 +466,14 @@ Section Sheafification.
                                                                     (P1 @ ap f1 (P2 p)) (ap f2 (P3 p) @ P4)))
     end.
 
-    refine (O_rec_dep _ shf _).1.
+    simple refine (O_rec_dep _ shf _).1.
     unfold shf; clear shf; cbn.
     intro p. destruct p.
-    refine (_ @ ((OT_rec_beta_Otp E S f _ _ a a °1)^ @@ 1)).
-
+    simple refine (_ @ ((OT_rec_beta_Otp E S f _ _ a a °1)^ @@ 1)).
+    cbn.
     match goal with
     |[|- _ = O_rec n nj ?PP ?QQ ?ff _ @ _] =>
-     refine (_ @ ((ap10 (O_rec_retr n nj PP QQ ff) 1)^ @@ 1))
+     simple refine (_ @ ((ap10 (O_rec_retr n nj PP QQ ff) 1)^ @@ 1))
     end.
     cbn.
     match goal with |[|- _ = 1 @ ?xx] => path_via (xx @ 1) end.
@@ -483,7 +483,7 @@ Section Sheafification.
     apply ap.
     apply Otp_1.
 
-    refine (concat_p1 _ @ _). symmetry; apply concat_1p.
+    simple refine (concat_p1 _ @ _). symmetry; apply concat_1p.
     
     Opaque O_rec_dep.
     abstract (
@@ -561,7 +561,7 @@ Section Sheafification.
     { intro i; cbn. induction i.
       exact f.
       apply OT_to_sep. exact sepV. exact IHi. }
-    refine (Build_cocone _ _).    
+    simple refine (Build_cocone _ _).    
     - exact F.
     - intros i j q; destruct q.
       induction i.
@@ -573,10 +573,10 @@ Section Sheafification.
   Theorem isequiv_separation_colimit_OTtelescope_cocone (U V:TruncType (n.+1)) (sepV:separated V)
     : IsEquiv (separation_colimit_OTtelescope_cocone U V sepV).
   Proof.
-    refine (isequiv_adjointify _ _ _).
+    simple refine (isequiv_adjointify _ _ _).
     - intro C. exact (C 0).
     - intro C.
-      refine (path_cocone _ _).
+      simple refine (path_cocone _ _).
       + intro i. apply ap10.
         induction i.
         reflexivity.
@@ -635,7 +635,7 @@ Section Sheafification.
     intros P [Q sepQ].
     pose (G := separation_colimit_OTtelescope P Q).
     match goal with |[G:IsEquiv ?ff |- _] => pose (F := ff) end.
-    refine (isequiv_compose' F _ (λ C, C 0) _).
+    simple refine (isequiv_compose' F _ (λ C, C 0) _).
     - exact (isequiv_inverse _ (feq := isequiv_separation_colimit_OTtelescope_cocone P Q sepQ)).
   Defined.
   
@@ -650,13 +650,13 @@ Section Sheafification.
 
   Lemma density_sigma (E:Type) (χ : EnJ E) (e:E) (E' := {e':E & e = e'})
   : EnJ {e':E & e' = e}.
-    refine (@Build_EnJ _ _ _).
+    simple refine (@Build_EnJ _ _ _).
     - intro x. apply χ. exact x.1.
     - intros e0.
       pose (dense_eq _ χ e0.1).
       etransitivity; try exact p.
       apply path_universe_uncurried.
-      refine (equiv_adjointify _ _ _ _).
+      simple refine (equiv_adjointify _ _ _ _).
       + intros [e' q]. destruct q. exists e0.1. reflexivity.
       + intros [e' q]. destruct q. exists e0. reflexivity.
       + intros [e' q]. destruct q. reflexivity.
@@ -665,15 +665,15 @@ Section Sheafification.
 
   (* Proposition 31 *)
   Definition separated_modality : Modality (trunc_S n).
-    refine (Build_Modality _ separation_reflective_subuniverse _).
+    simple refine (Build_Modality _ separation_reflective_subuniverse _).
     intros A B. simpl in *.
     destruct A as [A sepA]. simpl in sepA.
     unfold separated.
     intros E χ f g. simpl in *.
-    refine (isequiv_adjointify _ _ _).
+    simple refine (isequiv_adjointify _ _ _).
     - unfold E_to_χ_map; simpl. intros H. simpl in H.
       apply path_forall; intro x.
-      refine (path_sigma _ _ _ _ _).
+      simple refine (path_sigma _ _ _ _ _).
       apply (ap10 (f := (pr1 o f)) (g := (pr1 o g))).
       apply (equiv_inv _ (IsEquiv := sepA E χ (pr1 o f) (pr1 o g))).
       apply path_forall; intro y. exact (ap10 H y)..1.
@@ -733,7 +733,7 @@ Section Sheafification.
       apply isequiv_inverse.
       rewrite eissect. simpl.
       unfold pr1_path, pr2_path.
-      refine (path_sigma' _ _ _).
+      simple refine (path_sigma' _ _ _).
       { pose (p0 := ap10_ap_precompose (pr1 : {e:E & χ e} -> E) ((let (equiv_inv, eisretr, eissect, _) :=
                                                                     sepA E χ (pr1 o f) (pr1 o g) in
                                                                 equiv_inv)
@@ -744,7 +744,8 @@ Section Sheafification.
         pose (p0 := eisretr _ (IsEquiv := sepA E χ (λ x0 : E, (f x0).1) (λ x0 : E, (g x0).1)) (path_forall (λ y : ∃ b : E, χ b, ap pr1 (ap10 p y)))).
         unfold Sect, equiv_inv, E_to_χ_map in p0. 
         apply (transport (λ u, ap10 u e = _) p0^). clear p0.
-        exact (apD10 (eisretr (apD10 (f:=(λ x0 : ∃ b : E, χ b, (f x0.1).1)) (g:=(λ x0 : ∃ b : E, χ b, (g x0.1).1))) (IsEquiv := isequiv_apD10 _ _ (λ x0 : ∃ b : E, χ b, (f x0.1).1) (λ x0 : ∃ b : E, χ b, (g x0.1).1)) (λ y : ∃ b : E, χ b, ap pr1 (ap10 p y))) e). }
+        exact (apD10 (eisretr (apD10 (f:=(λ x0 : ∃ b : E, χ b, (f x0.1).1)) (g:=(λ x0 : ∃ b : E, χ b, (g x0.1).1))) (IsEquiv := isequiv_apD10 _ _ (λ x0 : ∃ b : E, χ b, (f x0.1).1) (λ x0 : ∃ b : E, χ b, (g x0.1).1)) (λ y : ∃ b : E, χ b, ap pr1 (ap10 p y))) e). 
+}
       { destruct e as [a c]. simpl in *.
         repeat rewrite transport_paths_FlFr; simpl.
         repeat rewrite ap_const.
@@ -815,9 +816,9 @@ Section Sheafification.
       unfold path_sigma.
       rewrite eissect. simpl.
 
-      refine (path_sigma' _ _ _).
+      simple refine (path_sigma' _ _ _).
       { destruct p. simpl.
-        refine (apD10 _ _). intro y; reflexivity.
+        simple refine (apD10 _ _). intro y; reflexivity.
         
         unfold equiv_inv.
         path_via (ap10 ((let (equiv_inv, eisretr, eissect, _) :=
@@ -856,7 +857,7 @@ Section Sheafification.
         { intro u. apply ap.
           path_via (transport (λ x0 : A, B x0) 1 (f u.1).2); try auto.
           apply (ap (λ p, transport (λ x0 : A, B x0) p (f u.1).2)). simpl.
-          refine (apD10 _ _). intro v. reflexivity.
+          simple refine (apD10 _ _). intro v. reflexivity.
           path_via (ap10 ((let (equiv_inv, eisretr, eissect, _) :=
                              sepA E χ (pr1 o f) (pr1 o f) in
                          equiv_inv)
@@ -928,7 +929,7 @@ Section Sheafification.
           match goal with
           |[|- _ = ap _ (eisretr _ (IsEquiv := ?HEL) _) @ _] => pose (HELP := HEL)
           end.
-          refine (apD10 (g := λ bc, ap
+          simple refine (apD10 (g := λ bc, ap
                                       (λ
                                          x : (λ x : ∃ b0 : E, χ b0, (f x.1).1) =
                                              (λ x : ∃ b0 : E, χ b0, (f x.1).1), ap10 x bc)
@@ -1084,9 +1085,9 @@ Section Sheafification.
       unfold E_to_χ_map in *; cbn in *.
       exact (@compose_equiv _ (∃ x : T, φ x) T (∃ e : P, χ e) P pr1 f g pr1 SepP Monoχ).
     - intros E φ.
-      refine (isequiv_adjointify _ _ _).
+      simple refine (isequiv_adjointify _ _ _).
       + intros f e. cbn.
-        refine (exist _ _ _). apply (equiv_inv _ (IsEquiv := ShP E φ) (pr1 o f) e). 
+        simple refine (exist _ _ _). apply (equiv_inv _ (IsEquiv := ShP E φ) (pr1 o f) e). 
         apply (equiv_inv _ (IsEquiv := clχ (equiv_inv _ (IsEquiv := ShP E φ) (pr1 o f) e))).
         generalize (equiv_path _ _ (j_is_nj (φ e).1) (φ e).2).
         apply O_rec; intro p; apply O_unit.
@@ -1094,7 +1095,7 @@ Section Sheafification.
         exact (f (e;p)).2.
       + intros f. apply path_forall; intros [e p].
         unfold E_to_χmono_map.
-        refine (path_sigma' _ _ _).
+        simple refine (path_sigma' _ _ _).
         exact (ap10 (eisretr (E_to_χmono_map P φ) (pr1 o f)) (e;p)). simpl.
         apply (moveR_transport_p (λ u:P, χ u)).
         apply moveR_equiv_V.
@@ -1107,7 +1108,7 @@ Section Sheafification.
         end.
         rewrite r; clear r. reflexivity.
       + intros f. apply path_forall; intro e.
-        refine (path_sigma' _ _ _).
+        simple refine (path_sigma' _ _ _).
         pose (eissect (E_to_χmono_map P φ)). unfold Sect, E_to_χmono_map in s.
         apply (ap10 (g:= pr1 o f)). 
         apply moveR_equiv_V. reflexivity.
@@ -1152,7 +1153,7 @@ Section Sheafification.
   Definition separated_to_sheaf_IsTrunc_Sn (U : TruncType (trunc_S n)) χ Monom :
     IsTrunc (trunc_S n) (@separated_to_sheaf_Type U χ Monom).
   Proof.
-    refine (trunc_sigma).
+    simple refine (trunc_sigma).
   Defined.
 
   Definition IsMono_fromIm_inv {A B} (f : A -> B) (x y : Im f): x.1 = y.1 -> x=y.
@@ -1204,9 +1205,9 @@ Section Sheafification.
     : IsMono (pr1 : {t:T & O nj (χ t)} -> T).
   Proof.
     intros [x px] [y py].
-    simpl; refine (isequiv_adjointify _ _ _).
+    simpl; simple refine (isequiv_adjointify _ _ _).
     - intro p. apply path_sigma' with p. 
-      refine (path_ishprop _ _). apply IsMono_IsHProp_cloture. exact Monom.
+      simple refine (path_ishprop _ _). apply IsMono_IsHProp_cloture. exact Monom.
     - intro p. simpl. destruct p. simpl.
       unfold path_ishprop.
       destruct (center (px = py)). reflexivity.
@@ -1223,7 +1224,7 @@ Section Sheafification.
   Definition separated_to_sheaf (U:SnType_j_Type) (χ:U.1 -> TruncType n) (sep: separated (BuildTruncType _ {u:U.1 & χ u})) Monom :
     Snsheaf_struct (BuildTruncType _ (@separated_to_sheaf_Type U.1 χ Monom)).
   Proof.
-    refine (closed_to_sheaf _ _ _ _).
+    simple refine (closed_to_sheaf _ _ _ _).
     exact (IsMono_cloture _ _ Monom).
     apply cloture_is_closed.
   Defined.
@@ -1237,7 +1238,7 @@ Section Sheafification.
   Definition sheafification_istrunc (T:TruncType (trunc_S n)) : 
     IsTrunc (trunc_S n) (sheafification_Type T).
   Proof.
-    refine trunc_sigma.
+    simple refine trunc_sigma.
     apply T_nType_j_Type_trunc.
   Defined.
 
@@ -1274,9 +1275,10 @@ Section Sheafification.
 
   Definition good_sheafification (T:TruncType (n.+1))
   : SnType_j_Type.
-    refine (exist _ _ _).
+    simple refine (exist _ _ _).
     exists (good_sheafification_Type T).
-    refine trunc_sigma. apply T_nType_j_Type_trunc.
+    simple refine trunc_sigma. apply T_nType_j_Type_trunc.
+    cbn.
     match goal with
       |[|- Snsheaf_struct ?X] => assert (eq : (sheafification T).1 = X)
     end.
@@ -1306,19 +1308,19 @@ Section Sheafification.
 
   Lemma density_sheafification_is_sep (T : TruncType (n.+1))
   : {e:(good_sheafification_Type T) & (density_sheafification T e).1} <~> separated_Type T.
-    refine (equiv_adjointify _ _ _ _).
+    simple refine (equiv_adjointify _ _ _ _).
     - intros [e p].
       exists e.1.
       exact p.
     - intros [e he].
-      refine (exist _ _ _).
+      simple refine (exist _ _ _).
       exists e.
       apply Oj_unit.
       exact he. exact he.
     - intros [e he].
       reflexivity.
     - intros [e p].
-      refine (path_sigma' _ _ _).
+      simple refine (path_sigma' _ _ _).
       apply path_sigma' with 1.
       apply path_ishprop.
       apply path_ishprop.
@@ -1341,7 +1343,7 @@ Section Sheafification.
          (x : P), f (separated_unit P x))).
     assert (foo = sep_f o clsep_to_sep o sh_to_clsep) by reflexivity.
     rewrite X.
-    refine (isequiv_compose).
+    simple refine (isequiv_compose).
     - exact (separated_equiv P (existT (separated) Q sepQ)).
   Qed.
 
@@ -1353,7 +1355,7 @@ Section Sheafification.
     - assert (p := subu_sigma _ (separated_modality)). simpl in p.      
       exact (p (Build_subuniverse_Type _ separation_reflective_subuniverse A sepA) (λ a, Build_subuniverse_Type _ separation_reflective_subuniverse (B a) (fst (modB a)))). 
     - intros E χ.
-      refine (isequiv_adjointify _ _ _).
+      simple refine (isequiv_adjointify _ _ _).
       + simpl.
         intros φ e.
         destruct ((sheafA E χ)) as [inva retra secta _]. unfold Sect in *; simpl in *.
@@ -1363,7 +1365,7 @@ Section Sheafification.
         specialize (modB a).
         destruct modB as [sepB sheafB]. simpl in *.        
         specialize (sheafB {e':E & e = e'} (λ x, χ x.1)).
-        refine (equiv_inv _ (IsEquiv := sheafB) _ (e;1)).
+        simple refine (equiv_inv _ (IsEquiv := sheafB) _ (e;1)).
         intros X.
         specialize (retra (pr1 o φ)).
         apply ap10 in retra.
@@ -1374,7 +1376,7 @@ Section Sheafification.
       + intro φ; simpl in *.
         unfold E_to_χmono_map; simpl in *.
         apply path_forall; intros [e h].
-        refine (path_sigma' _ _ _).
+        simple refine (path_sigma' _ _ _).
         { exact (ap10 (eisretr _ (IsEquiv := sheafA E χ) (pr1 o φ)) (e;h)). }
         { destruct ((sheafA E χ)) as [inva retra secta adja]. 
           destruct (modB (inva
@@ -1383,7 +1385,7 @@ Section Sheafification.
           destruct (sheafB (∃ e' : E, e = e') (λ x, (χ x.1))) as [invb retrb sectb adjb].
           simpl in *. clear adjb; clear adja.
           unfold Sect, E_to_χmono_map in *; simpl in *.
-          refine (moveR_transport_p B _ _ _ _).
+          simple refine (moveR_transport_p B _ _ _ _).
           match goal with
             |[|- invb ?X _ = _ ] => specialize (retrb X)
           end.
@@ -1393,10 +1395,10 @@ Section Sheafification.
           exact retrb. }
       + intro φ; simpl in *.
         apply path_forall; intro e.
-        refine (path_sigma' _ _ _).
+        simple refine (path_sigma' _ _ _).
         { exact (ap10 (eissect _ (IsEquiv := sheafA E χ) (pr1 o φ)) e). }
         {
-          refine (moveR_transport_p B _ _ _ _).
+          simple refine (moveR_transport_p B _ _ _ _).
 
           assert (moveR_EV2 : forall (X Y:Type) (Z:X -> Type) (T:Y -> Type)
                                      (f:(forall x, Z x) -> (forall x, T x))
@@ -1406,7 +1408,7 @@ Section Sheafification.
                                      (x:X),
                      (f g = h) -> (f^-1 h x = g x)).
           { intros X Y Z T f H g h x X0. destruct X0. rewrite eissect. reflexivity. }
-          refine (@moveR_EV2 {e':E & e=e'} {b:{e':E & e=e'} & (χ b.1).1}
+          simple refine (@moveR_EV2 {e':E & e=e'} {b:{e':E & e=e'} & (χ b.1).1}
                              _ _ _ _ _ _ (e;1) _); clear moveR_EV2.
           intros [X p].
           destruct p.
@@ -1430,7 +1432,7 @@ Section Sheafification.
 
   (* Proposition 33 *)
   Definition sheafification_subU : subuniverse_struct (n.+1).
-    refine (Build_subuniverse_struct _ _ _ _ _).
+    simple refine (Build_subuniverse_struct _ _ _ _ _).
     - intro T. exists (Snsheaf_struct T). apply Snsheaf_struct_is_HProp.
     - intros T. exact (good_sheafification T).
     - intros T. apply good_sheafification_unit.
@@ -1439,7 +1441,7 @@ Section Sheafification.
 
   (* Proposition 34 *)
   Definition sheafification_modality : Modality (n.+1).
-    refine (Build_Modality _ _ _).
+    simple refine (Build_Modality _ _ _).
     - exact sheafification_subU.
     - exact (λ A B, sheafification_subu_sigma A (@subu_struct _ _ _) B (λ a, @subu_struct _ _ (B a))).
   Defined.
@@ -1497,7 +1499,7 @@ Section Sheafification.
     revert x.
     transparent assert (sh : ((O nj (BTT (a = b))) -> subuniverse_Type nj)).
     { intro x.
-      refine (Build_subuniverse_Type _ nj (BTT (O_unit nj (BTT (b = b)) 1 =
+      simple refine (Build_subuniverse_Type _ nj (BTT (O_unit nj (BTT (b = b)) 1 =
    O_rec sheaf_def_and_thm.n nj (BTT (a = b)) (O nj (BTT (b = b)))
      (λ u : a = b,
       O_rec sheaf_def_and_thm.n nj
@@ -1506,7 +1508,7 @@ Section Sheafification.
         istrunc_trunctype_type := istrunc_paths a b |} 
         (O nj (BTT (b = b))) (λ v : a = b, O_unit nj (BTT (b = b)) (v^ @ u))
         x) x)) _). }
-      refine (O_rec_dep _ sh _).1.
+      simple refine (O_rec_dep _ sh _).1.
       unfold sh; clear sh; intro x; simpl.
               
       pose (foo := λ P Q f, ap10 (O_rec_retr n nj P Q f)).
@@ -1560,7 +1562,7 @@ Section Sheafification.
   (* Proposition 36 *)
   Theorem good_sheafification_unit_paths_are_nj_paths (T:(n.+1)-Type) (a b:T) : (good_sheafification_unit T a = good_sheafification_unit T b) <~> (O nj (BTT (a=b))).
   Proof.
-    refine (equiv_adjointify _ _ _ _).
+    simple refine (equiv_adjointify _ _ _ _).
     - apply good_sheafification_unit_paths_are_nj_paths_fun.
     - apply good_sheafification_unit_paths_are_nj_paths_inv.
     - apply good_sheafification_unit_paths_are_nj_paths_retr.
@@ -1573,7 +1575,7 @@ Section Sheafification.
   Proof.
     intros A x y H. simpl.
     Transparent O. cbn. Opaque O.
-    refine (contr_equiv' _ (cumulativity (BTT (x=y)) _)).
+    simple refine (contr_equiv' _ (cumulativity (BTT (x=y)) _)).
     apply (@trunc_equiv' (good_sheafification_unit A x = good_sheafification_unit A y) ((O nj (BTT (x=y)))) (good_sheafification_unit_paths_are_nj_paths A x y) -2).
     apply (@contr_paths_contr).
     simpl in H.
@@ -1591,12 +1593,12 @@ Section Sheafification.
       admit.
     }
 
-    refine (ap (trunctype_type) (path_iff_hprop (A:=pr1 (Oj (BuildhProp T))) (B:=@BuildTruncType -1 _ X) _ _)).
+    simple refine (ap (trunctype_type) (path_iff_hprop (A:=pr1 (Oj (BuildhProp T))) (B:=@BuildTruncType -1 _ X) _ _)).
     - intro x.
       cbn. unfold good_sheafification_Type.
-      refine (exist _ _ _).
+      simple refine (exist _ _ _).
       intro t.
-      refine (Build_subuniverse_Type n nj _ _).
+      simple refine (Build_subuniverse_Type n nj _ _).
       revert x.
 
       cut ((O subuniverse_Prop (BuildhProp T)) -> (O subuniverse_Prop
@@ -1619,7 +1621,7 @@ Section Sheafification.
       apply unique_subuniverse. apply path_trunctype.
       cbn. equiv_via (O nj (BTT Unit)).
       apply function_lift_equiv'. exact fs.
-      refine (equiv_adjointify _ _ _ _).
+      simple refine (equiv_adjointify _ _ _ _).
       intro p; exact tt.
       intro tt; apply path_ishprop.
       intro y; apply path_ishprop.
@@ -1652,20 +1654,20 @@ Section Sheafification.
     ∀ (X : Type) (i : trunc_index), Trunc i X → Trunc i (Trunc i.+1 X).
   Proof.
     intros X i.
-    refine (Trunc_rec _).
+    simple refine (Trunc_rec _).
     exact (tr o tr).
   Defined.
 
   Lemma Trunc_Trunc_S (X:Type) (i:trunc_index)
     : Trunc i X <~> Trunc i (Trunc i.+1 X).
   Proof.
-    refine (equiv_adjointify _ _ _ _).
+    simple refine (equiv_adjointify _ _ _ _).
     - apply Trunc_Trunc_S_fun.
-    - refine (Trunc_rec _). refine (Trunc_rec _).
+    - simple refine (Trunc_rec _). simple refine (Trunc_rec _).
       exact tr.
-    - refine (Trunc_ind _ _). refine (Trunc_ind _ _).
+    - simple refine (Trunc_ind _ _). simple refine (Trunc_ind _ _).
       intro a; reflexivity.
-    - refine (Trunc_ind _ _).
+    - simple refine (Trunc_ind _ _).
       intro a; reflexivity.
   Defined.
 End Sheafification.

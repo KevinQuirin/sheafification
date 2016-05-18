@@ -54,8 +54,8 @@ Definition Oconcat_p1 {A:TruncType (n.+1)} {x y:A} (p: O subU (BTT (x=y)))
   : p °@ °1 = p.
 Proof.
   revert p.
-  refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT (p °@ °1 = p)) _) _).1.
-  refine (subuniverse_paths _ _ _ _ _).
+  simple refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT (p °@ °1 = p)) _) _).1.
+  simple refine (subuniverse_paths _ _ _ _ _).
   intro p.
   unfold Oconcat, Oidpath.
   repeat rewrite (λ P Q f, ap10 (O_rec_retr n subU P Q f)).
@@ -66,8 +66,8 @@ Definition Oconcat_1p {A:TruncType (n.+1)} {x y:A} (p: O subU (BTT (x=y)))
   : °1 °@ p = p.
 Proof.
   revert p.
-  refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT (°1 °@ p = p)) _) _).1.
-  refine (subuniverse_paths _ _ _ _ _).
+  simple refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT (°1 °@ p = p)) _) _).1.
+  simple refine (subuniverse_paths _ _ _ _ _).
   intro p.
   unfold Oconcat, Oidpath.
   repeat rewrite (λ P Q f, ap10 (O_rec_retr n subU P Q f)).
@@ -78,13 +78,13 @@ Definition Oconcat_p_pp {A:TruncType (n.+1)} {x y z t:A} (p: O subU (BTT (x=y)))
   : p °@ (q °@ r) = (p °@ q) °@ r.
 Proof.
   revert p.
-  refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT (p °@ _ = (p °@ _) °@ _)) _) _).1.
-  refine (subuniverse_paths _ _ _ _ _). intro p.
+  simple refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT (p °@ _ = (p °@ _) °@ _)) _) _).1.
+  simple refine (subuniverse_paths _ _ _ _ _). intro p.
   revert q.
-  refine (O_rec_dep _ (λ q, Build_subuniverse_Type n subU (BTT (_ °@ (q °@ _) = (_ °@ q) °@ _)) _) _).1.
+  simple refine (O_rec_dep _ (λ q, Build_subuniverse_Type n subU (BTT (_ °@ (q °@ _) = (_ °@ q) °@ _)) _) _).1.
   intro q.
   revert r.
-  refine (O_rec_dep _ (λ r, Build_subuniverse_Type n subU (BTT (_ °@ (_ °@ r) = (_ °@ _) °@ r)) _) _).1.
+  simple refine (O_rec_dep _ (λ r, Build_subuniverse_Type n subU (BTT (_ °@ (_ °@ r) = (_ °@ _) °@ r)) _) _).1.
   intro r. cbn.
   unfold Oconcat, Oidpath, Oinverse, function_lift.
   cbn.
@@ -96,13 +96,13 @@ Definition Oconcat_pp_p {A:TruncType (n.+1)} {x y z t:A} (p: O subU (BTT (x=y)))
   : (p °@ q) °@ r = p °@ (q °@ r).
 Proof.
   revert p.
-  refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT ((p °@ _) °@ _ = p °@ (_ °@ _))) _) _).1.
-  refine (subuniverse_paths _ _ _ _ _). intro p.
+  simple refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT ((p °@ _) °@ _ = p °@ (_ °@ _))) _) _).1.
+  simple refine (subuniverse_paths _ _ _ _ _). intro p.
   revert q.
-  refine (O_rec_dep _ (λ q, Build_subuniverse_Type n subU (BTT ((_ °@ q) °@ _ = _ °@ (q °@ _))) _) _).1.
+  simple refine (O_rec_dep _ (λ q, Build_subuniverse_Type n subU (BTT ((_ °@ q) °@ _ = _ °@ (q °@ _))) _) _).1.
   intro q.
   revert r.
-  refine (O_rec_dep _ (λ r, Build_subuniverse_Type n subU (BTT ((_ °@ _) °@ r = _ °@ (_ °@ r))) _) _).1.
+  simple refine (O_rec_dep _ (λ r, Build_subuniverse_Type n subU (BTT ((_ °@ _) °@ r = _ °@ (_ °@ r))) _) _).1.
   intro r. cbn.
   unfold Oconcat, Oidpath, Oinverse, function_lift.
   cbn.
@@ -114,8 +114,8 @@ Definition Oconcat_pV {A:TruncType (n.+1)} {x y:A} (p: O subU (BTT (x=y)))
   : p °@ p °^ = °1.
 Proof.
   revert p.
-  refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT (p °@ p °^ = °1)) _) _).1.
-  refine (subuniverse_paths _ _ _ _ _).
+  simple refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT (p °@ p °^ = °1)) _) _).1.
+  simple refine (subuniverse_paths _ _ _ _ _).
   intro p.
   unfold Oconcat, Oidpath, Oinverse, function_lift.
   cbn.
@@ -127,8 +127,8 @@ Definition Oconcat_Vp {A:TruncType (n.+1)} {x y:A} (p: O subU (BTT (x=y)))
   : p°^ °@ p = °1.
 Proof.
   revert p.
-  refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT (p °^ °@ p = °1)) _) _).1.
-  refine (subuniverse_paths _ _ _ _ _).
+  simple refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT (p °^ °@ p = °1)) _) _).1.
+  simple refine (subuniverse_paths _ _ _ _ _).
   intro p.
   unfold Oconcat, Oidpath, Oinverse, function_lift.
   cbn.
@@ -140,12 +140,12 @@ Definition Oinv_pp {A:TruncType (n.+1)} {x y z:A} (p: O subU (BTT (x=y))) (q: O 
   : (p °@ q)°^ = q°^ °@ p°^.
 Proof.
   revert p.
-  refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT ((p °@ q)°^ = q°^ °@ p°^)) _) _).1.
-  refine (subuniverse_paths _ _ _ _ _).
+  simple refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT ((p °@ q)°^ = q°^ °@ p°^)) _) _).1.
+  simple refine (subuniverse_paths _ _ _ _ _).
   intro p. cbn.
   revert q.
-  refine (O_rec_dep _ (λ q, Build_subuniverse_Type n subU (BTT ((_ °@ q)°^ = q°^ °@ _)) _) _).1.
-  refine (subuniverse_paths _ _ _ _ _).
+  simple refine (O_rec_dep _ (λ q, Build_subuniverse_Type n subU (BTT ((_ °@ q)°^ = q°^ °@ _)) _) _).1.
+  simple refine (subuniverse_paths _ _ _ _ _).
   intro q.
   cbn.
   unfold Oconcat, Oidpath, Oinverse, function_lift.
@@ -158,8 +158,8 @@ Definition Oinv_V {A:TruncType (n.+1)} {x y:A} (p: O subU (BTT (x=y)))
   : p°^°^ = p.
 Proof.
   revert p.
-  refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT ((p°^)°^ = p)) _) _).1.
-  refine (subuniverse_paths _ _ _ _ _).
+  simple refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT ((p°^)°^ = p)) _) _).1.
+  simple refine (subuniverse_paths _ _ _ _ _).
   intro p.
   cbn.
   unfold Oconcat, Oidpath, Oinverse, function_lift.
@@ -183,12 +183,12 @@ Definition Oap_pp {A B:TruncType (n.+1)} (f: A -> B) {x y z:A} (p: O subU (BTT (
   : Oap f (p °@ q) = (Oap f p) °@ (Oap f q).
 Proof.
   revert p.
-  refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT (Oap f (p °@ q) = Oap f p °@ Oap f q)) _) _).1.
-  refine (subuniverse_paths _ _ _ _ _).
+  simple refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT (Oap f (p °@ q) = Oap f p °@ Oap f q)) _) _).1.
+  simple refine (subuniverse_paths _ _ _ _ _).
   intro p. cbn.
   revert q.
-  refine (O_rec_dep _ (λ q, Build_subuniverse_Type n subU (BTT (Oap f (_ °@ q) = _ °@  Oap f q)) _) _).1.
-  refine (subuniverse_paths _ _ _ _ _).
+  simple refine (O_rec_dep _ (λ q, Build_subuniverse_Type n subU (BTT (Oap f (_ °@ q) = _ °@  Oap f q)) _) _).1.
+  simple refine (subuniverse_paths _ _ _ _ _).
   intro q.
   cbn.
   unfold Oconcat, Oidpath, Oinverse, Oap, function_lift.
@@ -200,8 +200,8 @@ Definition Oap_V {A B:TruncType (n.+1)} (f: A -> B) {x y:A} (p: O subU (BTT (x=y
   : Oap f (p°^) = (Oap f p)°^.
 Proof.
   revert p.
-  refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT (Oap f p°^ = (Oap f p)°^)) _) _).1.
-  refine (subuniverse_paths _ _ _ _ _).
+  simple refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT (Oap f p°^ = (Oap f p)°^)) _) _).1.
+  simple refine (subuniverse_paths _ _ _ _ _).
   intro p. cbn.
   unfold Oconcat, Oidpath, Oinverse, Oap, function_lift.
   cbn.
@@ -233,8 +233,8 @@ Proof.
   
   rewrite transport_paths_FlFr. cbn. rewrite ap_V. rewrite inv_V.
   rewrite !concat_pp_p. apply whiskerL.
-  unfold Oidpath. refine ((ap10_O_retr_sect n subU (BTT (x = x)) (O subU (BTT (x = x))) idmap 1) @ _).
-  refine ((concat_p1 _)^ @ _). apply whiskerL.
+  unfold Oidpath. simple refine ((ap10_O_retr_sect n subU (BTT (x = x)) (O subU (BTT (x = x))) idmap 1) @ _).
+  simple refine ((concat_p1 _)^ @ _). apply whiskerL.
   rewrite (ap_compose (λ x0, x0 1) (λ x0, (O_unit subU (BTT (x = x))) x0)).
   rewrite ap_apply_l. rewrite ap10_V.
   rewrite ap10_path_forall. reflexivity.
@@ -244,8 +244,8 @@ Definition Oap_compose {A B C:TruncType (n.+1)} (f: A -> B) (g: B -> C) {x y:A} 
   : Oap (g o f) p = Oap g (Oap f p).
 Proof.
   revert p.
-  refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT (Oap (g o f) p = Oap g (Oap f p))) _) _).1.
-  refine (subuniverse_paths _ _ _ _ _).
+  simple refine (O_rec_dep _ (λ p, Build_subuniverse_Type n subU (BTT (Oap (g o f) p = Oap g (Oap f p))) _) _).1.
+  simple refine (subuniverse_paths _ _ _ _ _).
   intro p. cbn.
   unfold Oconcat, Oidpath, Oinverse, Oap, function_lift.
   cbn.
@@ -271,9 +271,9 @@ Definition Otransport2 {A:TruncType (n.+1)} (P:A -> subuniverse_Type subU) {x y:
   : forall z:P x, Otransport P p z = Otransport P q z.
 Proof.
   intro z.
-  refine (O_rec _ subU (BTT (p=q))
+  simple refine (O_rec _ subU (BTT (p=q))
                 (Build_subuniverse_Type n subU (BTT (Otransport P p z = Otransport P q z)) _) _ r).
-  refine (subuniverse_paths _ _ _ _ _).
+  simple refine (subuniverse_paths _ _ _ _ _).
   intro r'; destruct r'; reflexivity.
 Defined.
   

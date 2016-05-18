@@ -1,8 +1,10 @@
--R . ""
--arg -type-in-type
-COQC = ../HoTT/hoqc
-COQDEP = ../HoTT/hoqdep
+-R . Sheafification
+-arg -type-in-type 
+COQC = /Users/kquiri13/Code/Coq/HoTT8.5/HoTT/hoqc
+COQTOP = /Users/kquiri13/Code/Coq/HoTT8.5/HoTT/hoqtop
+COQDEP = /Users/kquiri13/Code/Coq/HoTT8.5/HoTT/hoqdep
 
+sheaf_induction.v
 Limit/Auxiliary.v
 Limit/CechNerve.v
 Limit/CoEqualizer.v
@@ -18,9 +20,6 @@ Limit/KernelPair.v
 Limit/MappingTelescope.v
 Limit/MyLemmas.v
 Limit/MyTacs.v
-
-
-R.v
 Limit.v
 PathGroupoid_.v
 Equivalences_.v
@@ -38,4 +37,4 @@ sheaf_def_and_thm.v
 Tf_Omono_sep.v
 OT.v
 OT_Tf.v
-sheaf_induction.v
+

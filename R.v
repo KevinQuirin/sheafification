@@ -58,7 +58,7 @@ Definition R_rec {A:Type} (P:A -> A -> Type) (p0: forall x:A, P x x)
            (rp_1' : forall a, rp' a a (p0 a) = 1)
   : R P p0 -> Q.
 Proof.
-  refine (R_ind _ _ _ r' (fun a b p => transport_const _ _ @ rp' a b p)  _).
+  simple refine (R_ind _ _ _ r' (fun a b p => transport_const _ _ @ rp' a b p)  _).
   intro a.
   pose (p:=whiskerR (transport2_const (A:=R P p0) (B:= Q) (rp_1 a) (r' a) @ concat_p1 _)^ (rp' a a (p0 a))). cbn in p.
   pose (p1:=(whiskerL (transport2 (λ _ : R P p0, Q) (rp_1 a) (r' a)) (rp_1' a) @ concat_p1 _)^).
@@ -73,7 +73,7 @@ Definition R_rec_beta_rp {A:Type} (P:A -> A -> Type) (p0: forall x:A, P x x)
            a b p
   : ap (R_rec _ _ Q r' rp' rp_1') (rp a b p) = rp' a b p.
 Proof.
-  refine (cancelL (transport_const (rp (p0:=p0) a b p) (r' a)) _ _ _).
+  simple refine (cancelL (transport_const (rp (p0:=p0) a b p) (r' a)) _ _ _).
   pose (e1:= R_ind_beta_rp P p0 (λ _ : R P p0, Q) r'
         (λ (a0 b0 : A) (p1 : P a0 b0),
          transport_const (rp a0 b0 p1) (r' a0) @ rp' a0 b0 p1)
@@ -112,7 +112,7 @@ Proof.
   apply (cancelL (apD_const (R_rec P p0 Q r' rp' rp_1') (rp a a (p0 a)))).
   apply (cancelR _ _ (concat_p_pp _ (transport_const _ _) _)^).
   apply (cancelR _ _ (whiskerL (transport2 _ (rp_1 a) (r' a)) (apD_const (R_rec P p0 Q r' rp' rp_1') 1)^)).
-  refine ((apD02_const (R_rec P p0 Q r' rp' rp_1') (rp_1 a) )^ @ _).
+  simple refine ((apD02_const (R_rec P p0 Q r' rp' rp_1') (rp_1 a) )^ @ _).
   apply (cancelR _ _ (concat_p1 (transport2 (λ _ : R P p0, Q) (rp_1 a) (r' a)))).
   apply (cancelR _ _ ((whiskerL (transport2 (λ _ : R P p0, Q) (rp_1 a) (r' a)) (rp_1' a) @
         concat_p1 (transport2 (λ _ : R P p0, Q) (rp_1 a) (r' a)))^ @
@@ -121,7 +121,7 @@ Proof.
           concat_p1 (transport2 (λ _ : R P p0, Q) (rp_1 a) (r' a)))^
                       (rp' a a (p0 a)))).
   Opaque concat_p_pp.
-  refine (R_ind_beta_rp_1 _ _ _ _ _ _ _ @ _); cbn.
+  simple refine (R_ind_beta_rp_1 _ _ _ _ _ _ _ @ _); cbn.
   apply (cancelL (apD_const
                (R_ind P p0 (λ _ : R P p0, Q) r'
                   (λ (a0 b0 : A) (p2 : P a0 b0),
@@ -164,7 +164,7 @@ Proof.
   rewrite concat_concat2. cbn.
   rewrite (concat_1p (transport2_const (rp_1 a) (r' a))).
   rewrite (concat_p1 (R_rec_beta_rp P p0 Q r' rp' rp_1' a a (p0 a))).
-  refine ((concat_p1 _)^ @ _). rewrite !concat_pp_p.
+  simple refine ((concat_p1 _)^ @ _). rewrite !concat_pp_p.
   match goal with
   |[|- _ = (?P @@ ?Q) @ ?R] => path_via (((P @ 1) @@ Q) @ R)
   end.
@@ -172,7 +172,7 @@ Proof.
   rewrite <- concat_concat2.
   rewrite !concat_pp_p. apply whiskerL.
   rewrite !concat_p_pp. apply moveL_pV. rewrite concat_1p.
-  rewrite !concat_pp_p. refine ((concat_p1 _)^@ _).
+  rewrite !concat_pp_p. simple refine ((concat_p1 _)^@ _).
   apply whiskerL. cbn.
   pose (rew:= @triangulator _ _ _ _ (transport2 (λ _ : R P p0, Q) (rp_1 a) (r' a)) 1).
   apply moveL_Vp in rew. rewrite rew; clear rew. cbn.
@@ -188,10 +188,10 @@ Lemma path_R {A B:Type} (P: A -> A -> Type) (p0 : forall x, P x x)
                       = transport (λ U, eq1 a @ ap β U = ap α U @ eq1 a) (rp_1 a)^ (concat_p1 (eq1 a) @ (concat_1p (eq1 a))^))
   : α == β.
 Proof with cbn.
-  refine (R_ind _ _ _ _ _ _).
+  simple refine (R_ind _ _ _ _ _ _).
   - exact eq1.
   - intros a b p.
-    refine (transport_paths_FlFr _ _ @ _).
+    simple refine (transport_paths_FlFr _ _ @ _).
     etransitivity; try apply concat_pp_p.
     apply (cancelL (ap α (rp a b p))).
     etransitivity; try apply eq2.
@@ -506,7 +506,7 @@ Lemma equiv_R_id_fun {A:Type} (P: A -> A -> Type) (p0 : forall x, P x x)
       (κ : forall a, (φ a a) (p0 a) = q0 a)
   : R P p0 -> R Q q0.
 Proof.
-  refine (R_rec _ _ _ _ _ _).
+  simple refine (R_rec _ _ _ _ _ _).
   intro a; apply r. exact a.
   intros a b p; cbn.
   apply rp. exact (φ a b p).
@@ -525,20 +525,20 @@ Lemma equiv_R_id_sect {A:Type} (P: A -> A -> Type) (p0 : forall x, P x x)
 Proof.
   destruct κκ'.
   unfold Sect.
-  refine (path_R _ _ _ _ _ _ _); cbn.
+  simple refine (path_R _ _ _ _ _ _ _); cbn.
   + intro x; reflexivity.
   + intros a b p; cbn.
-    refine (concat_1p _ @ _).
-    refine (_ @ (concat_p1 _)^).
-    refine (ap_idmap _ @ _).
+    simple refine (concat_1p _ @ _).
+    simple refine (_ @ (concat_p1 _)^).
+    simple refine (ap_idmap _ @ _).
     match goal with |[|- _ = ap (λ x, ?ff (?gg x)) ?pp]
-                     => refine (_ @ (ap_compose gg ff pp)^)
+                     => simple refine (_ @ (ap_compose gg ff pp)^)
     end.
     match goal with
     |[|- _ = ap ?ff _ ]
-     => refine (_ @ (ap (ap ff) (R_rec_beta_rp _ _ _ _ _ _ _ _ _))^)
+     => simple refine (_ @ (ap (ap ff) (R_rec_beta_rp _ _ _ _ _ _ _ _ _))^)
     end.
-    refine (_ @ (R_rec_beta_rp _ _ _ _ _ _ _ _ _)^).
+    simple refine (_ @ (R_rec_beta_rp _ _ _ _ _ _ _ _ _)^).
     apply ap. symmetry; apply eisretr.
   + intro a; cbn.
     rewrite transport_paths_FlFr.
@@ -586,7 +586,7 @@ Proof.
     repeat rewrite concat_p_pp.
     match goal with
     |[|- ap (ap ?ff) ?pp = _]
-     => refine ((ap02_is_ap _ _ ff _ _ _ _ pp)^ @ _)
+     => simple refine ((ap02_is_ap _ _ ff _ _ _ _ pp)^ @ _)
     end.
     rewrite ap02_compose.
     repeat rewrite concat_pp_p. apply whiskerL.
@@ -615,7 +615,7 @@ Proof.
     apply whiskerR.
     transparent assert (X : (∀ a : A, (φ a a)^-1 (q0 a) = p0 a)).
     { intro b. pose (eissect (φ b b) (p0 b)).
-      refine (_ @ p).
+      simple refine (_ @ p).
       apply ap. exact (κ b)^. }
 
     pose (apD (λ U, R_rec_beta_rp P p0 (R Q q0) (λ a0 : A, r a0)
@@ -647,9 +647,9 @@ Lemma isequiv_equiv_R_id_fun {A:Type} (P: A -> A -> Type) (p0 : forall x, P x x)
       (κ : forall a, (φ a a) (p0 a) = q0 a)
   : IsEquiv (equiv_R_id_fun P p0 Q q0 φ κ).
 Proof.
-  refine (isequiv_adjointify _ _ _ _).
-  - refine (equiv_R_id_fun Q q0 P p0 (λ a b, equiv_inverse (φ a b)) _).
-    intro a. refine (_ @ (eissect (φ a a) (p0 a))).
+  simple refine (isequiv_adjointify _ _ _ _).
+  - simple refine (equiv_R_id_fun Q q0 P p0 (λ a b, equiv_inverse (φ a b)) _).
+    intro a. simple refine (_ @ (eissect (φ a a) (p0 a))).
     apply ap. exact (κ a)^.
   - apply equiv_R_id_sect. reflexivity.
   - apply equiv_R_id_sect.
@@ -676,12 +676,12 @@ Definition equiv_R_fun {A B:Type}
            (κ: forall a, (φ a a) (p0 a) = q0 (α a))
   : R P p0 -> R Q q0.
 Proof.
-  refine (R_rec _ _ _ _ _ _).
+  simple refine (R_rec _ _ _ _ _ _).
   - intro a. apply r. exact (α a).
   - intros a b p; cbn. apply rp.
     apply φ. exact p.
   - intro a; cbn.
-    refine (ap (rp (α a) (α a)) (κ a) @ _).
+    simple refine (ap (rp (α a) (α a)) (κ a) @ _).
     apply rp_1.
 Defined.
 
@@ -710,7 +710,7 @@ Definition equiv_R_inv {A B:Type}
            (κ: forall a, (φ a a) (p0 a) = q0 (α a))
   : R Q q0 -> R P p0.
 Proof.
-  refine (equiv_R_fun Q q0 P p0 (equiv_inverse α) _ _).
+  simple refine (equiv_R_fun Q q0 P p0 (equiv_inverse α) _ _).
   - intros a b q; cbn.    
     cut (Q (α (α^-1 a)) (α (α^-1 b))).
     apply (φ _ _)^-1.
@@ -736,20 +736,20 @@ Definition equiv_R_sect {A B:Type}
            (κ: forall a, (φ a a) (p0 a) = q0 (α a))
   : forall x, (equiv_R_fun P p0 Q q0 α φ κ) (equiv_R_inv P p0 Q q0 α φ κ x) = x.
 Proof.
-  refine (path_R _ _ _ _ _ _ _).
+  simple refine (path_R _ _ _ _ _ _ _).
   - intro a; cbn. exact (ap r (eisretr α a)).
   - intros a b q; cbn.
-    refine (((idpath (ap r (eisretr α a))) @@ (ap_idmap (rp (p0:=q0) a b q))) @ _).
+    simple refine (((idpath (ap r (eisretr α a))) @@ (ap_idmap (rp (p0:=q0) a b q))) @ _).
     unfold equiv_R_inv, equiv_R_fun; cbn.
     match goal with
     |[|- _ = ap (λ x, ?ff (?gg x)) ?pp @ _]
-     => refine (_ @ ((ap_compose gg ff pp)^ @@ 1))       
+     => simple refine (_ @ ((ap_compose gg ff pp)^ @@ 1))       
     end.
     match goal with
     |[|- _ = ap ?ff (ap (R_rec ?X1 ?X2 ?X3 ?X4 ?X5 ?X6) _) @ _]
-     => refine (_ @ ((ap02 ff (R_rec_beta_rp X1 X2 X3 X4 X5 X6 a b q)^) @@ 1))
+     => simple refine (_ @ ((ap02 ff (R_rec_beta_rp X1 X2 X3 X4 X5 X6 a b q)^) @@ 1))
     end.
-    refine (_ @ ((R_rec_beta_rp _ _ _ _ _ _ _ _ _)^ @@ 1)).
+    simple refine (_ @ ((R_rec_beta_rp _ _ _ _ _ _ _ _ _)^ @@ 1)).
     path_via ((rp (p0 := q0) _ _ (transport (λ U : B, Q (α (α^-1 a)) U) (eisretr α b)^
               (transport (λ U : B, Q U b) (eisretr α a)^ q))) @ (ap r (eisretr α b))).
     2: apply whiskerR; apply ap; symmetry; apply eisretr.
